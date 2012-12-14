@@ -1,5 +1,6 @@
 #include <Elementary.h>
 #include "view.h"
+#include "mesh.h"
 #define __UNUSED__
 
 typedef struct _GLData GLData;
@@ -254,6 +255,7 @@ create_view(Evas_Object *win)
    elm_box_pack_end(bx, gl);
    evas_object_show(gl);
 
+
    elm_object_focus_set(gl, EINA_TRUE);
 
    ani = ecore_animator_add(_anim, gl);
@@ -269,7 +271,11 @@ create_view(Evas_Object *win)
    elm_box_pack_end(bx, bt);
    evas_object_show(bt);
    evas_object_smart_callback_add(bt, "clicked", _on_done, win);
-}
 
+   Mesh* m = malloc(sizeof(Mesh));
+   readModel("model/tex.bin", m);
+   initModel(m,gld->glapi);
+   load_model(gl);
+}
 
 
