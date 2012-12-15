@@ -117,6 +117,15 @@ initModel(Mesh* m, Evas_GL_API* gl)
     m->normals->members,
     GL_STATIC_DRAW);
 
+ m->shader = malloc(sizeof(Shader));
+ //TODO delete shader
+  shader_init(m->shader, gl, "shader/simple.vert", "shader/simple.frag");
+ 
 }
 
+void
+initTexture(Mesh* m)
+{
+//TODO
+}
 

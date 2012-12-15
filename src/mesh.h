@@ -1,5 +1,7 @@
 #ifndef __mesh__
 #define __mesh__
+#include "shader.h"
+#include "matrix.h"
 typedef struct _Mesh Mesh;
 
 struct _Mesh
@@ -23,8 +25,10 @@ struct _Mesh
   GLfloat*  uvs;
   */
 
-  //shader
+  Shader* shader;
   //matrices
+  Matrix4GL matrix;
+  Matrix4GL matrix_normal;
 };
 
 
