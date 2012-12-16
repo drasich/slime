@@ -30,8 +30,6 @@ shader_init(Shader* shader, Evas_GL_API* gl, char* vert_path, char* frag_path)
   shader_init_string(shader, gl, vert, frag);
   free(vert);
   free(frag);
-  printf("s'il y a un probleme c'est ptet parce que je libere ca et \
-        il faut ptet que la string reste en memoire...\n");
 }
 
 void
@@ -113,7 +111,7 @@ shader_init_attributes(Shader* s, Evas_GL_API* gl)
 {
   shader_init_attribute(s, "vertex", &s->attribute_vertex, gl);
   shader_init_attribute(s, "normal", &s->attribute_normal, gl);
-  shader_init_attribute(s, "texcoord", &s->attribute_texcoord, gl);
+  //shader_init_attribute(s, "texcoord", &s->attribute_texcoord, gl);
 }
 
 void 

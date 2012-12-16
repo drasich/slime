@@ -10,7 +10,7 @@ create_window()
 
    create_view(win);
 
-   evas_object_resize(win, 320, 480);
+   evas_object_resize(win, 800, 480);
    evas_object_show(win);
 }
 

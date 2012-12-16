@@ -28,12 +28,16 @@ struct _Mesh
   Shader* shader;
   //matrices
   Matrix4GL matrix;
-  Matrix4GL matrix_normal;
+  Matrix3GL matrix_normal;
 };
 
 
 void load_model(Evas_Object *gl);
-void readModel(char* path, Mesh* mesh);
-void initModel(Mesh* mesh, Evas_GL_API *gl);
+void mesh_read(char* path, Mesh* mesh);
+void mesh_init(Mesh* mesh, Evas_GL_API *gl);
+
+void mesh_set_matrix(Mesh* mesh, Matrix4 mat, Evas_GL_API* gl);
+
+void mesh_draw(Mesh* mesh, Evas_GL_API* gl);
 
 #endif

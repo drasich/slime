@@ -3,7 +3,7 @@ attribute vec3 normal;
 attribute vec2 texcoord;
 uniform mat4 matrix;
 uniform mat3 normal_matrix;
-uniform float test;
+//uniform float test;
 
 varying vec4 diffuse,ambient;
 varying vec3 eye_normal,lightDir,halfway;
@@ -26,7 +26,8 @@ void main(void)
   //gl_Position =   gl_ProjectionMatrix * gl_ModelViewMatrix * vec4(vertex, 1.0);
   //gl_Position =   gl_ProjectionMatrix * matrix * vec4(vertex, 1.0);
   //gl_Position =   gl_ProjectionMatrix * matrix * vec4(vertex, test);
-  gl_Position = matrix * vec4(vertex, test);
+  //gl_Position = matrix * vec4(vertex, test);
+  gl_Position = matrix * vec4(vertex, 1.0);
   f_texcoord = texcoord;
 }
 

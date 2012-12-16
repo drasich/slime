@@ -29,7 +29,7 @@ error_cb(void* data, Eio_File* handler, int error)
 }
 
 void
-readModel(char* path, Mesh* mesh)
+mesh_read(char* path, Mesh* mesh)
 {
   FILE *f;
   f = fopen(path, "rb");
@@ -90,7 +90,7 @@ readModel(char* path, Mesh* mesh)
 
 
 void
-initModel(Mesh* m, Evas_GL_API* gl)
+mesh_init(Mesh* m, Evas_GL_API* gl)
 {
   gl->glGenBuffers(1, &m->buffer_vertices);
   gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_vertices);
@@ -120,12 +120,79 @@ initModel(Mesh* m, Evas_GL_API* gl)
  m->shader = malloc(sizeof(Shader));
  //TODO delete shader
   shader_init(m->shader, gl, "shader/simple.vert", "shader/simple.frag");
- 
+
 }
 
 void
 initTexture(Mesh* m)
 {
 //TODO
+}
+
+void
+mesh_set_matrix(Mesh* mesh, Matrix4 mat, Evas_GL_API* gl)
+{
+  shader_use(mesh->shader, gl);
+  Matrix3 normal_mat = mat4_to_mat3(mat);
+  normal_mat = mat3_inverse(normal_mat);
+  mesh->matrix_normal = mat3_to_gl(normal_mat);
+
+  //TODO remove projection from here
+  Matrix4 projection = mat4_frustum(-1,1,-1,1,1,100.0f);
+
+  Matrix4 tm = mat4_multiply(projection, mat);
+  tm = mat4_transpose(tm);
+  mesh->matrix = mat4_to_gl(tm);
+  gl->glUniformMatrix4fv(mesh->shader->uniform_matrix, 1, GL_FALSE, &(mesh->matrix.m[0]));
+  gl->glUniformMatrix3fv(mesh->shader->uniform_normal_matrix, 1, GL_FALSE, &(mesh->matrix_normal.m[0]));
+}
+
+void
+mesh_draw(Mesh* m, Evas_GL_API* gl)
+{
+  //component draw function
+  //Matrix4 mat = mat4_identity();
+  Matrix4 mat = mat4_translation(0,0,-10);
+  mesh_set_matrix(m, mat, gl);
+
+  // from herereal draw function
+  shader_use(m->shader, gl);
+
+  //TODO texture
+
+  gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_vertices);
+  gl->glEnableVertexAttribArray(m->shader->attribute_vertex);
+  
+  gl->glVertexAttribPointer(
+    m->shader->attribute_vertex,
+    3,
+    GL_FLOAT,
+    GL_FALSE,
+    0,
+    0);
+
+  gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_normals);
+  gl->glEnableVertexAttribArray(m->shader->attribute_normal);
+  gl->glVertexAttribPointer(
+    m->shader->attribute_normal,
+    3,
+    GL_FLOAT,
+    GL_FALSE,
+    0,
+    0);
+
+  gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->buffer_indices);
+  gl->glDrawElements(
+        GL_TRIANGLES, 
+        //gl.Sizei(len(m.indices)), 
+        m->indices->len,
+        GL_UNSIGNED_INT,
+        0);
+
+  gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
+  gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  gl->glDisableVertexAttribArray(m->shader->attribute_vertex);
+  gl->glDisableVertexAttribArray(m->shader->attribute_normal);
+  //gl->glDisableVertexAttribArray(m->shader->attribute_texcoord);
 }
 

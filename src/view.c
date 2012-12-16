@@ -113,6 +113,7 @@ init_shaders(GLData *gld)
    return 1;
 }
 
+static Mesh* smesh;
 
 
 // Callbacks
@@ -121,6 +122,7 @@ _init_gl(Evas_Object *obj)
 {
    GLData *gld = evas_object_data_get(obj, "gld");
    Evas_GL_API *gl = gld->glapi;
+   /*
    GLfloat vVertices[] = {  0.0f,  0.5f, 0.0f,
                            -0.5f, -0.5f, 0.0f,
                             0.5f, -0.5f, 0.0f };
@@ -134,6 +136,14 @@ _init_gl(Evas_Object *obj)
    gl->glGenBuffers(1, &gld->vbo);
    gl->glBindBuffer(GL_ARRAY_BUFFER, gld->vbo);
    gl->glBufferData(GL_ARRAY_BUFFER, 3 * 3 * 4, vVertices, GL_STATIC_DRAW);
+   */
+
+   smesh = malloc(sizeof(Mesh));
+   mesh_read("model/tex.bin", smesh);
+   mesh_init(smesh,gld->glapi);
+
+   gl->glEnable(GL_DEPTH_TEST);
+   gl->glClearDepthf(1.0f);
 }
 
 static void
@@ -185,11 +195,12 @@ _draw_gl(Evas_Object *obj)
 
    gl->glViewport(0, 0, w, h);
    gl->glClearColor(red,0.8,0.3,1);
-   gl->glClear(GL_COLOR_BUFFER_BIT);
+   gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
    // Draw a Triangle
    gl->glEnable(GL_BLEND);
 
+   /*
    gl->glUseProgram(gld->program);
 
    gl->glBindBuffer(GL_ARRAY_BUFFER, gld->vbo);
@@ -204,6 +215,10 @@ _draw_gl(Evas_Object *obj)
 
    red -= 0.1;
    if (red < 0.0) red = 1.0;
+   */
+
+   mesh_draw(smesh, gl);
+   gl->glFinish();
 }
 
 static Eina_Bool
@@ -272,10 +287,6 @@ create_view(Evas_Object *win)
    evas_object_show(bt);
    evas_object_smart_callback_add(bt, "clicked", _on_done, win);
 
-   Mesh* m = malloc(sizeof(Mesh));
-   readModel("model/tex.bin", m);
-   initModel(m,gld->glapi);
-   load_model(gl);
 }
 
 
