@@ -78,7 +78,6 @@ void
 mat3_to_gl(Matrix3 in, Matrix3GL out)
 {
   int i;
-
   for (i = 0; i < 9; ++i) {
     out[i] = (GLfloat) in[i];
   }
@@ -88,7 +87,6 @@ void
 mat4_to_gl(Matrix4 in, Matrix4GL out)
 {
   int i;
-
   for (i = 0; i < 16; ++i) {
     out[i] = (GLfloat) in[i];
   }
@@ -178,12 +176,12 @@ mat4_transpose(Matrix4 in, Matrix4 out)
 }
 
 void
-mat4_set_translation(Matrix4 m, double x, double y, double z)
+mat4_set_translation(Matrix4 m, Vec3 t)
 {
   m[0] = m[5] = m[10] = m[15] = 1;
-  m[3] = x;
-  m[7] = y;
-  m[11] = z;
+  m[3] = t.X;
+  m[7] = t.Y;
+  m[11] = t.Z;
 
   m[1] = m[2] = m[4] = 0;
   m[6] = m[8] = m[9] = 0;
@@ -202,5 +200,53 @@ mat3_zero(Matrix3 m)
 {
   int i;
   for (i = 0; i < 9; ++i) m[i] = 0;
+}
+
+void 
+mat4_set_rotation_quat(Matrix4 m, Quat q)
+{
+  double length2 = quat_length2(q);
+  if (fabs(length2) <= DBL_MIN) {
+    mat4_set_identity(m);
+    return;
+  }
+
+  double rlength2;
+  if (length2 != 1) rlength2 = 2.0f/length2;
+  else rlength2 = 2;
+
+  double x2, y2, z2, xx, xy, xz, yy, yz, zz, wx, wy, wz;
+
+  x2 = rlength2*q.X;
+  y2 = rlength2*q.Y;
+  z2 = rlength2*q.Z;
+
+  xx = q.X * x2;
+  xy = q.X * y2;
+  xz = q.X * z2;
+
+  yy = q.Y * y2;
+  yz = q.Y * z2;
+  zz = q.Z * z2;
+
+  wx = q.W * x2;
+  wy = q.W * y2;
+  wz = q.W * z2;
+
+  m[3] = m[7] = m[11] = m[12] = m[13] = m[14] = 0;
+
+  m[15] = 1;
+
+  m[0] = 1 - (yy + zz);
+  m[4] = xy - wz;
+  m[8] = xz + wy;
+
+  m[1] = xy + wz;
+  m[5] = 1 - (xx + zz);
+  m[9] = yz - wx;
+
+  m[2] = xz - wy;
+  m[6] = yz + wx;
+  m[10] = 1 - (xx + yy);
 }
 

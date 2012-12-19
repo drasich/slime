@@ -191,7 +191,8 @@ mesh_draw(Mesh* m, Evas_GL_API* gl)
   //component draw function
   //Matrix4 mat = mat4_identity();
   Matrix4 mat;
-  mat4_set_translation(mat, 0,0,-10);
+  Vec3 t = {0,0,-10};
+  mat4_set_translation(mat, t);
   mesh_set_matrix(m, mat, gl);
 
   // from herereal draw function
