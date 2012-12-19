@@ -15,6 +15,13 @@ quat_identity()
   return q;
 }
 
+void
+quat_set_identity(Quat* q)
+{
+  q->X = q->Y = q->Z = 0;
+  q->W = 1;
+}
+
 
 Quat
 quat_angle_axis(double angle, Vec3 axis)

@@ -1,4 +1,5 @@
 #include "shader.h"
+//#define gl() gl->
 
 char* 
 stringFromFile(char* path)

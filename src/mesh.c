@@ -179,8 +179,6 @@ mesh_set_matrix(Mesh* mesh, Matrix4 mat, Evas_GL_API* gl)
   mat4_multiply(projection, mat, tm);
   mat4_transpose(tm, tm);
   mat4_to_gl(tm, mesh->matrix);
-  //gl->glUniformMatrix4fv(mesh->shader->uniform_matrix, 1, GL_FALSE, &(mesh->matrix.m[0]));
-  //gl->glUniformMatrix3fv(mesh->shader->uniform_normal_matrix, 1, GL_FALSE, &(mesh->matrix_normal.m[0]));
   gl->glUniformMatrix4fv(mesh->shader->uniform_matrix, 1, GL_FALSE, mesh->matrix);
   gl->glUniformMatrix3fv(mesh->shader->uniform_normal_matrix, 1, GL_FALSE, mesh->matrix_normal);
 }
@@ -189,13 +187,12 @@ void
 mesh_draw(Mesh* m, Evas_GL_API* gl)
 {
   //component draw function
-  //Matrix4 mat = mat4_identity();
   Matrix4 mat;
   Vec3 t = {0,0,-10};
   mat4_set_translation(mat, t);
   mesh_set_matrix(m, mat, gl);
 
-  // from herereal draw function
+  // from here real draw function
   shader_use(m->shader, gl);
 
   gl->glActiveTexture(GL_TEXTURE0);
