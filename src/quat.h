@@ -1,6 +1,7 @@
 #ifndef __quat__
 #define __quat__
 #include "vec.h"
+#include <math.h>
 
 typedef Vec4 Quat;
 

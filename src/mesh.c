@@ -166,18 +166,23 @@ void
 mesh_set_matrix(Mesh* mesh, Matrix4 mat, Evas_GL_API* gl)
 {
   shader_use(mesh->shader, gl);
-  Matrix3 normal_mat = mat4_to_mat3(mat);
-  normal_mat = mat3_inverse(normal_mat);
-  mesh->matrix_normal = mat3_to_gl(normal_mat);
+  Matrix3 normal_mat;
+  mat4_to_mat3(mat, normal_mat);
+  mat3_inverse(normal_mat, normal_mat);
+  mat3_to_gl(normal_mat, mesh->matrix_normal);
 
   //TODO remove projection from here
-  Matrix4 projection = mat4_frustum(-1,1,-1,1,1,100.0f);
+  Matrix4 projection;
+  mat4_set_frustum(projection, -1,1,-1,1,1,100.0f);
 
-  Matrix4 tm = mat4_multiply(projection, mat);
-  tm = mat4_transpose(tm);
-  mesh->matrix = mat4_to_gl(tm);
-  gl->glUniformMatrix4fv(mesh->shader->uniform_matrix, 1, GL_FALSE, &(mesh->matrix.m[0]));
-  gl->glUniformMatrix3fv(mesh->shader->uniform_normal_matrix, 1, GL_FALSE, &(mesh->matrix_normal.m[0]));
+  Matrix4 tm;
+  mat4_multiply(projection, mat, tm);
+  mat4_transpose(tm, tm);
+  mat4_to_gl(tm, mesh->matrix);
+  //gl->glUniformMatrix4fv(mesh->shader->uniform_matrix, 1, GL_FALSE, &(mesh->matrix.m[0]));
+  //gl->glUniformMatrix3fv(mesh->shader->uniform_normal_matrix, 1, GL_FALSE, &(mesh->matrix_normal.m[0]));
+  gl->glUniformMatrix4fv(mesh->shader->uniform_matrix, 1, GL_FALSE, mesh->matrix);
+  gl->glUniformMatrix3fv(mesh->shader->uniform_normal_matrix, 1, GL_FALSE, mesh->matrix_normal);
 }
 
 void
@@ -185,7 +190,8 @@ mesh_draw(Mesh* m, Evas_GL_API* gl)
 {
   //component draw function
   //Matrix4 mat = mat4_identity();
-  Matrix4 mat = mat4_translation(0,0,-10);
+  Matrix4 mat;
+  mat4_set_translation(mat, 0,0,-10);
   mesh_set_matrix(m, mat, gl);
 
   // from herereal draw function
