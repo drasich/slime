@@ -1,17 +1,25 @@
 #include <Elementary.h>
 #define __UNUSED__
 
+static void
+win_del(void *data, Evas_Object *obj, void *event_info)
+{
+    elm_exit();
+}
+
 void
 create_window()
 {
    Evas_Object *win;
    win = elm_win_util_standard_add("slime", "slime");
    elm_win_autodel_set(win, EINA_TRUE);
+   evas_object_smart_callback_add(win, "delete,request", win_del, NULL);
 
    create_view(win);
 
    evas_object_resize(win, 800, 480);
    evas_object_show(win);
+
 }
 
 EAPI_MAIN int

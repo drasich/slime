@@ -1,7 +1,8 @@
 #ifndef __shader__
 #define __shader__
 //#include "GL/gl.h"
-#include <Elementary.h>
+//#include <Elementary.h>
+#include <Evas_GL.h>
 
 typedef struct _Shader Shader;
 

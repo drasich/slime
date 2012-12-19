@@ -3,6 +3,7 @@
 #include <Eina.h>
 #include <stdio.h>
 #include "mesh.h"
+#include "texture.h"
 
 void
 load_model(Evas_Object *gl)
@@ -92,6 +93,7 @@ mesh_read(char* path, Mesh* mesh)
 void
 mesh_init(Mesh* m, Evas_GL_API* gl)
 {
+  //TODO factorize these functions
   gl->glGenBuffers(1, &m->buffer_vertices);
   gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_vertices);
   gl->glBufferData(
@@ -121,12 +123,43 @@ mesh_init(Mesh* m, Evas_GL_API* gl)
  //TODO delete shader
   shader_init(m->shader, gl, "shader/simple.vert", "shader/simple.frag");
 
+  mesh_init_texture(m, gl);
+
+  gl->glGenBuffers(1, &m->buffer_texcoords);
+  gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_texcoords);
+  gl->glBufferData(
+         GL_ARRAY_BUFFER,
+         m->uvs->len* m->uvs->member_size,
+         m->uvs->members,
+         GL_STATIC_DRAW);
+
 }
 
 void
-initTexture(Mesh* m)
+mesh_init_texture(Mesh* m, Evas_GL_API* gl)
 {
-//TODO
+  //TODO
+  Texture* tex = texture_read_png_file("model/ceil.png");
+  gl->glGenTextures(1, &m->id_texture);
+	gl->glBindTexture(GL_TEXTURE_2D, m->id_texture);
+	gl->glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	gl->glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+  gl->glTexImage2D(
+        GL_TEXTURE_2D,
+        0,
+        //GL_RGBA, //4,
+        tex->internal_format,
+        tex->width,
+        tex->height,
+        0,
+        //GL_RGBA,
+        tex->format,
+        GL_UNSIGNED_BYTE,
+        tex->data);
+
+  free(tex->data);
+  free(tex);
 }
 
 void
@@ -158,7 +191,20 @@ mesh_draw(Mesh* m, Evas_GL_API* gl)
   // from herereal draw function
   shader_use(m->shader, gl);
 
-  //TODO texture
+  gl->glActiveTexture(GL_TEXTURE0);
+  gl->glBindTexture(GL_TEXTURE_2D, m->id_texture);
+  gl->glUniform1i(m->shader->uniform_texture, 0);
+
+  //texcoord
+  gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_texcoords);
+  gl->glEnableVertexAttribArray(m->shader->attribute_texcoord);
+  gl->glVertexAttribPointer(
+    m->shader->attribute_texcoord,
+    2,
+    GL_FLOAT,
+    GL_FALSE,
+    0,
+    0);
 
   gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_vertices);
   gl->glEnableVertexAttribArray(m->shader->attribute_vertex);
@@ -193,6 +239,6 @@ mesh_draw(Mesh* m, Evas_GL_API* gl)
   gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   gl->glDisableVertexAttribArray(m->shader->attribute_vertex);
   gl->glDisableVertexAttribArray(m->shader->attribute_normal);
-  //gl->glDisableVertexAttribArray(m->shader->attribute_texcoord);
+  gl->glDisableVertexAttribArray(m->shader->attribute_texcoord);
 }
 

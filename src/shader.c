@@ -111,7 +111,7 @@ shader_init_attributes(Shader* s, Evas_GL_API* gl)
 {
   shader_init_attribute(s, "vertex", &s->attribute_vertex, gl);
   shader_init_attribute(s, "normal", &s->attribute_normal, gl);
-  //shader_init_attribute(s, "texcoord", &s->attribute_texcoord, gl);
+  shader_init_attribute(s, "texcoord", &s->attribute_texcoord, gl);
 }
 
 void 

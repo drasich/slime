@@ -23,7 +23,8 @@ def configure(conf):
   #conf.check(header_name='stdio.h', features='cxx cxxprogram', mandatory=False)
   conf.check(header_name='stdio.h', features='c cprogram', mandatory=False)
   conf.check_cfg(package='elementary', uselib_store='elementary', atleast_version='0.0.1', args='--cflags --libs', mandatory=True)
-  conf.check_cfg(package='protobuf', uselib_store='protobuf', atleast_version='0.0.0', mandatory=1, args='--cflags --libs')
+  #conf.check_cfg(package='protobuf', uselib_store='protobuf', atleast_version='0.0.0', mandatory=1, args='--cflags --libs')
+  conf.check_cfg(package='libpng', uselib_store='png', atleast_version='0.0.0', mandatory=1, args='--cflags --libs')
 
   #conf.recurse('indefini')
 
@@ -38,7 +39,7 @@ def configure(conf):
 
 def post(ctx):
   if ctx.options.exe:
-    ctx.exec_command('./build/app')
+    ctx.exec_command('./build/slime')
 
 def pre(bld):
   print("Protoc start")
@@ -57,9 +58,9 @@ def build(bld):
   cpp_files = bld.path.ant_glob('src/*.c')
   bld.program(
       source= cpp_files, 
-      target='app', 
+      target='slime', 
       #use='elementary indefini protobuf',
-      use='elementary protobuf',
+      use='elementary png',
       #includes = ['include'],
       #includes = 'include indefini/include proto',
       includes = 'include proto',
