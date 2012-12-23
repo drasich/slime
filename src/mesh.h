@@ -2,6 +2,8 @@
 #define __mesh__
 #include "shader.h"
 #include "matrix.h"
+#include <stdbool.h>
+
 typedef struct _Mesh Mesh;
 
 struct _Mesh
@@ -12,18 +14,17 @@ struct _Mesh
   GLuint id_texture;
   GLuint buffer_texcoords;
 
-  //*
-  Eina_Inarray*  vertices;
-  Eina_Inarray*  indices;
-  Eina_Inarray*  normals;
-  Eina_Inarray*  uvs;
-  //*/
-  /*
   GLfloat*  vertices;
   GLuint*  indices;
   GLfloat*  normals;
   GLfloat*  uvs;
-  */
+
+  int vertices_len;
+  int indices_len;
+  int normals_len;
+  int uvs_len;
+
+  bool has_uv;
 
   Shader* shader;
   //matrices

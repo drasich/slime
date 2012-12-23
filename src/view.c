@@ -139,7 +139,10 @@ _init_gl(Evas_Object *obj)
    */
 
    smesh = malloc(sizeof(Mesh));
-   mesh_read("model/tex.bin", smesh);
+   //mesh_read("model/tex.bin", smesh);
+   mesh_read("model/smallchar.bin", smesh);
+   //mesh_read("model/blob.bin", smesh);
+   //mesh_read("model/plane2.bin", smesh);
    mesh_init(smesh,gld->glapi);
 
    gl->glEnable(GL_DEPTH_TEST);

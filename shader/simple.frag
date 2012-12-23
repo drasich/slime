@@ -13,6 +13,7 @@ void main (void)
 
 	vec4 color = ambient;
   vec4 diffuse_tex = texture2D(texture, f_texcoord);
+  //vec4 diffuse_tex = vec4(0.2, 0.2, 0.8,1);
 	n = normalize(eye_normal);
 
 	NdotL = max(dot(n,-lightDir),0.0);
