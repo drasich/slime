@@ -139,10 +139,8 @@ _init_gl(Evas_Object *obj)
    */
 
    smesh = malloc(sizeof(Mesh));
-   //mesh_read("model/tex.bin", smesh);
-   mesh_read("model/smallchar.bin", smesh);
-   //mesh_read("model/blob.bin", smesh);
-   //mesh_read("model/plane2.bin", smesh);
+   //mesh_read(smesh, "model/tex.bin");
+   mesh_read(smesh, "model/smallchar.bin");
    mesh_init(smesh,gld->glapi);
 
    gl->glEnable(GL_DEPTH_TEST);
@@ -272,7 +270,6 @@ create_view(Evas_Object *win)
    elm_glview_render_func_set(gl, _draw_gl);
    elm_box_pack_end(bx, gl);
    evas_object_show(gl);
-
 
    elm_object_focus_set(gl, EINA_TRUE);
 

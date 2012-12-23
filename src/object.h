@@ -11,7 +11,6 @@ struct _Component {
 
 };
 
-
 typedef struct _Object Object;
 
 struct _Object {

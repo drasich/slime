@@ -1,36 +1,11 @@
-#include <Elementary.h>
-#include <Eio.h>
-#include <Eina.h>
+//#include <Evas_GL.h>
 #include <stdio.h>
 #include "mesh.h"
 #include "texture.h"
 
 void
-load_model(Evas_Object *gl)
-{
-
-}
-
-static void
-open_cb(void* data, Eio_File* handler, Eina_File *file)
-{
-  printf("file was open\n");
-  size_t s = eina_file_size_get(file);
-  time_t t = eina_file_mtime_get(file);
-
-  printf("file size: %d\n", s);
-  printf("file time: %d\n", t);
-}
-
-static void
-error_cb(void* data, Eio_File* handler, int error)
-{
-  printf("there was an error\n");
-
-}
-
-void
-mesh_read(char* path, Mesh* mesh)
+//mesh_read(char* path, Mesh* mesh)
+mesh_read(Mesh* mesh, char* path)
 {
   FILE *f;
   f = fopen(path, "rb");
@@ -58,7 +33,6 @@ mesh_read(char* path, Mesh* mesh)
 
   for (i = 0; i< count*3; ++i) {
     fread(&index, 2,1,f);
-    printf("index: %d\n", index);
     mesh->indices[i] = index;
   }
 
@@ -69,7 +43,6 @@ mesh_read(char* path, Mesh* mesh)
   mesh->normals_len = count*3;
   for (i = 0; i< count*3; ++i) {
     fread(&x, 4,1,f);
-    printf("normal: %f\n", x);
     mesh->normals[i] = x;
   }
 
@@ -91,6 +64,10 @@ mesh_read(char* path, Mesh* mesh)
 
 }
 
+void
+mesh_init_buffer(Mesh* m, Evas_GL_API* gl, GLenum type, GLuint* buffer)
+{
+}
 
 void
 mesh_init(Mesh* m, Evas_GL_API* gl)
@@ -141,7 +118,7 @@ mesh_init(Mesh* m, Evas_GL_API* gl)
 void
 mesh_init_texture(Mesh* m, Evas_GL_API* gl)
 {
-  //TODO
+  //TODO texture path
   Texture* tex = texture_read_png_file("model/ceil.png");
   gl->glGenTextures(1, &m->id_texture);
 	gl->glBindTexture(GL_TEXTURE_2D, m->id_texture);

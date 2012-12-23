@@ -34,7 +34,7 @@ struct _Mesh
 
 
 void load_model(Evas_Object *gl);
-void mesh_read(char* path, Mesh* mesh);
+void mesh_read(Mesh* mesh, char* path);
 void mesh_init(Mesh* mesh, Evas_GL_API *gl);
 
 void mesh_set_matrix(Mesh* mesh, Matrix4 mat, Evas_GL_API* gl);
