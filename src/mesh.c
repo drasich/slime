@@ -166,13 +166,6 @@ mesh_set_matrix(Mesh* mesh, Matrix4 mat, Evas_GL_API* gl)
 void
 mesh_draw(Mesh* m, Evas_GL_API* gl)
 {
-  //component draw function
-  Matrix4 mat;
-  Vec3 t = {0,-5,-10};
-  mat4_set_translation(mat, t);
-  mesh_set_matrix(m, mat, gl);
-
-  // from here real draw function
   shader_use(m->shader, gl);
 
   gl->glActiveTexture(GL_TEXTURE0);

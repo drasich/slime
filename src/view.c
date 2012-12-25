@@ -1,6 +1,7 @@
 #include <Elementary.h>
 #include "view.h"
 #include "mesh.h"
+#include "object.h"
 #define __UNUSED__
 
 typedef struct _GLData GLData;
@@ -113,7 +114,7 @@ init_shaders(GLData *gld)
    return 1;
 }
 
-static Mesh* smesh;
+static Object* so;
 
 
 // Callbacks
@@ -138,10 +139,14 @@ _init_gl(Evas_Object *obj)
    gl->glBufferData(GL_ARRAY_BUFFER, 3 * 3 * 4, vVertices, GL_STATIC_DRAW);
    */
 
-   smesh = malloc(sizeof(Mesh));
+   Mesh* smesh = malloc(sizeof(Mesh));
    //mesh_read(smesh, "model/tex.bin");
    mesh_read(smesh, "model/smallchar.bin");
    mesh_init(smesh,gld->glapi);
+
+   so = calloc(1, sizeof(Object));
+   object_init(so);
+   object_add_component_mesh(so, smesh);
 
    gl->glEnable(GL_DEPTH_TEST);
    gl->glClearDepthf(1.0f);
@@ -218,7 +223,8 @@ _draw_gl(Evas_Object *obj)
    if (red < 0.0) red = 1.0;
    */
 
-   mesh_draw(smesh, gl);
+   //mesh_draw(smesh, gl);
+   object_draw(so, gl);
    gl->glFinish();
 }
 

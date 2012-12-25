@@ -27,13 +27,13 @@ struct _Mesh
   bool has_uv;
 
   Shader* shader;
+
   //matrices
   Matrix4GL matrix;
   Matrix3GL matrix_normal;
 };
 
 
-void load_model(Evas_Object *gl);
 void mesh_read(Mesh* mesh, char* path);
 void mesh_init(Mesh* mesh, Evas_GL_API *gl);
 
