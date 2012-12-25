@@ -1,4 +1,5 @@
 #include "scene.h"
+#include "view.h"
 
 Scene*
 create_scene()
@@ -34,7 +35,7 @@ scene_destroy(Scene* s)
 }
 
 void
-scene_draw(Scene* s, Evas_GL_API* gl)
+scene_draw(Scene* s, Evas_GL_API* gla)
 {
   Eina_List *l;
   //void *o;
