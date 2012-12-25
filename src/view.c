@@ -18,6 +18,16 @@ struct _GLData
    int          initialized : 1;
 };
 
+static void
+_key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, void *event_info)
+{
+  Evas_Event_Key_Down *ev = (Evas_Event_Key_Down*)event_info;
+  //printf("KEY: down, keyname: %s , key %s \n", ev->keyname, ev->key);
+  if (!strcmp(ev->keyname, "Escape")) elm_exit();
+}
+
+
+
 
 static float red = 1.0;
 
@@ -289,6 +299,9 @@ create_view(Evas_Object *win)
    evas_object_data_set(gl, "ani", ani);
    evas_object_data_set(gl, "gld", gld);
    evas_object_event_callback_add(gl, EVAS_CALLBACK_DEL, _del, gl);
+   evas_object_event_callback_add(gl, EVAS_CALLBACK_KEY_DOWN, _key_down, NULL);
+
+
 
    bt = elm_button_add(win);
    elm_object_text_set(bt, "OK");
