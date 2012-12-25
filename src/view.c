@@ -2,6 +2,7 @@
 #include "view.h"
 #include "mesh.h"
 #include "object.h"
+#include "scene.h"
 #define __UNUSED__
 
 typedef struct _GLData GLData;
@@ -114,7 +115,7 @@ init_shaders(GLData *gld)
    return 1;
 }
 
-static Object* so;
+static Scene* ss;
 
 
 // Callbacks
@@ -139,14 +140,16 @@ _init_gl(Evas_Object *obj)
    gl->glBufferData(GL_ARRAY_BUFFER, 3 * 3 * 4, vVertices, GL_STATIC_DRAW);
    */
 
-   Mesh* smesh = malloc(sizeof(Mesh));
-   //mesh_read(smesh, "model/tex.bin");
-   mesh_read(smesh, "model/smallchar.bin");
-   mesh_init(smesh,gld->glapi);
-
-   so = calloc(1, sizeof(Object));
-   object_init(so);
-   object_add_component_mesh(so, smesh);
+   ss = create_scene();
+   Mesh* mesh = create_mesh("model/smallchar.bin", gld->glapi);
+   Object* o = create_object();
+   object_add_component_mesh(o, mesh);
+   Vec3 t = {0,-5,-10};
+   object_set_position(o, t);
+   Vec3 axis = {0,0,1};
+   Quat q = quat_angle_axis(3.14159f/1.f, axis);
+   object_set_orientation(o, q);
+   scene_add_object(ss,o);
 
    gl->glEnable(GL_DEPTH_TEST);
    gl->glClearDepthf(1.0f);
@@ -223,8 +226,10 @@ _draw_gl(Evas_Object *obj)
    if (red < 0.0) red = 1.0;
    */
 
-   //mesh_draw(smesh, gl);
-   object_draw(so, gl);
+   //TODO remove this function from here
+   scene_update(ss);
+
+   scene_draw(ss, gl);
    gl->glFinish();
 }
 

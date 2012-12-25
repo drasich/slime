@@ -15,6 +15,7 @@ struct _Object {
   //Mesh component
   //Box component
   Mesh* mesh;
+  char* name;
 };
 
 void object_init(Object* o);
@@ -26,5 +27,9 @@ void object_update(Object* o);
 
 void object_add_component_mesh(Object* o, Mesh* m);
 
+Object* create_object();
+
+void object_set_position(Object* o, Vec3 v);
+void object_set_orientation(Object* o, Quat q);
 
 #endif

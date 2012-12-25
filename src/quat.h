@@ -5,7 +5,6 @@
 
 typedef Vec4 Quat;
 
-
 Quat quat_identity();
 Quat quat_angle_axis(double angle, Vec3 axis);
 void quat_set_identity(Quat* q);

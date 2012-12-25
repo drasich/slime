@@ -222,3 +222,12 @@ mesh_draw(Mesh* m, Evas_GL_API* gl)
   gl->glDisableVertexAttribArray(m->shader->attribute_texcoord);
 }
 
+
+Mesh* create_mesh(char* path, Evas_GL_API* gl)
+{
+   Mesh* m = calloc(1,sizeof(Mesh));
+   mesh_read(m, path);
+   mesh_init(m,gl);
+   return m;
+}
+
