@@ -1,7 +1,7 @@
-//#include <Evas_GL.h>
 #include <stdio.h>
 #include "mesh.h"
 #include "texture.h"
+#include "gl.h"
 
 void
 //mesh_read(char* path, Mesh* mesh)
@@ -164,7 +164,7 @@ mesh_set_matrix(Mesh* mesh, Matrix4 mat, Evas_GL_API* gl)
 }
 
 void
-mesh_draw(Mesh* m, Evas_GL_API* gl)
+mesh_draw(Mesh* m)
 {
   shader_use(m->shader, gl);
 

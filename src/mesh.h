@@ -39,7 +39,7 @@ void mesh_init(Mesh* mesh, Evas_GL_API *gl);
 
 void mesh_set_matrix(Mesh* mesh, Matrix4 mat, Evas_GL_API* gl);
 
-void mesh_draw(Mesh* mesh, Evas_GL_API* gl);
+void mesh_draw(Mesh* mesh);
 
 void mesh_init_texture(Mesh* m, Evas_GL_API* gl);
 

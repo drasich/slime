@@ -20,7 +20,7 @@ struct _Object {
 
 void object_init(Object* o);
 void object_destroy(Object* o);
-void object_draw(Object* o, Evas_GL_API* gl);
+void object_draw(Object* o);
 
 void object_update(Object* o);
 //void object_add_component(Component* c);

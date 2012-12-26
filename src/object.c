@@ -1,4 +1,5 @@
 #include "object.h"
+#include "gl.h"
 
 void
 object_init(Object* o)
@@ -15,7 +16,7 @@ object_destroy(Object* o)
 }
 
 void
-object_draw(Object* o, Evas_GL_API* gl)
+object_draw(Object* o)
 {
   Matrix4 mt, mr, mat;
   mat4_set_translation(mt, o->Position);
@@ -24,7 +25,7 @@ object_draw(Object* o, Evas_GL_API* gl)
 
   if (o->mesh != NULL) {
     mesh_set_matrix(o->mesh, mat, gl);
-    mesh_draw(o->mesh, gl);
+    mesh_draw(o->mesh);
   }
 }
 

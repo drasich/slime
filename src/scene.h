@@ -12,7 +12,7 @@ struct _Scene {
 
 Scene* create_scene();
 void scene_add_object(Scene* s, Object* o);
-void scene_draw(Scene* s, Evas_GL_API* gl);
+void scene_draw(Scene* s);
 void scene_update(Scene* s);
 
 #endif

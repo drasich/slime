@@ -3,6 +3,7 @@
 #include "mesh.h"
 #include "object.h"
 #include "scene.h"
+#include "gl.h"
 #define __UNUSED__
 
 static void
@@ -89,7 +90,7 @@ _draw_gl(Evas_Object *obj)
    //TODO remove this function from here
    scene_update(ss);
 
-   scene_draw(ss, gl);
+   scene_draw(ss);
    gl->glFinish();
 }
 
