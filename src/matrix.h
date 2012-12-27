@@ -1,7 +1,6 @@
 #ifndef __matrix__
 #define __matrix__
-//#include "GL/gl.h"
-#include "Evas_GL.h"
+#include "gl.h"
 #include "quat.h"
 
 typedef double Matrix4[16];
