@@ -24,7 +24,7 @@ object_draw(Object* o)
   mat4_multiply(mt, mr, mat);
 
   if (o->mesh != NULL) {
-    mesh_set_matrix(o->mesh, mat, gl);
+    mesh_set_matrix(o->mesh, mat);
     mesh_draw(o->mesh);
   }
 }

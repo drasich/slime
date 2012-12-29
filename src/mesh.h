@@ -35,14 +35,14 @@ struct _Mesh
 
 
 void mesh_read(Mesh* mesh, char* path);
-void mesh_init(Mesh* mesh, Evas_GL_API *gl);
+void mesh_init(Mesh* mesh);
 
-void mesh_set_matrix(Mesh* mesh, Matrix4 mat, Evas_GL_API* gl);
+void mesh_set_matrix(Mesh* mesh, Matrix4 mat);
 
 void mesh_draw(Mesh* mesh);
 
-void mesh_init_texture(Mesh* m, Evas_GL_API* gl);
+void mesh_init_texture(Mesh* m);
 
-Mesh* create_mesh(char* path, Evas_GL_API* gl);
+Mesh* create_mesh(char* path);
 
 #endif

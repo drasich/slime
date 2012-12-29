@@ -24,17 +24,17 @@ stringFromFile(char* path)
 }
 
 void 
-shader_init(Shader* shader, Evas_GL_API* gl, char* vert_path, char* frag_path)
+shader_init(Shader* shader, char* vert_path, char* frag_path)
 {
   char* vert = stringFromFile(vert_path);
   char* frag = stringFromFile(frag_path);
-  shader_init_string(shader, gl, vert, frag);
+  shader_init_string(shader, vert, frag);
   free(vert);
   free(frag);
 }
 
 void
-shader_init_string(Shader* s, Evas_GL_API* gl, const char* vert, const char* frag)
+shader_init_string(Shader* s, const char* vert, const char* frag)
 {
   //TODO factorize this by creating a function that get the shader id
   s->vert_shader = gl->glCreateShader(GL_VERTEX_SHADER);
@@ -90,12 +90,12 @@ shader_init_string(Shader* s, Evas_GL_API* gl, const char* vert, const char* fra
     free(message);
   }
 
-  shader_init_attributes(s,gl);
-  shader_init_uniforms(s,gl);
+  shader_init_attributes(s);
+  shader_init_uniforms(s);
 }
 
 void
-shader_init_attribute(Shader* s, char* att_name, GLuint* att, Evas_GL_API* gl)
+shader_init_attribute(Shader* s, char* att_name, GLuint* att)
 {
   GLint att_tmp = gl->glGetAttribLocation(s->program, att_name);
   if (att_tmp == -1) {
@@ -108,15 +108,15 @@ shader_init_attribute(Shader* s, char* att_name, GLuint* att, Evas_GL_API* gl)
 }
 
 void 
-shader_init_attributes(Shader* s, Evas_GL_API* gl)
+shader_init_attributes(Shader* s)
 {
-  shader_init_attribute(s, "vertex", &s->attribute_vertex, gl);
-  shader_init_attribute(s, "normal", &s->attribute_normal, gl);
-  shader_init_attribute(s, "texcoord", &s->attribute_texcoord, gl);
+  shader_init_attribute(s, "vertex", &s->attribute_vertex);
+  shader_init_attribute(s, "normal", &s->attribute_normal);
+  shader_init_attribute(s, "texcoord", &s->attribute_texcoord);
 }
 
 void 
-shader_init_uniform(Shader* s, char* uni_name, GLint* uni, Evas_GL_API* gl)
+shader_init_uniform(Shader* s, char* uni_name, GLint* uni)
 {
   *uni = gl->glGetUniformLocation(s->program, uni_name);
   if (*uni == -1) 
@@ -124,15 +124,15 @@ shader_init_uniform(Shader* s, char* uni_name, GLint* uni, Evas_GL_API* gl)
 }
 
 void 
-shader_init_uniforms(Shader* s, Evas_GL_API* gl)
+shader_init_uniforms(Shader* s)
 {
-  //shader_init_uniform(s, "test", &s->uniform_test, gl);
-  shader_init_uniform(s, "matrix", &s->uniform_matrix, gl);
-  shader_init_uniform(s, "normal_matrix", &s->uniform_normal_matrix, gl);
+  //shader_init_uniform(s, "test", &s->uniform_test);
+  shader_init_uniform(s, "matrix", &s->uniform_matrix);
+  shader_init_uniform(s, "normal_matrix", &s->uniform_normal_matrix);
 }
 
 void
-shader_use(Shader* s, Evas_GL_API* gl)
+shader_use(Shader* s)
 {
   gl->glUseProgram(s->program);
 }

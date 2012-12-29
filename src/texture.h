@@ -1,7 +1,7 @@
 #ifndef __texture__
 #define __texture__
 
-#include <Evas_GL.h>
+#include "gl.h"
 
 typedef struct _Texture Texture;
 

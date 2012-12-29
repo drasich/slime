@@ -23,7 +23,7 @@ _init_gl(Evas_Object *obj)
 {
    ss = create_scene();
 
-   Mesh* mesh = create_mesh("model/smallchar.bin", gl);
+   Mesh* mesh = create_mesh("model/smallchar.bin");
    Object* o = create_object();
    object_add_component_mesh(o, mesh);
    Vec3 t = {0,-5,-10};
@@ -34,7 +34,7 @@ _init_gl(Evas_Object *obj)
    scene_add_object(ss,o);
 
    Object* yep = create_object();
-   Mesh* mesh2 = create_mesh("model/tex.bin", gl);
+   Mesh* mesh2 = create_mesh("model/tex.bin");
    object_add_component_mesh(yep, mesh2);
    Vec3 t2 = {10,-5,-20};
    object_set_position(yep, t2);

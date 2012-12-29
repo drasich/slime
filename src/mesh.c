@@ -65,12 +65,12 @@ mesh_read(Mesh* mesh, char* path)
 }
 
 void
-mesh_init_buffer(Mesh* m, Evas_GL_API* gl, GLenum type, GLuint* buffer)
+mesh_init_buffer(Mesh* m, GLenum type, GLuint* buffer)
 {
 }
 
 void
-mesh_init(Mesh* m, Evas_GL_API* gl)
+mesh_init(Mesh* m)
 {
   //TODO factorize these functions
   gl->glGenBuffers(1, &m->buffer_vertices);
@@ -99,9 +99,9 @@ mesh_init(Mesh* m, Evas_GL_API* gl)
 
   m->shader = malloc(sizeof(Shader));
   //TODO delete shader
-  shader_init(m->shader, gl, "shader/simple.vert", "shader/simple.frag");
+  shader_init(m->shader, "shader/simple.vert", "shader/simple.frag");
 
-  mesh_init_texture(m, gl);
+  mesh_init_texture(m);
 
   if (m->has_uv) {
     gl->glGenBuffers(1, &m->buffer_texcoords);
@@ -116,7 +116,7 @@ mesh_init(Mesh* m, Evas_GL_API* gl)
 }
 
 void
-mesh_init_texture(Mesh* m, Evas_GL_API* gl)
+mesh_init_texture(Mesh* m)
 {
   //TODO texture path
   Texture* tex = texture_read_png_file("model/ceil.png");
@@ -143,9 +143,9 @@ mesh_init_texture(Mesh* m, Evas_GL_API* gl)
 }
 
 void
-mesh_set_matrix(Mesh* mesh, Matrix4 mat, Evas_GL_API* gl)
+mesh_set_matrix(Mesh* mesh, Matrix4 mat)
 {
-  shader_use(mesh->shader, gl);
+  shader_use(mesh->shader);
   Matrix3 normal_mat;
   mat4_to_mat3(mat, normal_mat);
   mat3_inverse(normal_mat, normal_mat);
@@ -166,7 +166,7 @@ mesh_set_matrix(Mesh* mesh, Matrix4 mat, Evas_GL_API* gl)
 void
 mesh_draw(Mesh* m)
 {
-  shader_use(m->shader, gl);
+  shader_use(m->shader);
 
   gl->glActiveTexture(GL_TEXTURE0);
   gl->glBindTexture(GL_TEXTURE_2D, m->id_texture);
@@ -223,11 +223,11 @@ mesh_draw(Mesh* m)
 }
 
 
-Mesh* create_mesh(char* path, Evas_GL_API* gl)
+Mesh* create_mesh(char* path)
 {
    Mesh* m = calloc(1,sizeof(Mesh));
    mesh_read(m, path);
-   mesh_init(m,gl);
+   mesh_init(m);
    return m;
 }
 
