@@ -15,7 +15,11 @@ _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, 
 }
 
 
+//TODO remove this
 static Scene* ss;
+
+//TODO put this data in the view?
+static View sview;
 
 // Callbacks
 static void
@@ -69,6 +73,16 @@ _resize_gl(Evas_Object *obj)
    // GL Viewport stuff. you can avoid doing this if viewport is all the
    // same as last frame if you want
    gl->glViewport(0, 0, w, h);
+
+
+   float cx = 0;
+   float hw = w*0.5f;
+   float aspect = (float)w/(float)h;
+
+   /* cx is the eye space center of the zNear plane in X */
+   //glFrustum(cx-half_w*aspect, cx+half_w*aspect, bottom, top, zNear, zFar);
+   //mat4_set_frustum(sview.projection, -1,1,-1,1,1,1000.0f);
+   mat4_set_frustum(sview.projection, -hw*aspect,hw*aspect,-1,1,1,1000.0f);
 }
 
 
@@ -90,7 +104,7 @@ _draw_gl(Evas_Object *obj)
    //TODO remove this function from here
    scene_update(ss);
 
-   scene_draw(ss);
+   scene_draw(ss, w, h);
    gl->glFinish();
 }
 
@@ -154,6 +168,8 @@ create_view(Evas_Object *win)
    elm_box_pack_end(bx, bt);
    evas_object_show(bt);
    evas_object_smart_callback_add(bt, "clicked", _on_done, win);
+
+   mat4_set_frustum(sview.projection, -1,1,-1,1,1,1000.0f);
 
 }
 

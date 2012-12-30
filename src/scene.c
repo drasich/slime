@@ -19,6 +19,8 @@ scene_add_object(Scene* s, Object* o)
   void *list_data;
   EINA_LIST_FOREACH(s->objects, l, list_data)
    printf("%s\n", ((Object*)list_data)->name);
+
+  o->scene = s;
 }
 
 void
@@ -35,12 +37,12 @@ scene_destroy(Scene* s)
 }
 
 void
-scene_draw(Scene* s)
+scene_draw(Scene* s, int w, int h)
 {
   Eina_List *l;
   Object *o;
   EINA_LIST_FOREACH(s->objects, l, o)
-    object_draw(o);
+    object_draw(o, w, h);
 }
 
 void

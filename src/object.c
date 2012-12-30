@@ -16,15 +16,20 @@ object_destroy(Object* o)
 }
 
 void
-object_draw(Object* o)
+object_draw(Object* o, int w, int h)
 {
   Matrix4 mt, mr, mat;
   mat4_set_translation(mt, o->Position);
   mat4_set_rotation_quat(mr, o->Orientation);
   mat4_multiply(mt, mr, mat);
 
+  float hw = w*0.5f;
+  float aspect = (float)w/(float)h;
+  Matrix4 projection;
+  mat4_set_frustum(projection, -aspect,aspect,-1,1,1,1000.0f);
+
   if (o->mesh != NULL) {
-    mesh_set_matrix(o->mesh, mat);
+    mesh_set_matrices(o->mesh, mat, projection);
     mesh_draw(o->mesh);
   }
 }

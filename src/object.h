@@ -16,11 +16,12 @@ struct _Object {
   //Box component
   Mesh* mesh;
   char* name;
+  struct Scene* scene; //TODO make a list of this?
 };
 
 void object_init(Object* o);
 void object_destroy(Object* o);
-void object_draw(Object* o);
+void object_draw(Object* o, int w, int h);
 
 void object_update(Object* o);
 //void object_add_component(Component* c);

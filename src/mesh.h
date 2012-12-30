@@ -38,6 +38,7 @@ void mesh_read(Mesh* mesh, char* path);
 void mesh_init(Mesh* mesh);
 
 void mesh_set_matrix(Mesh* mesh, Matrix4 mat);
+void mesh_set_matrices(Mesh* mesh, Matrix4 mat, Matrix4 projection);
 
 void mesh_draw(Mesh* mesh);
 
