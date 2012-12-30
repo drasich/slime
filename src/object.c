@@ -23,6 +23,7 @@ object_draw(Object* o, int w, int h)
   mat4_set_rotation_quat(mr, o->Orientation);
   mat4_multiply(mt, mr, mat);
 
+  //TODO put the projection matrix in the draw? or directly in scene draw (or even view)
   float hw = w*0.5f;
   float aspect = (float)w/(float)h;
   Matrix4 projection;

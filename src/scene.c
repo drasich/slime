@@ -29,11 +29,11 @@ scene_destroy(Scene* s)
   Eina_List *l;
   void *list_data;
   //EINA_LIST_FOREACH(list, l, list_data)
-   //printf("%s\n", (char*)list_data);
+  //printf("%s\n", (char*)list_data);
 
   eina_list_free(s->objects);
 
-   eina_shutdown();
+  eina_shutdown();
 }
 
 void

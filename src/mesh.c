@@ -150,7 +150,6 @@ mesh_set_matrix(Mesh* mesh, Matrix4 mat)
   mat3_inverse(normal_mat, normal_mat);
   mat3_to_gl(normal_mat, mesh->matrix_normal);
 
-  //TODO remove projection from here
   Matrix4 projection;
   mat4_set_frustum(projection, -1,1,-1,1,1,1000.0f);
 
