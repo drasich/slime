@@ -16,7 +16,7 @@ struct _Object {
   //Box component
   Mesh* mesh;
   char* name;
-  struct Scene* scene; //TODO make a list of this?
+  struct _Scene* scene; //TODO make a list of this?
 };
 
 void object_init(Object* o);
