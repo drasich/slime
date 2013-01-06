@@ -10,6 +10,15 @@ mesh_read(Mesh* mesh, char* path)
   f = fopen(path, "rb");
   fseek(f, 0, SEEK_SET);
 
+  // read name
+  uint16_t strlen;
+  fread(&strlen, sizeof(strlen),1,f);
+  printf("strlen: %d\n", strlen);
+  char* name = malloc(strlen+1);
+  fread(name, 1, strlen, f);
+  name[strlen] = '\0';
+  printf("name: %s\n", name);
+
   uint16_t count;
   fread(&count, sizeof(count),1,f);
   printf("size: %d\n", count);

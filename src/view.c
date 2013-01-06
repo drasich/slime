@@ -38,7 +38,8 @@ _init_gl(Evas_Object *obj)
    scene_add_object(ss,o);
 
    Object* yep = create_object();
-   Mesh* mesh2 = create_mesh("model/tex.bin");
+   //Mesh* mesh2 = create_mesh("model/tex.bin");
+   Mesh* mesh2 = create_mesh("model/smallchar.bin");
    object_add_component_mesh(yep, mesh2);
    Vec3 t2 = {10,-5,-20};
    object_set_position(yep, t2);
