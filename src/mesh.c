@@ -3,12 +3,29 @@
 #include "texture.h"
 #include "gl.h"
 
+const char*
+type_read(FILE* f)
+{
+  uint16_t strlen;
+  fread(&strlen, sizeof(strlen),1,f);
+  printf("strlen: %d\n", strlen);
+  char* name = malloc(strlen+1);
+  fread(name, 1, strlen, f);
+  name[strlen] = '\0';
+  printf("name: %s\n", name);
+  return name;
+}
+
 void
 mesh_read(Mesh* mesh, char* path)
 {
   FILE *f;
   f = fopen(path, "rb");
   fseek(f, 0, SEEK_SET);
+
+  const char* test = type_read(f);
+  printf("TESTTTT: %s\n", test);
+  free(test);
 
   // read name
   uint16_t strlen;
