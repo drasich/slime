@@ -61,10 +61,47 @@ void object_add_component_mesh(Object* o, Mesh* m)
 
 Object* create_object()
 {
-   Object* o = calloc(1, sizeof(Object));
-   object_init(o);
-   return o;
+  Object* o = calloc(1, sizeof(Object));
+  object_init(o);
+  return o;
 }
+
+char*
+type_read(FILE* f)
+{
+  uint16_t strlen;
+  fread(&strlen, sizeof(strlen),1,f);
+  printf("strlen: %d\n", strlen);
+  char* name = malloc(strlen+1);
+  fread(name, 1, strlen, f);
+  name[strlen] = '\0';
+  printf("name: %s\n", name);
+  return name;
+}
+
+Object* create_object_file(const char* path)
+{
+  Object* o = create_object();
+  FILE *f;
+  f = fopen(path, "rb");
+  fseek(f, 0, SEEK_SET);
+
+  char* type = type_read(f);
+
+  if (!strcmp(type, "mesh")){
+    Mesh* mesh = create_mesh_file(f);
+    object_add_component_mesh(o, mesh);
+  }
+  else if (!strcmp(type, "armature")){
+    //Armature* armature = create_armature_file(f);
+    //object_add_component_armature(o, armature);
+  }
+
+  free(type);
+
+  return o;
+}
+
 
 void
 object_set_position(Object* o, Vec3 v)

@@ -27,9 +27,7 @@ _init_gl(Evas_Object *obj)
 {
    ss = create_scene();
 
-   Mesh* mesh = create_mesh("model/smallchar.bin");
-   Object* o = create_object();
-   object_add_component_mesh(o, mesh);
+   Object* o = create_object_file("model/smallchar.bin");
    Vec3 t = {0,-5,-10};
    object_set_position(o, t);
    Vec3 axis = {0,0,1};

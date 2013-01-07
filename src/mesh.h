@@ -34,6 +34,7 @@ struct _Mesh
 };
 
 
+void mesh_read_file(Mesh* mesh, FILE* f);
 void mesh_read(Mesh* mesh, char* path);
 void mesh_init(Mesh* mesh);
 
@@ -45,5 +46,6 @@ void mesh_draw(Mesh* mesh);
 void mesh_init_texture(Mesh* m);
 
 Mesh* create_mesh(char* path);
+Mesh* create_mesh_file(FILE* f);
 
 #endif

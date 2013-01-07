@@ -2,31 +2,11 @@
 #include "mesh.h"
 #include "texture.h"
 #include "gl.h"
+#include "object.h" //TODO it's used for the "typeread" function, should make a new file like read_utils
 
-const char*
-type_read(FILE* f)
+void mesh_read_file(Mesh* mesh, FILE* f)
 {
-  uint16_t strlen;
-  fread(&strlen, sizeof(strlen),1,f);
-  printf("strlen: %d\n", strlen);
-  char* name = malloc(strlen+1);
-  fread(name, 1, strlen, f);
-  name[strlen] = '\0';
-  printf("name: %s\n", name);
-  return name;
-}
-
-void
-mesh_read(Mesh* mesh, char* path)
-{
-  FILE *f;
-  f = fopen(path, "rb");
-  fseek(f, 0, SEEK_SET);
-
-  const char* test = type_read(f);
-  printf("TESTTTT: %s\n", test);
-  free(test);
-
+  printf("mesh_read-file\n");
   // read name
   uint16_t strlen;
   fread(&strlen, sizeof(strlen),1,f);
@@ -35,10 +15,15 @@ mesh_read(Mesh* mesh, char* path)
   fread(name, 1, strlen, f);
   name[strlen] = '\0';
   printf("name: %s\n", name);
+  printf("mesh_read-file 100\n");
+  // read name
 
   uint16_t count;
+  printf("mesh_read-file 200\n");
   fread(&count, sizeof(count),1,f);
+  printf("mesh_read-file 300\n");
   printf("size: %d\n", count);
+  printf("mesh_read-file 400\n");
 
   float x,y,z;
   int i;
@@ -84,6 +69,21 @@ mesh_read(Mesh* mesh, char* path)
       mesh->uvs[i] = x;
     }
   }
+
+}
+
+void
+mesh_read(Mesh* mesh, char* path)
+{
+  FILE *f;
+  f = fopen(path, "rb");
+  fseek(f, 0, SEEK_SET);
+
+  char* test = type_read(f);
+  printf("TESTTTT: %s\n", test);
+  free(test);
+
+  mesh_read_file(mesh, f);
 
   fclose(f);
 
@@ -272,4 +272,13 @@ Mesh* create_mesh(char* path)
    mesh_init(m);
    return m;
 }
+
+Mesh* create_mesh_file(FILE* f)
+{
+   Mesh* m = calloc(1,sizeof(Mesh));
+   mesh_read_file(m, f);
+   mesh_init(m);
+   return m;
+}
+
 
