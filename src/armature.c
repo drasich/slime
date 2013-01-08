@@ -1,4 +1,5 @@
 #include "armature.h"
+#include "read.h"
 
 Armature* create_armature_file(FILE* f)
 {
@@ -21,42 +22,11 @@ char* object_read_string(FILE* f)
   return str;
 }
 
-char* read_name(FILE*f)
-{
-  uint16_t strlen;
-  fread(&strlen, sizeof(strlen),1,f);
-  char* name = malloc(strlen+1);
-  fread(name, 1, strlen, f);
-  name[strlen] = '\0';
-  return name;
-}
-
-Vec3 read_vec3(FILE* f)
-{
-  float x,y,z;
-  fread(&x, 4,1,f);
-  fread(&y, 4,1,f);
-  fread(&z, 4,1,f);
-  Vec3 v = {x,y,z};
-  return v;
-}
-
-Vec4 read_vec4(FILE* f)
-{
-  float x,y,z,w;
-  fread(&x, 4,1,f);
-  fread(&y, 4,1,f);
-  fread(&z, 4,1,f);
-  fread(&w, 4,1,f);
-  Vec4 v = {x,y,z,w};
-  return v;
-}
-
-
 Bone* bone_create( FILE* f)
 {
   Bone* bone = malloc(sizeof(Armature));
   char* name = read_name(f);
+  free(name);
   Vec3 v = read_vec3(f);
   Quat q = read_vec4(f);
 

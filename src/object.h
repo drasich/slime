@@ -33,7 +33,6 @@ void object_add_component_armature(Object* o, Armature* a);
 
 Object* create_object();
 Object* create_object_file(const char* file);
-char* type_read(FILE* f);
 
 void object_set_position(Object* o, Vec3 v);
 void object_set_orientation(Object* o, Quat q);

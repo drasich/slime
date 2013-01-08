@@ -1,5 +1,6 @@
 #include "object.h"
 #include "gl.h"
+#include "read.h"
 
 void
 object_init(Object* o)
@@ -71,26 +72,6 @@ Object* create_object()
   return o;
 }
 
-char*
-type_read(FILE* f)
-{
-  uint16_t strlen;
-  fread(&strlen, sizeof(strlen),1,f);
-  printf("strlen: %d\n", strlen);
-  char* name = malloc(strlen+1);
-  fread(name, 1, strlen, f);
-  name[strlen] = '\0';
-  printf("name: %s\n", name);
-  return name;
-}
-
-uint16_t read_uint16(FILE* f)
-{
-  uint16_t count;
-  fread(&count, sizeof(count),1,f);
-  return count;
-}
-
 Object* create_object_file(const char* path)
 {
   Object* o = create_object();
@@ -102,7 +83,7 @@ Object* create_object_file(const char* path)
   int i;
   for (i = 0; i <ob_nb; ++i) {
 
-    char* type = type_read(f);
+    char* type = read_name(f);
 
     if (!strcmp(type, "mesh")){
       Mesh* mesh = create_mesh_file(f);

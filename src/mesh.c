@@ -2,20 +2,13 @@
 #include "mesh.h"
 #include "texture.h"
 #include "gl.h"
-#include "object.h" //TODO it's used for the "typeread" function, should make a new file like read_utils
+#include "read.h"
 
 void mesh_read_file(Mesh* mesh, FILE* f)
 {
   printf("mesh_read-file\n");
-  // read name
-  uint16_t strlen;
-  fread(&strlen, sizeof(strlen),1,f);
-  printf("strlen: %d\n", strlen);
-  char* name = malloc(strlen+1);
-  fread(name, 1, strlen, f);
-  name[strlen] = '\0';
-  printf("name: %s\n", name);
-  // read name
+  char* name = read_name(f);
+  free(name);
 
   uint16_t count;
   fread(&count, sizeof(count),1,f);
@@ -75,8 +68,7 @@ mesh_read(Mesh* mesh, char* path)
   f = fopen(path, "rb");
   fseek(f, 0, SEEK_SET);
 
-  char* test = type_read(f);
-  printf("TESTTTT: %s\n", test);
+  char* test = read_name(f);
   free(test);
 
   mesh_read_file(mesh, f);
