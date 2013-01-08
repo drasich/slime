@@ -15,15 +15,11 @@ void mesh_read_file(Mesh* mesh, FILE* f)
   fread(name, 1, strlen, f);
   name[strlen] = '\0';
   printf("name: %s\n", name);
-  printf("mesh_read-file 100\n");
   // read name
 
   uint16_t count;
-  printf("mesh_read-file 200\n");
   fread(&count, sizeof(count),1,f);
-  printf("mesh_read-file 300\n");
   printf("size: %d\n", count);
-  printf("mesh_read-file 400\n");
 
   float x,y,z;
   int i;

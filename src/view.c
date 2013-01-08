@@ -35,6 +35,7 @@ _init_gl(Evas_Object *obj)
    object_set_orientation(o, q);
    scene_add_object(ss,o);
 
+   /*
    Object* yep = create_object();
    //Mesh* mesh2 = create_mesh("model/tex.bin");
    Mesh* mesh2 = create_mesh("model/smallchar.bin");
@@ -42,6 +43,7 @@ _init_gl(Evas_Object *obj)
    Vec3 t2 = {10,-5,-20};
    object_set_position(yep, t2);
    scene_add_object(ss,yep);
+   */
 
    gl->glEnable(GL_DEPTH_TEST);
    gl->glClearDepthf(1.0f);

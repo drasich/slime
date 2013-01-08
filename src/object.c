@@ -84,6 +84,13 @@ type_read(FILE* f)
   return name;
 }
 
+uint16_t read_uint16(FILE* f)
+{
+  uint16_t count;
+  fread(&count, sizeof(count),1,f);
+  return count;
+}
+
 Object* create_object_file(const char* path)
 {
   Object* o = create_object();
@@ -91,18 +98,23 @@ Object* create_object_file(const char* path)
   f = fopen(path, "rb");
   fseek(f, 0, SEEK_SET);
 
-  char* type = type_read(f);
+  int ob_nb = read_uint16(f);
+  int i;
+  for (i = 0; i <ob_nb; ++i) {
 
-  if (!strcmp(type, "mesh")){
-    Mesh* mesh = create_mesh_file(f);
-    object_add_component_mesh(o, mesh);
-  }
-  else if (!strcmp(type, "armature")){
-    Armature* armature = create_armature_file(f);
-    //object_add_component_armature(o, armature);
+    char* type = type_read(f);
+
+    if (!strcmp(type, "mesh")){
+      Mesh* mesh = create_mesh_file(f);
+      object_add_component_mesh(o, mesh);
+    }
+    else if (!strcmp(type, "armature")){
+      Armature* armature = create_armature_file(f);
+      object_add_component_armature(o, armature);
+    }
+    free(type);
   }
 
-  free(type);
 
   return o;
 }

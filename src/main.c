@@ -1,4 +1,5 @@
 #include <Elementary.h>
+#include "view.h"
 #define __UNUSED__
 
 static void

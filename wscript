@@ -19,6 +19,7 @@ def options(opt):
 
 
 def configure(conf):
+  #conf.env["CC"] = ["clang"]
   conf.load('compiler_c')
   #conf.check(header_name='stdio.h', features='cxx cxxprogram', mandatory=False)
   conf.check(header_name='stdio.h', features='c cprogram', mandatory=False)
