@@ -4,6 +4,7 @@
 #include "quat.h"
 #include "matrix.h"
 #include "mesh.h"
+#include "armature.h"
 
 typedef struct _Object Object;
 
@@ -15,6 +16,7 @@ struct _Object {
   //Mesh component
   //Box component
   Mesh* mesh;
+  Armature* armature;
   char* name;
   struct _Scene* scene; //TODO make a list of this?
 };
@@ -27,6 +29,7 @@ void object_update(Object* o);
 //void object_add_component(Component* c);
 
 void object_add_component_mesh(Object* o, Mesh* m);
+void object_add_component_armature(Object* o, Armature* a);
 
 Object* create_object();
 Object* create_object_file(const char* file);

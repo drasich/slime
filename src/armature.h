@@ -23,6 +23,8 @@ struct _Armature
   //tree of bones?
 };
 
+void armature_read_file(Armature* armature, FILE* f);
+Armature* create_armature_file(FILE* f);
 
 
 #endif

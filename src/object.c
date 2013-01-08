@@ -56,8 +56,13 @@ object_add_component(Component* c)
 void object_add_component_mesh(Object* o, Mesh* m)
 {
   o->mesh = m;
-  
 }
+
+void object_add_component_armature(Object* o, Armature* a)
+{
+  o->armature = a;
+}
+
 
 Object* create_object()
 {
@@ -93,7 +98,7 @@ Object* create_object_file(const char* path)
     object_add_component_mesh(o, mesh);
   }
   else if (!strcmp(type, "armature")){
-    //Armature* armature = create_armature_file(f);
+    Armature* armature = create_armature_file(f);
     //object_add_component_armature(o, armature);
   }
 
