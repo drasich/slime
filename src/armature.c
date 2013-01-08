@@ -10,25 +10,13 @@ Armature* create_armature_file(FILE* f)
   return a;
 }
 
-char* object_read_string(FILE* f)
-{
-  uint16_t strlen;
-  fread(&strlen, sizeof(strlen),1,f);
-  printf("read string strlen: %d\n", strlen);
-  char* str = malloc(strlen+1);
-  fread(str, 1, strlen, f);
-  str[strlen] = '\0';
-  printf("read string: %s\n", str);
-  return str;
-}
-
 Bone* bone_create( FILE* f)
 {
-  Bone* bone = malloc(sizeof(Armature));
-  char* name = read_name(f);
-  free(name);
-  Vec3 v = read_vec3(f);
-  Quat q = read_vec4(f);
+  Bone* bone = malloc(sizeof(Bone));
+  bone->name = read_name(f);
+  printf("bone name '%s'\n",bone->name);
+  bone->position = read_vec3(f);
+  bone->rotation = read_vec4(f);
 
   uint16_t child_nb = read_uint16(f);
   int i;
@@ -43,15 +31,8 @@ Bone* bone_create( FILE* f)
 void armature_read_file(Armature* armature, FILE* f)
 {
   printf("armature_read-file\n");
-  // read name
-  uint16_t strlen;
-  fread(&strlen, sizeof(strlen),1,f);
-  printf("strlen: %d\n", strlen);
-  char* name = malloc(strlen+1);
-  fread(name, 1, strlen, f);
-  name[strlen] = '\0';
-  printf("name: %s\n", name);
-  // read name
+  armature->name = read_name(f);
+  printf("armature name: %s\n", armature->name);
 
   uint16_t bone_count;
   fread(&bone_count, sizeof(bone_count),1,f);
@@ -62,7 +43,6 @@ void armature_read_file(Armature* armature, FILE* f)
     Bone* b = bone_create(f);
     armature_add_bone(armature, b);
   }
-
 }
 
 void armature_add_bone(Armature* a, Bone* b)

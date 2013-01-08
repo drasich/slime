@@ -84,6 +84,7 @@ Object* create_object_file(const char* path)
   for (i = 0; i <ob_nb; ++i) {
 
     char* type = read_name(f);
+    printf("object of type '%s'\n",type);
 
     if (!strcmp(type, "mesh")){
       Mesh* mesh = create_mesh_file(f);

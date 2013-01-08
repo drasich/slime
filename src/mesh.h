@@ -31,6 +31,8 @@ struct _Mesh
   //matrices
   Matrix4GL matrix;
   Matrix3GL matrix_normal;
+
+  char* name;
 };
 
 

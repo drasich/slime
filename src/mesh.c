@@ -7,8 +7,7 @@
 void mesh_read_file(Mesh* mesh, FILE* f)
 {
   printf("mesh_read-file\n");
-  char* name = read_name(f);
-  free(name);
+  mesh->name = read_name(f);
 
   uint16_t count;
   fread(&count, sizeof(count),1,f);
@@ -68,8 +67,7 @@ mesh_read(Mesh* mesh, char* path)
   f = fopen(path, "rb");
   fseek(f, 0, SEEK_SET);
 
-  char* test = read_name(f);
-  free(test);
+  mesh->name = read_name(f);
 
   mesh_read_file(mesh, f);
 
