@@ -1,7 +1,8 @@
 #include "armature.h"
 #include "read.h"
 
-Armature* create_armature_file(FILE* f)
+Armature*
+create_armature_file(FILE* f)
 {
   Armature* a = calloc(1,sizeof(Armature));
   a->bones = NULL;
@@ -10,7 +11,8 @@ Armature* create_armature_file(FILE* f)
   return a;
 }
 
-Bone* bone_create( FILE* f)
+Bone*
+bone_create( FILE* f)
 {
   Bone* bone = malloc(sizeof(Bone));
   bone->name = read_name(f);
@@ -28,7 +30,8 @@ Bone* bone_create( FILE* f)
   return bone;
 }
 
-void armature_read_file(Armature* armature, FILE* f)
+void
+armature_read_file(Armature* armature, FILE* f)
 {
   printf("armature_read-file\n");
   armature->name = read_name(f);
@@ -45,12 +48,14 @@ void armature_read_file(Armature* armature, FILE* f)
   }
 }
 
-void armature_add_bone(Armature* a, Bone* b)
+void
+armature_add_bone(Armature* a, Bone* b)
 {
    a->bones = eina_list_append(a->bones, b);
 }
 
-void bone_add_child(Bone* b, Bone* child)
+void
+bone_add_child(Bone* b, Bone* child)
 {
    b->children = eina_list_append(b->children, child);
 }
