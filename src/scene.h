@@ -8,7 +8,7 @@ typedef struct _Scene Scene;
 struct _Scene {
   //list of objects
   Eina_List* objects;
-  struct View* v;
+  struct View* view;
 };
 
 Scene* create_scene();

@@ -8,6 +8,7 @@ char* read_name(FILE*f);
 Vec3 read_vec3(FILE* f);
 Vec4 read_vec4(FILE* f);
 uint16_t read_uint16(FILE* f);
+float read_float(FILE* f);
 
 
 #endif

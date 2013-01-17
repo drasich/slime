@@ -39,3 +39,9 @@ uint16_t read_uint16(FILE* f)
   return count;
 }
 
+float read_float(FILE* f)
+{
+  float x;
+  fread(&x, 4,1,f);
+  return x;
+}

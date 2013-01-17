@@ -13,6 +13,46 @@ struct _Bone
   Eina_List* children;
 };
 
+typedef struct _Frame Frame;
+struct _Frame
+{
+  float time;
+  union{
+    Vec3 vec3;
+    Vec4 vec4;
+    Quat quat;
+  };
+};
+//TODO ou alors je fais un truc avec 
+// frame avec quaternion, position and scale...?
+
+
+typedef enum _DataType
+{
+  POSITION,
+  QUATERNION,
+  EULER,
+  SCALE
+
+} DataType;
+
+typedef struct _Curve Curve;
+struct _Curve
+{
+  Bone* bone; //or just name?
+  DataType type;
+  Eina_List* frames;
+};
+
+
+typedef struct _Action Action;
+struct _Action
+{
+  char* name;
+  Eina_List* curves; //could be 3 curves : position, quaternion, scale
+};
+
+
 typedef struct _Armature Armature;
 struct _Armature
 {
