@@ -6,6 +6,7 @@ create_armature_file(FILE* f)
 {
   Armature* a = calloc(1,sizeof(Armature));
   a->bones = NULL;
+  a->actions = NULL;
   eina_init();
   armature_read_file(a, f);
   return a;
@@ -72,13 +73,9 @@ curve_create(FILE* f, Armature* armature)
   curve->frames = NULL;
 
   char* bone_name = read_name(f);
-  printf("curve, bone bane : %s\n", bone_name);
   curve->bone = armature_find_bone(armature, bone_name);
-  if (curve->bone)
-    printf("curve, bone  found bane : %s\n", curve->bone->name);
 
   char* type = read_name(f);
-
   if (!strcmp(type, "position")) {
     curve->type = POSITION;
   } else if (!strcmp(type, "quaternion")) {
@@ -91,18 +88,25 @@ curve_create(FILE* f, Armature* armature)
 
   //TODO add the frame to the curve
   uint16_t frames_nb = read_uint16(f);
+  curve->frames = calloc(frames_nb, sizeof(Frame));
   int i;
   for (i = 0; i < frames_nb; ++i) {
-    Frame frame;
-    frame.time = read_float(f);
+    Frame* frame = &curve->frames[i];
+    frame->time = read_float(f);
     if (curve->type == QUATERNION) {
-      frame.quat = read_vec4(f);
+      frame->quat = read_vec4(f);
     } else {
-      frame.vec3 = read_vec3(f);
+      frame->vec3 = read_vec3(f);
     }
   }
 
   return curve;
+}
+
+void
+action_add_curve(Action* a, Curve* c)
+{
+  a->curves = eina_list_append(a->curves,c);
 }
 
 Action*
@@ -118,8 +122,7 @@ action_create(FILE* f, Armature* armature)
   printf("curves count: %d\n", curves_nb);
   for (i = 0; i < curves_nb; ++i) {
     Curve* c = curve_create(f, armature);
-    //TODO
-    //action_add_curve(action,c);
+    action_add_curve(action,c);
   }
 
   return action;
@@ -146,7 +149,7 @@ armature_read_file(Armature* armature, FILE* f)
   printf("action count: %d\n", action_count);
   for (i = 0; i < action_count; ++i) {
     Action* a = action_create(f, armature);
-    //TODO
+    armature_add_action(armature, a);
   }
 }
 
@@ -154,6 +157,12 @@ void
 armature_add_bone(Armature* a, Bone* b)
 {
    a->bones = eina_list_append(a->bones, b);
+}
+
+void
+armature_add_action(Armature* armature, Action* action)
+{
+   armature->actions = eina_list_append(armature->actions, action);
 }
 
 void
