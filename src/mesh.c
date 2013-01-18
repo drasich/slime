@@ -114,7 +114,7 @@ mesh_init(Mesh* m)
     GL_ARRAY_BUFFER,
     m->vertices_len* sizeof(GLfloat),
     m->vertices,
-    GL_STATIC_DRAW);
+    GL_DYNAMIC_DRAW);
 
   gl->glGenBuffers(1, &m->buffer_indices);
   gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->buffer_indices);
@@ -122,7 +122,7 @@ mesh_init(Mesh* m)
     GL_ELEMENT_ARRAY_BUFFER,
     m->indices_len* sizeof(GLuint),
     m->indices,
-    GL_STATIC_DRAW);
+    GL_DYNAMIC_DRAW);
 
   gl->glGenBuffers(1, &m->buffer_normals);
   gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_normals);
@@ -130,7 +130,7 @@ mesh_init(Mesh* m)
     GL_ARRAY_BUFFER,
     m->normals_len* sizeof(GLfloat),
     m->normals,
-    GL_STATIC_DRAW);
+    GL_DYNAMIC_DRAW);
 
   m->shader = malloc(sizeof(Shader));
   //TODO delete shader
@@ -145,7 +145,7 @@ mesh_init(Mesh* m)
           GL_ARRAY_BUFFER,
           m->uvs_len* sizeof(GLfloat),
           m->uvs,
-          GL_STATIC_DRAW);
+          GL_DYNAMIC_DRAW);
   }
 
 }
