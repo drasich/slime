@@ -44,4 +44,16 @@ quat_angle_axis(double angle, Vec3 axis)
   return q;
 }
 
+Quat
+quat_mul(Quat ql, Quat qr)
+{
+  Quat q = { 
+    .X = qr.W*ql.X + qr.X*ql.W + qr.Y*ql.Z - qr.Z*ql.Y,
+    .Y = qr.W*ql.Y - qr.X*ql.Z + qr.Y*ql.W - qr.Z*ql.X,
+    .Z = qr.W*ql.Z + qr.X*ql.Y + qr.Y*ql.X - qr.Z*ql.W,
+    .W = qr.W*ql.W - qr.X*ql.X + qr.Y*ql.Y - qr.Z*ql.Z
+  };
 
+  return q;
+
+}

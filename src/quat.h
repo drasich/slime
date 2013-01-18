@@ -10,5 +10,6 @@ Quat quat_angle_axis(double angle, Vec3 axis);
 void quat_set_identity(Quat* q);
 
 double quat_length2(Quat v);
+Quat quat_mul(Quat ql, Quat qr);
 
 #endif

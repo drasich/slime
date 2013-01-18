@@ -40,10 +40,14 @@ void
 object_update(Object* o)
 {
   //TODO remove this code and this function anyway
+  /*
   static float test = 0;
   test += 0.05f;
   Vec3 axis = {0,1,0};
   o->Orientation = quat_angle_axis(test, axis);
+  */
+  //Vec3 axis = {1,0,0};
+  //o->Orientation = quat_angle_axis(90, axis);
 }
 
 /*
@@ -113,3 +117,35 @@ object_set_orientation(Object* o, Quat q)
 {
   o->Orientation = q;
 }
+
+void 
+object_set_pose(Object* o, char* action_name)
+{
+  if (o->mesh == NULL || o->armature == NULL) return;
+
+  Action* action = armature_find_action(o->armature, action_name);
+
+  if (action == NULL) return;
+  
+  printf("found action\n");
+
+  Eina_List *l;
+  Curve *curve;
+  EINA_LIST_FOREACH(action->curves, l, curve) {
+    Bone* b = curve->bone;
+      printf("bone name : %s \n", b->name);
+    if (curve->type == POSITION) {
+
+    } else if (curve->type == QUATERNION) {
+      printf("quat\n");
+
+    } else if (curve->type == EULER) {
+      printf("euler\n");
+
+    }
+
+  }
+
+
+}
+

@@ -170,3 +170,17 @@ bone_add_child(Bone* b, Bone* child)
 {
    b->children = eina_list_append(b->children, child);
 }
+
+Action*
+armature_find_action(Armature* armature, char* action_name)
+{
+   Eina_List *l;
+   Action *action;
+   EINA_LIST_FOREACH(armature->actions, l, action) {
+     if (!strcmp(action->name, action_name)) {
+       return action;
+     }
+   }
+
+  return NULL;
+}

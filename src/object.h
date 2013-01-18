@@ -37,4 +37,6 @@ Object* create_object_file(const char* file);
 void object_set_position(Object* o, Vec3 v);
 void object_set_orientation(Object* o, Quat q);
 
+void object_set_pose(Object* o, char* action_name);
+
 #endif

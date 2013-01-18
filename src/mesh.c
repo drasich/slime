@@ -92,11 +92,8 @@ mesh_read(Mesh* mesh, char* path)
   fseek(f, 0, SEEK_SET);
 
   mesh->name = read_name(f);
-
   mesh_read_file(mesh, f);
-
   fclose(f);
-
 }
 
 void
