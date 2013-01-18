@@ -1,7 +1,7 @@
 #include "read.h"
 #include <stdlib.h>
 
-char* read_name(FILE*f)
+char* read_string(FILE*f)
 {
   uint16_t strlen;
   fread(&strlen, sizeof(strlen),1,f);
@@ -9,6 +9,11 @@ char* read_name(FILE*f)
   fread(name, 1, strlen, f);
   name[strlen] = '\0';
   return name;
+}
+
+char* read_name(FILE* f)
+{
+  return read_string(f);
 }
 
 Vec3 read_vec3(FILE* f)
