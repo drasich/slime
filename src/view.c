@@ -38,6 +38,7 @@ _init_gl(Evas_Object *obj)
    object_set_orientation(o, q);
    scene_add_object(ss,o);
 
+   //object_set_pose(o, "idle");
    object_set_pose(o, "realwalk");
 
    /*

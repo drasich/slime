@@ -88,6 +88,7 @@ curve_create(FILE* f, Armature* armature)
 
   //TODO add the frame to the curve
   uint16_t frames_nb = read_uint16(f);
+  /*
   curve->frames = calloc(frames_nb, sizeof(Frame));
   int i;
   for (i = 0; i < frames_nb; ++i) {
@@ -99,7 +100,20 @@ curve_create(FILE* f, Armature* armature)
       frame->vec3 = read_vec3(f);
     }
   }
-
+  */
+  curve->frames = eina_inarray_new(sizeof(Frame), frames_nb);
+  int i;
+  for (i = 0; i < frames_nb; ++i) {
+    Frame frame;
+    frame.time = read_float(f);
+    if (curve->type == QUATERNION) {
+      frame.quat = read_vec4(f);
+    } else {
+      frame.vec3 = read_vec3(f);
+    }
+    eina_inarray_push(curve->frames, &frame);
+  }
+  
   return curve;
 }
 
@@ -184,3 +198,14 @@ armature_find_action(Armature* armature, char* action_name)
 
   return NULL;
 }
+
+Frame*
+curve_find_frame(Curve* curve, float time)
+{
+  //TODO can optimize this by looking in the middle
+  Frame* fr;
+  EINA_INARRAY_FOREACH(curve->frames, fr) {
+    if (time <= fr->time) return fr;
+  }
+}
+

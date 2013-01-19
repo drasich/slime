@@ -129,19 +129,33 @@ object_set_pose(Object* o, char* action_name)
   
   printf("found action\n");
 
+  int frame = 10;
+
   Eina_List *l;
   Curve *curve;
   EINA_LIST_FOREACH(action->curves, l, curve) {
-    Bone* b = curve->bone;
-      printf("bone name : %s \n", b->name);
+    Bone* bone = curve->bone;
+    printf("bone name : %s \n", bone->name);
+    Frame* f = curve_find_frame(curve,0);
     if (curve->type == POSITION) {
 
     } else if (curve->type == QUATERNION) {
       printf("quat\n");
 
     } else if (curve->type == EULER) {
-      printf("euler\n");
+      Vec3 euler = f->vec3;
+      printf("euler %f %f %f\n", euler.X, euler.Y, euler.Z);
+      Vec3 axisz = {0,0,1};
+      Quat qz = quat_angle_axis(euler.Z, axisz);
+      Vec3 axisy = {0,1,0};
+      Quat qy = quat_angle_axis(euler.Y, axisy);
+      Vec3 axisx = {1,0,0};
+      Quat qx = quat_angle_axis(euler.X, axisx);
+      Quat q = quat_mul( quat_mul (qz, qy), qx);
 
+      //TODO we have the bone rotation for this frame, now we have to
+      // make a new bone representation like posebone.
+      // and then modify the vertices associated to this bone
     }
 
   }

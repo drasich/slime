@@ -41,7 +41,8 @@ struct _Curve
 {
   Bone* bone; //or just name?
   DataType type;
-  Frame* frames;
+  Eina_Inarray* frames;
+
 };
 
 
@@ -70,5 +71,6 @@ void armature_add_action(Armature* a, Action* action);
 void bone_add_child(Bone* b, Bone* child);
 Action* armature_find_action(Armature* armature, char* action_name);
 
+Frame* curve_find_frame(Curve* curve, float time);
 
 #endif
