@@ -18,6 +18,8 @@ struct _Vec4 {
   double W;
 };
 
+Vec3 vec3_zero();
+
 double vec3_length(Vec3 v);
 double vec4_length(Vec4 v);
 double vec4_length2(Vec4 v);

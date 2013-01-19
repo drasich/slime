@@ -156,10 +156,26 @@ object_set_pose(Object* o, char* action_name)
       //TODO we have the bone rotation for this frame, now we have to
       // make a new bone representation like posebone.
       // and then modify the vertices associated to this bone
+      
+      bone->rotation = qx;
     }
 
   }
+}
 
+void
+object_update_mesh_from_armature(Object* o)
+{
+  if (o->mesh == NULL || o->armature == NULL) return;
+
+   Eina_List *l;
+   Bone *bone;
+   EINA_LIST_FOREACH(o->armature->bones, l, bone) {
+     char* bone_name = bone->name;
+
+   }
+
+  
 
 }
 

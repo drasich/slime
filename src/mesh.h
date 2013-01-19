@@ -4,10 +4,26 @@
 #include "matrix.h"
 #include <stdbool.h>
 
+typedef struct _Weight Weight;
+struct _Weight
+{
+  int index;
+  float weight;
+};
+
+typedef struct _VertexGroup VertexGroup;
+struct _VertexGroup
+{
+  char* name;
+  Weight* weights;
+};
+
 typedef struct _Mesh Mesh;
 
 struct _Mesh
 {
+  char* name;
+
   GLuint buffer_vertices;
   GLuint buffer_indices;
   GLuint buffer_normals;
@@ -28,12 +44,13 @@ struct _Mesh
 
   Shader* shader;
 
-  //matrices
   Matrix4GL matrix;
   Matrix3GL matrix_normal;
 
-  char* name;
+  VertexGroup* groups;
 };
+
+
 
 
 void mesh_read_file(Mesh* mesh, FILE* f);

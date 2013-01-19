@@ -17,6 +17,7 @@ struct _Object {
   //Box component
   Mesh* mesh;
   Armature* armature;
+  Armature* animarm;
   char* name;
   struct _Scene* scene; //TODO make a list of this?
 };

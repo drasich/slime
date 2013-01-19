@@ -19,8 +19,10 @@ bone_create(FILE* f)
   bone->children = NULL;
   bone->name = read_name(f);
   printf("bone name '%s'\n",bone->name);
-  bone->position = read_vec3(f);
-  bone->rotation = read_vec4(f);
+  bone->position_base = read_vec3(f);
+  bone->rotation_base = read_vec4(f);
+  bone->position = vec3_zero();
+  bone->rotation = quat_identity();
 
   uint16_t child_nb = read_uint16(f);
   int i;

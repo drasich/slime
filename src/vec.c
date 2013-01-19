@@ -1,6 +1,18 @@
 #include "vec.h"
 #include <math.h>
 
+Vec3 
+vec3_zero()
+{
+  Vec3 v = {
+    .X = 0,
+    .Y = 0,
+    .Z = 0
+  };
+
+  return v;
+}
+
 double
 vec3_length(Vec3 v)
 {

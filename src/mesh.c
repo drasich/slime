@@ -59,16 +59,22 @@ void mesh_read_file(Mesh* mesh, FILE* f)
   }
 
   uint16_t vertex_group_count = read_uint16(f);
+  mesh->groups = calloc(vertex_group_count, sizeof(VertexGroup));
+
   printf("vertex group size: %d\n", vertex_group_count);
   for (i = 0; i < vertex_group_count; ++i) {
     char* name = read_string(f);
+    mesh->groups[i].name = name;
     //printf("vertex group name : %s \n", name);
     uint16_t weights_count = read_uint16(f);
     //printf("vertex group weights nb : %d \n", weights_count);
+    mesh->groups[i].weights = calloc(weights_count, sizeof(Weight));
     int j;
     for (j = 0; j < weights_count; ++j) {
       uint16_t index = read_uint16(f);
       float weight = read_float(f);
+      mesh->groups[i].weights[j].index = index;
+      mesh->groups[i].weights[j].weight = weight;
       //printf("  index, weight : %d, %f\n", index, weight);
     }
   }

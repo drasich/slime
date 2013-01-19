@@ -9,7 +9,9 @@ struct _Bone
 {
   char* name;
   Vec3 position;
+  Vec3 position_base;
   Quat rotation;
+  Quat rotation_base;
   Eina_List* children;
 };
 
@@ -60,8 +62,8 @@ struct _Armature
   char* name;
   Vec3 position;
   Quat rotation;
-  Eina_List* bones;
   Eina_List* actions;
+  Eina_List* bones;
 };
 
 void armature_read_file(Armature* armature, FILE* f);
