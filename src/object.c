@@ -188,8 +188,13 @@ object_update_mesh_from_armature(Object* o)
       Vec3* v = eina_inarray_nth(mesh->vertices_base, w->index);
       //printf("vertex to change : %f, %f, %f\n", v->X, v->Y, v->Z);
       //Quat qdiff = quat_from_quat_to_quat(bone->rotation_base, bone->rotation);
+      Quat qdiff = quat_slerp(bone->rotation_base, bone->rotation, w->weight);
+      //Quat qdiff = quat_slerp(bone->rotation_base, bone->rotation, 0);
+      qdiff = quat_from_quat_to_quat(bone->rotation_base, qdiff);
+      //Quat qdiff = bone->rotation_base;
+      printf("  qdiff rotation : %f, %f, %f, %f\n", qdiff.X, qdiff.Y, qdiff.Z, qdiff.W);
       Vec3 axis = {1,0,0};
-      Quat qdiff = quat_angle_axis(3.14f/4.0f,axis);
+      //Quat qdiff = quat_angle_axis(3.14f/4.0f,axis);
       Vec3 nv = vec3_sub(*v, bone->position_base);
       //nv  = quat_rotate_vec3(bone->rotation, nv);
       nv  = quat_rotate_vec3(qdiff, nv);

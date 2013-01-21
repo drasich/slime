@@ -55,8 +55,21 @@ quat_mul(Quat ql, Quat qr)
   };
 
   return q;
-
 }
+
+Quat
+quat_add(Quat ql, Quat qr)
+{
+  Quat q = { 
+    .X = ql.X+qr.X,
+    .Y = ql.Y+qr.Y,
+    .Z = ql.Z+qr.Z,
+    .W = ql.W+qr.W,
+  };
+
+  return q;
+}
+
 
 Vec3 
 quat_rotate_vec3(Quat q, Vec3 v)
@@ -101,7 +114,8 @@ quat_inverse(Quat q)
 Quat 
 quat_from_quat_to_quat(Quat q1, Quat q2)
 {
-  return quat_mul(quat_inverse(q1),q2);
+  return quat_mul(quat_conj(q1),q2);
+  //return quat_mul(q2,quat_conj(q1));
 }
 
 Quat
@@ -119,14 +133,12 @@ quat_mul_scalar(Quat q, float s)
 }
 
 Quat
-slerp(Quat from, Quat to, float t)
+quat_slerp(Quat from, Quat to, float t)
 {
   const double epsilon = 0.00001;
   double omega, cosomega, sinomega, scale_from, scale_to ;
 
   Quat quatTo = to;
-
-  // this is a dot product
   cosomega = vec4_dot(from, to);
 
   if ( cosomega <0.0 ) { 
@@ -134,30 +146,27 @@ slerp(Quat from, Quat to, float t)
     quatTo = quat_mul_scalar(to, -1); //quatTo = -to;
   }
 
-    if( (1.0 - cosomega) > epsilon )
-    {
-        omega= acos(cosomega) ;  // 0 <= omega <= Pi (see man acos)
-        sinomega = sin(omega) ;  // this sinomega should always be +ve so
-        // could try sinomega=sqrt(1-cosomega*cosomega) to avoid a sin()?
-        scale_from = sin((1.0-t)*omega)/sinomega ;
-        scale_to = sin(t*omega)/sinomega ;
-    }
-    else
-    {
-        // --------------------------------------------------
-        //   The ends of the vectors are very close
-        //   we can use simple linear interpolation - no need
-        //   to worry about the "spherical" interpolation
-        //   --------------------------------------------------
-        scale_from = 1.0 - t ;
-        scale_to = t ;
-    }
+  if( (1.0 - cosomega) > epsilon ){
+    omega= acos(cosomega) ;  // 0 <= omega <= Pi (see man acos)
+    sinomega = sin(omega) ;  // this sinomega should always be +ve so
+    // could try sinomega=sqrt(1-cosomega*cosomega) to avoid a sin()?
+    scale_from = sin((1.0-t)*omega)/sinomega ;
+    scale_to = sin(t*omega)/sinomega ;
+   } else {
+     // --------------------------------------------------
+     //   The ends of the vectors are very close
+     //   we can use simple linear interpolation - no need
+     //   to worry about the "spherical" interpolation
+     //   --------------------------------------------------
+     scale_from = 1.0 - t ;
+     scale_to = t ;
+   }
 
 
-    //TODO quat add Quat q = quat_mul_scalar(from, scale_from) + quat_mul_scalar(quatTo,scale_to);
-    //*this = (from*scale_from) + (quatTo*scale_to);
-    // so that we get a Vec4
+  //TODO quat add 
+  Quat q = quat_add(quat_mul_scalar(from, scale_from),quat_mul_scalar(quatTo,scale_to));
+  //*this = (from*scale_from) + (quatTo*scale_to);
+  // so that we get a Vec4
 
-
-  return to;
+  return q;
 }
