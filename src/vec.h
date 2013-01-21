@@ -29,6 +29,9 @@ Vec3 vec3_sub(Vec3 v1, Vec3 v2);
 Vec3 vec3_mul(Vec3 v1, double s);
 
 double vec3_dot(Vec3 v1, Vec3 v2);
+Vec3 vec3_cross(Vec3 v1, Vec3 v2);
+
+double vec4_dot(Vec4 v1, Vec4 v2);
 
 typedef struct _Ray Ray;
 

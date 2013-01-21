@@ -44,7 +44,6 @@ struct _Curve
   Bone* bone; //or just name?
   DataType type;
   Eina_Inarray* frames;
-
 };
 
 

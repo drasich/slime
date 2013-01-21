@@ -17,10 +17,18 @@ void mesh_read_file(Mesh* mesh, FILE* f)
   int i;
 
   mesh->vertices = calloc(count*3, sizeof(GLfloat));
+  mesh->vertices_base = eina_inarray_new(sizeof(Vec3), count);
   mesh->vertices_len = count*3;
+  Vec3 v;
   for (i = 0; i< count*3; ++i) {
     fread(&x, 4,1,f);
     mesh->vertices[i] = x;
+    if (i % 3 == 0) v.X = x;
+    else if (i % 3 == 1) v.Y = x;
+    else if (i % 3 == 2) {
+      v.Z = x;
+      eina_inarray_push(mesh->vertices_base, &v);
+    }
   }
 
   fread(&count, sizeof(count),1,f);
@@ -59,24 +67,29 @@ void mesh_read_file(Mesh* mesh, FILE* f)
   }
 
   uint16_t vertex_group_count = read_uint16(f);
-  mesh->groups = calloc(vertex_group_count, sizeof(VertexGroup));
+  mesh->vertexgroups = eina_array_new(vertex_group_count);
 
   printf("vertex group size: %d\n", vertex_group_count);
   for (i = 0; i < vertex_group_count; ++i) {
+    VertexGroup* vg = malloc(sizeof(VertexGroup));
     char* name = read_string(f);
-    mesh->groups[i].name = name;
+    vg->name = name;
     //printf("vertex group name : %s \n", name);
     uint16_t weights_count = read_uint16(f);
     //printf("vertex group weights nb : %d \n", weights_count);
-    mesh->groups[i].weights = calloc(weights_count, sizeof(Weight));
+    vg->weights = eina_inarray_new(sizeof(Weight), weights_count);
     int j;
     for (j = 0; j < weights_count; ++j) {
       uint16_t index = read_uint16(f);
       float weight = read_float(f);
-      mesh->groups[i].weights[j].index = index;
-      mesh->groups[i].weights[j].weight = weight;
-      //printf("  index, weight : %d, %f\n", index, weight);
+      Weight w = { .index = index, .weight = weight};
+      eina_inarray_push(vg->weights, &w);
+      //printf("  index, weight : %d, %f\n", w.index, w.weight);
+      //Weight* tw = eina_inarray_nth(vg->weights, j);
+      //printf("     array index, weight : %d, %f\n", tw->index, tw->weight);
+      
     }
+    eina_array_push(mesh->vertexgroups, vg);
   }
 
   /*
@@ -278,7 +291,8 @@ mesh_draw(Mesh* m)
 }
 
 
-Mesh* create_mesh(char* path)
+Mesh*
+create_mesh(char* path)
 {
    Mesh* m = calloc(1,sizeof(Mesh));
    mesh_read(m, path);
@@ -286,7 +300,8 @@ Mesh* create_mesh(char* path)
    return m;
 }
 
-Mesh* create_mesh_file(FILE* f)
+Mesh*
+create_mesh_file(FILE* f)
 {
    Mesh* m = calloc(1,sizeof(Mesh));
    mesh_read_file(m, f);
@@ -294,4 +309,16 @@ Mesh* create_mesh_file(FILE* f)
    return m;
 }
 
+VertexGroup*
+mesh_find_vertexgroup(Mesh* mesh, char* name)
+{
+  VertexGroup* vg;
+  Eina_Array_Iterator it;
+  unsigned int        i;
 
+  EINA_ARRAY_ITER_NEXT(mesh->vertexgroups, i, vg, it) {
+    if (!strcmp(vg->name, name)) return vg;
+  }
+  return NULL;
+
+}

@@ -209,5 +209,6 @@ curve_find_frame(Curve* curve, float time)
   EINA_INARRAY_FOREACH(curve->frames, fr) {
     if (time <= fr->time) return fr;
   }
+  return NULL;
 }
 

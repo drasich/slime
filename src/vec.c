@@ -97,3 +97,12 @@ intersection_ray_plane(Ray ray, Plane plane)
 
   return out;
 }
+
+
+double
+vec4_dot(Vec4 v1, Vec4 v2)
+{
+  return v1.X*v2.X + v1.Y*v2.Y + v1.Z*v2.Z + v1.W*v2.W;
+}
+
+

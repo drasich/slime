@@ -57,3 +57,107 @@ quat_mul(Quat ql, Quat qr)
   return q;
 
 }
+
+Vec3 
+quat_rotate_vec3(Quat q, Vec3 v)
+{
+  Vec3 uv, uuv;
+  Vec3 qvec = {.X = q.X, .Y = q.Y, .Z = q.Z} ;
+  uv = vec3_cross(qvec, v);
+  uuv = vec3_cross(qvec, uv);
+  uv = vec3_mul(uv, 2.0f*q.W);
+  uuv = vec3_mul(uuv, 2.0f);
+  return vec3_add(v, vec3_add(uv, uuv));
+}
+
+
+Quat
+quat_conj(Quat q)
+{
+  Quat r = {
+    .X = -q.X, 
+    .Y = -q.Y,
+    .Z = -q.Z,
+    .W = q.W
+  };
+
+  return r;
+}
+
+Quat
+quat_inverse(Quat q)
+{
+  float l = quat_length2(q);
+  Quat r = {
+    .X = -q.X/l, 
+    .Y = -q.Y/l,
+    .Z = -q.Z/l,
+    .W = q.W/l
+  };
+
+  return r;
+}
+
+Quat 
+quat_from_quat_to_quat(Quat q1, Quat q2)
+{
+  return quat_mul(quat_inverse(q1),q2);
+}
+
+Quat
+quat_mul_scalar(Quat q, float s)
+{
+  Quat r = {
+    .X = q.X*s, 
+    .Y = q.Y*s,
+    .Z = q.Z*s,
+    .W = q.W*s
+  };
+
+  return r;
+
+}
+
+Quat
+slerp(Quat from, Quat to, float t)
+{
+  const double epsilon = 0.00001;
+  double omega, cosomega, sinomega, scale_from, scale_to ;
+
+  Quat quatTo = to;
+
+  // this is a dot product
+  cosomega = vec4_dot(from, to);
+
+  if ( cosomega <0.0 ) { 
+    cosomega = -cosomega; 
+    quatTo = quat_mul_scalar(to, -1); //quatTo = -to;
+  }
+
+    if( (1.0 - cosomega) > epsilon )
+    {
+        omega= acos(cosomega) ;  // 0 <= omega <= Pi (see man acos)
+        sinomega = sin(omega) ;  // this sinomega should always be +ve so
+        // could try sinomega=sqrt(1-cosomega*cosomega) to avoid a sin()?
+        scale_from = sin((1.0-t)*omega)/sinomega ;
+        scale_to = sin(t*omega)/sinomega ;
+    }
+    else
+    {
+        // --------------------------------------------------
+        //   The ends of the vectors are very close
+        //   we can use simple linear interpolation - no need
+        //   to worry about the "spherical" interpolation
+        //   --------------------------------------------------
+        scale_from = 1.0 - t ;
+        scale_to = t ;
+    }
+
+
+    //TODO quat add Quat q = quat_mul_scalar(from, scale_from) + quat_mul_scalar(quatTo,scale_to);
+    //*this = (from*scale_from) + (quatTo*scale_to);
+    // so that we get a Vec4
+
+
+  return to;
+}

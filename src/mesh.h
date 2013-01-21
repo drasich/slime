@@ -15,7 +15,8 @@ typedef struct _VertexGroup VertexGroup;
 struct _VertexGroup
 {
   char* name;
-  Weight* weights;
+  //Weight* weights;
+  Eina_Inarray* weights;
 };
 
 typedef struct _Mesh Mesh;
@@ -47,7 +48,9 @@ struct _Mesh
   Matrix4GL matrix;
   Matrix3GL matrix_normal;
 
-  VertexGroup* groups;
+  Eina_Array* vertexgroups;
+  Eina_Inarray* vertices_base;
+  //For animation I need original vertex and vertex to send
 };
 
 
@@ -66,5 +69,7 @@ void mesh_init_texture(Mesh* m);
 
 Mesh* create_mesh(char* path);
 Mesh* create_mesh_file(FILE* f);
+
+VertexGroup* mesh_find_vertexgroup(Mesh* mesh, char* name);
 
 #endif
