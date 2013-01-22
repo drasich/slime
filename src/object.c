@@ -40,12 +40,12 @@ void
 object_update(Object* o)
 {
   //TODO remove this code and this function anyway
-  /*
+  //*
   static float test = 0;
   test += 0.05f;
   Vec3 axis = {0,1,0};
   o->Orientation = quat_angle_axis(test, axis);
-  */
+  //*/
   //Vec3 axis = {1,0,0};
   //o->Orientation = quat_angle_axis(90, axis);
 }
@@ -141,6 +141,7 @@ object_set_pose(Object* o, char* action_name)
 
     } else if (curve->type == QUATERNION) {
       printf("quat\n");
+      bone->rotation = f->quat;
 
     } else if (curve->type == EULER) {
       Vec3 euler = f->vec3;
@@ -152,12 +153,13 @@ object_set_pose(Object* o, char* action_name)
       Vec3 axisx = {1,0,0};
       Quat qx = quat_angle_axis(euler.X, axisx);
       Quat q = quat_mul( quat_mul (qz, qy), qx);
+      //Quat q = quat_mul( quat_mul (qx, qy), qz);
 
       //TODO we have the bone rotation for this frame, now we have to
       // modify the vertices associated to this bone
       // in the next function we update this
       
-      bone->rotation = qx;
+      bone->rotation = q;
     }
 
   }
@@ -175,7 +177,7 @@ object_update_mesh_from_armature(Object* o)
   Bone *bone;
   EINA_LIST_FOREACH(o->armature->bones, l, bone) {
     char* bone_name = bone->name;
-    printf("bone name : %s\n", bone_name);
+    printf("update bone name : %s\n", bone_name);
     Quat q = bone->rotation_base;
     printf("  rotation base : %f, %f, %f, %f\n", q.X, q.Y, q.Z, q.W);
     q = bone->rotation;
@@ -183,20 +185,17 @@ object_update_mesh_from_armature(Object* o)
     //TODO optimize/change this for loop
     VertexGroup* vg = mesh_find_vertexgroup(mesh, bone_name);
     Weight* w;
+    int i =0;
     EINA_INARRAY_FOREACH(vg->weights, w){
-      //printf("index, weight : %d, %f\n", w->index, w->weight);
+      if (w->weight < 0.9f) continue;
+      printf("index, weight : %d, %f nb %d\n", w->index, w->weight, i);
+      i++;
       Vec3* v = eina_inarray_nth(mesh->vertices_base, w->index);
       //printf("vertex to change : %f, %f, %f\n", v->X, v->Y, v->Z);
-      //Quat qdiff = quat_from_quat_to_quat(bone->rotation_base, bone->rotation);
       Quat qdiff = quat_slerp(bone->rotation_base, bone->rotation, w->weight);
-      //Quat qdiff = quat_slerp(bone->rotation_base, bone->rotation, 0);
-      qdiff = quat_from_quat_to_quat(bone->rotation_base, qdiff);
-      //Quat qdiff = bone->rotation_base;
-      printf("  qdiff rotation : %f, %f, %f, %f\n", qdiff.X, qdiff.Y, qdiff.Z, qdiff.W);
-      Vec3 axis = {1,0,0};
-      //Quat qdiff = quat_angle_axis(3.14f/4.0f,axis);
+      qdiff = quat_between_quat(bone->rotation_base, qdiff);
+      //printf("  qdiff rotation : %f, %f, %f, %f\n", qdiff.X, qdiff.Y, qdiff.Z, qdiff.W);
       Vec3 nv = vec3_sub(*v, bone->position_base);
-      //nv  = quat_rotate_vec3(bone->rotation, nv);
       nv  = quat_rotate_vec3(qdiff, nv);
       nv = vec3_add(nv, bone->position_base);
 
@@ -205,6 +204,8 @@ object_update_mesh_from_armature(Object* o)
       mesh->vertices[w->index*3+2] = nv.Z;
     }
   }
+
   mesh_init(mesh);
+
 }
 

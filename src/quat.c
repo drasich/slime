@@ -49,11 +49,10 @@ quat_mul(Quat ql, Quat qr)
 {
   Quat q = { 
     .X = qr.W*ql.X + qr.X*ql.W + qr.Y*ql.Z - qr.Z*ql.Y,
-    .Y = qr.W*ql.Y - qr.X*ql.Z + qr.Y*ql.W - qr.Z*ql.X,
-    .Z = qr.W*ql.Z + qr.X*ql.Y + qr.Y*ql.X - qr.Z*ql.W,
-    .W = qr.W*ql.W - qr.X*ql.X + qr.Y*ql.Y - qr.Z*ql.Z
+    .Y = qr.W*ql.Y - qr.X*ql.Z + qr.Y*ql.W + qr.Z*ql.X,
+    .Z = qr.W*ql.Z + qr.X*ql.Y - qr.Y*ql.X + qr.Z*ql.W,
+    .W = qr.W*ql.W - qr.X*ql.X - qr.Y*ql.Y - qr.Z*ql.Z
   };
-
   return q;
 }
 
@@ -112,10 +111,12 @@ quat_inverse(Quat q)
 }
 
 Quat 
-quat_from_quat_to_quat(Quat q1, Quat q2)
+quat_between_quat(Quat q1, Quat q2)
 {
   return quat_mul(quat_conj(q1),q2);
   //return quat_mul(q2,quat_conj(q1));
+  //return quat_mul(q1,quat_conj(q2));
+  //return quat_mul(q2,quat_inverse(q1));
 }
 
 Quat
@@ -139,6 +140,7 @@ quat_slerp(Quat from, Quat to, float t)
   double omega, cosomega, sinomega, scale_from, scale_to ;
 
   Quat quatTo = to;
+  //printf("  quatto : %f, %f, %f, %f\n", quatTo.X, quatTo.Y, quatTo.Z, quatTo.W);
   cosomega = vec4_dot(from, to);
 
   if ( cosomega <0.0 ) { 
@@ -169,4 +171,28 @@ quat_slerp(Quat from, Quat to, float t)
   // so that we get a Vec4
 
   return q;
+}
+
+Vec4
+quat_to_axis_angle(Quat q)
+{
+  Vec4 r;
+  float sinhalfangle = sqrt( q.X*q.X + q.Y*q.Y + q.Z*q.Z );
+
+  r.W = 2.0 * atan2( sinhalfangle, q.W );
+  if(sinhalfangle)
+   {
+    r.X = q.X / sinhalfangle;
+    r.Y = q.Y / sinhalfangle;
+    r.Z = q.Z / sinhalfangle;
+   }
+  else
+   {
+    r.X = 0.0;
+    r.Y = 0.0;
+    r.Z = 1.0;
+   }
+
+  return r;
+
 }

@@ -20,13 +20,8 @@ bone_create(FILE* f)
   bone->name = read_name(f);
   printf("bone name '%s'\n",bone->name);
   bone->position_base = read_vec3(f);
-  //bone->rotation_base = read_vec4(f);
-  Quat q = read_vec4(f);
-  bone->rotation_base.X = q.Y;
-  bone->rotation_base.Y = q.Z;
-  bone->rotation_base.Z = q.W;
-  bone->rotation_base.W = q.X;
-  q = bone->rotation_base;
+  bone->rotation_base = read_vec4(f);
+  Quat q = bone->rotation_base;
   printf("  bone rotation : %f, %f, %f, %f\n", q.X, q.Y, q.Z, q.W);
   bone->position = bone->position_base;
   bone->rotation = bone->rotation_base;

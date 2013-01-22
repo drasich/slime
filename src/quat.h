@@ -17,8 +17,10 @@ Quat quat_add(Quat ql, Quat qr);
 
 Quat quat_conj(Quat q);
 Quat quat_inverse(Quat q);
-Quat quat_from_quat_to_quat(Quat q1, Quat q2);
+Quat quat_between_quat(Quat q1, Quat q2);
 
 Quat quat_slerp(Quat from, Quat to, float t);
+
+Vec4 quat_to_axis_angle(Quat q);
 
 #endif
