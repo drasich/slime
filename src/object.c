@@ -40,12 +40,12 @@ void
 object_update(Object* o)
 {
   //TODO remove this code and this function anyway
-  //*
+  /*
   static float test = 0;
   test += 0.05f;
   Vec3 axis = {0,1,0};
   o->Orientation = quat_angle_axis(test, axis);
-  //*/
+  */
   //Vec3 axis = {1,0,0};
   //o->Orientation = quat_angle_axis(90, axis);
 }
@@ -84,6 +84,7 @@ Object* create_object_file(const char* path)
   fseek(f, 0, SEEK_SET);
 
   int ob_nb = read_uint16(f);
+  printf("object nb '%d'\n",ob_nb);
   int i;
   for (i = 0; i <ob_nb; ++i) {
 
@@ -136,8 +137,10 @@ object_set_pose(Object* o, char* action_name)
   EINA_LIST_FOREACH(action->curves, l, curve) {
     Bone* bone = curve->bone;
     printf("bone name : %s \n", bone->name);
-    Frame* f = curve_find_frame(curve,0);
+    Frame* f = curve_find_frame(curve,10);
     if (curve->type == POSITION) {
+      bone->position = f->vec3;
+      printf("new pos : %f, %f, %f\n", bone->position.X, bone->position.Y, bone->position.Z);
 
     } else if (curve->type == QUATERNION) {
       printf("quat\n");
@@ -159,7 +162,7 @@ object_set_pose(Object* o, char* action_name)
       // modify the vertices associated to this bone
       // in the next function we update this
       
-      bone->rotation = q;
+      //bone->rotation = q;
     }
 
   }
@@ -196,12 +199,15 @@ object_update_mesh_from_armature(Object* o)
       qdiff = quat_between_quat(bone->rotation_base, qdiff);
       //printf("  qdiff rotation : %f, %f, %f, %f\n", qdiff.X, qdiff.Y, qdiff.Z, qdiff.W);
       Vec3 nv = vec3_sub(*v, bone->position_base);
-      nv  = quat_rotate_vec3(qdiff, nv);
-      nv = vec3_add(nv, bone->position_base);
+      //nv  = quat_rotate_vec3(qdiff, nv);
+      //nv = vec3_add(nv, bone->position_base);
 
-      mesh->vertices[w->index*3] = nv.X;
-      mesh->vertices[w->index*3+1] = nv.Y;
-      mesh->vertices[w->index*3+2] = nv.Z;
+      //mesh->vertices[w->index*3] = nv.X;
+      //mesh->vertices[w->index*3+1] = nv.Y;
+      //mesh->vertices[w->index*3+2] = nv.Z;
+      mesh->vertices[w->index*3] = v->X;
+      mesh->vertices[w->index*3+1] = v->Y;
+      mesh->vertices[w->index*3+2] = v->Z;
     }
   }
 

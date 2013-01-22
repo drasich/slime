@@ -27,7 +27,8 @@ _init_gl(Evas_Object *obj)
 {
    ss = create_scene();
 
-   Object* o = create_object_file("model/smallchar.bin");
+   //Object* o = create_object_file("model/smallchar.bin");
+   Object* o = create_object_file("model/simpleplane.bin");
    Vec3 t = {0,-5,-8};
    object_set_position(o, t);
    Vec3 axis = {1,0,0};
@@ -39,7 +40,8 @@ _init_gl(Evas_Object *obj)
    scene_add_object(ss,o);
 
    //object_set_pose(o, "idle");
-   object_set_pose(o, "realwalk");
+   //object_set_pose(o, "realwalk");
+   object_set_pose(o, "ArmatureAction");
 
    /*
    Object* yep = create_object();
