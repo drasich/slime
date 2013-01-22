@@ -158,10 +158,6 @@ object_set_pose(Object* o, char* action_name)
       Quat q = quat_mul( quat_mul (qz, qy), qx);
       //Quat q = quat_mul( quat_mul (qx, qy), qz);
 
-      //TODO we have the bone rotation for this frame, now we have to
-      // modify the vertices associated to this bone
-      // in the next function we update this
-      
       //bone->rotation = q;
     }
 
@@ -173,6 +169,10 @@ object_set_pose(Object* o, char* action_name)
 void
 object_update_mesh_from_armature(Object* o)
 {
+  //TODO add the rotation/position of the armature in the exporter
+  //TODO i forgot that a vertex can be influenced by multiple bones...
+  // so I have to start with the vertex and check if it has a weight or check the vertex groups it's in
+
   if (o->mesh == NULL || o->armature == NULL) return;
   Mesh* mesh = o->mesh;
 
