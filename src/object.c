@@ -137,7 +137,7 @@ object_set_pose(Object* o, char* action_name)
   EINA_LIST_FOREACH(action->curves, l, curve) {
     Bone* bone = curve->bone;
     printf("bone name : %s \n", bone->name);
-    Frame* f = curve_find_frame(curve,10);
+    Frame* f = curve_find_frame(curve,20);
     if (curve->type == POSITION) {
       bone->position = f->vec3;
       printf("new pos : %f, %f, %f\n", bone->position.X, bone->position.Y, bone->position.Z);
@@ -182,10 +182,14 @@ object_update_mesh_from_armature(Object* o)
     char* bone_name = bone->name;
     printf("update bone name : %s\n", bone_name);
     Quat q = bone->rotation_base;
-    printf("  rotation base : %f, %f, %f, %f\n", q.X, q.Y, q.Z, q.W);
+    //printf("  rotation base : %f, %f, %f, %f\n", q.X, q.Y, q.Z, q.W);
     q = bone->rotation;
-    printf("  rotation : %f, %f, %f, %f\n", q.X, q.Y, q.Z, q.W);
+    //printf("  rotation : %f, %f, %f, %f\n", q.X, q.Y, q.Z, q.W);
     //TODO optimize/change this for loop
+    Vec3 vb = bone->position_base;
+    printf("  position base : %f, %f, %f\n", vb.X, vb.Y, vb.Z);
+    Vec3 vp = vec3_sub(bone->position, vb);
+    printf("  position move : %f, %f, %f\n", vp.X, vp.Y, vp.Z);
     VertexGroup* vg = mesh_find_vertexgroup(mesh, bone_name);
     Weight* w;
     int i =0;
@@ -194,20 +198,24 @@ object_update_mesh_from_armature(Object* o)
       printf("index, weight : %d, %f nb %d\n", w->index, w->weight, i);
       i++;
       Vec3* v = eina_inarray_nth(mesh->vertices_base, w->index);
-      //printf("vertex to change : %f, %f, %f\n", v->X, v->Y, v->Z);
+      printf("vertex to change : %f, %f, %f\n", v->X, v->Y, v->Z);
       Quat qdiff = quat_slerp(bone->rotation_base, bone->rotation, w->weight);
       qdiff = quat_between_quat(bone->rotation_base, qdiff);
       //printf("  qdiff rotation : %f, %f, %f, %f\n", qdiff.X, qdiff.Y, qdiff.Z, qdiff.W);
-      Vec3 nv = vec3_sub(*v, bone->position_base);
+      //Vec3 nv = vec3_sub(*v, bone->position_base);
       //nv  = quat_rotate_vec3(qdiff, nv);
       //nv = vec3_add(nv, bone->position_base);
 
       //mesh->vertices[w->index*3] = nv.X;
       //mesh->vertices[w->index*3+1] = nv.Y;
       //mesh->vertices[w->index*3+2] = nv.Z;
-      mesh->vertices[w->index*3] = v->X;
-      mesh->vertices[w->index*3+1] = v->Y;
-      mesh->vertices[w->index*3+2] = v->Z;
+      
+      Vec3 vw = vec3_mul(vp, w->weight);
+      vw = vec3_add(*v, vw);
+      printf("  position in the end : %f, %f, %f\n", vw.X, vw.Y, vw.Z);
+      mesh->vertices[w->index*3] = vw.X;
+      mesh->vertices[w->index*3+1] = vw.Y;
+      mesh->vertices[w->index*3+2] = vw.Z;
     }
   }
 

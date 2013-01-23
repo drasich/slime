@@ -35,8 +35,8 @@ _init_gl(Evas_Object *obj)
    Quat q = quat_angle_axis(3.14159f/2.f, axis);
    Vec3 axis2 = {0,0,1};
    Quat q2 = quat_angle_axis(3.14159f/4.f, axis2);
-   q = quat_mul(q, q2);
-   object_set_orientation(o, q);
+   //q = quat_mul(q, q2);
+   //object_set_orientation(o, q);
    scene_add_object(ss,o);
 
    //object_set_pose(o, "idle");
