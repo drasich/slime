@@ -7,7 +7,7 @@
 typedef struct _Weight Weight;
 struct _Weight
 {
-  int index;
+  uint16_t index;
   float weight;
 };
 
@@ -16,6 +16,13 @@ struct _VertexGroup
 {
   char* name;
   //Weight* weights;
+  Eina_Inarray* weights;
+};
+
+typedef struct _VertexInfo VertexInfo;
+struct _VertexInfo
+{
+  Vec3 position;
   Eina_Inarray* weights;
 };
 
@@ -52,9 +59,6 @@ struct _Mesh
   Eina_Inarray* vertices_base;
   //For animation I need original vertex and vertex to send
 };
-
-
-
 
 void mesh_read_file(Mesh* mesh, FILE* f);
 void mesh_read(Mesh* mesh, char* path);

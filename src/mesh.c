@@ -17,17 +17,18 @@ void mesh_read_file(Mesh* mesh, FILE* f)
   int i;
 
   mesh->vertices = calloc(count*3, sizeof(GLfloat));
-  mesh->vertices_base = eina_inarray_new(sizeof(Vec3), count);
+  mesh->vertices_base = eina_inarray_new(sizeof(VertexInfo), count);
   mesh->vertices_len = count*3;
-  Vec3 v;
+  VertexInfo vi;
+  //Vec3 v;
   for (i = 0; i< count*3; ++i) {
     fread(&x, 4,1,f);
     mesh->vertices[i] = x;
-    if (i % 3 == 0) v.X = x;
-    else if (i % 3 == 1) v.Y = x;
+    if (i % 3 == 0) vi.position.X = x;
+    else if (i % 3 == 1) vi.position.Y = x;
     else if (i % 3 == 2) {
-      v.Z = x;
-      eina_inarray_push(mesh->vertices_base, &v);
+      vi.position.Z = x;
+      eina_inarray_push(mesh->vertices_base, &vi);
     }
   }
 
@@ -92,14 +93,28 @@ void mesh_read_file(Mesh* mesh, FILE* f)
     eina_array_push(mesh->vertexgroups, vg);
   }
 
-  /*
   uint16_t vertex_weight_count = read_uint16(f);
-  for (i = 0; i < vertex_weight_count; ++i) {
-    uint16_t index = read_uint16(f);
-    float weight = read_float(f);
-    printf("vertex, index, wight : %d, %f\n", index, weight);
+  if (vertex_weight_count == eina_inarray_count(mesh->vertices_base)){
+    printf("ok same size\n");
   }
-  */
+  else {
+    printf("Size different something wrong!!!!!!!\n");
+  }
+  //mesh->weights = eina_inarray_new(sizeof(Weight), weights_count);
+  printf("vertex weight count : %d\n", vertex_weight_count);
+  for (i = 0; i < vertex_weight_count; ++i) {
+    VertexInfo* vi = eina_inarray_nth(mesh->vertices_base, i);
+    uint16_t weight_count = read_uint16(f);
+    int j;
+    vi->weights = eina_inarray_new(sizeof(Weight), weight_count);
+    for (j = 0; j < weight_count; ++j) {
+      Weight w;
+      w.index = read_uint16(f);
+      w.weight = read_float(f);
+      eina_inarray_push(vi->weights, &w);
+      printf("vertex, index, weight : %d, %f\n", w.index, w.weight);
+    }
+  }
 
 }
 
@@ -314,7 +329,7 @@ mesh_find_vertexgroup(Mesh* mesh, char* name)
 {
   VertexGroup* vg;
   Eina_Array_Iterator it;
-  unsigned int        i;
+  unsigned int i;
 
   EINA_ARRAY_ITER_NEXT(mesh->vertexgroups, i, vg, it) {
     if (!strcmp(vg->name, name)) return vg;
@@ -322,3 +337,4 @@ mesh_find_vertexgroup(Mesh* mesh, char* name)
   return NULL;
 
 }
+

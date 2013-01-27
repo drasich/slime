@@ -29,7 +29,7 @@ _init_gl(Evas_Object *obj)
 
    //Object* o = create_object_file("model/smallchar.bin");
    Object* o = create_object_file("model/simpleplane.bin");
-   Vec3 t = {0,-5,-8};
+   Vec3 t = {0,-5,-10};
    object_set_position(o, t);
    Vec3 axis = {1,0,0};
    Quat q = quat_angle_axis(3.14159f/2.f, axis);

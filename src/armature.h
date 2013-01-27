@@ -71,6 +71,7 @@ void armature_add_bone(Armature* a, Bone* b);
 void armature_add_action(Armature* a, Action* action);
 void bone_add_child(Bone* b, Bone* child);
 Action* armature_find_action(Armature* armature, char* action_name);
+Bone* armature_find_bone(Armature* a, char* bone_name);
 
 Frame* curve_find_frame(Curve* curve, float time);
 

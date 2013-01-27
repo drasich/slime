@@ -130,21 +130,22 @@ object_set_pose(Object* o, char* action_name)
   
   printf("found action\n");
 
-  int frame = 10;
+  int frame = 40;
 
   Eina_List *l;
   Curve *curve;
   EINA_LIST_FOREACH(action->curves, l, curve) {
     Bone* bone = curve->bone;
     printf("bone name : %s \n", bone->name);
-    Frame* f = curve_find_frame(curve,20);
+    Frame* f = curve_find_frame(curve,frame);
     if (curve->type == POSITION) {
       bone->position = f->vec3;
       printf("new pos : %f, %f, %f\n", bone->position.X, bone->position.Y, bone->position.Z);
 
     } else if (curve->type == QUATERNION) {
-      printf("quat\n");
       bone->rotation = f->quat;
+      Quat qr = bone->rotation;
+      printf("set pose rotation %f %f %f %f\n", qr.X, qr.Y, qr.Z, qr.W);
 
     } else if (curve->type == EULER) {
       Vec3 euler = f->vec3;
@@ -163,7 +164,8 @@ object_set_pose(Object* o, char* action_name)
 
   }
 
-  object_update_mesh_from_armature(o);
+ // object_update_mesh_from_armature(o);
+  object_update_mesh_vertex(o);
 }
 
 void
@@ -220,6 +222,74 @@ object_update_mesh_from_armature(Object* o)
   }
 
   mesh_init(mesh);
+}
 
+
+void
+object_update_mesh_vertex(Object* o)
+{
+  //TODO add the rotation/position of the armature in the exporter
+
+  if (o->mesh == NULL || o->armature == NULL) return;
+  Mesh* mesh = o->mesh;
+
+  VertexInfo *vi;
+  int i = 0;
+  EINA_INARRAY_FOREACH(mesh->vertices_base, vi) {
+    Weight* w;
+    Vec3 translation = vec3_zero();
+    EINA_INARRAY_FOREACH(vi->weights, w) {
+      VertexGroup* vg = eina_array_data_get(mesh->vertexgroups, w->index);
+      Bone* bone = armature_find_bone(o->armature, vg->name);
+      /*
+      Quat brb = bone->rotation_base;
+      Quat br = bone->rotation;
+      printf("bone rotation base : %f, %f, %f, %f\n", brb.X, brb.Y, brb.Z, brb.W);
+      printf("bone rotation : %f, %f, %f, %f\n", br.X, br.Y, br.Z, br.W);
+      Vec4 aa = quat_to_axis_angle(brb);
+      printf("angle axis rotation rotation base : %f, %f, %f, %f\n", aa.X, aa.Y, aa.Z, aa.W);
+      aa = quat_to_axis_angle(br);
+      printf("angle axis rotation rotation : %f, %f, %f, %f\n", aa.X, aa.Y, aa.Z, aa.W);
+      */
+
+      printf("bone position : %f, %f, %f\n", bone->position.X, bone->position.Y, bone->position.Z);
+      Vec3 bn = quat_rotate_vec3(bone->rotation_base, bone->position);
+      printf("bone position after : %f, %f, %f\n", bn.X, bn.Y, bn.Z);
+
+      Vec3 t = vec3_mul(bn, w->weight);
+      //Quat start = quat_inverse(bone->rotation_base);
+      //Quat end = quat_mul(quat_inverse(bone->rotation_base), bone->rotation);
+      Quat q = quat_slerp(quat_identity(), bone->rotation, w->weight);
+      //Quat q = quat_slerp(start, end, w->weight);
+      printf("q rotation : %f, %f, %f, %f\n", q.X, q.Y, q.Z, q.W);
+      Vec4 aa = quat_to_axis_angle(q);
+      printf("angle axis rotation : %f, %f, %f, %f\n", aa.X, aa.Y, aa.Z, aa.W);
+
+      Vec3 bb = bone->position_base;
+      Vec3 yep = vec3_sub(vi->position, bb);
+      yep = quat_rotate_vec3(q, yep);
+      yep = vec3_add(yep, bb);
+      yep = vec3_sub(yep, vi->position);
+
+      Vec3 s = vi->position;
+      printf("posstart : %f, %f, %f\n", s.X, s.Y, s.Z);
+      printf("t : %f, %f, %f\n", t.X, t.Y, t.Z);
+      printf("yep : %f, %f, %f\n", yep.X, yep.Y, yep.Z);
+      t = vec3_add(t,yep);
+
+      translation = vec3_add(translation, t);
+    }
+
+    Vec3 newpos = vec3_add(vi->position,translation);
+    printf("newpos : %f, %f, %f\n", newpos.X, newpos.Y, newpos.Z);
+
+    mesh->vertices[i*3] = newpos.X;
+    mesh->vertices[i*3+1] = newpos.Y;
+    mesh->vertices[i*3+2] = newpos.Z;
+    ++i;
+
+  }
+
+  mesh_init(mesh);
 }
 
