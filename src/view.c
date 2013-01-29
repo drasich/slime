@@ -27,21 +27,22 @@ _init_gl(Evas_Object *obj)
 {
    ss = create_scene();
 
-   //Object* o = create_object_file("model/smallchar.bin");
-   Object* o = create_object_file("model/simpleplane.bin");
+   Object* o = create_object_file("model/smallchar.bin");
+   //Object* o = create_object_file("model/simpleplane.bin");
    Vec3 t = {0,-5,-10};
    object_set_position(o, t);
    Vec3 axis = {1,0,0};
    Quat q = quat_angle_axis(3.14159f/2.f, axis);
    Vec3 axis2 = {0,0,1};
    Quat q2 = quat_angle_axis(3.14159f/4.f, axis2);
-   //q = quat_mul(q, q2);
-   //object_set_orientation(o, q);
+   q = quat_mul(q, q2);
+   object_set_orientation(o, q);
    scene_add_object(ss,o);
 
    //object_set_pose(o, "idle");
    //object_set_pose(o, "realwalk");
-   object_set_pose(o, "ArmatureAction");
+   object_set_pose(o, "walkquat");
+   //object_set_pose(o, "ArmatureAction");
 
    /*
    Object* yep = create_object();

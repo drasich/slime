@@ -130,7 +130,7 @@ object_set_pose(Object* o, char* action_name)
   
   printf("found action\n");
 
-  int frame = 40;
+  int frame = 20;
 
   Eina_List *l;
   Curve *curve;
