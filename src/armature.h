@@ -44,6 +44,8 @@ struct _Curve
   Bone* bone; //or just name?
   DataType type;
   Eina_Inarray* frames;
+  float frame_start;
+  float frame_end;
 };
 
 
@@ -52,6 +54,8 @@ struct _Action
 {
   char* name;
   Eina_List* curves; //could be 3 curves : position, quaternion, scale
+  float frame_start;
+  float frame_end;
 };
 
 
@@ -74,5 +78,6 @@ Action* armature_find_action(Armature* armature, char* action_name);
 Bone* armature_find_bone(Armature* a, char* bone_name);
 
 Frame* curve_find_frame(Curve* curve, float time);
+void curve_get_frames(Curve* curve, float time, Frame** start, Frame** end);
 
 #endif

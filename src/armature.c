@@ -1,5 +1,6 @@
 #include "armature.h"
 #include "read.h"
+#include <float.h>
 
 Armature*
 create_armature_file(FILE* f)
@@ -75,6 +76,8 @@ curve_create(FILE* f, Armature* armature)
 {
   Curve* curve = malloc(sizeof(Curve));
   curve->frames = NULL;
+  curve->frame_start = FLT_MAX ;
+  curve->frame_end = -FLT_MAX;
 
   char* bone_name = read_name(f);
   curve->bone = armature_find_bone(armature, bone_name);
@@ -92,24 +95,14 @@ curve_create(FILE* f, Armature* armature)
 
   //TODO add the frame to the curve
   uint16_t frames_nb = read_uint16(f);
-  /*
-  curve->frames = calloc(frames_nb, sizeof(Frame));
-  int i;
-  for (i = 0; i < frames_nb; ++i) {
-    Frame* frame = &curve->frames[i];
-    frame->time = read_float(f);
-    if (curve->type == QUATERNION) {
-      frame->quat = read_vec4(f);
-    } else {
-      frame->vec3 = read_vec3(f);
-    }
-  }
-  */
   curve->frames = eina_inarray_new(sizeof(Frame), frames_nb);
   int i;
   for (i = 0; i < frames_nb; ++i) {
     Frame frame;
     frame.time = read_float(f);
+    printf("curve time : %f ", frame.time);
+    if (frame.time < curve->frame_start) curve->frame_start = frame.time;
+    if (frame.time > curve->frame_end) curve->frame_end = frame.time;
     if (curve->type == QUATERNION) {
       frame.quat = read_vec4(f);
     } else {
@@ -125,6 +118,8 @@ void
 action_add_curve(Action* a, Curve* c)
 {
   a->curves = eina_list_append(a->curves,c);
+  if (c->frame_start < a->frame_start) a->frame_start = c->frame_start;
+  if (c->frame_end > a->frame_end) a->frame_end = c->frame_end;
 }
 
 Action*
@@ -134,6 +129,9 @@ action_create(FILE* f, Armature* armature)
   action->curves = NULL;
   action->name = read_name(f);
   printf("action name: %s\n", action->name);
+
+  action->frame_start = FLT_MAX;
+  action->frame_end = -FLT_MAX;
 
   uint16_t curves_nb = read_uint16(f);
   int i;
@@ -213,4 +211,31 @@ curve_find_frame(Curve* curve, float time)
   }
   return NULL;
 }
+
+void
+curve_get_frames(Curve* curve, float time, Frame** start, Frame** end)
+{
+  //TODO can optimize this by looking in the middle
+  Frame* f;
+  *start = NULL;
+  
+  EINA_INARRAY_FOREACH(curve->frames, f) {
+    if (time == f->time){
+      *start = f ;
+      *end = f;
+      return;
+    }
+    else if (time > f->time) {
+      *start = f;
+    }
+    else if (time < f->time) {
+      *end = f;
+      return;
+    }
+  }
+
+  if (*start == NULL) *start = f;
+  *end = f;
+}
+
 

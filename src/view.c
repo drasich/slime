@@ -20,6 +20,7 @@ static Scene* ss;
 
 //TODO put this data in the view?
 static View sview;
+Object* o;
 
 // Callbacks
 static void
@@ -27,7 +28,7 @@ _init_gl(Evas_Object *obj)
 {
    ss = create_scene();
 
-   Object* o = create_object_file("model/smallchar.bin");
+   o = create_object_file("model/smallchar.bin");
    //Object* o = create_object_file("model/simpleplane.bin");
    Vec3 t = {0,-5,-10};
    object_set_position(o, t);
@@ -41,7 +42,7 @@ _init_gl(Evas_Object *obj)
 
    //object_set_pose(o, "idle");
    //object_set_pose(o, "realwalk");
-   object_set_pose(o, "walkquat");
+   object_set_pose(o, "walkquat", -20);
    //object_set_pose(o, "ArmatureAction");
 
    /*
@@ -94,6 +95,7 @@ _resize_gl(Evas_Object *obj)
    //mat4_set_frustum(sview.projection, -1,1,-1,1,1,1000.0f);
    mat4_set_frustum(sview.projection, -hw*aspect,hw*aspect,-1,1,1,1000.0f);
 }
+
 
 
 

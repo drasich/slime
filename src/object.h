@@ -38,8 +38,9 @@ Object* create_object_file(const char* file);
 void object_set_position(Object* o, Vec3 v);
 void object_set_orientation(Object* o, Quat q);
 
-void object_set_pose(Object* o, char* action_name);
-void object_update_mesh_from_armature(Object* o);
+void object_set_pose(Object* o, char* action_name, float time);
 void object_update_mesh_vertex(Object* o);
+
+void object_play_animation(Object* o, char* action_name);
 
 #endif
