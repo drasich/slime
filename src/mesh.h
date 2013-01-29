@@ -63,6 +63,7 @@ struct _Mesh
 void mesh_read_file(Mesh* mesh, FILE* f);
 void mesh_read(Mesh* mesh, char* path);
 void mesh_init(Mesh* mesh);
+void mesh_resend(Mesh* mesh);
 
 void mesh_set_matrix(Mesh* mesh, Matrix4 mat);
 void mesh_set_matrices(Mesh* mesh, Matrix4 mat, Matrix4 projection);

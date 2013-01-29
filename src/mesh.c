@@ -182,6 +182,17 @@ mesh_init(Mesh* m)
 }
 
 void
+mesh_resend(Mesh* m)
+{
+  gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_vertices);
+  gl->glBufferSubData(
+    GL_ARRAY_BUFFER,
+    0,
+    m->vertices_len* sizeof(GLfloat),
+    m->vertices);
+}
+
+void
 mesh_init_texture(Mesh* m)
 {
   //TODO texture path

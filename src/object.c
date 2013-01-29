@@ -133,22 +133,16 @@ object_set_pose(Object* o, char* action_name, float time)
 
   if (action == NULL) return;
   
-  printf("found action\n");
   int frame = time *30;
   if (frame < action->frame_start) frame = action->frame_start;
   if (frame > action->frame_end) frame = action->frame_end;
-  //printf("frame I want : %d \n", frame);
 
   Eina_List *l;
   Curve *curve;
   EINA_LIST_FOREACH(action->curves, l, curve) {
     Bone* bone = curve->bone;
-    printf("bone name : %s \n", bone->name);
-    //Frame* f = curve_find_frame(curve,frame);
     Frame *start, *end;
     curve_get_frames(curve, frame, &start, &end);
-
-    printf("frames : %f %f\n", start->time, end->time);
 
     float ratio = 0;
     if (start != end)
@@ -256,7 +250,7 @@ object_update_mesh_vertex(Object* o)
 
   }
 
-  mesh_init(mesh);
+  mesh_resend(mesh);
 }
 
 void
