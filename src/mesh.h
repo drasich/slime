@@ -23,6 +23,7 @@ typedef struct _VertexInfo VertexInfo;
 struct _VertexInfo
 {
   Vec3 position;
+  Vec3 normal;
   Eina_Inarray* weights;
 };
 

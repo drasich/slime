@@ -198,32 +198,16 @@ object_update_mesh_vertex(Object* o)
   EINA_INARRAY_FOREACH(mesh->vertices_base, vi) {
     Weight* w;
     Vec3 translation = vec3_zero();
+    Quat rotation = quat_identity();
     EINA_INARRAY_FOREACH(vi->weights, w) {
       VertexGroup* vg = eina_array_data_get(mesh->vertexgroups, w->index);
       Bone* bone = armature_find_bone(o->armature, vg->name);
-      /*
-      Quat brb = bone->rotation_base;
-      Quat br = bone->rotation;
-      printf("bone rotation base : %f, %f, %f, %f\n", brb.X, brb.Y, brb.Z, brb.W);
-      printf("bone rotation : %f, %f, %f, %f\n", br.X, br.Y, br.Z, br.W);
-      Vec4 aa = quat_to_axis_angle(brb);
-      printf("angle axis rotation rotation base : %f, %f, %f, %f\n", aa.X, aa.Y, aa.Z, aa.W);
-      aa = quat_to_axis_angle(br);
-      printf("angle axis rotation rotation : %f, %f, %f, %f\n", aa.X, aa.Y, aa.Z, aa.W);
-      */
 
-      //printf("bone position : %f, %f, %f\n", bone->position.X, bone->position.Y, bone->position.Z);
       Vec3 bn = quat_rotate_vec3(bone->rotation_base, bone->position);
-      //printf("bone position after : %f, %f, %f\n", bn.X, bn.Y, bn.Z);
 
       Vec3 t = vec3_mul(bn, w->weight);
-      //Quat start = quat_inverse(bone->rotation_base);
-      //Quat end = quat_mul(quat_inverse(bone->rotation_base), bone->rotation);
       Quat q = quat_slerp(quat_identity(), bone->rotation, w->weight);
-      //Quat q = quat_slerp(start, end, w->weight);
-      //printf("q rotation : %f, %f, %f, %f\n", q.X, q.Y, q.Z, q.W);
-      Vec4 aa = quat_to_axis_angle(q);
-      //printf("angle axis rotation : %f, %f, %f, %f\n", aa.X, aa.Y, aa.Z, aa.W);
+      rotation = quat_mul(rotation, q);
 
       Vec3 bb = bone->position_base;
       Vec3 yep = vec3_sub(vi->position, bb);
@@ -231,21 +215,20 @@ object_update_mesh_vertex(Object* o)
       yep = vec3_add(yep, bb);
       yep = vec3_sub(yep, vi->position);
 
-      Vec3 s = vi->position;
-      //printf("posstart : %f, %f, %f\n", s.X, s.Y, s.Z);
-      //printf("t : %f, %f, %f\n", t.X, t.Y, t.Z);
-      //printf("yep : %f, %f, %f\n", yep.X, yep.Y, yep.Z);
       t = vec3_add(t,yep);
-
       translation = vec3_add(translation, t);
     }
 
     Vec3 newpos = vec3_add(vi->position,translation);
-    //printf("newpos : %f, %f, %f\n", newpos.X, newpos.Y, newpos.Z);
+    Vec3 newnor = quat_rotate_vec3(rotation, vi->normal);
 
     mesh->vertices[i*3] = newpos.X;
     mesh->vertices[i*3+1] = newpos.Y;
     mesh->vertices[i*3+2] = newpos.Z;
+
+    mesh->normals[i*3] = newnor.X;
+    mesh->normals[i*3+1] = newnor.Y;
+    mesh->normals[i*3+2] = newnor.Z;
     ++i;
 
   }

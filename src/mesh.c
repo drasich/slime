@@ -51,6 +51,10 @@ void mesh_read_file(Mesh* mesh, FILE* f)
   for (i = 0; i< count*3; ++i) {
     fread(&x, 4,1,f);
     mesh->normals[i] = x;
+    VertexInfo* vi = eina_inarray_nth(mesh->vertices_base, i / 3);
+    if (i % 3 == 0) vi->normal.X = x;
+    else if (i % 3 == 1) vi->normal.Y = x;
+    else if (i % 3 == 2) vi->normal.Z = x;
   }
 
   fread(&count, sizeof(count),1,f);
@@ -190,6 +194,13 @@ mesh_resend(Mesh* m)
     0,
     m->vertices_len* sizeof(GLfloat),
     m->vertices);
+
+  gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_normals);
+  gl->glBufferSubData(
+    GL_ARRAY_BUFFER,
+    0,
+    m->normals_len* sizeof(GLfloat),
+    m->normals);
 }
 
 void
