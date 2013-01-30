@@ -37,6 +37,27 @@ object_draw(Object* o, int w, int h)
 }
 
 void
+_animation_update(Object* o, float dt)
+{
+  Animation* anim = o->animation;
+  if (anim == NULL) return;
+
+  if (anim->status == PLAY) {
+    anim->time += dt;
+    if (anim->time*30 >= anim->action_current->frame_end) {
+      if (anim->mode == LOOP)
+      anim->time = (anim->time*30.0f - anim->action_current->frame_end)/30.0f ;
+      else if (anim->mode == ONCE) {
+        anim->time = anim->action_current->frame_end/30.0f;
+        anim->status = STOP;
+      }
+    }
+
+    object_set_pose(o, anim->current, anim->time);
+  }
+}
+
+void
 object_update(Object* o)
 {
   //TODO remove this code and this function anyway
@@ -49,10 +70,14 @@ object_update(Object* o)
   //Vec3 axis = {1,0,0};
   //o->Orientation = quat_angle_axis(90, axis);
 
-   static float ttt = 0;
-   object_set_pose(o, "walkquat", ttt);
-   ttt += 0.01f;
-   if (ttt > 20.0f/30.0f) ttt = 0;
+  _animation_update(o, 0.007f);
+  static float stime = 0;
+  static bool played =false;
+  stime += 0.05f;
+  if (stime > 15 && !played) {
+   animation_stop(o);
+   played = true;
+  }
 }
 
 /*
@@ -103,6 +128,7 @@ Object* create_object_file(const char* path)
     else if (!strcmp(type, "armature")){
       Armature* armature = create_armature_file(f);
       object_add_component_armature(o, armature);
+      o->animation = calloc(1, sizeof *o->animation);
     }
     free(type);
   }
@@ -180,7 +206,6 @@ object_set_pose(Object* o, char* action_name, float time)
 
   }
 
- // object_update_mesh_from_armature(o);
   object_update_mesh_vertex(o);
 }
 

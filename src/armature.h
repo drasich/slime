@@ -56,6 +56,7 @@ struct _Action
   Eina_List* curves; //could be 3 curves : position, quaternion, scale
   float frame_start;
   float frame_end;
+  //TODO frame rate? and replace framestart/end by length?
 };
 
 

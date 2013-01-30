@@ -5,6 +5,7 @@
 #include "matrix.h"
 #include "mesh.h"
 #include "armature.h"
+#include "animation.h"
 
 typedef struct _Object Object;
 
@@ -17,9 +18,9 @@ struct _Object {
   //Box component
   Mesh* mesh;
   Armature* armature;
-  Armature* animarm;
   char* name;
   struct _Scene* scene; //TODO make a list of this?
+  Animation* animation;
 };
 
 void object_init(Object* o);
