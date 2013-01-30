@@ -239,3 +239,49 @@ curve_get_frames(Curve* curve, float time, Frame** start, Frame** end)
 }
 
 
+void
+armature_set_pose(Armature* armature, char* action_name, float time)
+{
+  Action* action = armature_find_action(armature, action_name);
+
+  int frame = time *30;
+  if (frame < action->frame_start) frame = action->frame_start;
+  if (frame > action->frame_end) frame = action->frame_end;
+
+  Eina_List *l;
+  Curve *curve;
+  EINA_LIST_FOREACH(action->curves, l, curve) {
+    Bone* bone = curve->bone;
+    Frame *start, *end;
+    curve_get_frames(curve, frame, &start, &end);
+
+    float ratio = 0;
+    if (start != end)
+    ratio = (frame - start->time) / (end->time - start->time);
+
+    if (curve->type == POSITION) {
+      Vec3 v1 = vec3_mul(start->vec3, 1-ratio);
+      Vec3 v2 = vec3_mul(end->vec3, ratio);
+      bone->position = vec3_add(v1, v2);
+    } else if (curve->type == QUATERNION) {
+      bone->rotation = quat_slerp(start->quat, end->quat, ratio);
+    } else if (curve->type == EULER) {
+      /*
+      Vec3 euler = f->vec3;
+      printf("euler %f %f %f\n", euler.X, euler.Y, euler.Z);
+      Vec3 axisz = {0,0,1};
+      Quat qz = quat_angle_axis(euler.Z, axisz);
+      Vec3 axisy = {0,1,0};
+      Quat qy = quat_angle_axis(euler.Y, axisy);
+      Vec3 axisx = {1,0,0};
+      Quat qx = quat_angle_axis(euler.X, axisx);
+      Quat q = quat_mul( quat_mul (qz, qy), qx);
+      //Quat q = quat_mul( quat_mul (qx, qy), qz);
+
+      //bone->rotation = q;
+      */
+    }
+
+  }
+}
+
