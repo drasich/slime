@@ -5,7 +5,6 @@
 void
 object_init(Object* o)
 {
-  mat4_set_identity(o->Matrix);
   quat_set_identity(&o->Orientation);
   o->name = "dance";
 }
@@ -13,7 +12,7 @@ object_init(Object* o)
 void
 object_destroy(Object* o)
 {
-  //TODO
+  //TODO clean mesh, armature
 }
 
 void
@@ -46,7 +45,7 @@ _animation_update(Object* o, float dt)
     anim->time += dt;
     if (anim->time*30 >= anim->action_current->frame_end) {
       if (anim->mode == LOOP)
-      anim->time = (anim->time*30.0f - anim->action_current->frame_end)/30.0f ;
+      anim->time = (anim->time*30.0f - anim->action_current->frame_end)/30.0f;
       else if (anim->mode == ONCE) {
         anim->time = anim->action_current->frame_end/30.0f;
         anim->status = STOP;
@@ -150,18 +149,8 @@ object_set_orientation(Object* o, Quat q)
   o->Orientation = q;
 }
 
-void 
-object_set_pose(Object* o, char* action_name, float time)
-{
-  if (o->mesh == NULL || o->armature == NULL) return;
-
-  armature_set_pose(o->armature, action_name, time);
-  object_update_mesh_vertex(o);
-}
-
-
 void
-object_update_mesh_vertex(Object* o)
+_object_update_mesh_vertex(Object* o)
 {
   //TODO add the rotation/position of the armature in the exporter
 
@@ -205,11 +194,20 @@ object_update_mesh_vertex(Object* o)
     mesh->normals[i*3+1] = newnor.Y;
     mesh->normals[i*3+2] = newnor.Z;
     ++i;
-
   }
 
   mesh_resend(mesh);
 }
+
+void 
+object_set_pose(Object* o, char* action_name, float time)
+{
+  if (o->mesh == NULL || o->armature == NULL) return;
+
+  armature_set_pose(o->armature, action_name, time);
+  _object_update_mesh_vertex(o);
+}
+
 
 void
 object_play_animation(Object* o, char* action_name)

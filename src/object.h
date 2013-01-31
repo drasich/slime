@@ -12,7 +12,6 @@ typedef struct _Object Object;
 struct _Object {
   Vec3 Position;
   Quat Orientation;
-  Matrix4 Matrix;
   //components array
   //Mesh component
   //Box component
@@ -40,7 +39,6 @@ void object_set_position(Object* o, Vec3 v);
 void object_set_orientation(Object* o, Quat q);
 
 void object_set_pose(Object* o, char* action_name, float time);
-void object_update_mesh_vertex(Object* o);
 
 void object_play_animation(Object* o, char* action_name);
 

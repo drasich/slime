@@ -238,7 +238,6 @@ curve_get_frames(Curve* curve, float time, Frame** start, Frame** end)
   *end = f;
 }
 
-
 void
 armature_set_pose(Armature* armature, char* action_name, float time)
 {
