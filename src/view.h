@@ -9,6 +9,6 @@ struct _View
   Matrix4 projection;
 };
 
-void create_view(Evas_Object *win);
+Evas_Object* create_view(Evas_Object *win);
 
 #endif
