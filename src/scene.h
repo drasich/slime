@@ -9,6 +9,7 @@ struct _Scene {
   //list of objects
   Eina_List* objects;
   struct View* view;
+  Object* camera;
 };
 
 Scene* create_scene();

@@ -17,14 +17,14 @@ struct _Object {
   //Box component
   Mesh* mesh;
   Armature* armature;
-  char* name;
+  const char* name;
   struct _Scene* scene; //TODO make a list of this?
   Animation* animation;
 };
 
 void object_init(Object* o);
 void object_destroy(Object* o);
-void object_draw(Object* o, int w, int h);
+void object_draw(Object* o, int w, int h, Object* camera);
 
 void object_update(Object* o);
 //void object_add_component(Component* c);

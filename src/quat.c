@@ -136,7 +136,6 @@ quat_mul_scalar(Quat q, float s)
 Quat
 quat_slerp(Quat from, Quat to, float t)
 {
-  const double epsilon = 0.00001;
   double omega, cosomega, sinomega, scale_from, scale_to ;
 
   Quat quatTo = to;

@@ -7,6 +7,9 @@ create_scene()
   Scene* s = calloc(1, sizeof(Scene));
   s->objects = NULL;
   eina_init();
+  s->camera = create_object();
+  s->camera->name = "camera";
+
   return s;
 }
 
@@ -42,7 +45,7 @@ scene_draw(Scene* s, int w, int h)
   Eina_List *l;
   Object *o;
   EINA_LIST_FOREACH(s->objects, l, o)
-    object_draw(o, w, h);
+    object_draw(o, w, h, s->camera);
 }
 
 void

@@ -19,7 +19,6 @@ static Scene* ss;
 
 //TODO put this data in the view?
 static View sview;
-Object* o;
 
 // Callbacks
 static void
@@ -27,7 +26,7 @@ _init_gl(Evas_Object *obj)
 {
    ss = create_scene();
 
-   o = create_object_file("model/smallchar.bin");
+   Object* o = create_object_file("model/smallchar.bin");
    //Object* o = create_object_file("model/simpleplane.bin");
    Vec3 t = {0,-5,-10};
    object_set_position(o, t);

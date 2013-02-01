@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 void
-mat4_to_mat3(Matrix4 in, Matrix3 out)
+mat4_to_mat3(const Matrix4 in, Matrix3 out)
 {
   out[0] = in[0];
   out[1] = in[1];
@@ -20,7 +20,7 @@ mat4_to_mat3(Matrix4 in, Matrix3 out)
 }
 
 void
-mat3_inverse(Matrix3 in, Matrix3 out)
+mat3_inverse(const Matrix3 in, Matrix3 out)
 {
   double determinant, inv_determinant;
   double tmp[9];
@@ -75,7 +75,7 @@ mat4_set_identity(Matrix4 m)
 }
 
 void
-mat3_to_gl(Matrix3 in, Matrix3GL out)
+mat3_to_gl(const Matrix3 in, Matrix3GL out)
 {
   int i;
   for (i = 0; i < 9; ++i) {
@@ -84,7 +84,7 @@ mat3_to_gl(Matrix3 in, Matrix3GL out)
 }
 
 void
-mat4_to_gl(Matrix4 in, Matrix4GL out)
+mat4_to_gl(const Matrix4 in, Matrix4GL out)
 {
   int i;
   for (i = 0; i < 16; ++i) {
@@ -116,7 +116,7 @@ mat4_set_frustum(
 
 
 void
-mat4_multiply(Matrix4 m, Matrix4 n, Matrix4 out)
+mat4_multiply(const Matrix4 m, const Matrix4 n, Matrix4 out)
 {
   // we use a tmp in case out is the same as m or n.
   // we could make an assert to make sure they are different pointers...
@@ -145,7 +145,7 @@ mat4_multiply(Matrix4 m, Matrix4 n, Matrix4 out)
 }
 
 void
-mat4_transpose(Matrix4 in, Matrix4 out)
+mat4_transpose(const Matrix4 in, Matrix4 out)
 {
   double tmp[16];
 
@@ -248,5 +248,113 @@ mat4_set_rotation_quat(Matrix4 m, Quat q)
   m[2] = xz - wy;
   m[6] = yz + wx;
   m[10] = 1 - (xx + yy);
+}
+
+static double
+_cofactor(
+      double m0,
+      double m1,
+      double m2,
+      double m3,
+      double m4,
+      double m5,
+      double m6,
+      double m7,
+      double m8
+      )
+{
+  return 
+   m0 * (m4 * m8 - m5 * m7) -
+   m1 * (m3 * m8 - m5 * m6) +
+   m2 * (m3 * m7 - m4 * m6);
+}
+static void
+_mat4_inverse_affine(const Matrix4 m, Matrix4 out)
+{
+  // R^-1
+  //Matrix3 r = {m[0],m[1],m[2], m[4],m[5],m[6], m[8],m[9],m[10]};
+  Matrix3 r;
+  mat4_to_mat3(m,r);
+  mat3_inverse(r,r);
+
+  out[0] = r[0];  out[1] = r[1];  out[2] = r[2];
+  out[4] = r[3];  out[5] = r[4];  out[6] = r[5];
+  out[8] = r[6];  out[9] = r[7];  out[10]= r[8];
+
+  // -R^-1 * T
+  double x = m[3];
+  double y = m[7];
+  double z = m[11];
+  out[3]  = -(r[0] * x + r[1] * y + r[2] * z);
+  out[7]  = -(r[3] * x + r[4] * y + r[5] * z);
+  out[11] = -(r[6] * x + r[7] * y + r[8] * z);
+
+  // last row should be unchanged (0,0,0,1)
+  out[12] = out[13] = out[14] = 0.0f;
+  out[15] = 1.0f;
+}
+
+static void
+_mat4_inverse_general(const Matrix4 m, Matrix4 out)
+{
+  // get cofactors of minor matrices
+  double cofactor0 = _cofactor(m[5],m[6],m[7], m[9],m[10],m[11], m[13],m[14],m[15]);
+  double cofactor1 = _cofactor(m[4],m[6],m[7], m[8],m[10],m[11], m[12],m[14],m[15]);
+  double cofactor2 = _cofactor(m[4],m[5],m[7], m[8],m[9], m[11], m[12],m[13],m[15]);
+  double cofactor3 = _cofactor(m[4],m[5],m[6], m[8],m[9], m[10], m[12],m[13],m[14]);
+
+  // get determinant
+  double determinant = m[0] * cofactor0 - m[1] * cofactor1 + m[2] * cofactor2 - m[3] * cofactor3;
+  if(fabs(determinant) <= 0.00001f) {
+    mat4_set_identity(out);
+   }
+
+  // get rest of cofactors for adj(M)
+  double cofactor4 = _cofactor(m[1],m[2],m[3], m[9],m[10],m[11], m[13],m[14],m[15]);
+  double cofactor5 = _cofactor(m[0],m[2],m[3], m[8],m[10],m[11], m[12],m[14],m[15]);
+  double cofactor6 = _cofactor(m[0],m[1],m[3], m[8],m[9], m[11], m[12],m[13],m[15]);
+  double cofactor7 = _cofactor(m[0],m[1],m[2], m[8],m[9], m[10], m[12],m[13],m[14]);
+
+  double cofactor8 = _cofactor(m[1],m[2],m[3], m[5],m[6], m[7],  m[13],m[14],m[15]);
+  double cofactor9 = _cofactor(m[0],m[2],m[3], m[4],m[6], m[7],  m[12],m[14],m[15]);
+  double cofactor10= _cofactor(m[0],m[1],m[3], m[4],m[5], m[7],  m[12],m[13],m[15]);
+  double cofactor11= _cofactor(m[0],m[1],m[2], m[4],m[5], m[6],  m[12],m[13],m[14]);
+
+  double cofactor12= _cofactor(m[1],m[2],m[3], m[5],m[6], m[7],  m[9], m[10],m[11]);
+  double cofactor13= _cofactor(m[0],m[2],m[3], m[4],m[6], m[7],  m[8], m[10],m[11]);
+  double cofactor14= _cofactor(m[0],m[1],m[3], m[4],m[5], m[7],  m[8], m[9], m[11]);
+  double cofactor15= _cofactor(m[0],m[1],m[2], m[4],m[5], m[6],  m[8], m[9], m[10]);
+
+  // build inverse matrix = adj(M) / det(M)
+  // adjugate of M is the transpose of the cofactor matrix of M
+  double invDeterminant = 1.0f / determinant;
+  out[0] =  invDeterminant * cofactor0;
+  out[1] = -invDeterminant * cofactor4;
+  out[2] =  invDeterminant * cofactor8;
+  out[3] = -invDeterminant * cofactor12;
+
+  out[4] = -invDeterminant * cofactor1;
+  out[5] =  invDeterminant * cofactor5;
+  out[6] = -invDeterminant * cofactor9;
+  out[7] =  invDeterminant * cofactor13;
+
+  out[8] =  invDeterminant * cofactor2;
+  out[9] = -invDeterminant * cofactor6;
+  out[10]=  invDeterminant * cofactor10;
+  out[11]= -invDeterminant * cofactor14;
+
+  out[12]= -invDeterminant * cofactor3;
+  out[13]=  invDeterminant * cofactor7;
+  out[14]= -invDeterminant * cofactor11;
+  out[15]=  invDeterminant * cofactor15;
+}
+
+void
+mat4_inverse(const Matrix4 m, Matrix4 out)
+{
+  if(m[12] == 0 && m[13] == 0 && m[14] == 0 && m[15] == 1)
+  _mat4_inverse_affine(m, out);
+  else
+  _mat4_inverse_general(m, out);
 }
 
