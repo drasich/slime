@@ -9,6 +9,13 @@ create_scene()
   eina_init();
   s->camera = create_object();
   s->camera->name = "camera";
+  /*
+  Vec3 v = {-15,0,-5};
+  Vec3 axis = {0,1,0};
+  Quat q = quat_angle_axis(3.14f/4.0f, axis);
+  s->camera->Position = v;
+  s->camera->Orientation = q;
+  */
 
   return s;
 }

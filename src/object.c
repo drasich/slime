@@ -2,7 +2,6 @@
 #include "gl.h"
 #include "read.h"
 
-
 void
 object_init(Object* o)
 {
@@ -16,7 +15,6 @@ object_destroy(Object* o)
   //TODO clean mesh, armature
 }
 
-
 void
 object_draw(Object* o, int w, int h, Object* camera)
 {
@@ -25,11 +23,12 @@ object_draw(Object* o, int w, int h, Object* camera)
   mat4_set_rotation_quat(mr, o->Orientation);
   mat4_multiply(mt, mr, mat);
 
+  //TODO move this code so the camera calculation is done only one time.
   mat4_set_translation(mt, camera->Position);
   mat4_set_rotation_quat(mr, camera->Orientation);
   mat4_multiply(mt, mr, cam_mat);
   mat4_inverse(cam_mat, cam_mat);
-  //TODO get inverse matrix of camera and multiply it
+  mat4_multiply(cam_mat, mat, mat);
 
   //TODO put the projection matrix in the draw? or directly in scene draw (or even view)
   float hw = w*0.5f;

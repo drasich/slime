@@ -6,16 +6,85 @@
 #include "gl.h"
 #define __UNUSED__
 
+typedef enum _CamState
+{
+  IDLE,
+  ROT
+} CamState;
+
+static int scam_state = 0;
+
 static void
 _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, void *event_info)
 {
   Evas_Event_Key_Down *ev = (Evas_Event_Key_Down*)event_info;
-  //printf("KEY: down, keyname: %s , key %s \n", ev->keyname, ev->key);
+  printf("KEY: down, keyname: %s , key %s \n", ev->keyname, ev->key);
   if (!strcmp(ev->keyname, "Escape")) elm_exit();
 }
 
-//TODO remove this
-static Scene* ss;
+static void
+_mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
+{
+  Evas_Event_Mouse_Move *ev = (Evas_Event_Mouse_Move*) event_info;
+  printf("MOUSE: move @ %4i %4i\n", ev->cur.canvas.x, ev->cur.canvas.y);
+  //evas_object_move(indicator[0], ev->cur.canvas.x, ev->cur.canvas.y);
+  //evas_object_resize(indicator[0], 1, 1);
+  //elm_object_focus_set(o, EINA_TRUE);
+  if (scam_state == 1){
+    Scene* s = evas_object_data_get(o, "scene");
+    Quat q = s->camera->Orientation;
+    float x = ev->cur.canvas.x - ev->prev.canvas.x;
+    float y = ev->cur.canvas.y - ev->prev.canvas.y;
+    Vec3 axis = {y, -x, 0};
+    //Vec3 axis = {y, 0, 0};
+    axis = vec3_normalized(axis);
+    Quat rot = quat_angle_axis(0.015f, axis);
+    //q = quat_mul(q, rot);
+    q = quat_mul(q, rot);
+    s->camera->Orientation = q;
+  }
+}
+
+static void
+_mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
+{
+  Evas_Event_Mouse_Down *ev = (Evas_Event_Mouse_Down*) event_info;
+
+  //if (ev->button != 1) return;
+  printf("MOUSE: down @ %4i %4i\n", ev->canvas.x, ev->canvas.y);
+  //   evas_object_move(indicator[0], ev->canvas.x, ev->canvas.y);
+  //  evas_object_resize(indicator[0], 1, 1);
+  // evas_object_show(indicator[0]);
+
+  //elm_object_focus_set(o, EINA_TRUE);
+  scam_state = 1;
+}
+
+static void
+_mouse_up(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, void *event_info)
+{
+  Evas_Event_Mouse_Up *ev = (Evas_Event_Mouse_Up*)event_info;
+  //if (ev->button != 1) return;
+  printf("MOUSE: up   @ %4i %4i\n", ev->canvas.x, ev->canvas.y);
+  //evas_object_hide(indicator[0]);
+  scam_state = 0;
+}
+
+static void
+_mouse_wheel(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
+{
+  Evas_Event_Mouse_Wheel *ev = (Evas_Event_Mouse_Wheel*) event_info;
+
+  Scene* s = evas_object_data_get(o, "scene");
+  //float x = ev->cur.canvas.x - ev->prev.canvas.x;
+  //float y = ev->cur.canvas.y - ev->prev.canvas.y;
+  Vec3 axis = {0, 0, ev->z};
+  axis = vec3_mul(axis, 0.5f);
+  s->camera->Position = vec3_add(s->camera->Position, axis);
+}
+
+
+
 
 //TODO put this data in the view?
 static View sview;
@@ -24,7 +93,8 @@ static View sview;
 static void
 _init_gl(Evas_Object *obj)
 {
-   ss = create_scene();
+   Scene* s = create_scene();
+   evas_object_data_set(obj, "scene", s);
 
    Object* o = create_object_file("model/smallchar.bin");
    //Object* o = create_object_file("model/simpleplane.bin");
@@ -36,7 +106,7 @@ _init_gl(Evas_Object *obj)
    Quat q2 = quat_angle_axis(3.14159f/4.f, axis2);
    q = quat_mul(q, q2);
    object_set_orientation(o, q);
-   scene_add_object(ss,o);
+   scene_add_object(s,o);
 
    animation_play(o, "walkquat", LOOP);
 
@@ -44,7 +114,7 @@ _init_gl(Evas_Object *obj)
    Vec3 t2 = {10,-5,-20};
    object_set_position(yep, t2);
    object_set_orientation(yep, q);
-   scene_add_object(ss,yep);
+   scene_add_object(s,yep);
 
    gl->glEnable(GL_DEPTH_TEST);
    gl->glClearDepthf(1.0f);
@@ -104,10 +174,11 @@ _draw_gl(Evas_Object *obj)
    // Draw a Triangle
    gl->glEnable(GL_BLEND);
 
-   //TODO remove this function from here
-   scene_update(ss);
+   //TODO remove the function update here
+   Scene* s = evas_object_data_get(obj, "scene");
+   scene_update(s);
 
-   scene_draw(ss, w, h);
+   scene_draw(s, w, h);
    gl->glFinish();
 }
 
@@ -163,6 +234,13 @@ create_view(Evas_Object *win)
   evas_object_data_set(glview, "ani", ani);
   evas_object_event_callback_add(glview, EVAS_CALLBACK_DEL, _del, glview);
   evas_object_event_callback_add(glview, EVAS_CALLBACK_KEY_DOWN, _key_down, NULL);
+  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_MOVE, _mouse_move, NULL);
+  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_DOWN, _mouse_down, NULL);
+  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_UP, _mouse_up, NULL);
+  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_WHEEL, _mouse_wheel, NULL);
+
+
+
 
   /*
   bt = elm_button_add(win);

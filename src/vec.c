@@ -98,6 +98,12 @@ intersection_ray_plane(Ray ray, Plane plane)
   return out;
 }
 
+Vec3
+vec3_normalized(Vec3 v)
+{
+  Vec3 r = vec3_mul(v, 1.0f/vec3_length(v));
+}
+
 
 double
 vec4_dot(Vec4 v1, Vec4 v2)
