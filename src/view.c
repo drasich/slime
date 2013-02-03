@@ -22,26 +22,61 @@ _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, 
   if (!strcmp(ev->keyname, "Escape")) elm_exit();
 }
 
+static float yaw = 0, pitch = 0;
+
 static void
 _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
 {
   Evas_Event_Mouse_Move *ev = (Evas_Event_Mouse_Move*) event_info;
-  printf("MOUSE: move @ %4i %4i\n", ev->cur.canvas.x, ev->cur.canvas.y);
+  //printf("MOUSE: move @ %4i %4i\n", ev->cur.canvas.x, ev->cur.canvas.y);
   //evas_object_move(indicator[0], ev->cur.canvas.x, ev->cur.canvas.y);
   //evas_object_resize(indicator[0], 1, 1);
   //elm_object_focus_set(o, EINA_TRUE);
-  if (scam_state == 1){
+
+  //if (scam_state == 1){
+  if (ev->buttons & 1 == 1){
     Scene* s = evas_object_data_get(o, "scene");
-    Quat q = s->camera->Orientation;
     float x = ev->cur.canvas.x - ev->prev.canvas.x;
     float y = ev->cur.canvas.y - ev->prev.canvas.y;
+
+    const Evas_Modifier * mods = ev->modifiers;
+    if (evas_key_modifier_is_set(mods, "Shift")) {
+      Vec3 t = {x*0.05f, y*0.05f, 0};
+      s->camera->Position = vec3_add(s->camera->Position, t);
+        
+    }else {
+
+    Quat q = s->camera->Orientation;
     Vec3 axis = {y, -x, 0};
-    //Vec3 axis = {y, 0, 0};
     axis = vec3_normalized(axis);
-    Quat rot = quat_angle_axis(0.015f, axis);
-    //q = quat_mul(q, rot);
-    q = quat_mul(q, rot);
-    s->camera->Orientation = q;
+    Quat rot = quat_angle_axis(0.025f, axis);
+    ////q = quat_mul(q, rot); //local
+    q = quat_mul(rot,q);//global
+
+    /*
+    Vec3 axisx = {1, 0, 0};
+    Vec3 axisy = {0, 1, 0};
+    pitch += 0.005f*y;
+    yaw += -0.005f*x;
+    Quat qp = quat_angle_axis(pitch, axisx);
+    Quat qy = quat_angle_axis(yaw, axisy);
+
+    q = quat_mul(qy,qp);
+    */
+
+    //s->camera->Orientation = q;
+
+    //Vec4 aa = quat_to_axis_angle(q);
+    //printf("%f, %f, %f, %f \n", aa.X, aa.Y, aa.Z, aa.W);
+
+    Vec3 at = {0,0,0};
+    Vec3 up = {0,1,0};
+    s->camera->Orientation = quat_lookat(s->camera->Position, at, up);
+    //s->camera->Orientation = quat_angle_axis(3.14f/4.0f, vec3(0,-1,0));
+
+    Vec4 aa = quat_to_axis_angle(s->camera->Orientation);
+    printf(" quat %f, %f, %f, %f \n", aa.X, aa.Y, aa.Z, aa.W);
+    }
   }
 }
 
@@ -98,7 +133,7 @@ _init_gl(Evas_Object *obj)
 
    Object* o = create_object_file("model/smallchar.bin");
    //Object* o = create_object_file("model/simpleplane.bin");
-   Vec3 t = {0,-5,-10};
+   Vec3 t = {0,0,0};
    object_set_position(o, t);
    Vec3 axis = {1,0,0};
    Quat q = quat_angle_axis(3.14159f/2.f, axis);
@@ -154,6 +189,7 @@ _resize_gl(Evas_Object *obj)
    /* cx is the eye space center of the zNear plane in X */
    //glFrustum(cx-half_w*aspect, cx+half_w*aspect, bottom, top, zNear, zFar);
    //mat4_set_frustum(sview.projection, -1,1,-1,1,1,1000.0f);
+   //TODO not used I think, it is set in object_draw
    mat4_set_frustum(sview.projection, -hw*aspect,hw*aspect,-1,1,1,1000.0f);
 }
 

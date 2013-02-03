@@ -19,8 +19,10 @@ struct _Vec4 {
 };
 
 Vec3 vec3_zero();
+Vec3 vec3(double x, double y, double z);
 
 double vec3_length(Vec3 v);
+double vec3_length2(Vec3 v);
 double vec4_length(Vec4 v);
 double vec4_length2(Vec4 v);
 

@@ -13,11 +13,30 @@ vec3_zero()
   return v;
 }
 
+Vec3
+vec3(double x, double y, double z)
+{
+  Vec3 v = {
+    .X = x,
+    .Y = y,
+    .Z = z
+  };
+
+  return v;
+}
+
 double
 vec3_length(Vec3 v)
 {
   return sqrt(v.X*v.X + v.Y*v.Y + v.Z*v.Z);
 }
+
+double
+vec3_length2(Vec3 v)
+{
+  return v.X*v.X + v.Y*v.Y + v.Z*v.Z;
+}
+
 
 double
 vec4_length(Vec4 v)

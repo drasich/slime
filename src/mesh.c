@@ -116,7 +116,7 @@ void mesh_read_file(Mesh* mesh, FILE* f)
       w.index = read_uint16(f);
       w.weight = read_float(f);
       eina_inarray_push(vi->weights, &w);
-      printf("vertex, index, weight : %d, %f\n", w.index, w.weight);
+      //printf("vertex, index, weight : %d, %f\n", w.index, w.weight);
     }
   }
 

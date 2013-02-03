@@ -100,7 +100,7 @@ curve_create(FILE* f, Armature* armature)
   for (i = 0; i < frames_nb; ++i) {
     Frame frame;
     frame.time = read_float(f);
-    printf("curve time : %f ", frame.time);
+    //printf("curve time : %f ", frame.time);
     if (frame.time < curve->frame_start) curve->frame_start = frame.time;
     if (frame.time > curve->frame_end) curve->frame_end = frame.time;
     if (curve->type == QUATERNION) {

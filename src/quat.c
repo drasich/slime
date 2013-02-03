@@ -1,4 +1,5 @@
 #include "quat.h"
+#include "stdio.h"
 
 double
 quat_length2(Quat v)
@@ -193,5 +194,100 @@ quat_to_axis_angle(Quat q)
    }
 
   return r;
+}
+
+Quat
+quat_lookat(Vec3 from, Vec3 at, Vec3 up)
+{
+  Vec3 d = vec3_sub(at, from);
+  Quat qb = quat_between_vec(vec3(0,0,-1), d);
+  //Quat qr = quat_between_vec(vec3(0,1,0), up);
+  //qb = quat_mul(qr, qb);
+  Vec4 aa = quat_to_axis_angle(qb);
+  printf("direction is %f, %f, %f \n", d.X, d.Y, d.Z);
+  printf(" quat %f, %f, %f, %f \n", aa.X, aa.Y, aa.Z, aa.W);
+  //return quat_identity();
+  return quat_inverse(qb);
+}
+
+Quat
+quat_between_vec(Vec3 from, Vec3 to)
+{
+  Vec3 sourceVector = from;
+  Vec3 targetVector = to;
+
+  double fromLen2 = vec3_length2(from);
+  double fromLen;
+  // normalize only when necessary, epsilon test
+  if ((fromLen2 < 1.0-1e-7) || (fromLen2 > 1.0+1e-7)) {
+    fromLen = sqrt(fromLen2);
+    sourceVector = vec3_mul(sourceVector, 1.0f/fromLen); //sourceVector /= fromLen;
+  } else fromLen = 1.0;
+
+  double toLen2 = vec3_length2(to);
+  // normalize only when necessary, epsilon test
+  if ((toLen2 < 1.0-1e-7) || (toLen2 > 1.0+1e-7)) {
+    double toLen;
+    // re-use fromLen for case of mapping 2 vectors of the same length
+    if ((toLen2 > fromLen2-1e-7) && (toLen2 < fromLen2+1e-7)) {
+      toLen = fromLen;
+    } 
+    else toLen = sqrt(toLen2);
+    targetVector = vec3_mul(targetVector, 1.0f/toLen);// targetVector /= toLen;
+  }
+  
+  
+
+  // Now let's get into the real stuff
+  // Use "dot product plus one" as test as it can be re-used later on
+  double dotProdPlus1 = 1.0 + vec3_dot(sourceVector, targetVector);
+
+  Quat q;
+
+  // Check for degenerate case of full u-turn. Use epsilon for detection
+  if (dotProdPlus1 < 1e-7) {
+
+    // Get an orthogonal vector of the given vector
+    // in a plane with maximum vector coordinates.
+    // Then use it as quaternion axis with pi angle
+    // Trick is to realize one value at least is >0.6 for a normalized vector.
+    if (fabs(sourceVector.X) < 0.6) {
+      //const double norm = sqrt(1.0 - sourceVector.x() * sourceVector.x());
+      const double norm = sqrt(1.0 - sourceVector.X * sourceVector.X);
+      q.X = 0.0; 
+      q.Y = sourceVector.Z / norm;
+      q.Z = -sourceVector.Y / norm;
+      q.W = 0.0;
+    } else if (fabs(sourceVector.Y) < 0.6) {
+      const double norm = sqrt(1.0 - sourceVector.Y * sourceVector.Y);
+      q.X = -sourceVector.Z / norm;
+      q.Y = 0.0;
+      q.Z = sourceVector.X / norm;
+      q.W = 0.0;
+    } else {
+      const double norm = sqrt(1.0 - sourceVector.Z * sourceVector.Z);
+      q.X = sourceVector.Y / norm;
+      q.Y = -sourceVector.X / norm;
+      q.Z = 0.0;
+      q.W = 0.0;
+    }
+  }
+  else {
+    // Find the shortest angle quaternion that transforms normalized vectors
+    // into one other. Formula is still valid when vectors are colinear
+    const double s = sqrt(0.5 * dotProdPlus1);
+    //const Vec3d tmp = sourceVector ^ targetVector / (2.0*s);
+    const Vec3 tmp = vec3_mul(vec3_cross(sourceVector, targetVector), 1.0 / (2.0*s));
+    q.X = tmp.X;
+    q.Y = tmp.Y;
+    q.Z = tmp.Z;
+    q.W = s;
+  }
+
+
+  return q;
+
+
+  return quat_identity();
 
 }
