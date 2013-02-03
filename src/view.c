@@ -72,10 +72,9 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
     Vec3 at = {0,0,0};
     Vec3 up = {0,1,0};
     s->camera->Orientation = quat_lookat(s->camera->Position, at, up);
-    //s->camera->Orientation = quat_angle_axis(3.14f/4.0f, vec3(0,-1,0));
 
-    Vec4 aa = quat_to_axis_angle(s->camera->Orientation);
-    printf(" quat %f, %f, %f, %f \n", aa.X, aa.Y, aa.Z, aa.W);
+    //Vec4 aa = quat_to_axis_angle(s->camera->Orientation);
+    //printf(" quat %f, %f, %f, %f \n", aa.X, aa.Y, aa.Z, aa.W);
     }
   }
 }
