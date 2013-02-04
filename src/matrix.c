@@ -114,6 +114,20 @@ mat4_set_frustum(
   m[15] =  0;
 }
 
+void
+mat4_set_perspective(
+      Matrix4 m,
+      double fovy,
+      double aspect,
+      double near,
+      double far)
+{
+  double half_height = tan(fovy/2.0)*near;
+  double half_width = half_height* aspect;
+
+  mat4_set_frustum(m, -half_width, half_width, -half_height, half_height, near, far);
+}
+
 
 void
 mat4_multiply(const Matrix4 m, const Matrix4 n, Matrix4 out)
@@ -357,4 +371,5 @@ mat4_inverse(const Matrix4 m, Matrix4 out)
   else
   _mat4_inverse_general(m, out);
 }
+
 

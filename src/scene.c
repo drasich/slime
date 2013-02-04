@@ -7,15 +7,16 @@ create_scene()
   Scene* s = calloc(1, sizeof(Scene));
   s->objects = NULL;
   eina_init();
-  s->camera = create_object();
-  s->camera->name = "camera";
+  s->camera = create_camera();
+  s->camera->object.name = "camera";
   Vec3 v = {10,10,10};
   //Vec3 axis = {0,1,0};
   //Quat q = quat_angle_axis(3.14f/4.0f, axis);
-  s->camera->Position = v;
+  s->camera->object.Position = v;
   Vec3 at = {0,0,0};
   Vec3 up = {0,1,0};
-  s->camera->Orientation = quat_lookat(v, at, up);
+  s->camera->object.Orientation = quat_lookat(v, at, up);
+  mat4_set_perspective(s->camera->projection, M_PI/4.0, 1.6 ,1,1000.0f);
 
   return s;
 }
@@ -23,13 +24,7 @@ create_scene()
 void
 scene_add_object(Scene* s, Object* o)
 {
-   s->objects = eina_list_append(s->objects, o);
-
-  Eina_List *l;
-  void *list_data;
-  EINA_LIST_FOREACH(s->objects, l, list_data)
-   printf("%s\n", ((Object*)list_data)->name);
-
+  s->objects = eina_list_append(s->objects, o);
   o->scene = s;
 }
 
@@ -49,10 +44,25 @@ scene_destroy(Scene* s)
 void
 scene_draw(Scene* s, int w, int h)
 {
+  Matrix4 mt, mr, cam_mat, mo;
+
+  mat4_set_translation(mt, s->camera->object.Position);
+  mat4_set_rotation_quat(mr, s->camera->object.Orientation);
+  mat4_multiply(mt, mr, cam_mat);
+  mat4_inverse(cam_mat, cam_mat);
+
+  float aspect = (float)w/(float)h;
+  Matrix4 projection;
+  //mat4_set_frustum(projection, -aspect*1,aspect*1,-1,1,1,1000.0f);
+  mat4_set_perspective(projection, M_PI/4.0, aspect ,1,1000.0f);
+
   Eina_List *l;
   Object *o;
-  EINA_LIST_FOREACH(s->objects, l, o)
-    object_draw(o, w, h, s->camera);
+  EINA_LIST_FOREACH(s->objects, l, o) {
+    object_compute_matrix(o, mo);
+    mat4_multiply(cam_mat, mo, mo);
+    object_draw(o, mo, projection);
+  }
 }
 
 void

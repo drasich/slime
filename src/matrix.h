@@ -27,6 +27,13 @@ void mat4_set_frustum(
       double near,
       double far);
 
+void mat4_set_perspective(
+      Matrix4 m,
+      double fovy,
+      double aspect,
+      double near,
+      double far);
+
 void mat4_multiply(const Matrix4 m, const Matrix4 n, Matrix4 out);
 
 void mat4_transpose(const Matrix4 in, Matrix4 out);

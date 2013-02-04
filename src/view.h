@@ -7,8 +7,10 @@ typedef struct _View View;
 struct _View
 {
   Matrix4 projection;
+  struct _Context* context;
+  Evas_Object* glview;
 };
 
-Evas_Object* create_view(Evas_Object *win);
+View* create_view(Evas_Object *win);
 
 #endif

@@ -24,7 +24,7 @@ struct _Object {
 
 void object_init(Object* o);
 void object_destroy(Object* o);
-void object_draw(Object* o, int w, int h, Object* camera);
+void object_draw(Object* o, Matrix4 world, Matrix4 projection);
 
 void object_update(Object* o);
 //void object_add_component(Component* c);
@@ -41,5 +41,7 @@ void object_set_orientation(Object* o, Quat q);
 void object_set_pose(Object* o, char* action_name, float time);
 
 void object_play_animation(Object* o, char* action_name);
+
+void object_compute_matrix(Object* o, Matrix4 out);
 
 #endif

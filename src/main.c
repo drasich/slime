@@ -37,16 +37,18 @@ create_window()
   evas_object_smart_callback_add(win, "delete,request", win_del, NULL);
 
   Evas_Object* panes = create_panes(win);
-  Evas_Object* view = create_view(win);
+  View* view = create_view(win);
+  //Evas_Object* view = create_view(win);
+  Evas_Object* glview = view->glview;
   Evas_Object* property = property_create(win);
 
-  elm_object_part_content_set(panes, "left", view);
+  elm_object_part_content_set(panes, "left", glview);
   elm_object_part_content_set(panes, "right", property);
   //elm_object_part_content_set(panes, "right", hpanes);
 
   elm_panes_content_left_size_set(panes, 0.75f);
 
-  evas_object_resize(win, 800, 400);
+  evas_object_resize(win, 800/3, 400/3);
   evas_object_show(win);
 }
 

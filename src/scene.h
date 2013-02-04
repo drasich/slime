@@ -2,6 +2,7 @@
 #define __scene__
 #include <Eina.h>
 #include "object.h"
+#include "camera.h"
 
 typedef struct _Scene Scene;
 
@@ -9,7 +10,7 @@ struct _Scene {
   //list of objects
   Eina_List* objects;
   struct View* view;
-  Object* camera;
+  Camera* camera;
 };
 
 Scene* create_scene();

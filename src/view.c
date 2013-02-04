@@ -4,15 +4,8 @@
 #include "object.h"
 #include "scene.h"
 #include "gl.h"
+#include "context.h"
 #define __UNUSED__
-
-typedef enum _CamState
-{
-  IDLE,
-  ROT
-} CamState;
-
-static int scam_state = 0;
 
 static void
 _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, void *event_info)
@@ -33,7 +26,6 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   //evas_object_resize(indicator[0], 1, 1);
   //elm_object_focus_set(o, EINA_TRUE);
 
-  //if (scam_state == 1){
   if (ev->buttons & 1 == 1){
     Scene* s = evas_object_data_get(o, "scene");
     float x = ev->cur.canvas.x - ev->prev.canvas.x;
@@ -42,11 +34,11 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
     const Evas_Modifier * mods = ev->modifiers;
     if (evas_key_modifier_is_set(mods, "Shift")) {
       Vec3 t = {x*0.05f, y*0.05f, 0};
-      s->camera->Position = vec3_add(s->camera->Position, t);
+      s->camera->object.Position = vec3_add(s->camera->object.Position, t);
         
     }else {
 
-    Quat q = s->camera->Orientation;
+    Quat q = s->camera->object.Orientation;
     Vec3 axis = {y, -x, 0};
     axis = vec3_normalized(axis);
     Quat rot = quat_angle_axis(0.025f, axis);
@@ -71,7 +63,7 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
 
     Vec3 at = {0,0,0};
     Vec3 up = {0,1,0};
-    s->camera->Orientation = quat_lookat(s->camera->Position, at, up);
+    s->camera->object.Orientation = quat_lookat(s->camera->object.Position, at, up);
 
     //Vec4 aa = quat_to_axis_angle(s->camera->Orientation);
     //printf(" quat %f, %f, %f, %f \n", aa.X, aa.Y, aa.Z, aa.W);
@@ -91,7 +83,8 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   // evas_object_show(indicator[0]);
 
   //elm_object_focus_set(o, EINA_TRUE);
-  scam_state = 1;
+  //TODO ray to intersect object
+
 }
 
 static void
@@ -101,7 +94,6 @@ _mouse_up(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, 
   //if (ev->button != 1) return;
   printf("MOUSE: up   @ %4i %4i\n", ev->canvas.x, ev->canvas.y);
   //evas_object_hide(indicator[0]);
-  scam_state = 0;
 }
 
 static void
@@ -114,14 +106,8 @@ _mouse_wheel(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *ev
   //float y = ev->cur.canvas.y - ev->prev.canvas.y;
   Vec3 axis = {0, 0, ev->z};
   axis = vec3_mul(axis, 0.5f);
-  s->camera->Position = vec3_add(s->camera->Position, axis);
+  s->camera->object.Position = vec3_add(s->camera->object.Position, axis);
 }
-
-
-
-
-//TODO put this data in the view?
-static View sview;
 
 // Callbacks
 static void
@@ -169,7 +155,6 @@ _del_gl(Evas_Object *obj)
 
 }
 
-
 static void
 _resize_gl(Evas_Object *obj)
 {
@@ -189,11 +174,8 @@ _resize_gl(Evas_Object *obj)
    //glFrustum(cx-half_w*aspect, cx+half_w*aspect, bottom, top, zNear, zFar);
    //mat4_set_frustum(sview.projection, -1,1,-1,1,1,1000.0f);
    //TODO not used I think, it is set in object_draw
-   mat4_set_frustum(sview.projection, -hw*aspect,hw*aspect,-1,1,1,1000.0f);
+   //mat4_set_frustum(sview.projection, -hw*aspect,hw*aspect,-1,1,1,1000.0f);
 }
-
-
-
 
 static void
 _draw_gl(Evas_Object *obj)
@@ -238,8 +220,8 @@ _del(void *data __UNUSED__, Evas *evas __UNUSED__, Evas_Object *obj, void *event
    ecore_animator_del(ani);
 }
 
-Evas_Object*
-create_view(Evas_Object *win)
+static Evas_Object*
+_create_glview(Evas_Object* win)
 {
   Evas_Object *bx, *bt, *glview;
   Ecore_Animator *ani;
@@ -274,9 +256,6 @@ create_view(Evas_Object *win)
   evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_UP, _mouse_up, NULL);
   evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_WHEEL, _mouse_wheel, NULL);
 
-
-
-
   /*
   bt = elm_button_add(win);
   elm_object_text_set(bt, "OK");
@@ -287,9 +266,20 @@ create_view(Evas_Object *win)
   evas_object_smart_callback_add(bt, "clicked", _on_done, win);
   */
 
-  mat4_set_frustum(sview.projection, -1,1,-1,1,1,1000.0f);
-
   return glview;
+
 }
 
+View*
+create_view(Evas_Object *win)
+{
+  View *view = malloc(sizeof *view);
+
+  mat4_set_frustum(view->projection, -1,1,-1,1,1,1000.0f);
+  view->context = malloc(sizeof *view->context);
+  view->glview = _create_glview(win);
+  evas_object_data_set(view->glview, "view", view);
+
+  return view;
+}
 

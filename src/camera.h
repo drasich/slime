@@ -1,15 +1,18 @@
 #ifndef __camera__
 #define __camera__
+#include "object.h"
+#include "matrix.h"
 
 typedef struct _Camera Camera;
 struct _Camera
 {
-  Vec3 position;
-  Vec3 rotation;
-
+  struct _Object object;
+  Matrix4 projection;
   //other things like fov etc..
 
-}
+};
+
+Camera* create_camera();
 
 void camera_pan(Camera* cam, Vec3 v); // same as trans
 void camera_rotate(Camera* cam, Quat q); // same as -pos, rot, + pos
