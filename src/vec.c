@@ -121,6 +121,7 @@ Vec3
 vec3_normalized(Vec3 v)
 {
   Vec3 r = vec3_mul(v, 1.0f/vec3_length(v));
+  return r;
 }
 
 

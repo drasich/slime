@@ -9,7 +9,10 @@ struct _Camera
   struct _Object object;
   Matrix4 projection;
   //other things like fov etc..
-
+  float fovy;
+  float near;
+  float far;
+  float aspect;
 };
 
 Camera* create_camera();

@@ -84,6 +84,21 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
 
   //elm_object_focus_set(o, EINA_TRUE);
   //TODO ray to intersect object
+  Scene* s = evas_object_data_get(o, "scene");
+  Camera* c = s->camera;
+  Vec3 camz = quat_rotate_vec3(quat_inverse(c->object.Orientation), vec3(0,0,-1));
+  Vec3 up = {0,1,0};//TODO get from camera
+  Vec3 h = vec3_cross(camz, up);
+  h = vec3_normalized(h);
+  double l = vec3_length(h);
+  printf("cam z %f, %f, %f \n", camz.X, camz.Y, camz.Z);
+  float vl = tan(M_PI/4.0/2.0) * 1.0; // tan(fov/2)*near
+  float aspect = 1.6f; //width/height TODO
+  float vh = vl * aspect;
+
+  up = vec3_mul(up, vl);
+  h = vec3_mul(h, vh);
+
 
 }
 
