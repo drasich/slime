@@ -87,18 +87,24 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   Scene* s = evas_object_data_get(o, "scene");
   Camera* c = s->camera;
   Vec3 camz = quat_rotate_vec3(quat_inverse(c->object.Orientation), vec3(0,0,-1));
-  Vec3 up = {0,1,0};//TODO get from camera
+  Vec3 up = quat_rotate_vec3(quat_inverse(c->object.Orientation), vec3(0,1,0));
   Vec3 h = vec3_cross(camz, up);
   h = vec3_normalized(h);
   double l = vec3_length(h);
   printf("cam z %f, %f, %f \n", camz.X, camz.Y, camz.Z);
   float vl = tan(M_PI/4.0/2.0) * 1.0; // tan(fov/2)*near
-  float aspect = 1.6f; //width/height TODO
+
+  int width, height;
+  elm_glview_size_get(o, &width, &height);
+  float aspect = (float)width/ (float)height;
+  printf("aspect : %f\n", aspect);
   float vh = vl * aspect;
 
   up = vec3_mul(up, vl);
   h = vec3_mul(h, vh);
 
+  printf("up %f, %f, %f \n", up.X, up.Y, up.Z);
+  printf("h %f, %f, %f \n", h.X, h.Y, h.Z);
 
 }
 
