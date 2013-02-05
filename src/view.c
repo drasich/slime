@@ -86,13 +86,15 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   //TODO ray to intersect object
   Scene* s = evas_object_data_get(o, "scene");
   Camera* c = s->camera;
+  float near = 1.0f;
+  float fovy = M_PI/4.0f;
   Vec3 camz = quat_rotate_vec3(quat_inverse(c->object.Orientation), vec3(0,0,-1));
   Vec3 up = quat_rotate_vec3(quat_inverse(c->object.Orientation), vec3(0,1,0));
   Vec3 h = vec3_cross(camz, up);
   h = vec3_normalized(h);
   double l = vec3_length(h);
   printf("cam z %f, %f, %f \n", camz.X, camz.Y, camz.Z);
-  float vl = tan(M_PI/4.0/2.0) * 1.0; // tan(fov/2)*near
+  float vl = tan(fovy/2.0) * near; // tan(fov/2)*near
 
   int width, height;
   elm_glview_size_get(o, &width, &height);
@@ -100,11 +102,64 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   printf("aspect : %f\n", aspect);
   float vh = vl * aspect;
 
+
   up = vec3_mul(up, vl);
   h = vec3_mul(h, vh);
 
   printf("up %f, %f, %f \n", up.X, up.Y, up.Z);
   printf("h %f, %f, %f \n", h.X, h.Y, h.Z);
+
+  float x = ev->canvas.x;
+  float y = ev->canvas.y;
+  x -= width / 2.0;
+  y -= height / 2.0;
+
+  y /= height / 2.0;
+  x /= width / 2.0;
+
+  printf("X, Y %f, %f \n", x,y);
+
+  Vec3 pos = vec3_add(
+        c->object.Position, 
+        vec3_add(
+          vec3_mul(camz,near),
+          vec3_add( vec3_mul(h,x), vec3_mul(up,y))
+          )
+        );
+
+  Vec3 dir = vec3_sub(pos, c->object.Position);
+  dir = vec3_normalized(dir);
+
+  printf("pos %f, %f, %f \n", pos.X, pos.Y, pos.Z);
+  printf("dir %f, %f, %f \n", dir.X, dir.Y, dir.Z);
+
+  /*
+  Eina_List *list;
+  Object *ob;
+  EINA_LIST_FOREACH(s->objects, list, ob) {
+    Vec3 op = ob->Position;
+    printf("dir %f, %f, %f \n", dir.X, dir.Y, dir.Z);
+    printf("object position %f, %f, %f \n", op.X, op.Y, op.Z);
+    Vec3 e = vec3_sub(op, pos);
+    printf("eeeeee %f, %f, %f, length2 : %f \n", e.X, e.Y, e.Z, vec3_length2(e));
+    float a = vec3_dot(e,dir);
+    printf("  a %f \n", a);
+    float radius = 2;
+    float f2 = radius*radius - vec3_length2(e) + a*a;
+    printf("  f2 %f \n", f2);
+    if ( f2 >= 0) {
+      float t = a - sqrt(f2);
+      if (t > 0)
+      printf("COLLISION!!!!!!!!!!!!!!! with %s\n", ob->name);
+      else
+      printf("negative %s\n", ob->name);
+    }
+    //else
+     // printf("no collision with %s\n", ob->name);
+    //float t = 
+  }
+  */
+
 
 }
 
@@ -138,6 +193,7 @@ _init_gl(Evas_Object *obj)
    evas_object_data_set(obj, "scene", s);
 
    Object* o = create_object_file("model/smallchar.bin");
+   o->name = "111111";
    //Object* o = create_object_file("model/simpleplane.bin");
    Vec3 t = {0,0,0};
    object_set_position(o, t);
@@ -152,6 +208,7 @@ _init_gl(Evas_Object *obj)
    animation_play(o, "walkquat", LOOP);
 
    Object* yep = create_object_file("model/smallchar.bin");
+   yep->name = "2222222";
    Vec3 t2 = {10,-5,-20};
    object_set_position(yep, t2);
    object_set_orientation(yep, q);
