@@ -123,7 +123,7 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
         c->object.Position, 
         vec3_add(
           vec3_mul(camz,near),
-          vec3_add( vec3_mul(h,x), vec3_mul(up,y))
+          vec3_add( vec3_mul(h,x), vec3_mul(up,-y))
           )
         );
 
@@ -133,7 +133,6 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   printf("pos %f, %f, %f \n", pos.X, pos.Y, pos.Z);
   printf("dir %f, %f, %f \n", dir.X, dir.Y, dir.Z);
 
-  /*
   Eina_List *list;
   Object *ob;
   EINA_LIST_FOREACH(s->objects, list, ob) {
@@ -158,8 +157,6 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
      // printf("no collision with %s\n", ob->name);
     //float t = 
   }
-  */
-
 
 }
 
