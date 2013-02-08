@@ -24,13 +24,26 @@ void mesh_read_file(Mesh* mesh, FILE* f)
   for (i = 0; i< count*3; ++i) {
     fread(&x, 4,1,f);
     mesh->vertices[i] = x;
-    if (i % 3 == 0) vi.position.X = x;
-    else if (i % 3 == 1) vi.position.Y = x;
+    if (i % 3 == 0) {
+      vi.position.X = x;
+      if (x > mesh->bound_max.X) mesh->bound_max.X = x;
+      if (x < mesh->bound_min.X) mesh->bound_min.X = x;
+    }
+    else if (i % 3 == 1) {
+      vi.position.Y = x;
+      if (x > mesh->bound_max.Y) mesh->bound_max.Y = x;
+      if (x < mesh->bound_min.Y) mesh->bound_min.Y = x;
+    }
     else if (i % 3 == 2) {
       vi.position.Z = x;
+      if (x > mesh->bound_max.Z) mesh->bound_max.Z = x;
+      if (x < mesh->bound_min.Z) mesh->bound_min.Z = x;
       eina_inarray_push(mesh->vertices_base, &vi);
     }
   }
+
+  //printf("bounds min : %f %f %f\n", mesh->bound_min.X,mesh->bound_min.Y,mesh->bound_min.Z);
+  //printf("bounds max : %f %f %f\n", mesh->bound_max.X,mesh->bound_max.Y,mesh->bound_max.Z);
 
   fread(&count, sizeof(count),1,f);
   printf("faces size: %d\n", count);

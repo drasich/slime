@@ -59,6 +59,9 @@ struct _Mesh
   Eina_Array* vertexgroups;
   Eina_Inarray* vertices_base;
   //For animation I need original vertex and vertex to send
+
+  Vec3 bound_min;
+  Vec3 bound_max;
 };
 
 void mesh_read_file(Mesh* mesh, FILE* f);
