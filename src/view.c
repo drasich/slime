@@ -5,6 +5,7 @@
 #include "scene.h"
 #include "gl.h"
 #include "context.h"
+#include "intersect.h"
 #define __UNUSED__
 
 static void
@@ -132,30 +133,15 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
 
   printf("pos %f, %f, %f \n", pos.X, pos.Y, pos.Z);
   printf("dir %f, %f, %f \n", dir.X, dir.Y, dir.Z);
+  Ray r = {pos, dir};
 
   Eina_List *list;
   Object *ob;
   EINA_LIST_FOREACH(s->objects, list, ob) {
-    Vec3 op = ob->Position;
-    printf("dir %f, %f, %f \n", dir.X, dir.Y, dir.Z);
-    printf("object position %f, %f, %f \n", op.X, op.Y, op.Z);
-    Vec3 e = vec3_sub(op, pos);
-    printf("eeeeee %f, %f, %f, length2 : %f \n", e.X, e.Y, e.Z, vec3_length2(e));
-    float a = vec3_dot(e,dir);
-    printf("  a %f \n", a);
-    float radius = 2;
-    float f2 = radius*radius - vec3_length2(e) + a*a;
-    printf("  f2 %f \n", f2);
-    if ( f2 >= 0) {
-      float t = a - sqrt(f2);
-      if (t > 0)
+    Sphere s = {ob->Position, 2};
+    IntersectionRay ir = intersection_ray_sphere(r, s);
+    if (ir.hit != 0)
       printf("COLLISION!!!!!!!!!!!!!!! with %s\n", ob->name);
-      else
-      printf("negative %s\n", ob->name);
-    }
-    //else
-     // printf("no collision with %s\n", ob->name);
-    //float t = 
   }
 
 }

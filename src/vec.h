@@ -36,37 +36,4 @@ Vec3 vec3_cross(Vec3 v1, Vec3 v2);
 
 double vec4_dot(Vec4 v1, Vec4 v2);
 
-typedef struct _Ray Ray;
-
-struct _Ray {
-  Vec3 Start;
-  Vec3 Direction;
-};
-
-typedef struct _Plane Plane;
-
-struct _Plane {
-  Vec3 Point;
-  Vec3 Normal;
-};
-
-
-typedef struct _IntersectionRayPlane IntersectionRayPlane;
-
-struct _IntersectionRayPlane {
-  short hit;
-  Vec3 position;
-};
-
-IntersectionRayPlane intersection_ray_plane(Ray ray, Plane plane);
-
-typedef struct _AABox AABox;
-
-struct _AABox {
-  Vec3 Min;
-  Vec3 Max;
-};
-
-//TODO Intersection ray - aaabox
-
 #endif
