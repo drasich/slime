@@ -140,7 +140,7 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   EINA_LIST_FOREACH(s->objects, list, ob) {
     Sphere s = {ob->Position, 2};
     IntersectionRay ir = intersection_ray_sphere(r, s);
-    if (ir.hit != 0)
+    if (ir.hit)
       printf("COLLISION!!!!!!!!!!!!!!! with %s\n", ob->name);
   }
 

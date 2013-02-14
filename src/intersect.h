@@ -1,6 +1,7 @@
 #ifndef __intersect__
 #define __intersect__
 #include "vec.h"
+#include <stdbool.h>
 
 typedef struct _Ray Ray;
 
@@ -25,21 +26,23 @@ struct _Sphere {
 typedef struct _IntersectionRay IntersectionRay;
 
 struct _IntersectionRay {
-  short hit;
+  bool hit;
+  bool inside;
   Vec3 position;
+  Vec3 normal;
 };
 
 IntersectionRay intersection_ray_plane(Ray ray, Plane plane);
 IntersectionRay intersection_ray_sphere(Ray ray, Sphere sphere);
 
 typedef struct _AABox AABox;
-
 struct _AABox {
   Vec3 Min;
   Vec3 Max;
 };
 
 //TODO Intersection ray - aaabox
+IntersectionRay intersection_ray_box(Ray ray, AABox);
 
 
 #endif
