@@ -44,7 +44,7 @@ intersection_ray_sphere(Ray ray, Sphere sphere)
 }
 
 IntersectionRay
-intersection_ray_box(Ray ray, AABox box)
+intersection_ray_aabox(Ray ray, AABox box)
 {
 
   IntersectionRay out = { .hit = false, .inside = true};
@@ -166,3 +166,27 @@ intersection_ray_box(Ray ray, AABox box)
   return out;
 }
 
+IntersectionRay
+intersection_ray_box(Ray ray, AABox box, Vec3 position, Quat rotation)
+{
+  //transform the ray in box/object coord
+  Ray newray;
+  Vec3 start =  vec3_sub(ray.Start, position);
+  Quat iq = quat_conj(rotation);
+  start = quat_rotate_vec3(iq, start);// iq.RotateVec3(start)
+
+  Vec3 dir = quat_rotate_vec3(iq, ray.Direction);// iq.RotateVec3(ray.Direction)
+
+  newray.Start = start;
+  newray.Direction = dir;
+
+  IntersectionRay ir = intersection_ray_aabox(newray, box);
+
+  //transform back
+  ir.position = quat_rotate_vec3(rotation, ir.position);// o.Orientation.RotateVec3(position)
+  ir.position = vec3_add(ir.position, position);
+
+  ir.normal = quat_rotate_vec3(rotation, ir.normal); //o.Orientation.RotateVec3(normal)
+
+  return ir;
+}

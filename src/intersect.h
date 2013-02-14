@@ -1,6 +1,7 @@
 #ifndef __intersect__
 #define __intersect__
 #include "vec.h"
+#include "quat.h"
 #include <stdbool.h>
 
 typedef struct _Ray Ray;
@@ -42,7 +43,8 @@ struct _AABox {
 };
 
 //TODO Intersection ray - aaabox
-IntersectionRay intersection_ray_box(Ray ray, AABox);
+IntersectionRay intersection_ray_aabox(Ray ray, AABox box);
+IntersectionRay intersection_ray_box(Ray ray, AABox box, Vec3 position, Quat rotation);
 
 
 #endif
