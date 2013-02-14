@@ -3,6 +3,7 @@
 #include "shader.h"
 #include "matrix.h"
 #include <stdbool.h>
+#include "intersect.h" //TODO shouldn't need this for aabox for now, remove later
 
 typedef struct _Weight Weight;
 struct _Weight
@@ -60,8 +61,7 @@ struct _Mesh
   Eina_Inarray* vertices_base;
   //For animation I need original vertex and vertex to send
 
-  Vec3 bound_min;
-  Vec3 bound_max;
+  AABox box;
 };
 
 void mesh_read_file(Mesh* mesh, FILE* f);

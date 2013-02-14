@@ -130,18 +130,34 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
 
   Vec3 dir = vec3_sub(pos, c->object.Position);
   dir = vec3_normalized(dir);
+  dir = vec3_mul(dir, 100);
 
   printf("pos %f, %f, %f \n", pos.X, pos.Y, pos.Z);
   printf("dir %f, %f, %f \n", dir.X, dir.Y, dir.Z);
   Ray r = {pos, dir};
+    
+  AABox b = { vec3(-1,-1,-1), vec3(1,1,1)};
+  /*
+  IntersectionRay ir = intersection_ray_aabox(r, b);
+  if (ir.hit) 
+  printf("COLLISION!!!!!!!!!!!!!!!");
+  else {
+    printf("position %f, %f, %f \n", ir.position.X, ir.position.Y, ir.position.Z);
+    printf("normal %f, %f, %f \n", ir.normal.X, ir.normal.Y, ir.normal.Z);
+  }
+  */
 
   Eina_List *list;
   Object *ob;
   EINA_LIST_FOREACH(s->objects, list, ob) {
     Sphere s = {ob->Position, 2};
-    IntersectionRay ir = intersection_ray_sphere(r, s);
-    if (ir.hit)
+    //IntersectionRay ir = intersection_ray_sphere(r, s);
+    IntersectionRay ir = intersection_ray_box(r, ob->mesh->box, ob->Position, ob->Orientation);
+    if (ir.hit) {
       printf("COLLISION!!!!!!!!!!!!!!! with %s\n", ob->name);
+      printf("position %f, %f, %f \n", ir.position.X, ir.position.Y, ir.position.Z);
+      printf("normal %f, %f, %f \n", ir.normal.X, ir.normal.Y, ir.normal.Z);
+    }
   }
 
 }

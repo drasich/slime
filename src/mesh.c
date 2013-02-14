@@ -26,24 +26,24 @@ void mesh_read_file(Mesh* mesh, FILE* f)
     mesh->vertices[i] = x;
     if (i % 3 == 0) {
       vi.position.X = x;
-      if (x > mesh->bound_max.X) mesh->bound_max.X = x;
-      if (x < mesh->bound_min.X) mesh->bound_min.X = x;
+      if (x > mesh->box.Max.X) mesh->box.Max.X = x;
+      if (x < mesh->box.Min.X) mesh->box.Min.X = x;
     }
     else if (i % 3 == 1) {
       vi.position.Y = x;
-      if (x > mesh->bound_max.Y) mesh->bound_max.Y = x;
-      if (x < mesh->bound_min.Y) mesh->bound_min.Y = x;
+      if (x > mesh->box.Max.Y) mesh->box.Max.Y = x;
+      if (x < mesh->box.Min.Y) mesh->box.Min.Y = x;
     }
     else if (i % 3 == 2) {
       vi.position.Z = x;
-      if (x > mesh->bound_max.Z) mesh->bound_max.Z = x;
-      if (x < mesh->bound_min.Z) mesh->bound_min.Z = x;
+      if (x > mesh->box.Max.Z) mesh->box.Max.Z = x;
+      if (x < mesh->box.Min.Z) mesh->box.Min.Z = x;
       eina_inarray_push(mesh->vertices_base, &vi);
     }
   }
 
-  //printf("bounds min : %f %f %f\n", mesh->bound_min.X,mesh->bound_min.Y,mesh->bound_min.Z);
-  //printf("bounds max : %f %f %f\n", mesh->bound_max.X,mesh->bound_max.Y,mesh->bound_max.Z);
+  //printf("bounds min : %f %f %f\n", mesh->box.Min.X,mesh->box.Min.Y,mesh->box.Min.Z);
+  //printf("bounds max : %f %f %f\n", mesh->box.Max.X,mesh->box.Max.Y,mesh->box.Max.Z);
 
   fread(&count, sizeof(count),1,f);
   printf("faces size: %d\n", count);
