@@ -182,16 +182,20 @@ intersection_ray_aabox(Ray ray, AABox box)
 IntersectionRay
 intersection_ray_box(Ray ray, AABox box, Vec3 position, Quat rotation)
 {
+  /*
+  Repere r = { vec3(1,1,0), quat_angle_axis(3.141519/2, vec3(0,0,1))};
+  Vec3 a = vec3(2,2,0);
+  a = world_to_local(r, a);
+  printf("local to world : %f %f %f\n", a.X, a.Y, a.Z);
+  */
+
+  Repere r = {position, rotation};
   //transform the ray in box/object coord
   Ray newray;
-  Vec3 start = vec3_sub(ray.Start, position);
-  start = quat_rotate_vec3(rotation, start);
-  start = vec3_add(start,position);
-  Vec3 dir = quat_rotate_vec3(rotation, ray.Direction);// iq.RotateVec3(ray.Direction)
-
-
-  newray.Start = start;
-  newray.Direction = dir;
+  newray.Start = world_to_local(r, ray.Start);
+  newray.Direction = world_to_local(r, vec3_add(ray.Direction, ray.Start));
+  newray.Direction = vec3_sub(newray.Direction, newray.Start);
+          
 
   IntersectionRay ir = intersection_ray_aabox(newray, box);
 
@@ -205,5 +209,22 @@ intersection_ray_box(Ray ray, AABox box, Vec3 position, Quat rotation)
   //ir.normal = quat_rotate_vec3(rotation, ir.normal); //o.Orientation.RotateVec3(normal)
 
   return ir;
+}
+
+Vec3
+world_to_local(Repere r, Vec3 v)
+{
+  Vec3 out = vec3_sub(v, r.origin);
+  Quat iq = quat_inverse(r.rotation);
+  out = quat_rotate_vec3(iq, out);
+  return out;
+}
+
+Vec3
+local_to_world(Repere r, Vec3 v)
+{
+  Vec3 out = quat_rotate_vec3(r.rotation, v);
+  out = vec3_add(out, r.origin);
+  return out;
 }
 

@@ -46,5 +46,13 @@ struct _AABox {
 IntersectionRay intersection_ray_aabox(Ray ray, AABox box);
 IntersectionRay intersection_ray_box(Ray ray, AABox box, Vec3 position, Quat rotation);
 
+typedef struct _Repere Repere;
+struct _Repere {
+  Vec3 origin;
+  Quat rotation;
+};
+
+Vec3 world_to_local(Repere r, Vec3 v);
+Vec3 local_to_world(Repere r, Vec3 v);
 
 #endif
