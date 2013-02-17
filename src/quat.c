@@ -78,7 +78,7 @@ quat_rotate_vec3(Quat q, Vec3 v)
   Vec3 qvec = {.X = q.X, .Y = q.Y, .Z = q.Z} ;
   uv = vec3_cross(qvec, v);
   uuv = vec3_cross(qvec, uv);
-  uv = vec3_mul(uv, 2.0f*q.W);
+  uv = vec3_mul(uv, -2.0f*q.W);
   uuv = vec3_mul(uuv, 2.0f);
   return vec3_add(v, vec3_add(uv, uuv));
 }
@@ -291,3 +291,4 @@ quat_between_vec(Vec3 from, Vec3 to)
   return quat_identity();
 
 }
+

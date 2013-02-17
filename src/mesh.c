@@ -270,6 +270,7 @@ mesh_set_matrices(Mesh* mesh, Matrix4 mat, Matrix4 projection)
   Matrix3 normal_mat;
   mat4_to_mat3(mat, normal_mat);
   mat3_inverse(normal_mat, normal_mat);
+  mat3_transpose(normal_mat, normal_mat);
   mat3_to_gl(normal_mat, mesh->matrix_normal);
 
   Matrix4 tm;

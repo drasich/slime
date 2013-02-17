@@ -37,6 +37,7 @@ void mat4_set_perspective(
 void mat4_multiply(const Matrix4 m, const Matrix4 n, Matrix4 out);
 
 void mat4_transpose(const Matrix4 in, Matrix4 out);
+void mat3_transpose(const Matrix4 in, Matrix4 out);
 
 void mat4_set_translation(Matrix4 m, Vec3);
 
@@ -44,6 +45,9 @@ void mat4_zero(Matrix4 m);
 void mat3_zero(Matrix4 m);
 
 void mat4_set_rotation_quat(Matrix4 m, Quat q);
+
+Vec3 mat4_mul(const Matrix4 m, Vec3 v);
+Vec3 mat4_premul(const Matrix4 m, Vec3 v);
 
 #endif
 

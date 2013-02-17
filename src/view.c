@@ -89,8 +89,10 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   Camera* c = s->camera;
   float near = 1.0f;
   float fovy = M_PI/4.0f;
-  Vec3 camz = quat_rotate_vec3(quat_inverse(c->object.Orientation), vec3(0,0,-1));
-  Vec3 up = quat_rotate_vec3(quat_inverse(c->object.Orientation), vec3(0,1,0));
+  //Vec3 camz = quat_rotate_vec3(quat_inverse(c->object.Orientation), vec3(0,0,-1));
+  //Vec3 up = quat_rotate_vec3(quat_inverse(c->object.Orientation), vec3(0,1,0));
+  Vec3 camz = quat_rotate_vec3(c->object.Orientation, vec3(0,0,-1));
+  Vec3 up = quat_rotate_vec3(c->object.Orientation, vec3(0,1,0));
   Vec3 h = vec3_cross(camz, up);
   h = vec3_normalized(h);
   double l = vec3_length(h);
@@ -191,9 +193,11 @@ _init_gl(Evas_Object *obj)
    Scene* s = create_scene();
    evas_object_data_set(obj, "scene", s);
 
-   Object* o = create_object_file("model/smallchar.bin");
+   //Object* o = create_object_file("model/smallchar.bin");
+   Object* o = create_object_file("model/cube.bin");
    o->name = "111111";
    //Object* o = create_object_file("model/simpleplane.bin");
+   //Vec3 t = {-15,-4,-5};
    Vec3 t = {0,0,0};
    object_set_position(o, t);
    Vec3 axis = {1,0,0};
@@ -201,7 +205,7 @@ _init_gl(Evas_Object *obj)
    Vec3 axis2 = {0,0,1};
    Quat q2 = quat_angle_axis(3.14159f/4.f, axis2);
    q = quat_mul(q, q2);
-   object_set_orientation(o, q);
+   object_set_orientation(o, q2);
    scene_add_object(s,o);
 
    animation_play(o, "walkquat", LOOP);
@@ -215,6 +219,35 @@ _init_gl(Evas_Object *obj)
 
    gl->glEnable(GL_DEPTH_TEST);
    gl->glClearDepthf(1.0f);
+
+  Vec3 origin = {10,10,-10};
+  Repere r = {origin,q2};
+  Vec3 tao = vec3(11,11,-11);
+  Vec3 tbo = vec3(11,11,-9);
+  //ta = local_to_world(r, ta);
+  //tb = local_to_world(r, tb);
+  Vec3 ta = world_to_local(r, tao);
+  Vec3 tb = world_to_local(r, tbo);
+  printf("q2 %f, %f, %f, %f \n", q2.X, q2.Y, q2.Z, q2.W);
+  printf("ta %f, %f, %f \n", ta.X, ta.Y, ta.Z);
+  printf("tb %f, %f, %f \n", tb.X, tb.Y, tb.Z);
+
+  ta = quat_rotate_vec3(q2, tao);
+  tb = quat_rotate_vec3(q2, tbo);
+  printf("ta quat %f, %f, %f \n", ta.X, ta.Y, ta.Z);
+  printf("tb quat %f, %f, %f \n", tb.X, tb.Y, tb.Z);
+
+  ta = quat_rotate_vec3(quat_inverse(q2), tao);
+  tb = quat_rotate_vec3(quat_inverse(q2), tbo);
+  printf("ta quat inv %f, %f, %f \n", ta.X, ta.Y, ta.Z);
+  printf("tb quat inv %f, %f, %f \n", tb.X, tb.Y, tb.Z);
+
+  Matrix4 mo;
+  object_compute_matrix(o, mo);
+  ta = mat4_mul(mo, tao);
+  printf("ta matrix %f, %f, %f \n", ta.X, ta.Y, ta.Z);
+  ta = mat4_premul(mo, tao);
+  printf("ta matrix premul %f, %f, %f \n", ta.X, ta.Y, ta.Z);
 }
 
 static void

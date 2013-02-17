@@ -159,6 +159,30 @@ mat4_multiply(const Matrix4 m, const Matrix4 n, Matrix4 out)
 }
 
 void
+mat3_transpose(const Matrix3 in, Matrix3 out)
+{
+  double tmp[9];
+
+  tmp[0] = in[0];
+  tmp[1] = in[3];
+  tmp[2] = in[6];
+
+  tmp[3] = in[1];
+  tmp[4] = in[4];
+  tmp[5] = in[7];
+
+  tmp[6] = in[2];
+  tmp[7] = in[5];
+  tmp[8] = in[8];
+
+  int i;
+  for (i = 0; i < 9; ++i) {
+    out[i] = tmp[i];
+  }
+}
+
+
+void
 mat4_transpose(const Matrix4 in, Matrix4 out)
 {
   double tmp[16];
@@ -373,3 +397,21 @@ mat4_inverse(const Matrix4 m, Matrix4 out)
 }
 
 
+Vec3 
+mat4_mul(const Matrix4 m, Vec3 v)
+{
+  return vec3(
+        m[0]*v.X + m[1]*v.Y + m[2]*v.Z,
+        m[4]*v.X + m[5]*v.Y + m[6]*v.Z,
+        m[8]*v.X + m[9]*v.Y + m[10]*v.Z
+        );
+}
+
+Vec3
+mat4_premul(const Matrix4 m, Vec3 v)
+{
+  return vec3(
+        v.X*m[0] + v.Y*m[4] + v.Z*m[8],
+        v.X*m[1] + v.Y*m[5] + v.Z*m[9],
+        v.X*m[2] + v.Y*m[6] + v.Z*m[10]);
+}

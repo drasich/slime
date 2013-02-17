@@ -10,6 +10,7 @@ create_scene()
   s->camera = create_camera();
   s->camera->object.name = "camera";
   Vec3 v = {10,10,10};
+  //Vec3 v = {0,0,20};
   //Vec3 axis = {0,1,0};
   //Quat q = quat_angle_axis(3.14f/4.0f, axis);
   s->camera->object.Position = v;
