@@ -43,7 +43,7 @@ void mesh_read_file(Mesh* mesh, FILE* f)
   }
 
   //printf("bounds min : %f %f %f\n", mesh->box.Min.X,mesh->box.Min.Y,mesh->box.Min.Z);
-  //printf("bounds max : %f %f %f\n", mesh->box.Max.X,mesh->box.Max.Y,mesh->box.Max.Z);
+  //printf("bounds max : %4.16f %4.16f %4.16f\n", mesh->box.Max.X,mesh->box.Max.Y,mesh->box.Max.Z);
 
   fread(&count, sizeof(count),1,f);
   printf("faces size: %d\n", count);

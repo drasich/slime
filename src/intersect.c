@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdint.h>
+#include <float.h>
 
 IntersectionRay
 intersection_ray_plane(Ray ray, Plane plane)
@@ -152,23 +153,35 @@ intersection_ray_aabox(Ray ray, AABox box)
   switch (which) {
     case 0: // yz plane
       y = ray.Start.Y + ray.Direction.Y*t;
-      if (y < box.Min.Y || y > box.Max.Y) { out.inside = false; return out; }
+      if (y < box.Min.Y - FLT_EPSILON || y > box.Max.Y + FLT_EPSILON) { 
+        printf("return case 0_1\n");
+        out.inside = false; return out; }
       z = ray.Start.Z + ray.Direction.Z*t;
-      if (z < box.Min.Z || z > box.Max.Z) { out.inside = false; return out; }
+      if (z < box.Min.Z - FLT_EPSILON || z > box.Max.Z + FLT_EPSILON) {
+        printf("return case 0_2\n");
+        out.inside = false; return out; }
 
     out.normal.X = xn;
   case 1: //xz plane
     x = ray.Start.X + ray.Direction.X*t;
-    if (x < box.Min.X || x > box.Max.X) { out.inside = false; return out; }
+    if (x < box.Min.X - FLT_EPSILON || x > box.Max.X + FLT_EPSILON) { 
+        printf("return case 1_1\n");
+      out.inside = false; return out; }
     z = ray.Start.Z + ray.Direction.Z*t;
-    if (z < box.Min.Z || z > box.Max.Z) { out.inside = false; return out; }
+    if (z < box.Min.Z - FLT_EPSILON || z > box.Max.Z + FLT_EPSILON) {
+        printf("return case 1_2\n");
+      out.inside = false; return out; }
 
     out.normal.Y = yn;
   case 2:
     x = ray.Start.X + ray.Direction.X*t;
-    if (x < box.Min.X || x > box.Max.X) { out.inside = false; return out; }
+    if (x < box.Min.X - FLT_EPSILON || x > box.Max.X + FLT_EPSILON) {
+      printf("return case 2_1\n");
+      out.inside = false; return out; }
     y = ray.Start.Y + ray.Direction.Y*t;
-    if (y < box.Min.Y || y > box.Max.Y) { out.inside = false; return out; }
+    if (y < box.Min.Y - FLT_EPSILON || y > box.Max.Y + FLT_EPSILON) { 
+      printf("return case 2_2 : %4.16f %4.16f %4.16f %4.16f \n", y, box.Min.Y, box.Max.Y);
+      out.inside = false; return out; }
 
     out.normal.Y = zn;
   }

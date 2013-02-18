@@ -87,8 +87,8 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   //TODO ray to intersect object
   Scene* s = evas_object_data_get(o, "scene");
   Camera* c = s->camera;
-  float near = 1.0f;
-  float fovy = M_PI/4.0f;
+  double near = 1.0;
+  double fovy = M_PI/4.0;
   //Vec3 camz = quat_rotate_vec3(quat_inverse(c->object.Orientation), vec3(0,0,-1));
   //Vec3 up = quat_rotate_vec3(quat_inverse(c->object.Orientation), vec3(0,1,0));
   Vec3 camz = quat_rotate_vec3(c->object.Orientation, vec3(0,0,-1));
@@ -97,13 +97,13 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   h = vec3_normalized(h);
   double l = vec3_length(h);
   printf("cam z %f, %f, %f \n", camz.X, camz.Y, camz.Z);
-  float vl = tan(fovy/2.0) * near; // tan(fov/2)*near
+  double vl = tan(fovy/2.0) * near; // tan(fov/2)*near
 
   int width, height;
   elm_glview_size_get(o, &width, &height);
-  float aspect = (float)width/ (float)height;
+  double aspect = (double)width/ (double)height;
   printf("aspect : %f\n", aspect);
-  float vh = vl * aspect;
+  double vh = vl * aspect;
 
 
   up = vec3_mul(up, vl);
@@ -112,13 +112,13 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   printf("up %f, %f, %f \n", up.X, up.Y, up.Z);
   printf("h %f, %f, %f \n", h.X, h.Y, h.Z);
 
-  float x = ev->canvas.x;
-  float y = ev->canvas.y;
-  x -= width / 2.0;
-  y -= height / 2.0;
+  double x = ev->canvas.x;
+  double y = ev->canvas.y;
+  x -= (double)width / 2.0;
+  y -= (double)height / 2.0;
 
-  y /= height / 2.0;
-  x /= width / 2.0;
+  y /= (double)height / 2.0;
+  x /= (double)width / 2.0;
 
   printf("X, Y %f, %f \n", x,y);
 
