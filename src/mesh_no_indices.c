@@ -4,9 +4,9 @@
 #include "gl.h"
 #include "read.h"
 
-void mesh_read_file(Mesh* mesh, FILE* f)
+void mesh_read_file_no_indices(Mesh* mesh, FILE* f)
 {
-  printf("mesh_read-file\n");
+  printf("mesh_read-file no indices\n");
   mesh->name = read_name(f);
 
   uint16_t count;
@@ -16,29 +16,24 @@ void mesh_read_file(Mesh* mesh, FILE* f)
   float x,y,z;
   int i;
 
-  mesh->vertices = calloc(count*3, sizeof(GLfloat));
-  mesh->vertices_len = count*3;
-  mesh->vertices_base = eina_inarray_new(sizeof(VertexInfo), count);
-  VertexInfo vi;
-  //Vec3 v;
+  GLfloat* vert_tmp;
+
+  vert_tmp = calloc(count*3, sizeof(GLfloat));
+  uint32_t vert_len = count*3;
   for (i = 0; i< count*3; ++i) {
     fread(&x, 4,1,f);
-    mesh->vertices[i] = x;
+    vert_tmp[i] = x;
     if (i % 3 == 0) {
-      vi.position.X = x;
       if (x > mesh->box.Max.X) mesh->box.Max.X = x;
       if (x < mesh->box.Min.X) mesh->box.Min.X = x;
     }
     else if (i % 3 == 1) {
-      vi.position.Y = x;
       if (x > mesh->box.Max.Y) mesh->box.Max.Y = x;
       if (x < mesh->box.Min.Y) mesh->box.Min.Y = x;
     }
     else if (i % 3 == 2) {
-      vi.position.Z = x;
       if (x > mesh->box.Max.Z) mesh->box.Max.Z = x;
       if (x < mesh->box.Min.Z) mesh->box.Min.Z = x;
-      eina_inarray_push(mesh->vertices_base, &vi);
     }
   }
 
@@ -48,39 +43,36 @@ void mesh_read_file(Mesh* mesh, FILE* f)
   fread(&count, sizeof(count),1,f);
   printf("faces size: %d\n", count);
   uint16_t index;
-  mesh->indices = calloc(count*3, sizeof(GLuint));
-  mesh->indices_len = count*3;
+  GLuint* indices_tmp = calloc(count*3, sizeof(GLuint));
+  uint32_t indices_len = count*3;
 
   for (i = 0; i< count*3; ++i) {
     fread(&index, 2,1,f);
-    mesh->indices[i] = index;
+    indices_tmp[i] = index;
   }
 
   fread(&count, sizeof(count),1,f);
   printf("normals size: %d\n", count);
 
-  mesh->normals = calloc(count*3, sizeof(GLfloat));
-  mesh->normals_len = count*3;
+  GLfloat* normals_tmp = calloc(count*3, sizeof(GLfloat));
+  uint32_t normals_len = count*3;
   for (i = 0; i< count*3; ++i) {
     fread(&x, 4,1,f);
-    mesh->normals[i] = x;
-    VertexInfo* vi = eina_inarray_nth(mesh->vertices_base, i / 3);
-    if (i % 3 == 0) vi->normal.X = x;
-    else if (i % 3 == 1) vi->normal.Y = x;
-    else if (i % 3 == 2) vi->normal.Z = x;
+    normals_tmp[i] = x;
   }
 
   fread(&count, sizeof(count),1,f);
   printf("uv size: %d\n", count);
   
   mesh->has_uv = count != 0;
-  mesh->uvs_len = count*2;
+  uint32_t uvs_len = count*2;
+  GLfloat* uvs_tmp;
   if (mesh->has_uv) {
-    mesh->uvs = calloc(count*2, sizeof(GLfloat));
+    uvs_tmp = calloc(count*2, sizeof(GLfloat));
 
     for (i = 0; i< count*2; ++i) {
       fread(&x, 4,1,f);
-      mesh->uvs[i] = x;
+      uvs_tmp[i] = x;
     }
   }
 
@@ -136,24 +128,7 @@ void mesh_read_file(Mesh* mesh, FILE* f)
 }
 
 void
-mesh_read(Mesh* mesh, char* path)
-{
-  FILE *f;
-  f = fopen(path, "rb");
-  fseek(f, 0, SEEK_SET);
-
-  mesh->name = read_name(f);
-  mesh_read_file(mesh, f);
-  fclose(f);
-}
-
-void
-mesh_init_buffer(Mesh* m, GLenum type, GLuint* buffer)
-{
-}
-
-void
-mesh_init(Mesh* m)
+mesh_init_no_indices(Mesh* m)
 {
   //TODO factorize these functions
   gl->glGenBuffers(1, &m->buffer_vertices);
@@ -199,7 +174,7 @@ mesh_init(Mesh* m)
 }
 
 void
-mesh_resend(Mesh* m)
+mesh_resend_no_indices(Mesh* m)
 {
   gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_vertices);
   gl->glBufferSubData(
@@ -217,73 +192,7 @@ mesh_resend(Mesh* m)
 }
 
 void
-mesh_init_texture(Mesh* m)
-{
-  //TODO texture path
-  Texture* tex = texture_read_png_file("model/ceil.png");
-  gl->glGenTextures(1, &m->id_texture);
-	gl->glBindTexture(GL_TEXTURE_2D, m->id_texture);
-	gl->glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	gl->glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-  gl->glTexImage2D(
-        GL_TEXTURE_2D,
-        0,
-        //GL_RGBA, //4,
-        tex->internal_format,
-        tex->width,
-        tex->height,
-        0,
-        //GL_RGBA,
-        tex->format,
-        GL_UNSIGNED_BYTE,
-        tex->data);
-
-  free(tex->data);
-  free(tex);
-}
-
-void
-mesh_set_matrix(Mesh* mesh, Matrix4 mat)
-{
-  shader_use(mesh->shader);
-  Matrix3 normal_mat;
-  mat4_to_mat3(mat, normal_mat);
-  mat3_inverse(normal_mat, normal_mat);
-  mat3_to_gl(normal_mat, mesh->matrix_normal);
-
-  Matrix4 projection;
-  mat4_set_frustum(projection, -1,1,-1,1,1,1000.0f);
-
-  Matrix4 tm;
-  mat4_multiply(projection, mat, tm);
-  mat4_transpose(tm, tm);
-  mat4_to_gl(tm, mesh->matrix);
-  gl->glUniformMatrix4fv(mesh->shader->uniform_matrix, 1, GL_FALSE, mesh->matrix);
-  gl->glUniformMatrix3fv(mesh->shader->uniform_normal_matrix, 1, GL_FALSE, mesh->matrix_normal);
-}
-
-void
-mesh_set_matrices(Mesh* mesh, Matrix4 mat, Matrix4 projection)
-{
-  shader_use(mesh->shader);
-  Matrix3 normal_mat;
-  mat4_to_mat3(mat, normal_mat);
-  mat3_inverse(normal_mat, normal_mat);
-  mat3_transpose(normal_mat, normal_mat);
-  mat3_to_gl(normal_mat, mesh->matrix_normal);
-
-  Matrix4 tm;
-  mat4_multiply(projection, mat, tm);
-  mat4_transpose(tm, tm);
-  mat4_to_gl(tm, mesh->matrix);
-  gl->glUniformMatrix4fv(mesh->shader->uniform_matrix, 1, GL_FALSE, mesh->matrix);
-  gl->glUniformMatrix3fv(mesh->shader->uniform_normal_matrix, 1, GL_FALSE, mesh->matrix_normal);
-}
-
-
-void
-mesh_draw(Mesh* m)
+mesh_draw_no_indices(Mesh* m)
 {
   shader_use(m->shader);
 
@@ -339,38 +248,5 @@ mesh_draw(Mesh* m)
   
   if (m->has_uv)
   gl->glDisableVertexAttribArray(m->shader->attribute_texcoord);
-}
-
-
-Mesh*
-create_mesh(char* path)
-{
-   Mesh* m = calloc(1,sizeof(Mesh));
-   mesh_read(m, path);
-   mesh_init(m);
-   return m;
-}
-
-Mesh*
-create_mesh_file(FILE* f)
-{
-   Mesh* m = calloc(1,sizeof(Mesh));
-   mesh_read_file(m, f);
-   mesh_init(m);
-   return m;
-}
-
-VertexGroup*
-mesh_find_vertexgroup(Mesh* mesh, char* name)
-{
-  VertexGroup* vg;
-  Eina_Array_Iterator it;
-  unsigned int i;
-
-  EINA_ARRAY_ITER_NEXT(mesh->vertexgroups, i, vg, it) {
-    if (!strcmp(vg->name, name)) return vg;
-  }
-  return NULL;
-
 }
 

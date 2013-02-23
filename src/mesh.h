@@ -3,7 +3,7 @@
 #include "shader.h"
 #include "matrix.h"
 #include <stdbool.h>
-#include "intersect.h" //TODO shouldn't need this for aabox for now, remove later
+#include "intersect.h" //TODO shouldn't need this. for aabox for now, remove later
 
 typedef struct _Weight Weight;
 struct _Weight
@@ -45,10 +45,10 @@ struct _Mesh
   GLfloat*  normals;
   GLfloat*  uvs;
 
-  int vertices_len;
-  int indices_len;
-  int normals_len;
-  int uvs_len;
+  uint32_t vertices_len;
+  uint32_t indices_len;
+  uint32_t normals_len;
+  uint32_t uvs_len;
 
   bool has_uv;
 
