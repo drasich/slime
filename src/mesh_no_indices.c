@@ -76,6 +76,26 @@ void mesh_read_file_no_indices(Mesh* mesh, FILE* f)
     }
   }
 
+  mesh->vertices = calloc(indices_len*3, sizeof(GLfloat));
+  mesh->vertices_base = eina_inarray_new(sizeof(VertexInfo), indices_len);
+  VertexInfo vi;
+  for (index = 0; index < indices_len; ++index){
+    mesh->vertices[index*3] = vert_tmp[index*3];
+    vi.position.X = vert_tmp[index*3];
+    mesh->vertices[index*3+1] = vert_tmp[index*3+1];
+    vi.position.Y = vert_tmp[index*3+1];
+    mesh->vertices[index*3+2] = vert_tmp[index*3+2];
+    vi.position.Z = vert_tmp[index*3+2];
+    eina_inarray_push(mesh->vertices_base, &vi);
+  }
+
+  //TODO normals, etc and free the tmp
+
+
+  //TODO
+  //TODO from here it's vertex weight
+  //TODO
+
   uint16_t vertex_group_count = read_uint16(f);
   mesh->vertexgroups = eina_array_new(vertex_group_count);
 
