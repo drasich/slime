@@ -43,10 +43,10 @@ void mesh_read_file_no_indices(Mesh* mesh, FILE* f)
   fread(&count, sizeof(count),1,f);
   printf("faces size: %d\n", count);
   uint16_t index;
-  GLuint* indices_tmp = calloc(count*3, sizeof(GLuint));
-  uint32_t indices_len = count*3;
+  GLuint* indices_tmp = calloc(count, sizeof(GLuint));
+  uint32_t indices_len = count;
 
-  for (i = 0; i< count*3; ++i) {
+  for (i = 0; i< count; ++i) {
     fread(&index, 2,1,f);
     indices_tmp[i] = index;
   }
@@ -77,20 +77,38 @@ void mesh_read_file_no_indices(Mesh* mesh, FILE* f)
   }
 
   mesh->vertices = calloc(indices_len*3, sizeof(GLfloat));
+  mesh->vertices_len = indices_len*3;
   mesh->vertices_base = eina_inarray_new(sizeof(VertexInfo), indices_len);
   VertexInfo vi;
   for (index = 0; index < indices_len; ++index){
-    mesh->vertices[index*3] = vert_tmp[index*3];
-    vi.position.X = vert_tmp[index*3];
-    mesh->vertices[index*3+1] = vert_tmp[index*3+1];
-    vi.position.Y = vert_tmp[index*3+1];
-    mesh->vertices[index*3+2] = vert_tmp[index*3+2];
-    vi.position.Z = vert_tmp[index*3+2];
+    mesh->vertices[index*3] = vert_tmp[indices_tmp[index]*3];
+    vi.position.X = vert_tmp[indices_tmp[index]*3];
+    mesh->vertices[index*3+1] = vert_tmp[indices_tmp[index]*3+1];
+    vi.position.Y = vert_tmp[indices_tmp[index]*3+1];
+    mesh->vertices[index*3+2] = vert_tmp[indices_tmp[index]*3+2];
+    vi.position.Z = vert_tmp[indices_tmp[index]*3+2];
     eina_inarray_push(mesh->vertices_base, &vi);
   }
 
-  //TODO normals, etc and free the tmp
+  mesh->normals = calloc(indices_len*3, sizeof(GLfloat));
+  mesh->normals_len = indices_len*3;
+  for (index = 0; index < indices_len; ++index){
+    mesh->normals[index*3] = normals_tmp[indices_tmp[index]*3];
+    mesh->normals[index*3+1] = normals_tmp[indices_tmp[index]*3+1];
+    mesh->normals[index*3+2] = normals_tmp[indices_tmp[index]*3+2];
+  }
 
+  mesh->uvs = calloc(indices_len*2, sizeof(GLfloat));
+  mesh->uvs_len = indices_len*2;
+  for (index = 0; index < indices_len; ++index){
+    mesh->uvs[index*2] = uvs_tmp[indices_tmp[index]*2];
+    mesh->uvs[index*2+1] = uvs_tmp[indices_tmp[index]*2+1];
+  }
+
+  //TODO free the tmp also indices
+  free(vert_tmp);
+  free(normals_tmp);
+  free(uvs_tmp);
 
   //TODO
   //TODO from here it's vertex weight
@@ -157,14 +175,6 @@ mesh_init_no_indices(Mesh* m)
     GL_ARRAY_BUFFER,
     m->vertices_len* sizeof(GLfloat),
     m->vertices,
-    GL_DYNAMIC_DRAW);
-
-  gl->glGenBuffers(1, &m->buffer_indices);
-  gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->buffer_indices);
-  gl->glBufferData(
-    GL_ELEMENT_ARRAY_BUFFER,
-    m->indices_len* sizeof(GLuint),
-    m->indices,
     GL_DYNAMIC_DRAW);
 
   gl->glGenBuffers(1, &m->buffer_normals);
@@ -254,12 +264,15 @@ mesh_draw_no_indices(Mesh* m)
     0,
     0);
 
+  /*
   gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->buffer_indices);
   gl->glDrawElements(
         GL_TRIANGLES, 
         m->indices_len,
         GL_UNSIGNED_INT,
         0);
+        */
+  gl->glDrawArrays(GL_TRIANGLES,0, m->vertices_len);
 
   gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
   gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
