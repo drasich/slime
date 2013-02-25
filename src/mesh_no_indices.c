@@ -78,6 +78,8 @@ void mesh_read_file_no_indices(Mesh* mesh, FILE* f)
 
   mesh->vertices = calloc(indices_len*3, sizeof(GLfloat));
   mesh->vertices_len = indices_len*3;
+  mesh->barycentric = calloc(indices_len*3, sizeof(GLfloat));
+  mesh->barycentric_len = indices_len*3;
   mesh->vertices_base = eina_inarray_new(sizeof(VertexInfo), indices_len);
   VertexInfo vi;
   for (index = 0; index < indices_len; ++index){
@@ -88,6 +90,14 @@ void mesh_read_file_no_indices(Mesh* mesh, FILE* f)
     mesh->vertices[index*3+2] = vert_tmp[indices_tmp[index]*3+2];
     vi.position.Z = vert_tmp[indices_tmp[index]*3+2];
     eina_inarray_push(mesh->vertices_base, &vi);
+
+    //we are only setting 1 because the rest is already 0 with calloc
+    if (index % 3 == 0)
+    mesh->barycentric[index*3] = 1;
+    else if (index % 3 == 1)
+    mesh->barycentric[index*3 +1] = 1;
+    else if (index % 3 == 2)
+    mesh->barycentric[index*3 +2] = 1;
   }
 
   mesh->normals = calloc(indices_len*3, sizeof(GLfloat));
@@ -187,6 +197,14 @@ mesh_init_no_indices(Mesh* m)
     m->normals,
     GL_DYNAMIC_DRAW);
 
+  gl->glGenBuffers(1, &m->buffer_barycentric);
+  gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_barycentric);
+  gl->glBufferData(
+    GL_ARRAY_BUFFER,
+    m->barycentric_len* sizeof(GLfloat),
+    m->barycentric,
+    GL_STATIC_DRAW);
+
   m->shader = malloc(sizeof(Shader));
   //TODO delete shader
   shader_init(m->shader, "shader/simple.vert", "shader/simple.frag");
@@ -266,6 +284,17 @@ mesh_draw_no_indices(Mesh* m)
     0,
     0);
 
+  gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_barycentric);
+  gl->glEnableVertexAttribArray(m->shader->attribute_barycentric);
+  
+  gl->glVertexAttribPointer(
+    m->shader->attribute_barycentric,
+    3,
+    GL_FLOAT,
+    GL_FALSE,
+    0,
+    0);
+
   /*
   gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->buffer_indices);
   gl->glDrawElements(
@@ -280,6 +309,7 @@ mesh_draw_no_indices(Mesh* m)
   gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   gl->glDisableVertexAttribArray(m->shader->attribute_vertex);
   gl->glDisableVertexAttribArray(m->shader->attribute_normal);
+  gl->glDisableVertexAttribArray(m->shader->attribute_barycentric);
   
   if (m->has_uv)
   gl->glDisableVertexAttribArray(m->shader->attribute_texcoord);

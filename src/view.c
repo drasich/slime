@@ -295,11 +295,13 @@ _draw_gl(Evas_Object *obj)
    elm_glview_size_get(obj, &w, &h);
 
    gl->glViewport(0, 0, w, h);
-   gl->glClearColor(1.0,0.8,0.3,1);
+   //gl->glClearColor(1.0,0.8,0.3,1);
+   gl->glClearColor(0.2,0.2,0.2,1);
    gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
    // Draw a Triangle
    gl->glEnable(GL_BLEND);
+   gl->glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
    //TODO remove the function update here
    Scene* s = evas_object_data_get(obj, "scene");

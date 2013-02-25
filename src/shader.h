@@ -13,6 +13,7 @@ struct _Shader
 
   GLuint attribute_vertex;
   GLuint attribute_normal;
+  GLuint attribute_barycentric;
 
   GLint uniform_matrix;
   GLint uniform_normal_matrix;

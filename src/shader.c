@@ -113,6 +113,7 @@ shader_init_attributes(Shader* s)
   shader_init_attribute(s, "vertex", &s->attribute_vertex);
   shader_init_attribute(s, "normal", &s->attribute_normal);
   shader_init_attribute(s, "texcoord", &s->attribute_texcoord);
+  shader_init_attribute(s, "barycentric", &s->attribute_barycentric);
 }
 
 void 

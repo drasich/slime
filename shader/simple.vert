@@ -1,5 +1,6 @@
 attribute vec3 vertex;
 attribute vec3 normal;
+attribute vec3 barycentric;
 attribute vec2 texcoord;
 uniform mat4 matrix;
 uniform mat3 normal_matrix;
@@ -8,9 +9,11 @@ uniform mat3 normal_matrix;
 varying vec4 diffuse,ambient;
 varying vec3 eye_normal,lightDir,halfway;
 varying vec2 f_texcoord;
+varying vec3 bc;
 
 void main(void)
 {
+  bc = barycentric;
   eye_normal = normalize(normal_matrix * normal);
 
   lightDir = normalize(vec3(0.2,-0.5,-1));

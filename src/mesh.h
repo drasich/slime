@@ -39,16 +39,19 @@ struct _Mesh
   GLuint buffer_normals;
   GLuint id_texture;
   GLuint buffer_texcoords;
+  GLuint buffer_barycentric;
 
   GLfloat*  vertices;
   GLuint*  indices;
   GLfloat*  normals;
   GLfloat*  uvs;
+  GLfloat*  barycentric;
 
   uint32_t vertices_len;
   uint32_t indices_len;
   uint32_t normals_len;
   uint32_t uvs_len;
+  uint32_t barycentric_len;
 
   bool has_uv;
 
