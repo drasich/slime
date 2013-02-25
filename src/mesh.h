@@ -81,4 +81,10 @@ Mesh* create_mesh_file(FILE* f);
 
 VertexGroup* mesh_find_vertexgroup(Mesh* mesh, char* name);
 
+
+void mesh_read_file_no_indices(Mesh* mesh, FILE* f);
+void mesh_init_no_indices(Mesh* mesh);
+void mesh_resend_no_indices(Mesh* mesh);
+void mesh_draw_no_indices(Mesh* m);
+
 #endif

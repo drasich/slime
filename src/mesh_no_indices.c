@@ -43,10 +43,10 @@ void mesh_read_file_no_indices(Mesh* mesh, FILE* f)
   fread(&count, sizeof(count),1,f);
   printf("faces size: %d\n", count);
   uint16_t index;
-  GLuint* indices_tmp = calloc(count, sizeof(GLuint));
-  uint32_t indices_len = count;
+  GLuint* indices_tmp = calloc(count*3, sizeof(GLuint));
+  uint32_t indices_len = count*3;
 
-  for (i = 0; i< count; ++i) {
+  for (i = 0; i< count*3; ++i) {
     fread(&index, 2,1,f);
     indices_tmp[i] = index;
   }
@@ -98,17 +98,19 @@ void mesh_read_file_no_indices(Mesh* mesh, FILE* f)
     mesh->normals[index*3+2] = normals_tmp[indices_tmp[index]*3+2];
   }
 
-  mesh->uvs = calloc(indices_len*2, sizeof(GLfloat));
-  mesh->uvs_len = indices_len*2;
-  for (index = 0; index < indices_len; ++index){
-    mesh->uvs[index*2] = uvs_tmp[indices_tmp[index]*2];
-    mesh->uvs[index*2+1] = uvs_tmp[indices_tmp[index]*2+1];
+  if (mesh->has_uv) {
+    mesh->uvs = calloc(indices_len*2, sizeof(GLfloat));
+    mesh->uvs_len = indices_len*2;
+    for (index = 0; index < indices_len; ++index){
+      mesh->uvs[index*2] = uvs_tmp[indices_tmp[index]*2];
+      mesh->uvs[index*2+1] = uvs_tmp[indices_tmp[index]*2+1];
+    }
   }
 
-  //TODO free the tmp also indices
   free(vert_tmp);
   free(normals_tmp);
-  free(uvs_tmp);
+  if (mesh->has_uv) free(uvs_tmp);
+  //TODO free indices tmp
 
   //TODO
   //TODO from here it's vertex weight

@@ -138,12 +138,14 @@ void mesh_read_file(Mesh* mesh, FILE* f)
 void
 mesh_read(Mesh* mesh, char* path)
 {
+  printf("come here ~~~~~~~~~~~~~~~~4444444444444\n");
   FILE *f;
   f = fopen(path, "rb");
   fseek(f, 0, SEEK_SET);
 
   mesh->name = read_name(f);
-  mesh_read_file(mesh, f);
+  //mesh_read_file(mesh, f);
+  mesh_read_file_no_indices(mesh, f);
   fclose(f);
 }
 
@@ -345,7 +347,9 @@ mesh_draw(Mesh* m)
 Mesh*
 create_mesh(char* path)
 {
+  printf("come here ~~~~~~~~~~~~~~~~\n");
    Mesh* m = calloc(1,sizeof(Mesh));
+   mesh_read(m, path);
    mesh_read(m, path);
    mesh_init(m);
    return m;
@@ -354,9 +358,12 @@ create_mesh(char* path)
 Mesh*
 create_mesh_file(FILE* f)
 {
+  printf("come here ~~~~~~~~~~~~~~~~ 22222222\n");
    Mesh* m = calloc(1,sizeof(Mesh));
-   mesh_read_file(m, f);
-   mesh_init(m);
+   //mesh_read_file(m, f);
+   //mesh_init(m);
+   mesh_read_file_no_indices(m, f);
+   mesh_init_no_indices(m);
    return m;
 }
 
