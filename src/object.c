@@ -28,7 +28,7 @@ object_draw(Object* o, Matrix4 world, Matrix4 projection)
 void
 object_compute_matrix(Object* o, Matrix4 mat)
 {
-  Matrix4 mt, mr, cam_mat;
+  Matrix4 mt, mr;
   mat4_set_translation(mt, o->Position);
   mat4_set_rotation_quat(mr, o->Orientation);
   mat4_multiply(mt, mr, mat);

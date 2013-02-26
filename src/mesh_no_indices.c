@@ -220,6 +220,9 @@ mesh_init_no_indices(Mesh* m)
           m->uvs,
           GL_DYNAMIC_DRAW);
   }
+
+  mesh_init_attributes(m);
+  mesh_init_uniforms(m);
 }
 
 void
@@ -247,14 +250,14 @@ mesh_draw_no_indices(Mesh* m)
 
   gl->glActiveTexture(GL_TEXTURE0);
   gl->glBindTexture(GL_TEXTURE_2D, m->id_texture);
-  gl->glUniform1i(m->shader->uniform_texture, 0);
+  gl->glUniform1i(m->uniform_texture, 0);
 
   //texcoord
   if (m->has_uv) {
     gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_texcoords);
-    gl->glEnableVertexAttribArray(m->shader->attribute_texcoord);
+    gl->glEnableVertexAttribArray(m->attribute_texcoord);
     gl->glVertexAttribPointer(
-          m->shader->attribute_texcoord,
+          m->attribute_texcoord,
           2,
           GL_FLOAT,
           GL_FALSE,
@@ -263,10 +266,10 @@ mesh_draw_no_indices(Mesh* m)
   }
 
   gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_vertices);
-  gl->glEnableVertexAttribArray(m->shader->attribute_vertex);
+  gl->glEnableVertexAttribArray(m->attribute_vertex);
   
   gl->glVertexAttribPointer(
-    m->shader->attribute_vertex,
+    m->attribute_vertex,
     3,
     GL_FLOAT,
     GL_FALSE,
@@ -274,9 +277,9 @@ mesh_draw_no_indices(Mesh* m)
     0);
 
   gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_normals);
-  gl->glEnableVertexAttribArray(m->shader->attribute_normal);
+  gl->glEnableVertexAttribArray(m->attribute_normal);
   gl->glVertexAttribPointer(
-    m->shader->attribute_normal,
+    m->attribute_normal,
     3,
     GL_FLOAT,
     GL_FALSE,
@@ -284,10 +287,10 @@ mesh_draw_no_indices(Mesh* m)
     0);
 
   gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_barycentric);
-  gl->glEnableVertexAttribArray(m->shader->attribute_barycentric);
+  gl->glEnableVertexAttribArray(m->attribute_barycentric);
   
   gl->glVertexAttribPointer(
-    m->shader->attribute_barycentric,
+    m->attribute_barycentric,
     3,
     GL_FLOAT,
     GL_FALSE,
@@ -306,17 +309,17 @@ mesh_draw_no_indices(Mesh* m)
 
   gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
   gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-  gl->glDisableVertexAttribArray(m->shader->attribute_vertex);
-  gl->glDisableVertexAttribArray(m->shader->attribute_normal);
-  gl->glDisableVertexAttribArray(m->shader->attribute_barycentric);
+  gl->glDisableVertexAttribArray(m->attribute_vertex);
+  gl->glDisableVertexAttribArray(m->attribute_normal);
+  gl->glDisableVertexAttribArray(m->attribute_barycentric);
   
   if (m->has_uv)
-  gl->glDisableVertexAttribArray(m->shader->attribute_texcoord);
+  gl->glDisableVertexAttribArray(m->attribute_texcoord);
 }
 
 void
 mesh_show_wireframe(Mesh* m, bool b)
 {
   shader_use(m->shader);
-  gl->glUniform1i(m->shader->uniform_wireframe, b?1:0);
+  gl->glUniform1i(m->uniform_wireframe, b?1:0);
 }

@@ -5,14 +5,6 @@
 #include <stdbool.h>
 #include "intersect.h" //TODO shouldn't need this. for aabox for now, remove later
 
-typedef struct _VertexInfo VertexInfo;
-struct _VertexInfo
-{
-  Vec3 position;
-  Vec3 normal;
-  Eina_Inarray* weights;
-};
-
 typedef struct _Line Line;
 
 struct _Line
@@ -28,15 +20,17 @@ struct _Line
   Matrix3GL matrix_normal;
 
   Eina_Inarray* vertices;
+
+  GLint uniform_matrix;
+  GLuint attribute_vertex;
 };
 
 void line_init(Line* line);
 void line_resend(Line* line);
 
-void line_set_matrix(Line* mesh, Matrix4 mat);
-void line_set_matrices(Line* mesh, Matrix4 mat, Matrix4 projection);
+void line_set_matrices(Line* line, Matrix4 mat, Matrix4 projection);
 
-void line_draw(Line* mesh);
+void line_draw(Line* line);
 
 Line* create_line();
 void line_add(Line* line, Vec3 p1, Vec3 p2);

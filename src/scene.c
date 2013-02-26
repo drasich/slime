@@ -9,8 +9,8 @@ create_scene()
   eina_init();
   s->camera = create_camera();
   s->camera->object.name = "camera";
-  Vec3 v = {10,10,10};
-  //Vec3 v = {0,0,20};
+  //Vec3 v = {10,10,10};
+  Vec3 v = {0,0,20};
   //Vec3 axis = {0,1,0};
   //Quat q = quat_angle_axis(3.14f/4.0f, axis);
   s->camera->object.Position = v;
@@ -49,6 +49,8 @@ scene_draw(Scene* s, int w, int h)
 
   mat4_set_translation(mt, s->camera->object.Position);
   mat4_set_rotation_quat(mr, s->camera->object.Orientation);
+  //Quat q = s->camera->object.Orientation;
+  //printf("camera rot %f, %f, %f, %f \n", q.X, q.Y, q.Z, q.W);
   mat4_multiply(mt, mr, cam_mat);
   mat4_inverse(cam_mat, cam_mat);
 

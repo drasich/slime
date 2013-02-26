@@ -65,6 +65,16 @@ struct _Mesh
   //For animation I need original vertex and vertex to send
 
   AABox box;
+
+  GLuint attribute_vertex;
+  GLuint attribute_normal;
+  GLuint attribute_barycentric;
+  GLuint attribute_texcoord;
+
+  GLint uniform_matrix;
+  GLint uniform_normal_matrix;
+  GLint uniform_wireframe;
+  GLint uniform_texture;
 };
 
 void mesh_read_file(Mesh* mesh, FILE* f);
@@ -90,5 +100,8 @@ void mesh_init_no_indices(Mesh* mesh);
 void mesh_resend_no_indices(Mesh* mesh);
 void mesh_draw_no_indices(Mesh* m);
 void mesh_show_wireframe(Mesh* m, bool b);
+
+void mesh_init_attributes(Mesh* m);
+void mesh_init_uniforms(Mesh* s);
 
 #endif

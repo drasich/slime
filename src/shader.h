@@ -10,17 +10,6 @@ struct _Shader
   GLuint vert_shader;
   GLuint frag_shader;
   GLuint program;
-
-  GLuint attribute_vertex;
-  GLuint attribute_normal;
-  GLuint attribute_barycentric;
-
-  GLint uniform_matrix;
-  GLint uniform_normal_matrix;
-  GLint uniform_wireframe;
-
-  GLint uniform_texture;
-  GLuint attribute_texcoord;
 };
 
 
@@ -34,9 +23,7 @@ void shader_init_string(
       const char* frag);
 
 void shader_init_attribute(Shader* s, char* att_name, GLuint* att);
-void shader_init_attributes(Shader* s);
 void shader_init_uniform(Shader* s, char* uni_name, GLint* uni);
-void shader_init_uniforms(Shader* s);
 
 void shader_use(Shader* s);
 #endif

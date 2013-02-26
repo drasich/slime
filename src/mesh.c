@@ -198,6 +198,8 @@ mesh_init(Mesh* m)
           GL_DYNAMIC_DRAW);
   }
 
+  mesh_init_attributes(m);
+  mesh_init_uniforms(m);
 }
 
 void
@@ -261,8 +263,8 @@ mesh_set_matrix(Mesh* mesh, Matrix4 mat)
   mat4_multiply(projection, mat, tm);
   mat4_transpose(tm, tm);
   mat4_to_gl(tm, mesh->matrix);
-  gl->glUniformMatrix4fv(mesh->shader->uniform_matrix, 1, GL_FALSE, mesh->matrix);
-  gl->glUniformMatrix3fv(mesh->shader->uniform_normal_matrix, 1, GL_FALSE, mesh->matrix_normal);
+  gl->glUniformMatrix4fv(mesh->uniform_matrix, 1, GL_FALSE, mesh->matrix);
+  gl->glUniformMatrix3fv(mesh->uniform_normal_matrix, 1, GL_FALSE, mesh->matrix_normal);
 }
 
 void
@@ -279,8 +281,8 @@ mesh_set_matrices(Mesh* mesh, Matrix4 mat, Matrix4 projection)
   mat4_multiply(projection, mat, tm);
   mat4_transpose(tm, tm);
   mat4_to_gl(tm, mesh->matrix);
-  gl->glUniformMatrix4fv(mesh->shader->uniform_matrix, 1, GL_FALSE, mesh->matrix);
-  gl->glUniformMatrix3fv(mesh->shader->uniform_normal_matrix, 1, GL_FALSE, mesh->matrix_normal);
+  gl->glUniformMatrix4fv(mesh->uniform_matrix, 1, GL_FALSE, mesh->matrix);
+  gl->glUniformMatrix3fv(mesh->uniform_normal_matrix, 1, GL_FALSE, mesh->matrix_normal);
 }
 
 
@@ -291,14 +293,14 @@ mesh_draw(Mesh* m)
 
   gl->glActiveTexture(GL_TEXTURE0);
   gl->glBindTexture(GL_TEXTURE_2D, m->id_texture);
-  gl->glUniform1i(m->shader->uniform_texture, 0);
+  gl->glUniform1i(m->uniform_texture, 0);
 
   //texcoord
   if (m->has_uv) {
     gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_texcoords);
-    gl->glEnableVertexAttribArray(m->shader->attribute_texcoord);
+    gl->glEnableVertexAttribArray(m->attribute_texcoord);
     gl->glVertexAttribPointer(
-          m->shader->attribute_texcoord,
+          m->attribute_texcoord,
           2,
           GL_FLOAT,
           GL_FALSE,
@@ -307,10 +309,10 @@ mesh_draw(Mesh* m)
   }
 
   gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_vertices);
-  gl->glEnableVertexAttribArray(m->shader->attribute_vertex);
+  gl->glEnableVertexAttribArray(m->attribute_vertex);
   
   gl->glVertexAttribPointer(
-    m->shader->attribute_vertex,
+    m->attribute_vertex,
     3,
     GL_FLOAT,
     GL_FALSE,
@@ -318,9 +320,9 @@ mesh_draw(Mesh* m)
     0);
 
   gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_normals);
-  gl->glEnableVertexAttribArray(m->shader->attribute_normal);
+  gl->glEnableVertexAttribArray(m->attribute_normal);
   gl->glVertexAttribPointer(
-    m->shader->attribute_normal,
+    m->attribute_normal,
     3,
     GL_FLOAT,
     GL_FALSE,
@@ -336,11 +338,11 @@ mesh_draw(Mesh* m)
 
   gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
   gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-  gl->glDisableVertexAttribArray(m->shader->attribute_vertex);
-  gl->glDisableVertexAttribArray(m->shader->attribute_normal);
+  gl->glDisableVertexAttribArray(m->attribute_vertex);
+  gl->glDisableVertexAttribArray(m->attribute_normal);
   
   if (m->has_uv)
-  gl->glDisableVertexAttribArray(m->shader->attribute_texcoord);
+  gl->glDisableVertexAttribArray(m->attribute_texcoord);
 }
 
 
@@ -379,5 +381,24 @@ mesh_find_vertexgroup(Mesh* mesh, char* name)
   }
   return NULL;
 
+}
+
+void 
+mesh_init_attributes(Mesh* m)
+{
+  shader_init_attribute(m->shader, "vertex", &m->attribute_vertex);
+  shader_init_attribute(m->shader, "normal", &m->attribute_normal);
+  shader_init_attribute(m->shader, "texcoord", &m->attribute_texcoord);
+  shader_init_attribute(m->shader, "barycentric", &m->attribute_barycentric);
+}
+
+
+void 
+mesh_init_uniforms(Mesh* m)
+{
+  //shader_init_uniform(s, "test", &s->uniform_test);
+  shader_init_uniform(m->shader, "matrix", &m->uniform_matrix);
+  shader_init_uniform(m->shader, "normal_matrix", &m->uniform_normal_matrix);
+  shader_init_uniform(m->shader, "wireframe", &m->uniform_wireframe);
 }
 
