@@ -17,6 +17,7 @@ struct _Shader
 
   GLint uniform_matrix;
   GLint uniform_normal_matrix;
+  GLint uniform_wireframe;
 
   GLint uniform_texture;
   GLuint attribute_texcoord;

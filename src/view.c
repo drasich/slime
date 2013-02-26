@@ -72,6 +72,7 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   }
 }
 
+static Object* selected = NULL;
 static void
 _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
 {
@@ -159,6 +160,9 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
       printf("COLLISION!!!!!!!!!!!!!!! with %s\n", ob->name);
       printf("position %f, %f, %f \n", ir.position.X, ir.position.Y, ir.position.Z);
       printf("normal %f, %f, %f \n", ir.normal.X, ir.normal.Y, ir.normal.Z);
+      if (selected != NULL && selected != ob) mesh_show_wireframe(selected->mesh,false);
+      selected = ob;
+      mesh_show_wireframe(selected->mesh, true);
     }
   }
 

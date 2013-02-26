@@ -220,7 +220,6 @@ mesh_init_no_indices(Mesh* m)
           m->uvs,
           GL_DYNAMIC_DRAW);
   }
-
 }
 
 void
@@ -315,3 +314,9 @@ mesh_draw_no_indices(Mesh* m)
   gl->glDisableVertexAttribArray(m->shader->attribute_texcoord);
 }
 
+void
+mesh_show_wireframe(Mesh* m, bool b)
+{
+  shader_use(m->shader);
+  gl->glUniform1i(m->shader->uniform_wireframe, b?1:0);
+}

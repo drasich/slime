@@ -1,4 +1,5 @@
 uniform float test;
+uniform int wireframe;
 
 varying vec4 diffuse,ambient;
 varying vec3 eye_normal,lightDir,halfway;
@@ -35,18 +36,15 @@ void main (void)
     color += specular * pow(NdotHV, shininess);
   }
 
-  //gl_FragColor = color;
-  //if (any(lessThan(bc, vec3(0.05)))) {
-    //gl_FragColor = color;
-  //}
-  //else
-    //gl_FragColor = vec4(0,0,0,0);
-
-  float test = (1.0-edgeFactor())*0.95;
-  if (test > 0.5) {
-    gl_FragColor = vec4(1.0, 0.6, 0.0, test);
-  }
-  else {
+  if (wireframe == 1) {
+    float near_edge = (1.0-edgeFactor())*0.95;
+    if (near_edge > 0.5) {
+      gl_FragColor = vec4(1.0, 0.6, 0.0, near_edge);
+    }
+    else {
+      gl_FragColor = color;
+    }
+  } else {
     gl_FragColor = color;
   }
 

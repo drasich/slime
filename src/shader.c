@@ -130,6 +130,7 @@ shader_init_uniforms(Shader* s)
   //shader_init_uniform(s, "test", &s->uniform_test);
   shader_init_uniform(s, "matrix", &s->uniform_matrix);
   shader_init_uniform(s, "normal_matrix", &s->uniform_normal_matrix);
+  shader_init_uniform(s, "wireframe", &s->uniform_wireframe);
 }
 
 void

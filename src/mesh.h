@@ -89,5 +89,6 @@ void mesh_read_file_no_indices(Mesh* mesh, FILE* f);
 void mesh_init_no_indices(Mesh* mesh);
 void mesh_resend_no_indices(Mesh* mesh);
 void mesh_draw_no_indices(Mesh* m);
+void mesh_show_wireframe(Mesh* m, bool b);
 
 #endif
