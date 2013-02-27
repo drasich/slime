@@ -23,6 +23,10 @@ object_draw(Object* o, Matrix4 world, Matrix4 projection)
     //mesh_draw(o->mesh);
     mesh_draw_no_indices(o->mesh);
   }
+  if (o->line != NULL) {
+    line_set_matrices(o->line, world, projection);
+    line_draw(o->line);
+  }
 }
 
 void
@@ -122,6 +126,9 @@ Object* create_object_file(const char* path)
     if (!strcmp(type, "mesh")){
       Mesh* mesh = create_mesh_file(f);
       object_add_component_mesh(o, mesh);
+      o->line = create_line();
+      line_add(o->line,vec3(0,0,0),vec3(10,1,0));
+      line_init(o->line);
     }
     else if (!strcmp(type, "armature")){
       Armature* armature = create_armature_file(f);

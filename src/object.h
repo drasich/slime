@@ -6,6 +6,7 @@
 #include "mesh.h"
 #include "armature.h"
 #include "animation.h"
+#include "line.h"
 
 typedef struct _Object Object;
 
@@ -20,6 +21,7 @@ struct _Object {
   const char* name;
   struct _Scene* scene; //TODO make a list of this?
   Animation* animation;
+  Line* line;
 };
 
 void object_init(Object* o);

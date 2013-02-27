@@ -190,8 +190,6 @@ _mouse_wheel(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *ev
   s->camera->object.Position = vec3_add(s->camera->object.Position, axis);
 }
 
-#include "line.h"
-static Line* sl;
 // Callbacks
 static void
 _init_gl(Evas_Object *obj)
@@ -216,16 +214,14 @@ _init_gl(Evas_Object *obj)
 
    animation_play(o, "walkquat", LOOP);
 
+   /*
    Object* yep = create_object_file("model/smallchar.bin");
    yep->name = "2222222";
    Vec3 t2 = {10,-5,-20};
    object_set_position(yep, t2);
    object_set_orientation(yep, q);
    scene_add_object(s,yep);
-
-   sl = create_line();
-   line_add(sl,vec3(0,0,0),vec3(10,1,0));
-   line_init(sl);
+   */
 
    gl->glEnable(GL_DEPTH_TEST);
    gl->glClearDepthf(1.0f);
@@ -318,7 +314,6 @@ _draw_gl(Evas_Object *obj)
    scene_update(s);
 
    scene_draw(s, w, h);
-   line_draw(sl);
    gl->glFinish();
 }
 

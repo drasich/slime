@@ -48,8 +48,8 @@ create_window()
 
   elm_panes_content_left_size_set(panes, 0.75f);
 
-  //evas_object_resize(win, 800/3, 400/3);
-  evas_object_resize(win, 1200, 400);
+  evas_object_resize(win, 800/3, 400/3);
+  //evas_object_resize(win, 1200, 400);
   evas_object_show(win);
 }
 

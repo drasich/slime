@@ -43,11 +43,6 @@ line_init(Line* l)
   
   gl->glBufferData(
     GL_ARRAY_BUFFER,
-    /*
-    m->vertices_len* sizeof(GLfloat),
-    m->vertices,
-    GL_DYNAMIC_DRAW);
-    */
     l->vertices->len * l->vertices->member_size,
     l->vertices->members,
     GL_DYNAMIC_DRAW);
