@@ -22,6 +22,8 @@ struct _Line
 
   GLint uniform_matrix;
   GLuint attribute_vertex;
+  
+  bool need_resend;
 };
 
 void line_init(Line* line);
@@ -33,7 +35,7 @@ void line_draw(Line* line);
 
 Line* create_line();
 void line_add(Line* line, Vec3 p1, Vec3 p2);
-void line_add_box(Line* line, AABox box, Repere r);
+void line_add_box(Line* line, AABox box);
 void line_clear(Line* line);
 
 

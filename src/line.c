@@ -27,24 +27,74 @@ line_add(Line* l, Vec3 p1, Vec3 p2)
   f = p2.Z;
   eina_inarray_push(l->vertices, &f); 
 
-  /*
-  l->vertices_len = l->vertices->len;
-  GLfloat* tmp = realloc(l->vertices_gl, l->vertices->len * sizeof(GLfloat));
-  
-  if (tmp != NULL) {
-    l->vertices_gl = tmp;
-  }
-  int i = 0;
-  for (i = 0; i < l->vertices_len; ++i) {
-    l->vertices_gl[i] = ((GLfloat*)l->vertices->members)[i];
-  }
-  */
+  l->need_resend = true;
 }
 
 void
-line_add_box(Line* line, AABox box, Repere r)
+line_add_box(Line* l, AABox box)
 {
+  printf("begin addbox : %d \n", l->vertices->len);
+
   //TODO
+  Vec3 min = box.Min;
+  Vec3 max = box.Max;
+
+  Vec3 p1, p2;
+  
+  p1 = vec3(min.X, min.Y, max.Z);
+  p2 = vec3(max.X, min.Y, max.Z);
+  line_add(l, p1, p2);
+
+  p1 = vec3(min.X, max.Y, max.Z);
+  p2 = vec3(max.X, max.Y, max.Z);
+  line_add(l, p1, p2);
+
+  p1 = vec3(min.X, min.Y, max.Z);
+  p2 = vec3(min.X, max.Y, max.Z);
+  line_add(l, p1, p2);
+
+  p1 = vec3(max.X, min.Y, max.Z);
+  p2 = vec3(max.X, max.Y, max.Z);
+  line_add(l, p1, p2);
+
+  ////////////////
+
+  p1 = vec3(min.X, min.Y, min.Z);
+  p2 = vec3(max.X, min.Y, min.Z);
+  line_add(l, p1, p2);
+
+  p1 = vec3(min.X, max.Y, min.Z);
+  p2 = vec3(max.X, max.Y, min.Z);
+  line_add(l, p1, p2);
+
+  p1 = vec3(min.X, min.Y, min.Z);
+  p2 = vec3(min.X, max.Y, min.Z);
+  line_add(l, p1, p2);
+
+  p1 = vec3(max.X, min.Y, min.Z);
+  p2 = vec3(max.X, max.Y, min.Z);
+  line_add(l, p1, p2);
+
+  /////////////////////////
+
+  p1 = vec3(min.X, min.Y, min.Z);
+  p2 = vec3(min.X, min.Y, max.Z);
+  line_add(l, p1, p2);
+
+  p1 = vec3(min.X, max.Y, min.Z);
+  p2 = vec3(min.X, max.Y, max.Z);
+  line_add(l, p1, p2);
+
+  p1 = vec3(max.X, min.Y, min.Z);
+  p2 = vec3(max.X, min.Y, max.Z);
+  line_add(l, p1, p2);
+
+  p1 = vec3(max.X, max.Y, min.Z);
+  p2 = vec3(max.X, max.Y, max.Z);
+  line_add(l, p1, p2);
+
+  printf("finish addbox : %d \n", l->vertices->len);
+
 }
 
 void
@@ -60,7 +110,7 @@ line_init(Line* l)
     l->vertices->members,
     //l->vertices_len*sizeof(GLfloat),
     //l->vertices_gl,
-    GL_STREAM_DRAW);
+    GL_DYNAMIC_DRAW);
 
   l->shader = malloc(sizeof(Shader));
   shader_init(l->shader, "shader/line.vert", "shader/line.frag");
@@ -71,11 +121,21 @@ line_init(Line* l)
 void
 line_resend(Line* l)
 {
-  /*
   printf("line resend vertices len : %d \n", l->vertices->len);
   int i = 0;
   for (i = 0; i < l->vertices->len; ++i) {
-    printf("v[i] : %f \n", ((GLfloat*)l->vertices->members)[i]);
+    //    printf("v[i] : %f \n", ((GLfloat*)l->vertices->members)[i]);
+  }
+
+  /*
+  l->vertices_len = l->vertices->len;
+  GLfloat* tmp = realloc(l->vertices_gl, l->vertices_len * sizeof(GLfloat));
+  
+  if (tmp != NULL) {
+    l->vertices_gl = tmp;
+  }
+  for (i = 0; i < l->vertices_len; ++i) {
+    l->vertices_gl[i] = ((GLfloat*)l->vertices->members)[i];
   }
   */
 
@@ -85,6 +145,9 @@ line_resend(Line* l)
     0,
     l->vertices->len * l->vertices->member_size,
     l->vertices->members);
+    //l->vertices_len*sizeof(GLfloat),
+    //l->vertices_gl);
+  l->need_resend = false;
 }
 
 void
@@ -102,7 +165,10 @@ line_set_matrices(Line* l, Matrix4 mat, Matrix4 projection)
 void 
 line_draw(Line* l)
 {
-  //line_resend(l);
+  if (l->need_resend) {
+    line_resend(l);
+  }
+
   shader_use(l->shader);
 
   gl->glBindBuffer(GL_ARRAY_BUFFER, l->buffer_vertices);
@@ -125,7 +191,7 @@ line_draw(Line* l)
   }
   */
 
-  gl->glDrawArrays(GL_LINES,0, l->vertices->len);
+  gl->glDrawArrays(GL_LINES,0, l->vertices->len/3);
   //gl->glDrawArrays(GL_LINES,0, l->vertices_len);
 
   gl->glBindBuffer(GL_ARRAY_BUFFER, 0);

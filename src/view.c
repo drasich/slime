@@ -197,13 +197,12 @@ _init_gl(Evas_Object *obj)
    Scene* s = create_scene();
    evas_object_data_set(obj, "scene", s);
 
-   //*
    //Object* o = create_object_file("model/smallchar.bin");
    Object* o = create_object_file("model/cube.bin");
    o->name = "111111";
    //Object* o = create_object_file("model/simpleplane.bin");
-   //Vec3 t = {-15,-4,-5};
-   Vec3 t = {0,0,0};
+   Vec3 t = {-15,-4,-5};
+   //Vec3 t = {0,0,0};
    object_set_position(o, t);
    Vec3 axis = {1,0,0};
    Quat q = quat_angle_axis(3.14159f/2.f, axis);
@@ -217,16 +216,15 @@ _init_gl(Evas_Object *obj)
    animation_play(o, "walkquat", LOOP);
    */
 
-   /*
    Object* yep = create_object_file("model/smallchar.bin");
    yep->name = "2222222";
    Vec3 t2 = {10,-5,-20};
    object_set_position(yep, t2);
    object_set_orientation(yep, q);
    scene_add_object(s,yep);
-   */
 
    gl->glEnable(GL_DEPTH_TEST);
+   gl->glDepthFunc(GL_LEQUAL);
    gl->glClearDepthf(1.0f);
 
    /*

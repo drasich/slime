@@ -130,7 +130,7 @@ Object* create_object_file(const char* path)
       Mesh* mesh = create_mesh_file(f);
       object_add_component_mesh(o, mesh);
       o->line = create_line();
-      line_add(o->line,vec3(0,0,0),vec3(10,1,0));
+      line_add_box(o->line, mesh->box);
       line_init(o->line);
     }
     else if (!strcmp(type, "armature")){
