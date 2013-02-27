@@ -13,6 +13,7 @@ void
 object_destroy(Object* o)
 {
   if (o->mesh != NULL) mesh_destroy(o->mesh);
+  //if (o->line != NULL) line_destroy(o->line);
   //TODO clean armature
 }
 
@@ -27,7 +28,7 @@ object_draw(Object* o, Matrix4 world, Matrix4 projection)
   }
   if (o->line != NULL) {
     line_set_matrices(o->line, world, projection);
-    line_draw(o->line);
+    //line_draw(o->line);
   }
 }
 
@@ -128,11 +129,9 @@ Object* create_object_file(const char* path)
     if (!strcmp(type, "mesh")){
       Mesh* mesh = create_mesh_file(f);
       object_add_component_mesh(o, mesh);
-      /*
       o->line = create_line();
       line_add(o->line,vec3(0,0,0),vec3(10,1,0));
       line_init(o->line);
-      */
     }
     else if (!strcmp(type, "armature")){
       Armature* armature = create_armature_file(f);

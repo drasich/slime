@@ -419,4 +419,6 @@ mesh_destroy(Mesh* m)
   }
 
   gl->glDeleteBuffers(1,&m->buffer_barycentric);
+
+  //TODO arrays
 }
