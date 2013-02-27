@@ -13,7 +13,7 @@ void
 object_destroy(Object* o)
 {
   if (o->mesh != NULL) mesh_destroy(o->mesh);
-  //if (o->line != NULL) line_destroy(o->line);
+  if (o->line != NULL) line_destroy(o->line);
   //TODO clean armature
 }
 
@@ -28,7 +28,7 @@ object_draw(Object* o, Matrix4 world, Matrix4 projection)
   }
   if (o->line != NULL) {
     line_set_matrices(o->line, world, projection);
-    //line_draw(o->line);
+    line_draw(o->line);
   }
 }
 

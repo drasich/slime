@@ -3,7 +3,7 @@
 Line* 
 create_line()
 {
-  Line* l = calloc(1, sizeof l);
+  Line* l = calloc(1, sizeof *l);
   //TODO name, shader
   l->vertices = eina_inarray_new(sizeof(GLfloat), 2);
   return l;
@@ -27,12 +27,18 @@ line_add(Line* l, Vec3 p1, Vec3 p2)
   f = p2.Z;
   eina_inarray_push(l->vertices, &f); 
 
-  l->vertices_gl = realloc(l->vertices_gl, l->vertices->len* sizeof(GLfloat));
-  l->vertices_len = l->vertices_len;
+  /*
+  l->vertices_len = l->vertices->len;
+  GLfloat* tmp = realloc(l->vertices_gl, l->vertices->len * sizeof(GLfloat));
+  
+  if (tmp != NULL) {
+    l->vertices_gl = tmp;
+  }
   int i = 0;
   for (i = 0; i < l->vertices_len; ++i) {
     l->vertices_gl[i] = ((GLfloat*)l->vertices->members)[i];
   }
+  */
 }
 
 void
@@ -50,11 +56,10 @@ line_init(Line* l)
   
   gl->glBufferData(
     GL_ARRAY_BUFFER,
-    //l->vertices->len * l->vertices->member_size,
-    //l->vertices->members,
-    l->vertices_len*sizeof(GLfloat),
-    l->vertices_gl,
-
+    l->vertices->len * l->vertices->member_size,
+    l->vertices->members,
+    //l->vertices_len*sizeof(GLfloat),
+    //l->vertices_gl,
     GL_STREAM_DRAW);
 
   l->shader = malloc(sizeof(Shader));
@@ -66,12 +71,13 @@ line_init(Line* l)
 void
 line_resend(Line* l)
 {
+  /*
   printf("line resend vertices len : %d \n", l->vertices->len);
   int i = 0;
   for (i = 0; i < l->vertices->len; ++i) {
     printf("v[i] : %f \n", ((GLfloat*)l->vertices->members)[i]);
   }
-
+  */
 
   gl->glBindBuffer(GL_ARRAY_BUFFER, l->buffer_vertices);
   gl->glBufferSubData(
@@ -119,8 +125,8 @@ line_draw(Line* l)
   }
   */
 
-  //gl->glDrawArrays(GL_LINES,0, l->vertices->len);
-  gl->glDrawArrays(GL_LINES,0, l->vertices_len);
+  gl->glDrawArrays(GL_LINES,0, l->vertices->len);
+  //gl->glDrawArrays(GL_LINES,0, l->vertices_len);
 
   gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
   gl->glDisableVertexAttribArray(l->attribute_vertex);
@@ -134,6 +140,6 @@ void line_destroy(Line* l)
   gl->glDeleteBuffers(1,&l->buffer_vertices);
 
   eina_inarray_free(l->vertices);
-  free(l->vertices_gl);
+  //free(l->vertices_gl);
   free(l);
 }

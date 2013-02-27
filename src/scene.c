@@ -37,7 +37,6 @@ scene_destroy(Scene* s)
 
   EINA_LIST_FREE(s->objects, o) {
     object_destroy(o);
-    free(o);
   }
 
   //TODO destroy camera
