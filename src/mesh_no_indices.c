@@ -175,6 +175,8 @@ void mesh_read_file_no_indices(Mesh* mesh, FILE* f)
     }
   }
 
+  free(indices_tmp);
+
 }
 
 void

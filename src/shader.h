@@ -26,4 +26,6 @@ void shader_init_attribute(Shader* s, char* att_name, GLuint* att);
 void shader_init_uniform(Shader* s, char* uni_name, GLint* uni);
 
 void shader_use(Shader* s);
+
+void shader_destroy(Shader* s);
 #endif

@@ -197,6 +197,7 @@ _init_gl(Evas_Object *obj)
    Scene* s = create_scene();
    evas_object_data_set(obj, "scene", s);
 
+   //*
    //Object* o = create_object_file("model/smallchar.bin");
    Object* o = create_object_file("model/cube.bin");
    o->name = "111111";
@@ -212,7 +213,9 @@ _init_gl(Evas_Object *obj)
    object_set_orientation(o, q2);
    scene_add_object(s,o);
 
+   /*
    animation_play(o, "walkquat", LOOP);
+   */
 
    /*
    Object* yep = create_object_file("model/smallchar.bin");
@@ -226,6 +229,7 @@ _init_gl(Evas_Object *obj)
    gl->glEnable(GL_DEPTH_TEST);
    gl->glClearDepthf(1.0f);
 
+   /*
   Vec3 origin = {10,10,-10};
   Repere r = {origin,q2};
   Vec3 tao = vec3(11,11,-11);
@@ -254,11 +258,15 @@ _init_gl(Evas_Object *obj)
   printf("ta matrix %f, %f, %f \n", ta.X, ta.Y, ta.Z);
   ta = mat4_premul(mo, tao);
   printf("ta matrix premul %f, %f, %f \n", ta.X, ta.Y, ta.Z);
+  */
 }
 
 static void
 _del_gl(Evas_Object *obj)
 {
+  printf("glview delete gl\n");
+  Scene* s = evas_object_data_get(obj, "scene");
+  scene_destroy(s);
   /*
    gl->glDeleteShader(gld->vtx_shader);
    gl->glDeleteShader(gld->fgmt_shader);
@@ -334,6 +342,7 @@ _on_done(void *data, Evas_Object *obj __UNUSED__, void *event_info __UNUSED__)
 static void
 _del(void *data __UNUSED__, Evas *evas __UNUSED__, Evas_Object *obj, void *event_info __UNUSED__)
 {
+  printf("del ani\n");
    Ecore_Animator *ani = evas_object_data_get(obj, "ani");
    ecore_animator_del(ani);
 }
@@ -399,5 +408,13 @@ create_view(Evas_Object *win)
   evas_object_data_set(view->glview, "view", view);
 
   return view;
+}
+
+void
+view_destroy(View* v)
+{
+  printf("destroy view\n");
+  free(v->context);
+  free(v);
 }
 

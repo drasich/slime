@@ -57,6 +57,12 @@ line_init(Line* l)
 void
 line_resend(Line* l)
 {
+  printf("line resend vertices len : %d \n", l->vertices->len);
+  int i = 0;
+  for (i = 0; i < l->vertices->len; ++i) {
+    printf("v[i] : %f \n", ((GLfloat*)l->vertices->members)[i]);
+  }
+
   gl->glBindBuffer(GL_ARRAY_BUFFER, l->buffer_vertices);
   gl->glBufferSubData(
     GL_ARRAY_BUFFER,
@@ -82,26 +88,6 @@ line_draw(Line* l)
 {
   line_resend(l);
   shader_use(l->shader);
-
-  //TODO
-  Matrix4 mt, mr, cam_mat, mo;
-  mat4_set_translation(mt, vec3(0,0,20));
-  mat4_set_rotation_quat(mr, quat_identity());
-  mat4_multiply(mt, mr, cam_mat);
-  mat4_inverse(cam_mat, cam_mat);
-
-  float aspect = (float)1200/(float)400;
-  Matrix4 projection;
-  mat4_set_perspective(projection, M_PI/4.0, aspect ,1,1000.0f);
-
-  Matrix4 mtt, mrr, mat;
-  mat4_set_translation(mtt, vec3(0,0,0));
-  mat4_set_rotation_quat(mrr, quat_identity());
-  mat4_multiply(mtt, mrr, mat);
-
-  mat4_multiply(cam_mat, mat, mo);
-  line_set_matrices(l,mo, projection);
-  //TODO
 
   gl->glBindBuffer(GL_ARRAY_BUFFER, l->buffer_vertices);
   gl->glEnableVertexAttribArray(l->attribute_vertex);

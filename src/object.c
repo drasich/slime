@@ -12,8 +12,10 @@ object_init(Object* o)
 void
 object_destroy(Object* o)
 {
-  //TODO clean mesh, armature
+  if (o->mesh != NULL) mesh_destroy(o->mesh);
+  //TODO clean armature
 }
+
 
 void
 object_draw(Object* o, Matrix4 world, Matrix4 projection)
@@ -126,9 +128,11 @@ Object* create_object_file(const char* path)
     if (!strcmp(type, "mesh")){
       Mesh* mesh = create_mesh_file(f);
       object_add_component_mesh(o, mesh);
+      /*
       o->line = create_line();
       line_add(o->line,vec3(0,0,0),vec3(10,1,0));
       line_init(o->line);
+      */
     }
     else if (!strcmp(type, "armature")){
       Armature* armature = create_armature_file(f);
@@ -220,3 +224,4 @@ void
 object_play_animation(Object* o, char* action_name)
 {
 }
+

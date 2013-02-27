@@ -119,3 +119,10 @@ shader_use(Shader* s)
   gl->glUseProgram(s->program);
 }
 
+void
+shader_destroy(Shader* s)
+{
+  gl->glDeleteShader(s->vert_shader);
+  gl->glDeleteShader(s->frag_shader);
+  gl->glDeleteProgram(s->program);
+}

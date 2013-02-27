@@ -3,6 +3,8 @@
 #include "ui/property.h"
 #define __UNUSED__
 
+static View* view;
+
 void
 create_workspace(Evas_Object* parent)
 {
@@ -25,6 +27,8 @@ create_panes(Evas_Object* win)
 static void
 win_del(void *data, Evas_Object *obj, void *event_info)
 {
+  printf("win delete \n");
+  view_destroy(view);
   elm_exit();
 }
 
@@ -37,8 +41,7 @@ create_window()
   evas_object_smart_callback_add(win, "delete,request", win_del, NULL);
 
   Evas_Object* panes = create_panes(win);
-  View* view = create_view(win);
-  //Evas_Object* view = create_view(win);
+  view = create_view(win);
   Evas_Object* glview = view->glview;
   Evas_Object* property = property_create(win);
 

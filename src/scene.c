@@ -33,12 +33,16 @@ void
 scene_destroy(Scene* s)
 {
   Eina_List *l;
-  void *list_data;
-  //EINA_LIST_FOREACH(list, l, list_data)
-  //printf("%s\n", (char*)list_data);
+  Object *o;
 
-  eina_list_free(s->objects);
+  EINA_LIST_FREE(s->objects, o) {
+    object_destroy(o);
+    free(o);
+  }
 
+  //TODO destroy camera
+
+  free(s);
   eina_shutdown();
 }
 
@@ -75,5 +79,5 @@ scene_update(Scene* s)
   Object *o;
   EINA_LIST_FOREACH(s->objects, l, o)
     object_update(o);
-  
 }
+

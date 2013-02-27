@@ -12,5 +12,6 @@ struct _View
 };
 
 View* create_view(Evas_Object *win);
+void view_destroy(View* v);
 
 #endif

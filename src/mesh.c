@@ -340,7 +340,7 @@ mesh_draw(Mesh* m)
   gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   gl->glDisableVertexAttribArray(m->attribute_vertex);
   gl->glDisableVertexAttribArray(m->attribute_normal);
-  
+
   if (m->has_uv)
   gl->glDisableVertexAttribArray(m->attribute_texcoord);
 }
@@ -350,23 +350,22 @@ Mesh*
 create_mesh(char* path)
 {
   printf("come here ~~~~~~~~~~~~~~~~\n");
-   Mesh* m = calloc(1,sizeof(Mesh));
-   mesh_read(m, path);
-   mesh_read(m, path);
-   mesh_init(m);
-   return m;
+  Mesh* m = calloc(1,sizeof(Mesh));
+  mesh_read(m, path);
+  mesh_init(m);
+  return m;
 }
 
 Mesh*
 create_mesh_file(FILE* f)
 {
   printf("come here ~~~~~~~~~~~~~~~~ 22222222\n");
-   Mesh* m = calloc(1,sizeof(Mesh));
-   //mesh_read_file(m, f);
-   //mesh_init(m);
-   mesh_read_file_no_indices(m, f);
-   mesh_init_no_indices(m);
-   return m;
+  Mesh* m = calloc(1,sizeof(Mesh));
+  //mesh_read_file(m, f);
+  //mesh_init(m);
+  mesh_read_file_no_indices(m, f);
+  mesh_init_no_indices(m);
+  return m;
 }
 
 VertexGroup*
@@ -402,3 +401,22 @@ mesh_init_uniforms(Mesh* m)
   shader_init_uniform(m->shader, "wireframe", &m->uniform_wireframe);
 }
 
+void
+mesh_destroy(Mesh* m)
+{
+  shader_destroy(m->shader);
+  free(m->shader);
+
+  gl->glDeleteBuffers(1,&m->buffer_vertices);
+  gl->glDeleteBuffers(1,&m->buffer_normals);
+  
+  //TODO not yet
+  //gl->glDeleteBuffers(1,&m->buffer_indices);
+  
+  if (m->has_uv) {
+    gl->glDeleteBuffers(1,&m->buffer_texcoords);
+    gl->glDeleteTextures(1,&m->id_texture);
+  }
+
+  gl->glDeleteBuffers(1,&m->buffer_barycentric);
+}
