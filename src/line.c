@@ -112,10 +112,17 @@ line_init(Line* l)
     //l->vertices_gl,
     GL_DYNAMIC_DRAW);
 
+  gl->glGenTextures(1, &l->id_texture);
+	gl->glBindTexture(GL_TEXTURE_2D, l->id_texture);
+  gl->glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	gl->glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
   l->shader = malloc(sizeof(Shader));
   shader_init(l->shader, "shader/line.vert", "shader/line.frag");
   shader_init_attribute(l->shader, "vertex", &l->attribute_vertex);
   shader_init_uniform(l->shader, "matrix", &l->uniform_matrix);
+  shader_init_uniform(l->shader, "texture", &l->uniform_texture);
+  shader_init_uniform(l->shader, "resolution", &l->uniform_resolution);
 }
 
 void
@@ -160,6 +167,9 @@ line_set_matrices(Line* l, Matrix4 mat, Matrix4 projection)
   mat4_transpose(tm, tm);
   mat4_to_gl(tm, l->matrix);
   gl->glUniformMatrix4fv(l->uniform_matrix, 1, GL_FALSE, l->matrix);
+  float width = 1200;
+  float height = 400;
+  gl->glUniform2f(l->uniform_resolution, width, height);
 }
 
 void 
@@ -168,6 +178,38 @@ line_draw(Line* l)
   if (l->need_resend) {
     line_resend(l);
   }
+
+  int width = 1200;
+  int height = 400;
+  
+  //GLuint mypixels[width*height];    //There is no 24 bit variable, so we'll have to settle for 32 bit
+  GLfloat mypixels[width*height];    //There is no 24 bit variable, so we'll have to settle for 32 bit
+  //gl->glReadPixels(0, 0, width, height, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT_24_8_OES, mypixels);  //No upconversion.
+  //gl->glReadPixels(0, 0, width, height, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, mypixels);  //No upconversion.
+  gl->glReadPixels(0, 0, width, height, GL_DEPTH_COMPONENT, GL_FLOAT, mypixels);
+  //
+  //save_png(mypixels);
+  //if (mypixels[0] != 1)
+  //printf("pix : %d\n", mypixels[0]);
+  //printf("pix : %f\n", mypixels[288*1200 +288]);
+
+	gl->glBindTexture(GL_TEXTURE_2D, l->id_texture);
+  gl->glTexImage2D(
+        GL_TEXTURE_2D,
+        0,
+        //GL_RGBA, //4,
+        GL_DEPTH_COMPONENT,
+        width,
+        height,
+        0,
+        //GL_RGBA,
+        GL_DEPTH_COMPONENT,
+        //GL_UNSIGNED_INT,
+        GL_FLOAT,
+        mypixels);
+
+  gl->glActiveTexture(GL_TEXTURE0);
+  gl->glUniform1i(l->uniform_texture, 0);
 
   shader_use(l->shader);
 

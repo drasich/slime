@@ -48,5 +48,12 @@ void main (void)
     gl_FragColor = color;
   }
 
+  //float z = gl_FragCoord.z/gl_FragCoord.w;
+  float z = 1.0 - (gl_FragCoord.z / gl_FragCoord.w) / 100.0;
+
+
+  //gl_FragColor = vec4(z,z,z,1);
+  //gl_FragColor = color;
+
 }
 

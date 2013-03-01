@@ -68,10 +68,10 @@ shader_init_string(Shader* s, const char* vert, const char* frag)
   gl->glGetShaderiv(s->frag_shader, GL_COMPILE_STATUS, &status);
   if (status == GL_FALSE) {
     printf("There was an error compiling the fragment shader\n");
-    gl->glGetShaderiv(s->vert_shader, GL_INFO_LOG_LENGTH, &info_length);
+    gl->glGetShaderiv(s->frag_shader, GL_INFO_LOG_LENGTH, &info_length);
     message = malloc(info_length);
     gl->glGetShaderInfoLog(s->frag_shader, info_length, 0, message);
-    printf("message : %s\n",message);
+    printf("message : %s\n", message);
     free(message);
   }
 

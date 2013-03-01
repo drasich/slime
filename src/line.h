@@ -11,6 +11,7 @@ struct _Line
 {
   char* name;
   GLuint buffer_vertices;
+  GLuint id_texture;
 
   GLfloat*  vertices_gl;
   uint32_t vertices_len;
@@ -21,6 +22,8 @@ struct _Line
   Eina_Inarray* vertices;
 
   GLint uniform_matrix;
+  GLint uniform_texture;
+  GLint uniform_resolution;
   GLuint attribute_vertex;
   
   bool need_resend;

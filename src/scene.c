@@ -17,7 +17,7 @@ create_scene()
   Vec3 at = {0,0,0};
   Vec3 up = {0,1,0};
   s->camera->object.Orientation = quat_lookat(v, at, up);
-  mat4_set_perspective(s->camera->projection, M_PI/4.0, 1.6 ,1,1000.0f);
+  //mat4_set_perspective(s->camera->projection, M_PI/4.0, 1.6 ,1,1000.0f);
 
   return s;
 }
@@ -57,10 +57,11 @@ scene_draw(Scene* s, int w, int h)
   mat4_multiply(mt, mr, cam_mat);
   mat4_inverse(cam_mat, cam_mat);
 
+  //TODO get values from camera
   float aspect = (float)w/(float)h;
   Matrix4 projection;
   //mat4_set_frustum(projection, -aspect*1,aspect*1,-1,1,1,1000.0f);
-  mat4_set_perspective(projection, M_PI/4.0, aspect ,1,1000.0f);
+  mat4_set_perspective(projection, M_PI/4.0, aspect ,1.0f,1000.0f);
 
   Eina_List *l;
   Object *o;

@@ -227,6 +227,11 @@ _init_gl(Evas_Object *obj)
    gl->glDepthFunc(GL_LEQUAL);
    gl->glClearDepthf(1.0f);
 
+   GLint bits;
+
+gl->glGetIntegerv(GL_DEPTH_BITS, &bits);
+printf("depth buffer %d\n\n", bits);
+
    /*
   Vec3 origin = {10,10,-10};
   Repere r = {origin,q2};
