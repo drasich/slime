@@ -21,15 +21,12 @@ object_destroy(Object* o)
 void
 object_draw(Object* o, Matrix4 world, Matrix4 projection)
 {
-  gl->glDepthFunc(GL_LEQUAL);
-
   if (o->mesh != NULL) {
     mesh_set_matrices(o->mesh, world, projection);
     //mesh_draw(o->mesh);
     mesh_draw_no_indices(o->mesh);
   }
 
-  gl->glDepthFunc(GL_ALWAYS);
   if (o->line != NULL) {
     line_set_matrices(o->line, world, projection);
     line_draw(o->line);

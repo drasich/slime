@@ -212,6 +212,7 @@ line_draw(Line* l)
   gl->glUniform1i(l->uniform_texture, 0);
 
   shader_use(l->shader);
+  gl->glClear( GL_DEPTH_BUFFER_BIT);
 
   gl->glBindBuffer(GL_ARRAY_BUFFER, l->buffer_vertices);
   gl->glEnableVertexAttribArray(l->attribute_vertex);
