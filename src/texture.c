@@ -229,12 +229,12 @@ void save_png(GLuint* pix)
         row_pointers[y] = row;
         for (x = 0; x < width; ++x) {
           //float f = pix[y*width +x]*255;
-          //float f = (pix[y*width +x]>>8) / 16777215.0f * 255.0f ;
-          float f = (pix[y*width +x]&0xff)*255;
-          if (y*width +x == 0)  {
-          printf(" the value u : %u \n", pix[0]&0xff);
-          printf(" the value f : %f \n", f);
-                }
+          float f = (pix[y*width +x]>>8) / 16777215.0f * 255.0f ;
+          //float f = (pix[y*width +x]&0xff)*255;
+          //if (y*width +x == 0)  {
+          //printf(" the value u : %u \n", pix[0]&0xff);
+          //printf(" the value f : %f \n", f);
+           //     }
             pixel_t yep = { f,f,f};
             pixel_t * pixel = &yep;
             *row++ = pixel->red;

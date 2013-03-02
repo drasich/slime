@@ -208,7 +208,7 @@ line_draw(Line* l)
   shader_use(l->shader);
 	gl->glBindTexture(GL_TEXTURE_2D, l->id_texture);
   gl->glActiveTexture(GL_TEXTURE0);
-  gl->glUniform1i(l->uniform_texture, l->id_texture);
+  gl->glUniform1i(l->uniform_texture, 0);
 
   gl->glClear( GL_DEPTH_BUFFER_BIT);
 
