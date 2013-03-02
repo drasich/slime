@@ -27,6 +27,9 @@ struct _Line
   GLuint attribute_vertex;
   
   bool need_resend;
+
+  GLuint fbo;
+  GLuint rb;
 };
 
 void line_init(Line* line);

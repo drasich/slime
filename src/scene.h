@@ -11,6 +11,10 @@ struct _Scene {
   Eina_List* objects;
   struct View* view;
   Camera* camera;
+
+  GLuint id_texture;
+  GLuint fbo;
+  GLuint rb;
 };
 
 Scene* create_scene();

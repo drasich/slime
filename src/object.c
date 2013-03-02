@@ -27,6 +27,11 @@ object_draw(Object* o, Matrix4 world, Matrix4 projection)
     mesh_draw_no_indices(o->mesh);
   }
 
+}
+
+void
+object_draw_lines(Object* o, Matrix4 world, Matrix4 projection)
+{
   if (o->line != NULL) {
     line_set_matrices(o->line, world, projection);
     line_draw(o->line);

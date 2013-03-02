@@ -112,17 +112,13 @@ line_init(Line* l)
     //l->vertices_gl,
     GL_DYNAMIC_DRAW);
 
-  gl->glGenTextures(1, &l->id_texture);
-	gl->glBindTexture(GL_TEXTURE_2D, l->id_texture);
-  gl->glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	gl->glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
   l->shader = malloc(sizeof(Shader));
   shader_init(l->shader, "shader/line.vert", "shader/line.frag");
   shader_init_attribute(l->shader, "vertex", &l->attribute_vertex);
   shader_init_uniform(l->shader, "matrix", &l->uniform_matrix);
   shader_init_uniform(l->shader, "texture", &l->uniform_texture);
   shader_init_uniform(l->shader, "resolution", &l->uniform_resolution);
+
 }
 
 void
@@ -179,19 +175,18 @@ line_draw(Line* l)
     line_resend(l);
   }
 
-  int width = 1200;
-  int height = 400;
+  //int width = 1200;
+  //int height = 400;
   
   //GLuint mypixels[width*height];    //There is no 24 bit variable, so we'll have to settle for 32 bit
-  GLfloat mypixels[width*height];    //There is no 24 bit variable, so we'll have to settle for 32 bit
   //gl->glReadPixels(0, 0, width, height, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT_24_8_OES, mypixels);  //No upconversion.
   //gl->glReadPixels(0, 0, width, height, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, mypixels);  //No upconversion.
+
+  /*
+  GLfloat mypixels[width*height];
   gl->glReadPixels(0, 0, width, height, GL_DEPTH_COMPONENT, GL_FLOAT, mypixels);
-  //
+
   //save_png(mypixels);
-  //if (mypixels[0] != 1)
-  //printf("pix : %d\n", mypixels[0]);
-  //printf("pix : %f\n", mypixels[288*1200 +288]);
 
 	gl->glBindTexture(GL_TEXTURE_2D, l->id_texture);
   gl->glTexImage2D(
@@ -206,12 +201,15 @@ line_draw(Line* l)
         GL_DEPTH_COMPONENT,
         //GL_UNSIGNED_INT,
         GL_FLOAT,
+        0);
         mypixels);
-
-  gl->glActiveTexture(GL_TEXTURE0);
-  gl->glUniform1i(l->uniform_texture, 0);
+        */
 
   shader_use(l->shader);
+	gl->glBindTexture(GL_TEXTURE_2D, l->id_texture);
+  gl->glActiveTexture(GL_TEXTURE0);
+  gl->glUniform1i(l->uniform_texture, l->id_texture);
+
   gl->glClear( GL_DEPTH_BUFFER_BIT);
 
   gl->glBindBuffer(GL_ARRAY_BUFFER, l->buffer_vertices);

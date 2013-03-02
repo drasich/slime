@@ -224,8 +224,10 @@ _init_gl(Evas_Object *obj)
    scene_add_object(s,yep);
 
    gl->glEnable(GL_DEPTH_TEST);
+   gl->glEnable(GL_STENCIL_TEST);
    gl->glDepthFunc(GL_LEQUAL);
    gl->glClearDepthf(1.0f);
+   gl->glClearStencil(0);
 
    GLint bits;
 
