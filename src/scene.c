@@ -169,6 +169,13 @@ scene_draw(Scene* s, int w, int h)
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat, mo, mo);
     object_draw(o, mo, projection);
+  }
+
+  //TODO avoid compute matrix 2 times
+  gl->glClear(GL_DEPTH_BUFFER_BIT);
+  EINA_LIST_FOREACH(s->objects, l, o) {
+    object_compute_matrix(o, mo);
+    mat4_multiply(cam_mat, mo, mo);
     //TODO Fix this
     o->line->id_texture = s->id_texture;
     object_draw_lines(o, mo, projection);

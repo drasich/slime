@@ -201,7 +201,7 @@ _init_gl(Evas_Object *obj)
    Object* o = create_object_file("model/cube.bin");
    o->name = "111111";
    //Object* o = create_object_file("model/simpleplane.bin");
-   Vec3 t = {-15,-4,-5};
+   Vec3 t = {-0,-4,-5};
    //Vec3 t = {0,0,0};
    object_set_position(o, t);
    Vec3 axis = {1,0,0};
@@ -218,7 +218,7 @@ _init_gl(Evas_Object *obj)
 
    Object* yep = create_object_file("model/smallchar.bin");
    yep->name = "2222222";
-   Vec3 t2 = {10,-5,-20};
+   Vec3 t2 = {0,-5,-20};
    object_set_position(yep, t2);
    object_set_orientation(yep, q);
    scene_add_object(s,yep);

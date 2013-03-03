@@ -210,8 +210,6 @@ line_draw(Line* l)
   gl->glActiveTexture(GL_TEXTURE0);
   gl->glUniform1i(l->uniform_texture, 0);
 
-  gl->glClear( GL_DEPTH_BUFFER_BIT);
-
   gl->glBindBuffer(GL_ARRAY_BUFFER, l->buffer_vertices);
   gl->glEnableVertexAttribArray(l->attribute_vertex);
   
@@ -237,6 +235,7 @@ line_draw(Line* l)
 
   gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
   gl->glDisableVertexAttribArray(l->attribute_vertex);
+	gl->glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void line_destroy(Line* l)
