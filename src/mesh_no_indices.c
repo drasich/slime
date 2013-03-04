@@ -120,7 +120,6 @@ void mesh_read_file_no_indices(Mesh* mesh, FILE* f)
   free(vert_tmp);
   free(normals_tmp);
   if (mesh->has_uv) free(uvs_tmp);
-  //TODO free indices tmp
 
   //TODO
   //TODO from here it's vertex weight
@@ -307,7 +306,7 @@ mesh_draw_no_indices(Mesh* m)
         GL_UNSIGNED_INT,
         0);
         */
-  gl->glDrawArrays(GL_TRIANGLES,0, m->vertices_len);
+  gl->glDrawArrays(GL_TRIANGLES,0, m->vertices_len/3);
 
   gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
   gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -324,4 +323,90 @@ mesh_show_wireframe(Mesh* m, bool b)
 {
   shader_use(m->shader);
   gl->glUniform1i(m->uniform_wireframe, b?1:0);
+}
+
+Mesh* 
+create_mesh_quad()
+{
+  Mesh* m = calloc(1,sizeof(Mesh));
+  m->name = "quad";
+
+  uint8_t nb_vert = 6;
+  m->vertices = calloc(nb_vert*3, sizeof(GLfloat));
+  m->vertices_len = nb_vert*3;
+
+  uint8_t index;
+  float hw = 0.5f, hh = 0.5f;
+
+  m->vertices[0] = -hw;
+  m->vertices[1] = hh;
+  m->vertices[2] = 0;
+
+  m->vertices[3] = hw;
+  m->vertices[4] = hh;
+  m->vertices[5] = 0;
+
+  m->vertices[6] = hw;
+  m->vertices[7] = -hh;
+  m->vertices[8] = 0;
+
+  m->vertices[9] = -hw;
+  m->vertices[10] = hh;
+  m->vertices[11] = 0;
+
+  m->vertices[12] = hw;
+  m->vertices[13] = -hh;
+  m->vertices[14] = 0;
+
+  m->vertices[15] = -hw;
+  m->vertices[16] = -hh;
+  m->vertices[17] = 0;
+
+  m->barycentric = calloc(nb_vert*3, sizeof(GLfloat));
+  m->barycentric_len = nb_vert*3;
+  for (index = 0; index < nb_vert; ++index){
+
+    if (index % 3 == 0)
+    m->barycentric[index*3] = 1;
+    else if (index % 3 == 1)
+    m->barycentric[index*3 +1] = 1;
+    else if (index % 3 == 2)
+    m->barycentric[index*3 +2] = 1;
+  }
+
+  m->normals = calloc(nb_vert*3, sizeof(GLfloat));
+  m->normals_len = nb_vert*3;
+  for (index = 0; index < nb_vert; ++index){
+    m->normals[index*3] = 0;
+    m->normals[index*3+1] = 0;
+    m->normals[index*3+2] = 1;
+  }
+
+  m->has_uv = false;
+  if (m->has_uv) {
+    m->uvs = calloc(nb_vert*2, sizeof(GLfloat));
+    m->uvs_len = nb_vert*2;
+
+    m->uvs[0] = 0;
+    m->uvs[1] = 0;
+
+    m->uvs[2] = 1;
+    m->uvs[3] = 0;
+
+    m->uvs[4] = 1;
+    m->uvs[5] = 1;
+
+    m->uvs[6] = 0;
+    m->uvs[7] = 0;
+
+    m->uvs[8] = 1;
+    m->uvs[9] = 1;
+
+    m->uvs[10] = 1;
+    m->uvs[11] = 0;
+  }
+
+  mesh_init_no_indices(m);
+
+  return m;
 }

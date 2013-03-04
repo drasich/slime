@@ -104,4 +104,8 @@ void mesh_show_wireframe(Mesh* m, bool b);
 void mesh_init_attributes(Mesh* m);
 void mesh_init_uniforms(Mesh* s);
 
+void mesh_init_uniforms(Mesh* s);
+
+Mesh* create_mesh_quad();
+
 #endif

@@ -231,7 +231,6 @@ line_draw(Line* l)
   */
 
   gl->glDrawArrays(GL_LINES,0, l->vertices->len/3);
-  //gl->glDrawArrays(GL_LINES,0, l->vertices_len);
 
   gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
   gl->glDisableVertexAttribArray(l->attribute_vertex);

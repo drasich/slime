@@ -160,7 +160,7 @@ scene_draw(Scene* s)
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
     //TODO Fix how to use depth texture for lines
-    o->line->id_texture = s->texture_depth_stencil_id;
+    if (o->line != NULL) o->line->id_texture = s->texture_depth_stencil_id;
     object_draw_lines(o, mo, *projection);
   }
 

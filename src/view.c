@@ -223,6 +223,12 @@ _init_gl(Evas_Object *obj)
    object_set_orientation(yep, q);
    scene_add_object(s,yep);
 
+   Object* quad = create_object();
+   quad->mesh = create_mesh_quad();
+   Vec3 t3 = {-5,0,10};
+   object_set_position(quad, t3);
+   scene_add_object(s,quad);
+
    gl->glEnable(GL_DEPTH_TEST);
    gl->glEnable(GL_STENCIL_TEST);
    gl->glDepthFunc(GL_LEQUAL);
