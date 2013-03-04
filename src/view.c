@@ -224,7 +224,7 @@ _init_gl(Evas_Object *obj)
    scene_add_object(s,yep);
 
    Object* quad = create_object();
-   quad->mesh = create_mesh_quad();
+   quad->mesh = create_mesh_quad(1,1);
    Vec3 t3 = {-5,0,10};
    object_set_position(quad, t3);
    scene_add_object(s,quad);

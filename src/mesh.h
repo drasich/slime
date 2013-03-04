@@ -106,6 +106,6 @@ void mesh_init_uniforms(Mesh* s);
 
 void mesh_init_uniforms(Mesh* s);
 
-Mesh* create_mesh_quad();
+Mesh* create_mesh_quad(int w, int h);
 
 #endif

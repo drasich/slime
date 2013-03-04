@@ -318,7 +318,7 @@ mesh_show_wireframe(Mesh* m, bool b)
 }
 
 Mesh* 
-create_mesh_quad()
+create_mesh_quad(int w, int h)
 {
   Mesh* m = calloc(1,sizeof(Mesh));
   m->name = "quad";
@@ -328,7 +328,7 @@ create_mesh_quad()
   m->vertices_len = nb_vert*3;
 
   uint8_t index;
-  float hw = 0.5f, hh = 0.5f;
+  float hw = w*0.5f, hh = h*0.5f;
   m->box.Max = vec3(hw, hh, 0);
   m->box.Min = vec3(-hw, -hh, 0);
 
@@ -376,7 +376,7 @@ create_mesh_quad()
     m->normals[index*3+2] = 1;
   }
 
-  m->has_uv = false;
+  m->has_uv = true;
   if (m->has_uv) {
     m->uvs = calloc(nb_vert*2, sizeof(GLfloat));
     m->uvs_len = nb_vert*2;
