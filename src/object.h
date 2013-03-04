@@ -22,6 +22,7 @@ struct _Object {
   struct _Scene* scene; //TODO make a list of this?
   Animation* animation;
   Line* line;
+  Matrix4 matrix; //computed from position and orientation
 };
 
 void object_init(Object* o);

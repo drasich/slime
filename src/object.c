@@ -81,13 +81,17 @@ object_update(Object* o)
   //Vec3 axis = {1,0,0};
   //o->Orientation = quat_angle_axis(90, axis);
 
-  _animation_update(o, 0.007f);
-  static float stime = 0;
-  static bool played =false;
-  stime += 0.05f;
-  if (stime > 15 && !played) {
-   animation_stop(o);
-   played = true;
+  mat4_pos_ori(o->Position, o->Orientation, o->matrix);
+
+  if (o->animation != NULL) {
+    _animation_update(o, 0.007f);
+    static float stime = 0;
+    static bool played =false;
+    stime += 0.05f;
+    if (stime > 15 && !played) {
+      animation_stop(o);
+      played = true;
+    }
   }
 }
 

@@ -294,16 +294,8 @@ _resize_gl(Evas_Object *obj)
    // same as last frame if you want
    gl->glViewport(0, 0, w, h);
 
-
-   float cx = 0;
-   float hw = w*0.5f;
-   float aspect = (float)w/(float)h;
-
-   /* cx is the eye space center of the zNear plane in X */
-   //glFrustum(cx-half_w*aspect, cx+half_w*aspect, bottom, top, zNear, zFar);
-   //mat4_set_frustum(sview.projection, -1,1,-1,1,1,1000.0f);
-   //TODO not used I think, it is set in object_draw
-   //mat4_set_frustum(sview.projection, -hw*aspect,hw*aspect,-1,1,1,1000.0f);
+   Scene* s = evas_object_data_get(obj, "scene");
+   camera_set_resolution(s->camera, w, h);
 }
 
 static void

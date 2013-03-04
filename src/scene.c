@@ -17,7 +17,6 @@ create_scene()
   Vec3 at = {0,0,0};
   Vec3 up = {0,1,0};
   s->camera->object.Orientation = quat_lookat(v, at, up);
-  //mat4_set_perspective(s->camera->projection, M_PI/4.0, 1.6 ,1,1000.0f);
 
   printf(">>>>>>>>>>>>>>next thing to do : how to send the depth texture to line <<<<<<<<<<<<<<<\n");
 
@@ -118,39 +117,27 @@ scene_destroy(Scene* s)
 void
 scene_draw(Scene* s, int w, int h)
 {
-  Matrix4 mt, mr, cam_mat, mo;
+  Matrix4 cam_mat_inv, mo;
 
-  mat4_set_translation(mt, s->camera->object.Position);
-  mat4_set_rotation_quat(mr, s->camera->object.Orientation);
-  //Quat q = s->camera->object.Orientation;
-  //printf("camera rot %f, %f, %f, %f \n", q.X, q.Y, q.Z, q.W);
-  mat4_multiply(mt, mr, cam_mat);
-  mat4_inverse(cam_mat, cam_mat);
-
-  //TODO get values from camera
-  float aspect = (float)w/(float)h;
-  Matrix4 projection;
-  //mat4_set_frustum(projection, -aspect*1,aspect*1,-1,1,1,1000.0f);
-  mat4_set_perspective(projection, M_PI/4.0, aspect ,1.0f,1000.0f);
+  mat4_inverse(((Object*)(s->camera))->matrix, cam_mat_inv);
+  camera_set_resolution(s->camera, w, h);
+  Matrix4* projection = &s->camera->projection;
 
   gl->glBindTexture(GL_TEXTURE_2D, 0);
   gl->glBindFramebuffer(GL_FRAMEBUFFER, s->fbo);
-	//gl->glBindTexture(GL_TEXTURE_2D, s->id_texture);
 
-  //gl->glBindRenderbuffer(GL_RENDERBUFFER, s->rb);
   gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT) ;
   //gl->glClearStencil(0);
   gl->glEnable(GL_STENCIL_TEST);
   gl->glStencilFunc(GL_ALWAYS, 0x1, 0x1);
   gl->glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
-
   Eina_List *l;
   Object *o;
   EINA_LIST_FOREACH(s->objects, l, o) {
     object_compute_matrix(o, mo);
-    mat4_multiply(cam_mat, mo, mo);
-    object_draw(o, mo, projection);
+    mat4_multiply(cam_mat_inv, mo, mo);
+    object_draw(o, mo, *projection);
   }
 
   //TODO : test, can be removed
@@ -160,25 +147,21 @@ scene_draw(Scene* s, int w, int h)
 
 
   gl->glBindFramebuffer(GL_FRAMEBUFFER,0);
-  //gl->glBindRenderbuffer(GL_RENDERBUFFER,0);
-	//gl->glBindTexture(GL_TEXTURE_2D, 0);
-  //gl->glDrawBuffer(GL_BACK);
-  //gl->glReadBuffer(GL_BACK);
 
   EINA_LIST_FOREACH(s->objects, l, o) {
     object_compute_matrix(o, mo);
-    mat4_multiply(cam_mat, mo, mo);
-    object_draw(o, mo, projection);
+    mat4_multiply(cam_mat_inv, mo, mo);
+    object_draw(o, mo, *projection);
   }
 
   //TODO avoid compute matrix 2 times
   gl->glClear(GL_DEPTH_BUFFER_BIT);
   EINA_LIST_FOREACH(s->objects, l, o) {
     object_compute_matrix(o, mo);
-    mat4_multiply(cam_mat, mo, mo);
+    mat4_multiply(cam_mat_inv, mo, mo);
     //TODO Fix this
     o->line->id_texture = s->id_texture;
-    object_draw_lines(o, mo, projection);
+    object_draw_lines(o, mo, *projection);
   }
 
 }
@@ -190,5 +173,7 @@ scene_update(Scene* s)
   Object *o;
   EINA_LIST_FOREACH(s->objects, l, o)
     object_update(o);
+
+  object_update((Object*)s->camera);
 }
 

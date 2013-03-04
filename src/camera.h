@@ -13,6 +13,8 @@ struct _Camera
   float near;
   float far;
   float aspect;
+  int width;
+  int height;
 };
 
 Camera* create_camera();
@@ -20,5 +22,8 @@ Camera* create_camera();
 void camera_pan(Camera* cam, Vec3 v); // same as trans
 void camera_rotate(Camera* cam, Quat q); // same as -pos, rot, + pos
 void camera_rotate_around_position(Camera* cam, Quat q, Vec3 v);  //same as rotate the cam pos and look at v
+void camera_update_projection(Camera* c);
+
+void camera_set_resolution(Camera* cam, int w, int h);
 
 #endif

@@ -415,3 +415,12 @@ mat4_premul(const Matrix4 m, Vec3 v)
         v.X*m[1] + v.Y*m[5] + v.Z*m[9],
         v.X*m[2] + v.Y*m[6] + v.Z*m[10]);
 }
+
+void
+mat4_pos_ori(Vec3 position, Quat orientation, Matrix4 out)
+{
+  Matrix4 mt, mr;
+  mat4_set_translation(mt, position);
+  mat4_set_rotation_quat(mr, orientation);
+  mat4_multiply(mt, mr, out);
+}

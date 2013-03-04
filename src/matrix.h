@@ -49,6 +49,8 @@ void mat4_set_rotation_quat(Matrix4 m, Quat q);
 Vec3 mat4_mul(const Matrix4 m, Vec3 v);
 Vec3 mat4_premul(const Matrix4 m, Vec3 v);
 
+void mat4_pos_ori(Vec3 position, Quat orientation, Matrix4 out);
+
 #endif
 
 
