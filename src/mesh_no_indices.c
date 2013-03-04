@@ -298,14 +298,6 @@ mesh_draw_no_indices(Mesh* m)
     0,
     0);
 
-  /*
-  gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->buffer_indices);
-  gl->glDrawElements(
-        GL_TRIANGLES, 
-        m->indices_len,
-        GL_UNSIGNED_INT,
-        0);
-        */
   gl->glDrawArrays(GL_TRIANGLES,0, m->vertices_len/3);
 
   gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -337,6 +329,8 @@ create_mesh_quad()
 
   uint8_t index;
   float hw = 0.5f, hh = 0.5f;
+  m->box.Max = vec3(hw, hh, 0);
+  m->box.Min = vec3(-hw, -hh, 0);
 
   m->vertices[0] = -hw;
   m->vertices[1] = hh;

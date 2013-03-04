@@ -228,6 +228,7 @@ _init_gl(Evas_Object *obj)
    Vec3 t3 = {-5,0,10};
    object_set_position(quad, t3);
    scene_add_object(s,quad);
+   quad->name = "quad";
 
    gl->glEnable(GL_DEPTH_TEST);
    gl->glEnable(GL_STENCIL_TEST);
