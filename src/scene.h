@@ -19,7 +19,7 @@ struct _Scene {
 
 Scene* create_scene();
 void scene_add_object(Scene* s, Object* o);
-void scene_draw(Scene* s, int w, int h);
+void scene_draw(Scene* s);
 void scene_update(Scene* s);
 
 void scene_destroy(Scene* s);

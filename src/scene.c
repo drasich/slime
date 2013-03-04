@@ -25,6 +25,8 @@ create_scene()
   gl->glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	gl->glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
+
+  //TODO texture resolution
   int width = 1200;
   int height = 400;
   /*
@@ -115,12 +117,12 @@ scene_destroy(Scene* s)
 }
 
 void
-scene_draw(Scene* s, int w, int h)
+scene_draw(Scene* s)
 {
   Matrix4 cam_mat_inv, mo;
 
+  //TODO save the inverse camera and compute only if there was a change.
   mat4_inverse(((Object*)(s->camera))->matrix, cam_mat_inv);
-  camera_set_resolution(s->camera, w, h);
   Matrix4* projection = &s->camera->projection;
 
   gl->glBindTexture(GL_TEXTURE_2D, 0);
@@ -174,6 +176,7 @@ scene_update(Scene* s)
   EINA_LIST_FOREACH(s->objects, l, o)
     object_update(o);
 
+  //TODO only update camera if there is a movement
   object_update((Object*)s->camera);
 }
 

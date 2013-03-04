@@ -318,7 +318,7 @@ _draw_gl(Evas_Object *obj)
    Scene* s = evas_object_data_get(obj, "scene");
    scene_update(s);
 
-   scene_draw(s, w, h);
+   scene_draw(s);
    gl->glFinish();
 }
 
