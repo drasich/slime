@@ -14,7 +14,6 @@ void
 camera_update_projection(Camera* c)
 {
   c->aspect = (float)c->width/(float)c->height;
-  //mat4_set_frustum(projection, -aspect*1,aspect*1,-1,1,1,1000.0f);
   mat4_set_perspective(c->projection, c->fovy, c->aspect , c->near, c->far);
 }
 

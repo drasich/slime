@@ -18,10 +18,8 @@ create_scene()
   Vec3 up = {0,1,0};
   s->camera->object.Orientation = quat_lookat(v, at, up);
 
-  printf(">>>>>>>>>>>>>>next thing to do : how to send the depth texture to line <<<<<<<<<<<<<<<\n");
-
-  gl->glGenTextures(1, &s->id_texture);
-	gl->glBindTexture(GL_TEXTURE_2D, s->id_texture);
+  gl->glGenTextures(1, &s->texture_depth_stencil_id);
+	gl->glBindTexture(GL_TEXTURE_2D, s->texture_depth_stencil_id);
   gl->glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	gl->glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
@@ -66,14 +64,14 @@ create_scene()
         GL_FRAMEBUFFER,
         GL_DEPTH_ATTACHMENT,
         GL_TEXTURE_2D,
-        s->id_texture,
+        s->texture_depth_stencil_id,
         0);
 
   gl->glFramebufferTexture2D(
         GL_FRAMEBUFFER,
         GL_STENCIL_ATTACHMENT,
         GL_TEXTURE_2D,
-        s->id_texture,
+        s->texture_depth_stencil_id,
         0);
 
   gl->glFramebufferRenderbuffer(
@@ -161,8 +159,8 @@ scene_draw(Scene* s)
   EINA_LIST_FOREACH(s->objects, l, o) {
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
-    //TODO Fix this
-    o->line->id_texture = s->id_texture;
+    //TODO Fix how to use depth texture for lines
+    o->line->id_texture = s->texture_depth_stencil_id;
     object_draw_lines(o, mo, *projection);
   }
 

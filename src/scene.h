@@ -12,7 +12,7 @@ struct _Scene {
   struct View* view;
   Camera* camera;
 
-  GLuint id_texture;
+  GLuint texture_depth_stencil_id;
   GLuint fbo;
   GLuint rb;
 };
