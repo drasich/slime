@@ -247,6 +247,7 @@ mesh_init_texture(Mesh* m)
   free(tex);
 }
 
+/*
 void
 mesh_set_matrix(Mesh* mesh, Matrix4 mat)
 {
@@ -266,6 +267,7 @@ mesh_set_matrix(Mesh* mesh, Matrix4 mat)
   gl->glUniformMatrix4fv(mesh->uniform_matrix, 1, GL_FALSE, mesh->matrix);
   gl->glUniformMatrix3fv(mesh->uniform_normal_matrix, 1, GL_FALSE, mesh->matrix_normal);
 }
+*/
 
 void
 mesh_set_matrices(Mesh* mesh, Matrix4 mat, Matrix4 projection)

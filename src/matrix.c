@@ -104,14 +104,14 @@ mat4_set_frustum(
 {
   m[1] = m[3] = m[4] = m[7] = m[8] = m[9] = m[12] = m[13] = 0;
 
-  m[0]  =  2 * near / (right - left);
-  m[2]  =  (right + left) / (right - left);
-  m[5]  =  2 * near / (top - bottom);
-  m[6]  =  (top + bottom) / (top - bottom);
+  m[0] = 2 * near / (right - left);
+  m[2] = (right + left) / (right - left);
+  m[5] = 2 * near / (top - bottom);
+  m[6] = (top + bottom) / (top - bottom);
   m[10] = -(far + near) / (far - near);
   m[11] = -(2 * far * near) / (far - near);
   m[14] = -1;
-  m[15] =  0;
+  m[15] = 0;
 }
 
 void
@@ -126,6 +126,23 @@ mat4_set_perspective(
   double half_width = half_height* aspect;
 
   mat4_set_frustum(m, -half_width, half_width, -half_height, half_height, near, far);
+}
+
+void
+mat4_set_orthographic(
+      Matrix4 m,
+      uint16_t hw,
+      uint16_t hh,
+      double near,
+      double far)
+{
+  m[1] = m[2] = m[3] = m[4] = m[6] = m[7] = m[8] = m[9] = m[12] = m[13] = m[14] = 0;
+
+  m[0] =  1/(double) hw;
+  m[5] =  1/(double) hh;
+  m[10] = -2 / (far - near);
+  m[11] = - (far + near) / (far - near);
+  m[15] = 1;
 }
 
 

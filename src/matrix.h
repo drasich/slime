@@ -3,6 +3,18 @@
 #include "gl.h"
 #include "quat.h"
 
+// matrices are row major in this code:
+// 0 1 2 3
+// 4 5 6 7
+// 8 9 10 11
+// 12 13 14 15
+// while opengL is column major:
+// 0 4 8 12
+// 1 5 9 13
+// 2 6 10 14
+// 3 7 11 15
+// so we need to transpose before sending
+
 typedef double Matrix4[16];
 typedef double Matrix3[9];
 typedef GLfloat Matrix4GL[16];
@@ -33,6 +45,14 @@ void mat4_set_perspective(
       double aspect,
       double near,
       double far);
+
+void mat4_set_orthographic(
+      Matrix4 m,
+      uint16_t width,
+      uint16_t height,
+      double near,
+      double far);
+
 
 void mat4_multiply(const Matrix4 m, const Matrix4 n, Matrix4 out);
 
