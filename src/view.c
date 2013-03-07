@@ -194,56 +194,54 @@ _mouse_wheel(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *ev
 static void
 _init_gl(Evas_Object *obj)
 {
-   Scene* s = create_scene();
-   evas_object_data_set(obj, "scene", s);
+  Scene* s = create_scene();
+  evas_object_data_set(obj, "scene", s);
 
-   //Object* o = create_object_file("model/smallchar.bin");
-   Object* o = create_object_file("model/cube.bin");
-   o->name = "111111";
-   //Object* o = create_object_file("model/simpleplane.bin");
-   Vec3 t = {-0,-4,-5};
-   //Vec3 t = {0,0,0};
-   object_set_position(o, t);
-   Vec3 axis = {1,0,0};
-   Quat q = quat_angle_axis(3.14159f/2.f, axis);
-   Vec3 axis2 = {0,0,1};
-   Quat q2 = quat_angle_axis(3.14159f/4.f, axis2);
-   q = quat_mul(q, q2);
-   object_set_orientation(o, q2);
-   scene_add_object(s,o);
+  //Object* o = create_object_file("model/smallchar.bin");
+  Object* o = create_object_file("model/cube.bin");
+  o->name = "111111";
+  //Object* o = create_object_file("model/simpleplane.bin");
+  Vec3 t = {-0,-4,-5};
+  //Vec3 t = {0,0,0};
+  object_set_position(o, t);
+  Vec3 axis = {1,0,0};
+  Quat q = quat_angle_axis(3.14159f/2.f, axis);
+  Vec3 axis2 = {0,0,1};
+  Quat q2 = quat_angle_axis(3.14159f/4.f, axis2);
+  q = quat_mul(q, q2);
+  object_set_orientation(o, q2);
+  scene_add_object(s,o);
 
-   /*
-   animation_play(o, "walkquat", LOOP);
-   */
+  //animation_play(o, "walkquat", LOOP);
 
-   Object* yep = create_object_file("model/smallchar.bin");
-   yep->name = "2222222";
-   Vec3 t2 = {0,-5,-20};
-   object_set_position(yep, t2);
-   object_set_orientation(yep, q);
-   scene_add_object(s,yep);
+  Object* yep = create_object_file("model/smallchar.bin");
+  yep->name = "2222222";
+  Vec3 t2 = {0,-5,-20};
+  object_set_position(yep, t2);
+  object_set_orientation(yep, q);
+  scene_add_object(s,yep);
 
-   Object* quad = create_object();
-   quad->mesh = create_mesh_quad(100,100);
-   Vec3 t3 = {210/2 - 50,400/3/2 - 50,-100};
-   //Vec3 t3 = {800/3/2 - 50,400/3/2 - 50,-100};
-   //Vec3 t3 = {0,0,-20};
-   object_set_position(quad, t3);
-   scene_add_object_ortho(s,quad);
-   quad->name = "quad";
+  Object* quad = create_object();
+  quad->mesh = create_mesh_quad(100,100);
+  Vec3 t3 = {-210/2 + 50,400/3/2 - 50,-100};
+  //Vec3 t3 = {800/3/2 - 50,400/3/2 - 50,-100};
+  //Vec3 t3 = {0,0,-20};
+  object_set_position(quad, t3);
+  scene_add_object_ortho(s,quad);
+  quad->name = "quad";
 
-   gl->glEnable(GL_DEPTH_TEST);
-   gl->glEnable(GL_STENCIL_TEST);
-   gl->glDepthFunc(GL_LEQUAL);
-   gl->glClearDepthf(1.0f);
-   gl->glClearStencil(0);
+  gl->glEnable(GL_DEPTH_TEST);
+  gl->glEnable(GL_STENCIL_TEST);
+  gl->glDepthFunc(GL_LEQUAL);
+  gl->glClearDepthf(1.0f);
+  gl->glClearStencil(0);
 
-   GLint bits;
+  GLint bits;
 
-gl->glGetIntegerv(GL_DEPTH_BITS, &bits);
-printf("depth buffer %d\n\n", bits);
+  //gl->glGetIntegerv(GL_DEPTH_BITS, &bits);
+  //printf("depth buffer %d\n\n", bits);
 
-   /*
+  /*
   Vec3 origin = {10,10,-10};
   Repere r = {origin,q2};
   Vec3 tao = vec3(11,11,-11);
@@ -317,7 +315,7 @@ _draw_gl(Evas_Object *obj)
 
    gl->glViewport(0, 0, w, h);
    //gl->glClearColor(1.0,0.8,0.3,1);
-   gl->glClearColor(0.2,1.0,0.2,1);
+   gl->glClearColor(0.2,0.2,0.2,1);
    gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
    // Draw a Triangle
