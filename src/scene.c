@@ -6,6 +6,7 @@ create_scene()
 {
   Scene* s = calloc(1, sizeof(Scene));
   s->objects = NULL;
+  s->ortho = NULL;
   eina_init();
   s->camera = create_camera();
   s->camera->object.name = "camera";
@@ -99,6 +100,15 @@ scene_add_object(Scene* s, Object* o)
 }
 
 void
+scene_add_object_ortho(Scene* s, Object* o)
+{
+  s->ortho = eina_list_append(s->ortho, o);
+  o->scene = s;
+}
+
+
+
+void
 scene_destroy(Scene* s)
 {
   Eina_List *l;
@@ -107,6 +117,11 @@ scene_destroy(Scene* s)
   EINA_LIST_FREE(s->objects, o) {
     object_destroy(o);
   }
+
+  EINA_LIST_FREE(s->ortho, o) {
+    object_destroy(o);
+  }
+
 
   //TODO destroy camera
 
@@ -122,6 +137,7 @@ scene_draw(Scene* s)
   //TODO save the inverse camera and compute only if there was a change.
   mat4_inverse(((Object*)(s->camera))->matrix, cam_mat_inv);
   Matrix4* projection = &s->camera->projection;
+  Matrix4* ortho = &s->camera->orthographic;
 
   gl->glBindTexture(GL_TEXTURE_2D, 0);
   gl->glBindFramebuffer(GL_FRAMEBUFFER, s->fbo);
@@ -160,9 +176,18 @@ scene_draw(Scene* s)
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
     //TODO Fix how to use depth texture for lines
-    if (o->line != NULL) o->line->id_texture = s->texture_depth_stencil_id;
-    object_draw_lines(o, mo, *projection);
+    //if (o->line != NULL) o->line->id_texture = s->texture_depth_stencil_id;
+    //object_draw_lines(o, mo, *projection);
   }
+
+  //* TODO ortho
+  gl->glClear(GL_DEPTH_BUFFER_BIT);
+  EINA_LIST_FOREACH(s->ortho, l, o) {
+    object_compute_matrix(o, mo);
+    //mat4_multiply(cam_mat_inv, mo, mo);
+    object_draw(o, mo, *ortho);
+  }
+  //*/
 
 }
 

@@ -48,8 +48,8 @@ void mat4_set_perspective(
 
 void mat4_set_orthographic(
       Matrix4 m,
-      uint16_t width,
-      uint16_t height,
+      uint16_t half_width,
+      uint16_t half_height,
       double near,
       double far);
 

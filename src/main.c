@@ -45,14 +45,34 @@ create_window()
   Evas_Object* glview = view->glview;
   Evas_Object* property = property_create(win);
 
-  elm_object_part_content_set(panes, "left", glview);
+  //elm_object_part_content_set(panes, "left", glview);
+  elm_object_part_content_set(panes, "left", view->box);
   elm_object_part_content_set(panes, "right", property);
   //elm_object_part_content_set(panes, "right", hpanes);
 
   elm_panes_content_left_size_set(panes, 0.75f);
 
-  //evas_object_resize(win, 800/3, 400/3);
-  evas_object_resize(win, 1200, 400);
+  /*
+  Evas_Object* box = elm_box_add(win);
+  printf("box : %p\n", box);
+  evas_object_size_hint_weight_set(box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  elm_win_resize_object_add(win, box);
+  elm_box_horizontal_set(box, EINA_TRUE);
+  view = create_view(win);
+  Evas_Object* glview = view->glview;
+  Evas_Object* property = property_create(win);
+  printf("glview : %p\n", glview);
+  printf("property : %p\n", property);
+  //elm_box_pack_start(box, glview);
+  elm_box_pack_end(box, property);
+  evas_object_show(box);
+
+  printf("win : %p\n", win);
+  */
+
+
+  evas_object_resize(win, 800/3, 400/3);
+  //evas_object_resize(win, 1200, 400);
   evas_object_show(win);
 }
 

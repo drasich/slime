@@ -9,6 +9,7 @@ typedef struct _Scene Scene;
 struct _Scene {
   //list of objects
   Eina_List* objects;
+  Eina_List* ortho;
   struct View* view;
   Camera* camera;
 
@@ -19,6 +20,7 @@ struct _Scene {
 
 Scene* create_scene();
 void scene_add_object(Scene* s, Object* o);
+void scene_add_object_ortho(Scene* s, Object* o);
 void scene_draw(Scene* s);
 void scene_update(Scene* s);
 

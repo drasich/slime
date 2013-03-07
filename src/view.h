@@ -9,6 +9,7 @@ struct _View
   Matrix4 projection;
   struct _Context* context;
   Evas_Object* glview;
+  Evas_Object* box;
 };
 
 View* create_view(Evas_Object *win);

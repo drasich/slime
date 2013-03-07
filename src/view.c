@@ -224,10 +224,12 @@ _init_gl(Evas_Object *obj)
    scene_add_object(s,yep);
 
    Object* quad = create_object();
-   quad->mesh = create_mesh_quad(1,1);
-   Vec3 t3 = {-5,0,10};
+   quad->mesh = create_mesh_quad(100,100);
+   Vec3 t3 = {210/2 - 50,400/3/2 - 50,-100};
+   //Vec3 t3 = {800/3/2 - 50,400/3/2 - 50,-100};
+   //Vec3 t3 = {0,0,-20};
    object_set_position(quad, t3);
-   scene_add_object(s,quad);
+   scene_add_object_ortho(s,quad);
    quad->name = "quad";
 
    gl->glEnable(GL_DEPTH_TEST);
@@ -296,6 +298,7 @@ _resize_gl(Evas_Object *obj)
 {
    int w, h;
    elm_glview_size_get(obj, &w, &h);
+   printf("resize gl %d, %d \n", w, h);
 
    // GL Viewport stuff. you can avoid doing this if viewport is all the
    // same as last frame if you want
@@ -314,7 +317,7 @@ _draw_gl(Evas_Object *obj)
 
    gl->glViewport(0, 0, w, h);
    //gl->glClearColor(1.0,0.8,0.3,1);
-   gl->glClearColor(0.2,0.2,0.2,1);
+   gl->glClearColor(0.2,1.0,0.2,1);
    gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
    // Draw a Triangle
@@ -352,14 +355,15 @@ _del(void *data __UNUSED__, Evas *evas __UNUSED__, Evas_Object *obj, void *event
 }
 
 static Evas_Object*
-_create_glview(Evas_Object* win)
+_create_glview(View* view, Evas_Object* win)
 {
   Evas_Object *bx, *bt, *glview;
   Ecore_Animator *ani;
 
-  bx = elm_box_add(win);
+  view->box = elm_box_add(win);
+  bx = view->box;
   evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  elm_win_resize_object_add(win, bx);
+  //elm_win_resize_object_add(win, bx);
   evas_object_show(bx);
 
   glview = elm_glview_add(win);
@@ -406,9 +410,8 @@ create_view(Evas_Object *win)
 {
   View *view = malloc(sizeof *view);
 
-  mat4_set_frustum(view->projection, -1,1,-1,1,1,1000.0f);
   view->context = malloc(sizeof *view->context);
-  view->glview = _create_glview(win);
+  view->glview = _create_glview(view, win);
   evas_object_data_set(view->glview, "view", view);
 
   return view;

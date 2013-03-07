@@ -17,6 +17,14 @@ camera_update_projection(Camera* c)
   mat4_set_perspective(c->projection, c->fovy, c->aspect , c->near, c->far);
 }
 
+void
+camera_update_orthographic(Camera* c)
+{
+  printf("camera wh : %d, %d\n", c->width, c->height);
+  mat4_set_orthographic(c->orthographic, c->width/2, c->height/2, c->near, c->far);
+}
+
+
 
 void 
 camera_set_resolution(Camera* c, int w, int h)
@@ -25,6 +33,7 @@ camera_set_resolution(Camera* c, int w, int h)
     c->width = w;
     c->height = h;
     camera_update_projection(c);
+    camera_update_orthographic(c);
   }
 }
 
