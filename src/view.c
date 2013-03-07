@@ -305,6 +305,26 @@ _resize_gl(Evas_Object *obj)
    Scene* s = evas_object_data_get(obj, "scene");
    camera_set_resolution(s->camera, w, h);
    quad_resize(s->quad->mesh, w, h);
+
+   //TODO wip fix
+	gl->glBindTexture(GL_TEXTURE_2D, s->texture_depth_stencil_id);
+
+  gl->glTexImage2D(
+        GL_TEXTURE_2D,
+        0,
+        GL_DEPTH_STENCIL_OES,
+        w,
+        h,
+        0,
+        GL_DEPTH_STENCIL_OES,
+        GL_UNSIGNED_INT_24_8_OES,
+        NULL);
+
+	gl->glBindTexture(GL_TEXTURE_2D, 0);
+
+  gl->glBindRenderbuffer(GL_RENDERBUFFER, s->rb);
+  gl->glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, w, h);
+  gl->glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
 static void
