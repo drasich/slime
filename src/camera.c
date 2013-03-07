@@ -20,7 +20,6 @@ camera_update_projection(Camera* c)
 void
 camera_update_orthographic(Camera* c)
 {
-  printf("camera wh : %d, %d\n", c->width, c->height);
   mat4_set_orthographic(c->orthographic, c->width/2, c->height/2, c->near, c->far);
 }
 

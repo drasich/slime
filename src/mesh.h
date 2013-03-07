@@ -75,6 +75,7 @@ struct _Mesh
   GLint uniform_normal_matrix;
   GLint uniform_wireframe;
   GLint uniform_texture;
+  GLint uniform_resolution;
 };
 
 void mesh_read_file(Mesh* mesh, FILE* f);
@@ -107,5 +108,8 @@ void mesh_init_uniforms(Mesh* s);
 void mesh_init_uniforms(Mesh* s);
 
 Mesh* create_mesh_quad(int w, int h);
+void quad_resize(Mesh* m, int w, int h);
+void quad_init(Mesh* m);
+void quad_draw(Mesh* m);
 
 #endif

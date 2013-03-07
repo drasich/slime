@@ -16,6 +16,7 @@ struct _Scene {
   GLuint texture_depth_stencil_id;
   GLuint fbo;
   GLuint rb;
+  Object* quad;
 };
 
 Scene* create_scene();

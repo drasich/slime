@@ -221,14 +221,15 @@ _init_gl(Evas_Object *obj)
   object_set_orientation(yep, q);
   scene_add_object(s,yep);
 
-  Object* quad = create_object();
-  quad->mesh = create_mesh_quad(100,100);
-  Vec3 t3 = {-210/2 + 50,400/3/2 - 50,-100};
+  s->quad = create_object();
+  s->quad->mesh = create_mesh_quad(100,100);
+  //Vec3 t3 = {-210/2 + 50,400/3/2 - 50,-100};
+  Vec3 t3 = {0,0,-100};
   //Vec3 t3 = {800/3/2 - 50,400/3/2 - 50,-100};
   //Vec3 t3 = {0,0,-20};
-  object_set_position(quad, t3);
-  scene_add_object_ortho(s,quad);
-  quad->name = "quad";
+  object_set_position(s->quad, t3);
+  scene_add_object_ortho(s,s->quad);
+  s->quad->name = "quad";
 
   gl->glEnable(GL_DEPTH_TEST);
   gl->glEnable(GL_STENCIL_TEST);
@@ -236,8 +237,7 @@ _init_gl(Evas_Object *obj)
   gl->glClearDepthf(1.0f);
   gl->glClearStencil(0);
 
-  GLint bits;
-
+  //GLint bits;
   //gl->glGetIntegerv(GL_DEPTH_BITS, &bits);
   //printf("depth buffer %d\n\n", bits);
 
@@ -296,7 +296,7 @@ _resize_gl(Evas_Object *obj)
 {
    int w, h;
    elm_glview_size_get(obj, &w, &h);
-   printf("resize gl %d, %d \n", w, h);
+   //printf("resize gl %d, %d \n", w, h);
 
    // GL Viewport stuff. you can avoid doing this if viewport is all the
    // same as last frame if you want
@@ -304,6 +304,7 @@ _resize_gl(Evas_Object *obj)
 
    Scene* s = evas_object_data_get(obj, "scene");
    camera_set_resolution(s->camera, w, h);
+   quad_resize(s->quad->mesh, w, h);
 }
 
 static void

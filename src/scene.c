@@ -185,6 +185,7 @@ scene_draw(Scene* s)
   EINA_LIST_FOREACH(s->ortho, l, o) {
     object_compute_matrix(o, mo);
     //mat4_multiply(cam_mat_inv, mo, mo);
+    if (o->mesh != NULL) o->mesh->id_texture = s->texture_depth_stencil_id;
     object_draw(o, mo, *ortho);
   }
   //*/

@@ -400,7 +400,171 @@ create_mesh_quad(int w, int h)
     m->uvs[11] = 0;
   }
 
-  mesh_init_no_indices(m);
+  quad_init(m);
 
   return m;
+}
+   
+void
+quad_resize(Mesh* m, int w, int h)
+{
+
+  shader_use(m->shader);
+  gl->glUniform2f(m->uniform_resolution, w, h);
+  float hw = w*0.5f, hh = h*0.5f;
+
+  m->vertices[0] = -hw;
+  m->vertices[1] = hh;
+  m->vertices[2] = 0;
+
+  m->vertices[3] = hw;
+  m->vertices[4] = hh;
+  m->vertices[5] = 0;
+
+  m->vertices[6] = hw;
+  m->vertices[7] = -hh;
+  m->vertices[8] = 0;
+
+  m->vertices[9] = -hw;
+  m->vertices[10] = hh;
+  m->vertices[11] = 0;
+
+  m->vertices[12] = hw;
+  m->vertices[13] = -hh;
+  m->vertices[14] = 0;
+
+  m->vertices[15] = -hw;
+  m->vertices[16] = -hh;
+  m->vertices[17] = 0;
+
+  //TODO we don't need to resend normals.
+  mesh_resend_no_indices(m);
+
+}
+
+void
+quad_init(Mesh* m)
+{
+  //TODO factorize these functions
+  gl->glGenBuffers(1, &m->buffer_vertices);
+  gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_vertices);
+  gl->glBufferData(
+    GL_ARRAY_BUFFER,
+    m->vertices_len* sizeof(GLfloat),
+    m->vertices,
+    GL_DYNAMIC_DRAW);
+
+  /*
+  gl->glGenBuffers(1, &m->buffer_normals);
+  gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_normals);
+  gl->glBufferData(
+    GL_ARRAY_BUFFER,
+    m->normals_len* sizeof(GLfloat),
+    m->normals,
+    GL_DYNAMIC_DRAW);
+    */
+
+  /*
+  gl->glGenBuffers(1, &m->buffer_barycentric);
+  gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_barycentric);
+  gl->glBufferData(
+    GL_ARRAY_BUFFER,
+    m->barycentric_len* sizeof(GLfloat),
+    m->barycentric,
+    GL_STATIC_DRAW);
+    */
+
+  m->shader = malloc(sizeof(Shader));
+  //TODO delete shader
+  shader_init(m->shader, "shader/stencil.vert", "shader/stencil.frag");
+  //shader_init(m->shader, "shader/simple.vert", "shader/simple.frag");
+
+  /*
+  if (m->has_uv) {
+    gl->glGenBuffers(1, &m->buffer_texcoords);
+    gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_texcoords);
+    gl->glBufferData(
+          GL_ARRAY_BUFFER,
+          m->uvs_len* sizeof(GLfloat),
+          m->uvs,
+          GL_DYNAMIC_DRAW);
+  }
+  */
+
+  shader_init_attribute(m->shader, "vertex", &m->attribute_vertex);
+  //shader_init_attribute(m->shader, "normal", &m->attribute_normal);
+  //shader_init_attribute(m->shader, "texcoord", &m->attribute_texcoord);
+  shader_init_uniform(m->shader, "matrix", &m->uniform_matrix);
+  shader_init_uniform(m->shader, "resolution", &m->uniform_resolution);
+}
+
+void
+quad_draw(Mesh* m)
+{
+  shader_use(m->shader);
+
+  gl->glActiveTexture(GL_TEXTURE0);
+  gl->glBindTexture(GL_TEXTURE_2D, m->id_texture);
+  gl->glUniform1i(m->uniform_texture, 0);
+
+  //texcoord
+  /*
+  if (m->has_uv) {
+    gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_texcoords);
+    gl->glEnableVertexAttribArray(m->attribute_texcoord);
+    gl->glVertexAttribPointer(
+          m->attribute_texcoord,
+          2,
+          GL_FLOAT,
+          GL_FALSE,
+          0,
+          0);
+  }
+  */
+
+  gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_vertices);
+  gl->glEnableVertexAttribArray(m->attribute_vertex);
+  
+  gl->glVertexAttribPointer(
+    m->attribute_vertex,
+    3,
+    GL_FLOAT,
+    GL_FALSE,
+    0,
+    0);
+
+  /*
+  gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_normals);
+  gl->glEnableVertexAttribArray(m->attribute_normal);
+  gl->glVertexAttribPointer(
+    m->attribute_normal,
+    3,
+    GL_FLOAT,
+    GL_FALSE,
+    0,
+    0);
+    */
+
+  /*
+  gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_barycentric);
+  gl->glEnableVertexAttribArray(m->attribute_barycentric);
+  
+  gl->glVertexAttribPointer(
+    m->attribute_barycentric,
+    3,
+    GL_FLOAT,
+    GL_FALSE,
+    0,
+    0);
+    */
+
+  gl->glDrawArrays(GL_TRIANGLES,0, m->vertices_len/3);
+
+  gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
+  gl->glDisableVertexAttribArray(m->attribute_vertex);
+  //gl->glDisableVertexAttribArray(m->attribute_normal);
+  //gl->glDisableVertexAttribArray(m->attribute_barycentric);
+  
+  //if (m->has_uv)
+  //gl->glDisableVertexAttribArray(m->attribute_texcoord);
 }
