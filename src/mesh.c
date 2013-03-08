@@ -144,8 +144,8 @@ mesh_read(Mesh* mesh, char* path)
   fseek(f, 0, SEEK_SET);
 
   mesh->name = read_name(f);
-  //mesh_read_file(mesh, f);
-  mesh_read_file_no_indices(mesh, f);
+  mesh_read_file(mesh, f);
+  //mesh_read_file_no_indices(mesh, f);
   fclose(f);
 }
 
@@ -182,10 +182,6 @@ mesh_init(Mesh* m)
     m->normals,
     GL_DYNAMIC_DRAW);
 
-  m->shader = malloc(sizeof(Shader));
-  //TODO delete shader
-  shader_init(m->shader, "shader/simple.vert", "shader/simple.frag");
-
   mesh_init_texture(m);
 
   if (m->has_uv) {
@@ -198,8 +194,6 @@ mesh_init(Mesh* m)
           GL_DYNAMIC_DRAW);
   }
 
-  mesh_init_attributes(m);
-  mesh_init_uniforms(m);
 }
 
 void
@@ -363,10 +357,10 @@ create_mesh_file(FILE* f)
 {
   printf("come here ~~~~~~~~~~~~~~~~ 22222222\n");
   Mesh* m = calloc(1,sizeof(Mesh));
-  //mesh_read_file(m, f);
-  //mesh_init(m);
-  mesh_read_file_no_indices(m, f);
-  mesh_init_no_indices(m);
+  mesh_read_file(m, f);
+  mesh_init(m);
+  //mesh_read_file_no_indices(m, f);
+  //mesh_init_no_indices(m);
   return m;
 }
 
@@ -387,6 +381,7 @@ mesh_find_vertexgroup(Mesh* mesh, char* name)
 void 
 mesh_init_attributes(Mesh* m)
 {
+  if (!m->shader) return;
   shader_init_attribute(m->shader, "vertex", &m->attribute_vertex);
   shader_init_attribute(m->shader, "normal", &m->attribute_normal);
   shader_init_attribute(m->shader, "texcoord", &m->attribute_texcoord);
@@ -397,7 +392,7 @@ mesh_init_attributes(Mesh* m)
 void 
 mesh_init_uniforms(Mesh* m)
 {
-  //shader_init_uniform(s, "test", &s->uniform_test);
+  if (!m->shader) return;
   shader_init_uniform(m->shader, "matrix", &m->uniform_matrix);
   shader_init_uniform(m->shader, "normal_matrix", &m->uniform_normal_matrix);
   shader_init_uniform(m->shader, "wireframe", &m->uniform_wireframe);
@@ -406,9 +401,6 @@ mesh_init_uniforms(Mesh* m)
 void
 mesh_destroy(Mesh* m)
 {
-  shader_destroy(m->shader);
-  free(m->shader);
-
   gl->glDeleteBuffers(1,&m->buffer_vertices);
   gl->glDeleteBuffers(1,&m->buffer_normals);
   

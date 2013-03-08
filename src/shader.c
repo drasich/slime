@@ -126,3 +126,11 @@ shader_destroy(Shader* s)
   gl->glDeleteShader(s->frag_shader);
   gl->glDeleteProgram(s->program);
 }
+
+Shader* 
+create_shader(char* vert_path, char* frag_path)
+{
+  Shader* s = malloc(sizeof(Shader));
+  shader_init(s, vert_path, frag_path);
+  return s;
+};

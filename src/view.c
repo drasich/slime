@@ -201,6 +201,12 @@ _init_gl(Evas_Object *obj)
   Object* o = create_object_file("model/cube.bin");
   o->name = "111111";
   //Object* o = create_object_file("model/simpleplane.bin");
+  //TODO free shader
+  Shader* shader_simple = create_shader("shader/simple.vert", "shader/simple.frag");
+  o->mesh->shader = shader_simple;
+  mesh_init_attributes(o->mesh);
+  mesh_init_uniforms(o->mesh);
+
   Vec3 t = {-0,-4,-5};
   //Vec3 t = {0,0,0};
   object_set_position(o, t);
@@ -215,6 +221,10 @@ _init_gl(Evas_Object *obj)
   //animation_play(o, "walkquat", LOOP);
 
   Object* yep = create_object_file("model/smallchar.bin");
+  yep->mesh->shader = shader_simple;
+  mesh_init_attributes(yep->mesh);
+  mesh_init_uniforms(yep->mesh);
+
   yep->name = "2222222";
   Vec3 t2 = {0,-5,-20};
   object_set_position(yep, t2);

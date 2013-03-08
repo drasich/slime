@@ -206,10 +206,6 @@ mesh_init_no_indices(Mesh* m)
     m->barycentric,
     GL_STATIC_DRAW);
 
-  m->shader = malloc(sizeof(Shader));
-  //TODO delete shader
-  shader_init(m->shader, "shader/simple.vert", "shader/simple.frag");
-
   mesh_init_texture(m);
 
   if (m->has_uv) {
@@ -221,9 +217,6 @@ mesh_init_no_indices(Mesh* m)
           m->uvs,
           GL_DYNAMIC_DRAW);
   }
-
-  mesh_init_attributes(m);
-  mesh_init_uniforms(m);
 }
 
 void

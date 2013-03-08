@@ -28,4 +28,7 @@ void shader_init_uniform(Shader* s, char* uni_name, GLint* uni);
 void shader_use(Shader* s);
 
 void shader_destroy(Shader* s);
+
+Shader* create_shader(char* vert_path, char* frag_path);
+
 #endif

@@ -27,8 +27,8 @@ object_draw(Object* o, Matrix4 world, Matrix4 projection)
   }
   else if (o->mesh != NULL) {
     mesh_set_matrices(o->mesh, world, projection);
-    //mesh_draw(o->mesh);
-    mesh_draw_no_indices(o->mesh);
+    mesh_draw(o->mesh);
+    //mesh_draw_no_indices(o->mesh);
   }
 
 }
