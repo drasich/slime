@@ -306,7 +306,8 @@ _resize_gl(Evas_Object *obj)
    camera_set_resolution(s->camera, w, h);
    quad_resize(s->quad->mesh, w, h);
 
-   //TODO wip fix
+   //TODO wip fix resize texture
+   /*
 	gl->glBindTexture(GL_TEXTURE_2D, s->texture_depth_stencil_id);
 
   gl->glTexImage2D(
@@ -325,6 +326,7 @@ _resize_gl(Evas_Object *obj)
   gl->glBindRenderbuffer(GL_RENDERBUFFER, s->rb);
   gl->glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, w, h);
   gl->glBindRenderbuffer(GL_RENDERBUFFER, 0);
+  */
 }
 
 static void

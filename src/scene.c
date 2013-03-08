@@ -157,10 +157,21 @@ scene_draw(Scene* s)
   }
 
   //TODO : test, can be removed
-  //GLuint mypixels[w*h];
-  //gl->glReadPixels(0, 0, w, h, GL_DEPTH_STENCIL_OES, GL_UNSIGNED_INT_24_8_OES, mypixels);
-  //save_png(mypixels);
-
+  /*
+  int w = s->camera->width;
+  int h = s->camera->height;
+  //printf(" w , h : %d, %d \n", w, h);
+  GLuint mypixels[w*h];
+  gl->glReadPixels(
+        0, 
+        0, 
+        w, 
+        h, 
+        GL_DEPTH_STENCIL_OES, 
+        GL_UNSIGNED_INT_24_8_OES, 
+        mypixels);
+  save_png(mypixels, w, h);
+  */
 
   gl->glBindFramebuffer(GL_FRAMEBUFFER,0);
 
@@ -180,15 +191,14 @@ scene_draw(Scene* s)
     //object_draw_lines(o, mo, *projection);
   }
 
-  //* TODO ortho
+  /* TODO ortho
   gl->glClear(GL_DEPTH_BUFFER_BIT);
   EINA_LIST_FOREACH(s->ortho, l, o) {
     object_compute_matrix(o, mo);
-    //mat4_multiply(cam_mat_inv, mo, mo);
     if (o->mesh != NULL) o->mesh->id_texture = s->texture_depth_stencil_id;
     object_draw(o, mo, *ortho);
   }
-  //*/
+  */
 
 }
 

@@ -19,6 +19,6 @@ struct _Texture
 
 Texture *texture_read_png_file(const char *filename);
 //void save_png(GLfloat* pix);
-void save_png(GLuint* pix);
+void save_png(GLuint* pix, int width, int height);
 
 #endif

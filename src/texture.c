@@ -163,7 +163,7 @@ typedef struct {
 } pixel_t;
 
 //void save_png(GLfloat* pix)
-void save_png(GLuint* pix)
+void save_png(GLuint* pix, int width, int height)
 {
   FILE * fp;
   png_structp png_ptr = NULL;
@@ -207,8 +207,8 @@ void save_png(GLuint* pix)
   }
 
   /* Set image attributes. */
-  int width = 1200;
-  int height = 400;
+  //int width = 1200;
+  //int height = 400;
 
   png_set_IHDR (png_ptr,
         info_ptr,
@@ -229,12 +229,17 @@ void save_png(GLuint* pix)
         row_pointers[y] = row;
         for (x = 0; x < width; ++x) {
           //float f = pix[y*width +x]*255;
-          float f = (pix[y*width +x]>>8) / 16777215.0f * 255.0f ;
+          //float f = (pix[y*width +x]>>8) / 16777215.0f * 255.0f ;
+          //float f = (pix[y*width +x]>>8);
+          //float f = (pix[y*width +x]>>8) / 65536.0f * 255.0f ;
           //float f = (pix[y*width +x]&0xff)*255;
-          //if (y*width +x == 0)  {
+          float f = (pix[y*width +x]&0xff);
+          uint32_t utest = (pix[y*width +x]&0xff);
+          if (y*width +x == 0)  {
           //printf(" the value u : %u \n", pix[0]&0xff);
-          //printf(" the value f : %f \n", f);
-           //     }
+          printf(" the value f : %f \n", f);
+          printf(" the value utest : %x \n", utest);
+                }
             pixel_t yep = { f,f,f};
             pixel_t * pixel = &yep;
             *row++ = pixel->red;
