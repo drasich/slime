@@ -250,37 +250,6 @@ _init_gl(Evas_Object *obj)
   //GLint bits;
   //gl->glGetIntegerv(GL_DEPTH_BITS, &bits);
   //printf("depth buffer %d\n\n", bits);
-
-  /*
-  Vec3 origin = {10,10,-10};
-  Repere r = {origin,q2};
-  Vec3 tao = vec3(11,11,-11);
-  Vec3 tbo = vec3(11,11,-9);
-  //ta = local_to_world(r, ta);
-  //tb = local_to_world(r, tb);
-  Vec3 ta = world_to_local(r, tao);
-  Vec3 tb = world_to_local(r, tbo);
-  printf("q2 %f, %f, %f, %f \n", q2.X, q2.Y, q2.Z, q2.W);
-  printf("ta %f, %f, %f \n", ta.X, ta.Y, ta.Z);
-  printf("tb %f, %f, %f \n", tb.X, tb.Y, tb.Z);
-
-  ta = quat_rotate_vec3(q2, tao);
-  tb = quat_rotate_vec3(q2, tbo);
-  printf("ta quat %f, %f, %f \n", ta.X, ta.Y, ta.Z);
-  printf("tb quat %f, %f, %f \n", tb.X, tb.Y, tb.Z);
-
-  ta = quat_rotate_vec3(quat_inverse(q2), tao);
-  tb = quat_rotate_vec3(quat_inverse(q2), tbo);
-  printf("ta quat inv %f, %f, %f \n", ta.X, ta.Y, ta.Z);
-  printf("tb quat inv %f, %f, %f \n", tb.X, tb.Y, tb.Z);
-
-  Matrix4 mo;
-  object_compute_matrix(o, mo);
-  ta = mat4_mul(mo, tao);
-  printf("ta matrix %f, %f, %f \n", ta.X, ta.Y, ta.Z);
-  ta = mat4_premul(mo, tao);
-  printf("ta matrix premul %f, %f, %f \n", ta.X, ta.Y, ta.Z);
-  */
 }
 
 static void
@@ -289,16 +258,6 @@ _del_gl(Evas_Object *obj)
   printf("glview delete gl\n");
   Scene* s = evas_object_data_get(obj, "scene");
   scene_destroy(s);
-  /*
-   gl->glDeleteShader(gld->vtx_shader);
-   gl->glDeleteShader(gld->fgmt_shader);
-   gl->glDeleteProgram(gld->program);
-   gl->glDeleteBuffers(1, &gld->vbo);
-
-   evas_object_data_del((Evas_Object*)obj, "..gld");
-   free(gld);
-   */
-
 }
 
 static void

@@ -1,4 +1,5 @@
 #include <Elementary.h>
+#include "property.h"
 
 Evas_Object*
 property_create(Evas_Object* win)
@@ -51,6 +52,50 @@ property_create(Evas_Object* win)
   set_value(o, "rotation,z", "5555.54321");
   */
 
+  property_add(win, bx, "name", "value");
+
   return frame;
+
+}
+
+Evas_Object* 
+property_add(Evas_Object* win, Evas_Object* bx, char* name, char* value)
+{
+  Evas_Object *en, *bx2, *label;
+
+  bx2 = elm_box_add(win);
+  elm_box_horizontal_set(bx2, EINA_TRUE);
+  evas_object_size_hint_weight_set(bx2, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bx2, EVAS_HINT_FILL, EVAS_HINT_FILL);
+
+  label = elm_label_add(win);
+  char s[50];
+  sprintf(s, "<b> %s </b> : ", name);
+
+  elm_object_text_set(label, s);
+  evas_object_show(label);
+  elm_box_pack_end(bx2, label);
+
+  en = elm_entry_add(win);
+  elm_entry_scrollable_set(en, EINA_TRUE);
+  evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
+  elm_object_text_set(en, value);
+  elm_entry_scrollbar_policy_set(en, 
+        ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_OFF);
+  elm_entry_single_line_set(en, EINA_TRUE);
+  elm_entry_select_all(en);
+  evas_object_show(en);
+  elm_box_pack_end(bx2, en);
+
+  evas_object_name_set(en, name);
+  //evas_object_smart_callback_add(
+   //     en, "changed,user", property_changed_cb, operator_);
+
+  elm_entry_context_menu_disabled_set(en, EINA_TRUE);
+
+  elm_box_pack_end(bx, bx2);
+  evas_object_show(bx2);
+  return label;
 
 }
