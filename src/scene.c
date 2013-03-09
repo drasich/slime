@@ -19,75 +19,7 @@ create_scene()
   Vec3 up = {0,1,0};
   s->camera->object.Orientation = quat_lookat(v, at, up);
 
-  gl->glGenTextures(1, &s->texture_depth_stencil_id);
-	gl->glBindTexture(GL_TEXTURE_2D, s->texture_depth_stencil_id);
-  gl->glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	gl->glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-
-  //TODO texture resolution
-  int width = 1200;
-  int height = 400;
-  /*
-  gl->glTexImage2D(
-        GL_TEXTURE_2D,
-        0,
-        GL_DEPTH_COMPONENT,
-        width,
-        height,
-        0,
-        GL_DEPTH_COMPONENT,
-        GL_FLOAT,
-        NULL);
-        */
-  gl->glTexImage2D(
-        GL_TEXTURE_2D,
-        0,
-        GL_DEPTH_STENCIL_OES,
-        width,
-        height,
-        0,
-        GL_DEPTH_STENCIL_OES,
-        GL_UNSIGNED_INT_24_8_OES,
-        NULL);
-
-	gl->glBindTexture(GL_TEXTURE_2D, 0);
-
-  gl->glGenRenderbuffers(1, &s->rb);
-  gl->glBindRenderbuffer(GL_RENDERBUFFER, s->rb);
-  gl->glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, width, height);
-  gl->glBindRenderbuffer(GL_RENDERBUFFER, 0);
-  
-  gl->glGenFramebuffers(1, &s->fbo);
-  gl->glBindFramebuffer(GL_FRAMEBUFFER, s->fbo);
-
-  gl->glFramebufferTexture2D(
-        GL_FRAMEBUFFER,
-        GL_DEPTH_ATTACHMENT,
-        GL_TEXTURE_2D,
-        s->texture_depth_stencil_id,
-        0);
-
-  gl->glFramebufferTexture2D(
-        GL_FRAMEBUFFER,
-        GL_STENCIL_ATTACHMENT,
-        GL_TEXTURE_2D,
-        s->texture_depth_stencil_id,
-        0);
-
-  gl->glFramebufferRenderbuffer(
-        GL_FRAMEBUFFER, 
-        GL_COLOR_ATTACHMENT0,
-        GL_RENDERBUFFER,
-        s->rb);
-
-  GLenum e = gl->glCheckFramebufferStatus(GL_FRAMEBUFFER);
-
-  if (e == GL_FRAMEBUFFER_COMPLETE) {
-    printf("---->>>>>buffer complete \n");
-  }
-
-  gl->glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  s->fbo = create_fbo();
 
   return s;
 }
@@ -139,8 +71,7 @@ scene_draw(Scene* s)
   Matrix4* projection = &s->camera->projection;
   Matrix4* ortho = &s->camera->orthographic;
 
-  gl->glBindTexture(GL_TEXTURE_2D, 0);
-  gl->glBindFramebuffer(GL_FRAMEBUFFER, s->fbo);
+  fbo_use(s->fbo);
 
   gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT) ;
   //gl->glClearStencil(0);
@@ -160,7 +91,7 @@ scene_draw(Scene* s)
   /*
   int w = s->camera->width;
   int h = s->camera->height;
-  //printf(" w , h : %d, %d \n", w, h);
+  printf(" w , h : %d, %d \n", w, h);
   GLuint mypixels[w*h];
   gl->glReadPixels(
         0, 
@@ -173,7 +104,7 @@ scene_draw(Scene* s)
   save_png(mypixels, w, h);
   */
 
-  gl->glBindFramebuffer(GL_FRAMEBUFFER,0);
+  fbo_use_end();
 
   EINA_LIST_FOREACH(s->objects, l, o) {
     object_compute_matrix(o, mo);
@@ -191,14 +122,14 @@ scene_draw(Scene* s)
     //object_draw_lines(o, mo, *projection);
   }
 
-  /* TODO ortho
+  ///* TODO ortho
   gl->glClear(GL_DEPTH_BUFFER_BIT);
   EINA_LIST_FOREACH(s->ortho, l, o) {
     object_compute_matrix(o, mo);
-    if (o->mesh != NULL) o->mesh->id_texture = s->texture_depth_stencil_id;
+    if (o->mesh != NULL) o->mesh->id_texture = s->fbo->texture_depth_stencil_id;
     object_draw(o, mo, *ortho);
   }
-  */
+  //*/
 
 }
 

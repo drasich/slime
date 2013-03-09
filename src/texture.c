@@ -232,8 +232,8 @@ void save_png(GLuint* pix, int width, int height)
           //float f = (pix[y*width +x]>>8) / 16777215.0f * 255.0f ;
           //float f = (pix[y*width +x]>>8);
           //float f = (pix[y*width +x]>>8) / 65536.0f * 255.0f ;
-          //float f = (pix[y*width +x]&0xff)*255;
-          float f = (pix[y*width +x]&0xff);
+          float f = (pix[y*width +x]&0xff)*255;
+          //float f = (pix[y*width +x]&0xff);
           uint32_t utest = (pix[y*width +x]&0xff);
           if (y*width +x == 0)  {
           //printf(" the value u : %u \n", pix[0]&0xff);

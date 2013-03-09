@@ -1,18 +1,9 @@
 uniform float test;
-uniform int wireframe;
 
 varying vec4 diffuse,ambient;
 varying vec3 eye_normal,lightDir,halfway;
 varying vec2 f_texcoord;
 uniform sampler2D texture;
-varying vec3 bc;
-
-//#extension GL_OES_standard_derivatives : enable
-float edgeFactor(){
-    vec3 d = fwidth(bc);
-    vec3 a3 = smoothstep(vec3(0.0), d*1.0, bc);
-    return min(min(a3.x, a3.y), a3.z);
-}
 
 void main (void)
 {
@@ -36,24 +27,6 @@ void main (void)
     color += specular * pow(NdotHV, shininess);
   }
 
-  if (wireframe == 1) {
-    float near_edge = (1.0-edgeFactor())*0.95;
-    if (near_edge > 0.5) {
-      gl_FragColor = vec4(1.0, 0.6, 0.0, near_edge);
-    }
-    else {
-      gl_FragColor = color;
-    }
-  } else {
-    gl_FragColor = color;
-  }
-
-  //float z = gl_FragCoord.z/gl_FragCoord.w;
-  float z = 1.0 - (gl_FragCoord.z / gl_FragCoord.w) / 100.0;
-
-
-  //gl_FragColor = vec4(z,z,z,1);
-  //gl_FragColor = color;
-
+  gl_FragColor = color;
 }
 

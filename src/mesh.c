@@ -385,7 +385,6 @@ mesh_init_attributes(Mesh* m)
   shader_init_attribute(m->shader, "vertex", &m->attribute_vertex);
   shader_init_attribute(m->shader, "normal", &m->attribute_normal);
   shader_init_attribute(m->shader, "texcoord", &m->attribute_texcoord);
-  shader_init_attribute(m->shader, "barycentric", &m->attribute_barycentric);
 }
 
 
@@ -395,7 +394,6 @@ mesh_init_uniforms(Mesh* m)
   if (!m->shader) return;
   shader_init_uniform(m->shader, "matrix", &m->uniform_matrix);
   shader_init_uniform(m->shader, "normal_matrix", &m->uniform_normal_matrix);
-  shader_init_uniform(m->shader, "wireframe", &m->uniform_wireframe);
 }
 
 void

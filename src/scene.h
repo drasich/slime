@@ -3,6 +3,7 @@
 #include <Eina.h>
 #include "object.h"
 #include "camera.h"
+#include "fbo.h"
 
 typedef struct _Scene Scene;
 
@@ -13,10 +14,16 @@ struct _Scene {
   struct View* view;
   Camera* camera;
 
+  /*
   GLuint texture_depth_stencil_id;
   GLuint fbo;
   GLuint rb;
+  */
   Object* quad;
+  Fbo* fbo;
+
+
+  Object* selected; //TODO put in context
 };
 
 Scene* create_scene();
