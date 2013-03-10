@@ -467,11 +467,6 @@ quad_init(Mesh* m)
     GL_STATIC_DRAW);
     */
 
-  m->shader = malloc(sizeof(Shader));
-  //TODO delete shader
-  shader_init(m->shader, "shader/stencil.vert", "shader/stencil.frag");
-  //shader_init(m->shader, "shader/simple.vert", "shader/simple.frag");
-
   /*
   if (m->has_uv) {
     gl->glGenBuffers(1, &m->buffer_texcoords);
@@ -483,12 +478,6 @@ quad_init(Mesh* m)
           GL_DYNAMIC_DRAW);
   }
   */
-
-  shader_init_attribute(m->shader, "vertex", &m->attribute_vertex);
-  //shader_init_attribute(m->shader, "normal", &m->attribute_normal);
-  //shader_init_attribute(m->shader, "texcoord", &m->attribute_texcoord);
-  shader_init_uniform(m->shader, "matrix", &m->uniform_matrix);
-  shader_init_uniform(m->shader, "resolution", &m->uniform_resolution);
 }
 
 void

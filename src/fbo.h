@@ -6,6 +6,7 @@ typedef struct _Fbo Fbo;
 
 struct _Fbo {
   GLuint texture_depth_stencil_id;
+  GLuint texture_color;
   GLuint fbo;
   GLuint rb;
 };

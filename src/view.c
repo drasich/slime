@@ -153,16 +153,20 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   Eina_List *list;
   Object *ob;
   EINA_LIST_FOREACH(s->objects, list, ob) {
-    Sphere s = {ob->Position, 2};
-    //IntersectionRay ir = intersection_ray_sphere(r, s);
+    //Sphere sphere = {ob->Position, 2};
+    //IntersectionRay ir = intersection_ray_sphere(r, sphere);
     IntersectionRay ir = intersection_ray_box(r, ob->mesh->box, ob->Position, ob->Orientation);
     if (ir.hit) {
       printf("COLLISION!!!!!!!!!!!!!!! with %s\n", ob->name);
       printf("position %f, %f, %f \n", ir.position.X, ir.position.Y, ir.position.Z);
       printf("normal %f, %f, %f \n", ir.normal.X, ir.normal.Y, ir.normal.Z);
-      if (selected != NULL && selected != ob) mesh_show_wireframe(selected->mesh,false);
       selected = ob;
-      mesh_show_wireframe(selected->mesh, true);
+      s->selected = ob;
+      if (selected != NULL ) {
+        //TODO compute the z if we don't want the outline to display with depth
+        //s->quad_outline->Position.Z = selected->Position.Z;
+        //s->quad_outline->Position.Z = -970;
+      }
     }
   }
 
@@ -231,16 +235,6 @@ _init_gl(Evas_Object *obj)
   object_set_orientation(yep, q);
   scene_add_object(s,yep);
 
-  s->quad = create_object();
-  s->quad->mesh = create_mesh_quad(100,100);
-  //Vec3 t3 = {-210/2 + 50,400/3/2 - 50,-100};
-  Vec3 t3 = {0,0,-100};
-  //Vec3 t3 = {800/3/2 - 50,400/3/2 - 50,-100};
-  //Vec3 t3 = {0,0,-20};
-  object_set_position(s->quad, t3);
-  scene_add_object_ortho(s,s->quad);
-  s->quad->name = "quad";
-
   gl->glEnable(GL_DEPTH_TEST);
   gl->glEnable(GL_STENCIL_TEST);
   gl->glDepthFunc(GL_LEQUAL);
@@ -273,10 +267,12 @@ _resize_gl(Evas_Object *obj)
 
    Scene* s = evas_object_data_get(obj, "scene");
    camera_set_resolution(s->camera, w, h);
-   quad_resize(s->quad->mesh, w, h);
+   quad_resize(s->quad_outline->mesh, w, h);
+   quad_resize(s->quad_color->mesh, w, h);
 
    //TODO
-   fbo_resize(s->fbo, w, h);
+   fbo_resize(s->fbo_all, w, h);
+   fbo_resize(s->fbo_selected, w, h);
 }
 
 static void

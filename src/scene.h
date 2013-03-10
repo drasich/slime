@@ -14,14 +14,10 @@ struct _Scene {
   struct View* view;
   Camera* camera;
 
-  /*
-  GLuint texture_depth_stencil_id;
-  GLuint fbo;
-  GLuint rb;
-  */
-  Object* quad;
-  Fbo* fbo;
-
+  Object* quad_outline;
+  Object* quad_color;
+  Fbo* fbo_selected;
+  Fbo* fbo_all;
 
   Object* selected; //TODO put in context
 };
