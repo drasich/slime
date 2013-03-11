@@ -164,8 +164,9 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
       s->selected = ob;
       if (selected != NULL ) {
         //TODO compute the z if we don't want the outline to display with depth
-        //s->quad_outline->Position.Z = selected->Position.Z;
-        //s->quad_outline->Position.Z = -970;
+        //s->quad_outline->Position.Z = -970.0f;
+        //printf("test :  %f\n", test);
+        //printf("selected position z :  %f\n", selected->Position.Z);
       }
     }
   }

@@ -148,8 +148,9 @@ scene_draw(Scene* s)
     mat4_multiply(cam_mat_inv, mo, mo);
     object_draw(o, mo, *projection);
   }
-  /*/
+  //*/
 
+  /*
   //TODO avoid compute matrix 2 times
   //Render lines
   gl->glClear(GL_DEPTH_BUFFER_BIT);
@@ -157,9 +158,10 @@ scene_draw(Scene* s)
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
     //TODO Fix how to use depth texture for lines
-    //if (o->line != NULL) o->line->id_texture = s->texture_depth_stencil_id;
-    //object_draw_lines(o, mo, *projection);
+    if (o->line != NULL) o->line->id_texture = s->fbo_all->texture_depth_stencil_id;
+    object_draw_lines(o, mo, *projection);
   }
+  */
 
 
 
