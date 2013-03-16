@@ -18,6 +18,19 @@ _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, 
 
 static float yaw = 0, pitch = 0;
 
+static void rotate_around(Scene* s, float x, float y)
+{
+  Object* o = s->selected;
+  Object* c = (Object*) s->camera;
+  Vec3 d = vec3_sub(c->Position, o->Position);
+  Vec3 axis = {0, 1, 0};
+  Quat rotx = quat_angle_axis(x*0.05f, axis);
+  d = quat_rotate_vec3(rotx, d);
+  c->Position = vec3_add(o->Position, d);
+  c->Orientation = quat_lookat(c->Position, o->Position, axis);
+
+}
+
 static void
 _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
 {
@@ -35,16 +48,20 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
     const Evas_Modifier * mods = ev->modifiers;
     if (evas_key_modifier_is_set(mods, "Shift")) {
       Vec3 t = {x*0.05f, y*0.05f, 0};
+      t = quat_rotate_vec3(s->camera->object.Orientation, t);
       s->camera->object.Position = vec3_add(s->camera->object.Position, t);
-        
-    }else {
 
-    Quat q = s->camera->object.Orientation;
-    Vec3 axis = {y, -x, 0};
-    axis = vec3_normalized(axis);
-    Quat rot = quat_angle_axis(0.025f, axis);
-    ////q = quat_mul(q, rot); //local
-    q = quat_mul(rot,q);//global
+    } else {
+      if (s->selected != NULL) {
+        rotate_around(s, x, y);
+        return;
+      }
+      Quat q = s->camera->object.Orientation;
+      Vec3 axis = {y, -x, 0};
+      axis = vec3_normalized(axis);
+      Quat rot = quat_angle_axis(0.025f, axis);
+      ////q = quat_mul(q, rot); //local
+      q = quat_mul(rot,q);//global
 
     /*
     Vec3 axisx = {1, 0, 0};

@@ -441,3 +441,64 @@ mat4_pos_ori(Vec3 position, Quat orientation, Matrix4 out)
   mat4_set_rotation_quat(mr, orientation);
   mat4_multiply(mt, mr, out);
 }
+
+void 
+mat4_lookat(Matrix4 m, Vec3 position, Vec3 at, Vec3 up)
+{
+  Vec3 d = vec3_sub(at, position);
+  d = vec3_normalized(d);
+  Vec3 s = vec3_cross(d, up);
+  s = vec3_normalized(s);
+  Vec3 u = vec3_cross(s, d);
+  u = vec3_normalized(u);
+
+  m[0] = s.X;
+  m[1] = u.X;
+  m[2] = -d.X;
+  m[3] = 0.0;
+
+  m[4] = s.Y;
+  m[5] = u.Y;
+  m[6] = -d.Y;
+  m[7] = 0.0;
+
+  m[8] = s.Z;
+  m[9] = u.Z;
+  m[10] = -d.Z;
+  m[11] = 0.0;
+
+  m[12] = 0.0;
+  m[13] = 0.0;
+  m[14] = 0.0;
+  m[15] = 1.0;
+
+  mat4_pre_translate(m, vec3_mul(position, -1));
+}
+
+void 
+mat4_pre_translate(Matrix4 m, Vec3 v)
+{
+  double tmp = v.X;
+  if (tmp != 0) {
+    m[12] += tmp*m[0];
+    m[13] += tmp*m[1];
+    m[14] += tmp*m[2];
+    m[15] += tmp*m[3];
+  }
+
+  tmp = v.Y;
+  if (tmp != 0) {
+    m[12] += tmp*m[4];
+    m[13] += tmp*m[5];
+    m[14] += tmp*m[6];
+    m[15] += tmp*m[7];
+  }
+
+  tmp = v.Z;
+  if (tmp != 0) {
+    m[12] += tmp*m[8];
+    m[13] += tmp*m[9];
+    m[14] += tmp*m[10];
+    m[15] += tmp*m[11];
+  }
+}

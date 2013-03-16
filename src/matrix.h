@@ -60,6 +60,7 @@ void mat4_transpose(const Matrix4 in, Matrix4 out);
 void mat3_transpose(const Matrix4 in, Matrix4 out);
 
 void mat4_set_translation(Matrix4 m, Vec3);
+void mat4_pre_translate(Matrix4 m, Vec3);
 
 void mat4_zero(Matrix4 m);
 void mat3_zero(Matrix4 m);
@@ -70,6 +71,8 @@ Vec3 mat4_mul(const Matrix4 m, Vec3 v);
 Vec3 mat4_premul(const Matrix4 m, Vec3 v);
 
 void mat4_pos_ori(Vec3 position, Quat orientation, Matrix4 out);
+
+void mat4_lookat(Matrix4 m, Vec3 position, Vec3 at, Vec3 up);
 
 #endif
 

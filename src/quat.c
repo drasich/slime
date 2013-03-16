@@ -200,14 +200,16 @@ Quat
 quat_lookat(Vec3 from, Vec3 at, Vec3 up)
 {
   Vec3 d = vec3_sub(at, from);
-  Quat qb = quat_between_vec(vec3(0,0,-1), d);
+  //Quat qb = quat_between_vec(vec3(0,0,-1), d);
+  Quat qb = quat_between_vec(d, vec3(0,0,-1));
   //Quat qr = quat_between_vec(vec3(0,1,0), up);
   //qb = quat_mul(qr, qb);
   Vec4 aa = quat_to_axis_angle(qb);
   printf("direction is %f, %f, %f \n", d.X, d.Y, d.Z);
   printf(" quat %f, %f, %f, %f \n", aa.X, aa.Y, aa.Z, aa.W);
   //return quat_identity();
-  return quat_inverse(qb);
+  //return quat_inverse(qb);
+  return qb;
 }
 
 Quat
