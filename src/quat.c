@@ -1,5 +1,6 @@
 #include "quat.h"
 #include "stdio.h"
+#include "matrix.h"
 
 double
 quat_length2(Quat v)
@@ -197,22 +198,6 @@ quat_to_axis_angle(Quat q)
 }
 
 Quat
-quat_lookat(Vec3 from, Vec3 at, Vec3 up)
-{
-  Vec3 d = vec3_sub(at, from);
-  //Quat qb = quat_between_vec(vec3(0,0,-1), d);
-  Quat qb = quat_between_vec(d, vec3(0,0,-1));
-  //Quat qr = quat_between_vec(vec3(0,1,0), up);
-  //qb = quat_mul(qr, qb);
-  Vec4 aa = quat_to_axis_angle(qb);
-  printf("direction is %f, %f, %f \n", d.X, d.Y, d.Z);
-  printf(" quat %f, %f, %f, %f \n", aa.X, aa.Y, aa.Z, aa.W);
-  //return quat_identity();
-  //return quat_inverse(qb);
-  return qb;
-}
-
-Quat
 quat_between_vec(Vec3 from, Vec3 to)
 {
   Vec3 sourceVector = from;
@@ -291,6 +276,51 @@ quat_between_vec(Vec3 from, Vec3 to)
 
 
   return quat_identity();
+
+}
+
+Vec3 
+quat_rotate_around_angles(Vec3 pivot, Vec3 mypoint, float yaw, float pitch)
+{
+  mypoint = vec3_sub(mypoint, pivot);
+
+  Quat rotx = quat_identity();
+  Quat roty = quat_identity();
+
+  if (yaw != 0) {
+    Vec3 axis = {0, 1, 0};
+    rotx = quat_angle_axis(yaw, axis);
+    //printf("yaw %f \n", yaw);
+    mypoint = quat_rotate_vec3(rotx, mypoint);
+  }
+
+  if (pitch != 0) {
+    Vec3 axis = {1, 0, 0};
+    roty = quat_angle_axis(pitch, axis);
+    //printf("yaw %f \n", yaw);
+    mypoint = quat_rotate_vec3(roty, mypoint);
+  }
+
+  mypoint = vec3_add(mypoint, pivot);
+
+  return mypoint;
+}
+
+Quat 
+quat_lookat(Vec3 from, Vec3 to, Vec3 up)
+{
+  Matrix4 la;
+  mat4_lookat(la, from, to, up);
+  return mat4_get_quat(la);
+}
+
+Vec3 quat_rotate_around(Quat q, Vec3 pivot, Vec3 mypoint)
+{
+  mypoint = vec3_sub(mypoint, pivot);
+  mypoint = quat_rotate_vec3(q, mypoint);
+  mypoint = vec3_add(mypoint, pivot);
+
+  return mypoint;
 
 }
 

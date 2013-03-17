@@ -22,13 +22,31 @@ static void rotate_around(Scene* s, float x, float y)
 {
   Object* o = s->selected;
   Object* c = (Object*) s->camera;
-  Vec3 d = vec3_sub(c->Position, o->Position);
-  Vec3 axis = {0, 1, 0};
-  Quat rotx = quat_angle_axis(x*0.05f, axis);
-  d = quat_rotate_vec3(rotx, d);
-  c->Position = vec3_add(o->Position, d);
-  c->Orientation = quat_lookat(c->Position, o->Position, axis);
 
+  yaw += 0.005f*x;
+  pitch += 0.005f*y;
+
+  Quat qy = quat_angle_axis(yaw, vec3(0,1,0));
+  Quat qp = quat_angle_axis(pitch, vec3(1,0,0));
+  Quat result = quat_mul(qy, qp);
+
+  c->Orientation = result;
+
+  /*
+  Vec3 test = o->Position;
+  Vec3 d = vec3_sub(test, c->Position);
+  Vec3 direction = quat_rotate_vec3(result, vec3(0,0,-1));
+  float length = vec3_length(d);
+  direction = vec3_mul(direction, length);
+  c->Position = vec3_sub(test, direction);
+  */
+
+  c->Position = quat_rotate_around(result, o->Position, vec3(5,0,20));
+
+  Matrix4 mt, mr, mm;
+  mat4_set_translation(mt, c->Position);
+  mat4_set_rotation_quat(mr, c->Orientation);
+  mat4_multiply(mt, mr, c->matrix);
 }
 
 static void
@@ -220,8 +238,8 @@ _init_gl(Evas_Object *obj)
   evas_object_data_set(obj, "scene", s);
 
   //Object* o = create_object_file("model/smallchar.bin");
-  Object* o = create_object_file("model/cube.bin");
-  o->name = "111111";
+  Object* o = create_object_file("model/pyram.bin");
+  o->name = "cube";
   //Object* o = create_object_file("model/simpleplane.bin");
   //TODO free shader
   Shader* shader_simple = create_shader("shader/simple.vert", "shader/simple.frag");
@@ -239,6 +257,7 @@ _init_gl(Evas_Object *obj)
   q = quat_mul(q, q2);
   object_set_orientation(o, q2);
   scene_add_object(s,o);
+  mat4_pos_ori(o->Position, o->Orientation, o->matrix);
 
   //animation_play(o, "walkquat", LOOP);
 
@@ -252,6 +271,7 @@ _init_gl(Evas_Object *obj)
   object_set_position(yep, t2);
   object_set_orientation(yep, q);
   scene_add_object(s,yep);
+  mat4_pos_ori(yep->Position, yep->Orientation, yep->matrix);
 
   gl->glEnable(GL_DEPTH_TEST);
   gl->glEnable(GL_STENCIL_TEST);
@@ -262,6 +282,14 @@ _init_gl(Evas_Object *obj)
   //GLint bits;
   //gl->glGetIntegerv(GL_DEPTH_BITS, &bits);
   //printf("depth buffer %d\n\n", bits);
+  Matrix4 la;
+  Vec3 at = {1,0,-1};
+  Vec3 up = {0,1,0};
+  mat4_lookat(la, vec3_zero(), at, up);
+  Quat myq = mat4_get_quat(la);
+  Vec4 toaa = quat_to_axis_angle(myq);
+  printf(" toaa : %f, %f, %f, %f \n", toaa.X, toaa.Y, toaa.Z, toaa.W);
+
 }
 
 static void

@@ -16,6 +16,7 @@ struct _Camera
   float aspect;
   int width;
   int height;
+  double yaw, pitch, roll;
 };
 
 Camera* create_camera();

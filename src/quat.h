@@ -24,6 +24,10 @@ Quat quat_slerp(Quat from, Quat to, float t);
 
 Vec4 quat_to_axis_angle(Quat q);
 
-Quat quat_lookat(Vec3 from, Vec3 at, Vec3 up);
+Vec3 quat_rotate_around_angles(Vec3 pivot, Vec3 mypoint, float yaw, float pitch);
+Vec3 quat_rotate_around(Quat q, Vec3 pivot, Vec3 mypoint);
+
+
+Quat quat_lookat(Vec3 from, Vec3 to, Vec3 up);
 
 #endif

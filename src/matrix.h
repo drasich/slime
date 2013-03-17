@@ -74,6 +74,10 @@ void mat4_pos_ori(Vec3 position, Quat orientation, Matrix4 out);
 
 void mat4_lookat(Matrix4 m, Vec3 position, Vec3 at, Vec3 up);
 
+void mat4_decompose(Matrix4 m, Vec3* position, Quat* rotation, Vec3* scale);
+
+Quat mat4_get_quat(Matrix4 m);
+
 #endif
 
 

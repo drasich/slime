@@ -25,6 +25,20 @@ vec3(double x, double y, double z)
   return v;
 }
 
+Vec4
+vec4(double x, double y, double z, double w)
+{
+  Vec4 v = {
+    .X = x,
+    .Y = y,
+    .Z = z,
+    .W = w
+  };
+
+  return v;
+}
+
+
 double
 vec3_length(Vec3 v)
 {

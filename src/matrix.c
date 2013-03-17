@@ -472,7 +472,7 @@ mat4_lookat(Matrix4 m, Vec3 position, Vec3 at, Vec3 up)
   m[14] = 0.0;
   m[15] = 1.0;
 
-  mat4_pre_translate(m, vec3_mul(position, -1));
+  //mat4_pre_translate(m, vec3_mul(position, -1));
 }
 
 void 
@@ -501,4 +501,128 @@ mat4_pre_translate(Matrix4 m, Vec3 v)
     m[14] += tmp*m[10];
     m[15] += tmp*m[11];
   }
+}
+
+typedef struct
+{
+  Vec4 t;
+  Quat q;
+  Quat u;
+  Quat qk;
+  double f;
+} _AffineParts;
+
+void 
+mat4_decomp_affine(Matrix4 hm, _AffineParts* parts)
+{
+  Matrix4 Q, S, U;
+  Quat p;
+
+  parts->t = vec4(hm[3], hm[7], hm[11], 0.0);
+  //double det = 
+
+}
+
+void 
+mat4_decompose(Matrix4 m, Vec3* position, Quat* rotation, Vec3* scale)
+{
+  Matrix4 hm;
+  mat4_transpose(m, hm);
+
+  _AffineParts parts;
+  mat4_decomp_affine(hm, &parts);
+}
+
+
+Quat
+mat4_get_quat_sav(Matrix4 m)
+{
+  Quat q;
+
+  double s;
+  double tq[4];
+  int i, j;
+
+  tq[0] = 1 + m[0] + m[5] + m[10];
+  tq[1] = 1 + m[0] - m[5] - m[10];
+  tq[2] = 1 - m[0] + m[5] - m[10];
+  tq[3] = 1 - m[0] - m[5] + m[10];
+
+  j = 0;
+  for (i = 1; i < 4; ++i) {
+    j = (tq[i] > tq[j]) ? i : j;
+  }
+
+  if (j == 0) {
+    q.W = tq[0];
+    q.X = m[6] - m[9];
+    q.Y = m[8] - m[2];
+    q.Z = m[1] - m[4];
+  } else if (j == 1) {
+    q.W = m[6] - m[9];
+    q.X = tq[1];
+    q.Y = m[1] + m[4];
+    q.Z = m[8] + m[2];
+  } else if (j == 2) {
+    q.W = m[8] - m[2];
+    q.X = m[1] + m[4];
+    q.Y = tq[2];
+    q.Z = m[6] + m[9];
+  } else {
+    q.W = m[1] - m[4];
+    q.X = m[8] + m[2];
+    q.Y = m[6] + m[9];
+    q.Z = tq[3];
+  }
+
+  s = sqrt(0.25/tq[j]);
+  q.W *= s;
+  q.X *= s;
+  q.Y *= s;
+  q.Z *= s;
+
+  return q;
+
+}
+
+
+Quat
+mat4_get_quat(Matrix4 m)
+{
+  Quat q;
+
+  double t = 1 + m[0] + m[5] + m[10];
+  double s;
+
+   if (t > 0.00000001) {
+     s = sqrt(t) * 2;
+     q.X = ( m[9] - m[6] ) / s;
+     q.Y = ( m[2] - m[8] ) / s;
+     q.Z = ( m[4] - m[1] ) / s;
+     q.W = 0.25 * s;
+  } else if (t < 0) {
+    printf("c'est plus petit que 0 \n");
+  } else {
+    if ( m[0] > m[5] && m[0] > m[10] )  {	// Column 0: 
+      s  = sqrt( 1.0 + m[0] - m[5] - m[10] ) * 2;
+      q.X = 0.25 * s;
+      q.Y = (m[4] + m[1] ) / s;
+      q.Z = (m[2] + m[8] ) / s;
+      q.W = (m[9] - m[6] ) / s;
+    } else if ( m[5] > m[10] ) {			// Column 1: 
+      s  = sqrt( 1.0 + m[5] - m[0] - m[10] ) * 2;
+      q.X = (m[4] + m[1] ) / s;
+      q.Y = 0.25 * s;
+      q.Z = (m[9] + m[6] ) / s;
+      q.W = (m[2] - m[8] ) / s;
+    } else {						// Column 2:
+      s  = sqrt( 1.0 + m[10] - m[0] - m[5] ) * 2;
+      q.X = (m[2] + m[8] ) / s;
+      q.Y = (m[9] + m[6] ) / s;
+      q.Z = 0.25 * s;
+      q.W = (m[4] - m[1] ) / s;
+    }
+  }
+
+   return q;
 }

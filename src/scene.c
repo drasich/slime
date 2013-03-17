@@ -11,13 +11,15 @@ create_scene()
   s->camera = create_camera();
   s->camera->object.name = "camera";
   //Vec3 v = {10,10,10};
-  Vec3 v = {0,0,20};
+  Vec3 v = {5,0,20};
   //Vec3 axis = {0,1,0};
   //Quat q = quat_angle_axis(3.14f/4.0f, axis);
   s->camera->object.Position = v;
   Vec3 at = {0,0,0};
   Vec3 up = {0,1,0};
   s->camera->object.Orientation = quat_lookat(v, at, up);
+  Object* c = (Object*) s->camera;
+  mat4_pos_ori(c->Position, c->Orientation, c->matrix);
 
   s->fbo_selected = create_fbo();
   s->fbo_all = create_fbo();
@@ -144,8 +146,9 @@ scene_draw(Scene* s)
   //*
    //Render objects
   EINA_LIST_FOREACH(s->objects, l, o) {
-    object_compute_matrix(o, mo);
-    mat4_multiply(cam_mat_inv, mo, mo);
+    //object_compute_matrix(o, mo);
+    //mat4_multiply(cam_mat_inv, mo, mo);
+    mat4_multiply(cam_mat_inv, o->matrix, mo);
     object_draw(o, mo, *projection);
   }
   //*/
@@ -203,6 +206,6 @@ scene_update(Scene* s)
     object_update(o);
 
   //TODO only update camera if there is a movement
-  object_update((Object*)s->camera);
+  //object_update((Object*)s->camera);
 }
 
