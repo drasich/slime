@@ -10,14 +10,10 @@ create_scene()
   eina_init();
   s->camera = create_camera();
   s->camera->object.name = "camera";
-  //Vec3 v = {10,10,10};
-  Vec3 v = {5,0,20};
-  //Vec3 axis = {0,1,0};
-  //Quat q = quat_angle_axis(3.14f/4.0f, axis);
+  Vec3 v = {0,0,20};
   s->camera->object.Position = v;
   Vec3 at = {0,0,0};
-  Vec3 up = {0,1,0};
-  s->camera->object.Orientation = quat_lookat(v, at, up);
+  camera_lookat(s->camera, at);
   Object* c = (Object*) s->camera;
   mat4_pos_ori(c->Position, c->Orientation, c->matrix);
 

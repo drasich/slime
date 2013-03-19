@@ -17,6 +17,7 @@ struct _Camera
   int width;
   int height;
   double yaw, pitch, roll;
+  Vec3 forward;
 };
 
 Camera* create_camera();
@@ -28,5 +29,7 @@ void camera_update_projection(Camera* c);
 void camera_update_orthographic(Camera* c);
 
 void camera_set_resolution(Camera* cam, int w, int h);
+
+void camera_lookat(Camera* c, Vec3 at);
 
 #endif
