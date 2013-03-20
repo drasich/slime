@@ -16,9 +16,8 @@ _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, 
   if (!strcmp(ev->keyname, "Escape")) elm_exit();
 }
 
-static void rotate_around(Scene* s, float x, float y)
+static void rotate_camera(Scene* s, float x, float y)
 {
-  Object* o = s->selected;
   Camera* cam = s->camera;
   Object* c = (Object*) cam;
 
@@ -31,6 +30,8 @@ static void rotate_around(Scene* s, float x, float y)
 
   c->Orientation = result;
 
+  Object* o = s->selected;
+  if (o == NULL) return;
   /*
   Vec3 test = o->Position;
   Vec3 d = vec3_sub(test, c->Position);
@@ -71,13 +72,7 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
       //s->camera->local_offset = quat_rotate_vec3(quat_inverse(c->Orientation), vec3_sub( c->Position, lastpos));
 
     } else {
-      if (s->selected != NULL) {
-        rotate_around(s, x, y);
-        return;
-      }
-      else {
-        //TODO camera rotation
-      }
+      rotate_camera(s, x, y);
     }
   }
 }
