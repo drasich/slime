@@ -18,6 +18,7 @@ _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, 
 
 static Vec3 soffset = {0,0,0};
 static Vec3 lastpos = {0,0,20};
+static Vec3 origin = {0,0,20};
 
 static void rotate_around(Scene* s, float x, float y)
 {
@@ -47,7 +48,9 @@ static void rotate_around(Scene* s, float x, float y)
   //c->Position = quat_rotate_around(result, o->Position, vec3_add(vec3(0,0,20), soffset));
   //c->Position = quat_rotate_around(result, o->Position, vec3_add(vec3(0,0,20),soffset));
 
-  Vec3 def = quat_rotate_around(result, o->Position, vec3(0,0,20));
+  //Vec3 def = quat_rotate_around(result, o->Position, vec3(0,0,20));
+  Vec3 def = quat_rotate_around(result, o->Position, origin);
+  //Vec3 def = quat_rotate_vec3(result, origin);
   Vec3 doff = quat_rotate_vec3(result, soffset);
   lastpos = def;
   c->Position = vec3_add(def, doff);
@@ -214,6 +217,12 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
       selected = ob;
       s->selected = ob;
       if (selected != NULL ) {
+        Vec3 yep = quat_rotate_vec3(s->camera->object.Orientation, soffset);
+        Vec3 tt = vec3_sub(s->camera->object.Position, yep);
+        origin = quat_rotate_around(quat_inverse(s->camera->object.Orientation), selected->Position, tt);
+
+        //soffset = vec3(0,0,0);
+        //lastpos = 
         //soffset = vec3_sub(s->camera->object.Position, selected->Position);
         //TODO compute the z if we don't want the outline to display with depth
         //s->quad_outline->Position.Z = -970.0f;
