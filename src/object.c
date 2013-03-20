@@ -75,46 +75,7 @@ _animation_update(Object* o, float dt)
 void
 object_update(Object* o)
 {
-  //TODO remove this code and this function anyway
-  if (!strcmp(o->name, "cube")) {
-
-    static float test = 0;
-    test += 0.01f;
-    Vec3 axis = {0,1,0};
-    //o->Orientation = quat_angle_axis(test, axis);
-
-    Vec3 t2 = {0,-5,-20};
-    static float yaw = 0;
-    static float pitch = 0;
-    float dyaw = 0.02;
-    float dpitch = 0.02;
-    yaw += dyaw;
-    pitch += dpitch;
-
-    yaw = M_PI/2.0;
-    //pitch = -M_PI/4.0;
-
-    Quat qy = quat_angle_axis(yaw, vec3(0,1,0));
-    Quat qp = quat_angle_axis(pitch, vec3(1,0,0));
-    Quat result = quat_mul(qy, qp);
-
-    //o->Orientation = result;
-
-    Vec3 direction = quat_rotate_vec3(result, vec3(0,0,-1));
-    float length = vec3_length(vec3_sub(t2, o->Position));
-    direction = vec3_mul(direction, length);
-    //o->Position = vec3_sub(t2, direction);
-    
-    Matrix4 mt, mr;
-    mat4_set_translation(mt, o->Position);
-    mat4_set_rotation_quat(mr, o->Orientation);
-    //mat4_multiply(mt, mr, o->matrix);
-  }
-
-  //Vec3 axis = {1,0,0};
-  //o->Orientation = quat_angle_axis(90, axis);
-
-  //mat4_pos_ori(o->Position, o->Orientation, o->matrix);
+  mat4_pos_ori(o->Position, o->Orientation, o->matrix);
 
   if (o->animation != NULL) {
     _animation_update(o, 0.007f);

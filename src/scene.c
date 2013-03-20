@@ -11,6 +11,7 @@ create_scene()
   s->camera = create_camera();
   s->camera->object.name = "camera";
   Vec3 v = {0,0,20};
+  s->camera->origin = v;
   s->camera->object.Position = v;
   Vec3 at = {0,0,0};
   camera_lookat(s->camera, at);
@@ -202,6 +203,6 @@ scene_update(Scene* s)
     object_update(o);
 
   //TODO only update camera if there is a movement
-  //object_update((Object*)s->camera);
+  object_update((Object*)s->camera);
 }
 

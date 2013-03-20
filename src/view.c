@@ -16,10 +16,6 @@ _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, 
   if (!strcmp(ev->keyname, "Escape")) elm_exit();
 }
 
-static Vec3 soffset = {0,0,0};
-static Vec3 lastpos = {0,0,20};
-static Vec3 origin = {0,0,20};
-
 static void rotate_around(Scene* s, float x, float y)
 {
   Object* o = s->selected;
@@ -44,21 +40,10 @@ static void rotate_around(Scene* s, float x, float y)
   c->Position = vec3_sub(test, direction);
   */
 
-  //c->Position = quat_rotate_around(result, o->Position, vec3(5,0,20));
-  //c->Position = quat_rotate_around(result, o->Position, vec3_add(vec3(0,0,20), soffset));
-  //c->Position = quat_rotate_around(result, o->Position, vec3_add(vec3(0,0,20),soffset));
-
-  //Vec3 def = quat_rotate_around(result, o->Position, vec3(0,0,20));
-  Vec3 def = quat_rotate_around(result, o->Position, origin);
-  //Vec3 def = quat_rotate_vec3(result, origin);
-  Vec3 doff = quat_rotate_vec3(result, soffset);
-  lastpos = def;
+  //TODO put this in camera update
+  Vec3 def = quat_rotate_around(result, o->Position, cam->origin);
+  Vec3 doff = quat_rotate_vec3(result, cam->local_offset);
   c->Position = vec3_add(def, doff);
-
-  Matrix4 mt, mr, mm;
-  mat4_set_translation(mt, c->Position);
-  mat4_set_rotation_quat(mr, c->Orientation);
-  mat4_multiply(mt, mr, c->matrix);
 }
 
 static void
@@ -77,51 +62,22 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
 
     const Evas_Modifier * mods = ev->modifiers;
     if (evas_key_modifier_is_set(mods, "Shift")) {
-      Vec3 t = {x*0.05f, y*0.05f, 0};
+      Vec3 t = {-x*0.05f, y*0.05f, 0};
+      s->camera->local_offset = vec3_add(s->camera->local_offset, t);
+      //TODO put this in camera update
       Object* c = (Object*) s->camera;
       t = quat_rotate_vec3(c->Orientation, t);
       c->Position = vec3_add(c->Position, t);
-      soffset = quat_rotate_vec3(quat_inverse(c->Orientation), vec3_sub( c->Position, lastpos));
-
-      Matrix4 mt, mr, mm;
-      mat4_set_translation(mt, c->Position);
-      mat4_set_rotation_quat(mr, c->Orientation);
-      mat4_multiply(mt, mr, c->matrix);
+      //s->camera->local_offset = quat_rotate_vec3(quat_inverse(c->Orientation), vec3_sub( c->Position, lastpos));
 
     } else {
       if (s->selected != NULL) {
         rotate_around(s, x, y);
         return;
       }
-      Quat q = s->camera->object.Orientation;
-      Vec3 axis = {y, -x, 0};
-      axis = vec3_normalized(axis);
-      Quat rot = quat_angle_axis(0.025f, axis);
-      ////q = quat_mul(q, rot); //local
-      q = quat_mul(rot,q);//global
-
-    /*
-    Vec3 axisx = {1, 0, 0};
-    Vec3 axisy = {0, 1, 0};
-    pitch += 0.005f*y;
-    yaw += -0.005f*x;
-    Quat qp = quat_angle_axis(pitch, axisx);
-    Quat qy = quat_angle_axis(yaw, axisy);
-
-    q = quat_mul(qy,qp);
-    */
-
-    //s->camera->Orientation = q;
-
-    //Vec4 aa = quat_to_axis_angle(q);
-    //printf("%f, %f, %f, %f \n", aa.X, aa.Y, aa.Z, aa.W);
-
-    Vec3 at = {0,0,0};
-    Vec3 up = {0,1,0};
-    s->camera->object.Orientation = quat_lookat(s->camera->object.Position, at, up);
-
-    //Vec4 aa = quat_to_axis_angle(s->camera->Orientation);
-    //printf(" quat %f, %f, %f, %f \n", aa.X, aa.Y, aa.Z, aa.W);
+      else {
+        //TODO camera rotation
+      }
     }
   }
 }
@@ -217,13 +173,10 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
       selected = ob;
       s->selected = ob;
       if (selected != NULL ) {
-        Vec3 yep = quat_rotate_vec3(s->camera->object.Orientation, soffset);
+        Vec3 yep = quat_rotate_vec3(s->camera->object.Orientation, s->camera->local_offset);
         Vec3 tt = vec3_sub(s->camera->object.Position, yep);
-        origin = quat_rotate_around(quat_inverse(s->camera->object.Orientation), selected->Position, tt);
+        s->camera->origin = quat_rotate_around(quat_inverse(s->camera->object.Orientation), selected->Position, tt);
 
-        //soffset = vec3(0,0,0);
-        //lastpos = 
-        //soffset = vec3_sub(s->camera->object.Position, selected->Position);
         //TODO compute the z if we don't want the outline to display with depth
         //s->quad_outline->Position.Z = -970.0f;
         //printf("test :  %f\n", test);
@@ -283,7 +236,6 @@ _init_gl(Evas_Object *obj)
   q = quat_mul(q, q2);
   object_set_orientation(o, q2);
   scene_add_object(s,o);
-  mat4_pos_ori(o->Position, o->Orientation, o->matrix);
 
   //animation_play(o, "walkquat", LOOP);
 
@@ -297,7 +249,6 @@ _init_gl(Evas_Object *obj)
   object_set_position(yep, t2);
   object_set_orientation(yep, q);
   scene_add_object(s,yep);
-  mat4_pos_ori(yep->Position, yep->Orientation, yep->matrix);
 
   gl->glEnable(GL_DEPTH_TEST);
   gl->glEnable(GL_STENCIL_TEST);
