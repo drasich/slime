@@ -125,6 +125,7 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
         found = true;
         d = diff;
         oh = ob;
+        //TODO mesh collision
       }
     }
   }
