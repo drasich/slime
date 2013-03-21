@@ -32,19 +32,8 @@ static void rotate_camera(Scene* s, float x, float y)
 
   Object* o = s->selected;
   if (o == NULL) return;
-  /*
-  Vec3 test = o->Position;
-  Vec3 d = vec3_sub(test, c->Position);
-  Vec3 direction = quat_rotate_vec3(result, vec3(0,0,-1));
-  float length = vec3_length(d);
-  direction = vec3_mul(direction, length);
-  c->Position = vec3_sub(test, direction);
-  */
 
-  //TODO put this in camera update
-  Vec3 def = quat_rotate_around(result, o->Position, cam->origin);
-  Vec3 doff = quat_rotate_vec3(result, cam->local_offset);
-  c->Position = vec3_add(def, doff);
+  camera_rotate_around(cam, result, o->Position);
 }
 
 static void
@@ -64,13 +53,7 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
     const Evas_Modifier * mods = ev->modifiers;
     if (evas_key_modifier_is_set(mods, "Shift")) {
       Vec3 t = {-x*0.05f, y*0.05f, 0};
-      s->camera->local_offset = vec3_add(s->camera->local_offset, t);
-      //TODO put this in camera update
-      Object* c = (Object*) s->camera;
-      t = quat_rotate_vec3(c->Orientation, t);
-      c->Position = vec3_add(c->Position, t);
-      //s->camera->local_offset = quat_rotate_vec3(quat_inverse(c->Orientation), vec3_sub( c->Position, lastpos));
-
+      camera_pan(s->camera, t);
     } else {
       rotate_camera(s, x, y);
     }

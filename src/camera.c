@@ -51,7 +51,18 @@ camera_lookat(Camera* c, Vec3 at)
 }
 
 void
-camera_update(Camera* c)
+camera_rotate_around(Camera* c, Quat q, Vec3 pivot)
 {
+  Vec3 def = quat_rotate_around(q, pivot, c->origin);
+  Vec3 doff = quat_rotate_vec3(q, c->local_offset);
+  c->object.Position = vec3_add(def, doff);
 
+}
+
+void
+camera_pan(Camera* c, Vec3 t)
+{
+  c->local_offset = vec3_add(c->local_offset, t);
+  t = quat_rotate_vec3(c->object.Orientation, t);
+  c->object.Position = vec3_add(c->object.Position, t);
 }

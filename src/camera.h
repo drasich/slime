@@ -34,6 +34,8 @@ void camera_set_resolution(Camera* cam, int w, int h);
 
 void camera_lookat(Camera* c, Vec3 at);
 
-void camera_update(Camera* c);
+void camera_rotate_around(Camera* c, Quat q, Vec3 pivot);
+
+void camera_pan(Camera* c, Vec3 t);
 
 #endif
