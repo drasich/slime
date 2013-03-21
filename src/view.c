@@ -40,9 +40,6 @@ static void
 _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
 {
   Evas_Event_Mouse_Move *ev = (Evas_Event_Mouse_Move*) event_info;
-  //printf("MOUSE: move @ %4i %4i\n", ev->cur.canvas.x, ev->cur.canvas.y);
-  //evas_object_move(indicator[0], ev->cur.canvas.x, ev->cur.canvas.y);
-  //evas_object_resize(indicator[0], 1, 1);
   //elm_object_focus_set(o, EINA_TRUE);
 
   if (ev->buttons & 1 == 1){
@@ -65,41 +62,26 @@ static void
 _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
 {
   Evas_Event_Mouse_Down *ev = (Evas_Event_Mouse_Down*) event_info;
-
-  //if (ev->button != 1) return;
-  printf("MOUSE: down @ %4i %4i\n", ev->canvas.x, ev->canvas.y);
-  //   evas_object_move(indicator[0], ev->canvas.x, ev->canvas.y);
-  //  evas_object_resize(indicator[0], 1, 1);
-  // evas_object_show(indicator[0]);
-
   //elm_object_focus_set(o, EINA_TRUE);
-  //TODO ray to intersect object
+
   Scene* s = evas_object_data_get(o, "scene");
   Camera* c = s->camera;
-  double near = 1.0;
-  double fovy = M_PI/4.0;
-  //Vec3 camz = quat_rotate_vec3(quat_inverse(c->object.Orientation), vec3(0,0,-1));
-  //Vec3 up = quat_rotate_vec3(quat_inverse(c->object.Orientation), vec3(0,1,0));
+  double near = c->near;
   Vec3 camz = quat_rotate_vec3(c->object.Orientation, vec3(0,0,-1));
   Vec3 up = quat_rotate_vec3(c->object.Orientation, vec3(0,1,0));
   Vec3 h = vec3_cross(camz, up);
   h = vec3_normalized(h);
   double l = vec3_length(h);
-  printf("cam z %f, %f, %f \n", camz.X, camz.Y, camz.Z);
-  double vl = tan(fovy/2.0) * near; // tan(fov/2)*near
+  double vl = tan(c->fovy/2.0) * near;
 
   int width, height;
   elm_glview_size_get(o, &width, &height);
   double aspect = (double)width/ (double)height;
-  printf("aspect : %f\n", aspect);
   double vh = vl * aspect;
 
 
   up = vec3_mul(up, vl);
   h = vec3_mul(h, vh);
-
-  printf("up %f, %f, %f \n", up.X, up.Y, up.Z);
-  printf("h %f, %f, %f \n", h.X, h.Y, h.Z);
 
   double x = ev->canvas.x;
   double y = ev->canvas.y;
@@ -108,8 +90,6 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
 
   y /= (double)height / 2.0;
   x /= (double)width / 2.0;
-
-  printf("X, Y %f, %f \n", x,y);
 
   Vec3 pos = vec3_add(
         c->object.Position, 
@@ -123,21 +103,8 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   dir = vec3_normalized(dir);
   dir = vec3_mul(dir, 100);
 
-  printf("pos %f, %f, %f \n", pos.X, pos.Y, pos.Z);
-  printf("dir %f, %f, %f \n", dir.X, dir.Y, dir.Z);
   Ray r = {pos, dir};
     
-  AABox b = { vec3(-1,-1,-1), vec3(1,1,1)};
-  /*
-  IntersectionRay ir = intersection_ray_aabox(r, b);
-  if (ir.hit) 
-  printf("COLLISION!!!!!!!!!!!!!!!");
-  else {
-    printf("position %f, %f, %f \n", ir.position.X, ir.position.Y, ir.position.Z);
-    printf("normal %f, %f, %f \n", ir.normal.X, ir.normal.Y, ir.normal.Z);
-  }
-  */
-
   Eina_List *list;
   Object *ob;
   EINA_LIST_FOREACH(s->objects, list, ob) {
