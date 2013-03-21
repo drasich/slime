@@ -57,14 +57,9 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   }
 }
 
-static Object* selected = NULL;
-static void
-_mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
+Ray
+ray_from_click(Scene* s, double x, double y)
 {
-  Evas_Event_Mouse_Down *ev = (Evas_Event_Mouse_Down*) event_info;
-  //elm_object_focus_set(o, EINA_TRUE);
-
-  Scene* s = evas_object_data_get(o, "scene");
   Camera* c = s->camera;
   double near = c->near;
   Vec3 camz = quat_rotate_vec3(c->object.Orientation, vec3(0,0,-1));
@@ -74,17 +69,14 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   double l = vec3_length(h);
   double vl = tan(c->fovy/2.0) * near;
 
-  int width, height;
-  elm_glview_size_get(o, &width, &height);
+  // used to do this : elm_glview_size_get(o, &width, &height);
+  int width = c->width, height = c->height;
   double aspect = (double)width/ (double)height;
   double vh = vl * aspect;
-
 
   up = vec3_mul(up, vl);
   h = vec3_mul(h, vh);
 
-  double x = ev->canvas.x;
-  double y = ev->canvas.y;
   x -= (double)width / 2.0;
   y -= (double)height / 2.0;
 
@@ -95,39 +87,59 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
         c->object.Position, 
         vec3_add(
           vec3_mul(camz,near),
-          vec3_add( vec3_mul(h,x), vec3_mul(up,-y))
+          vec3_add(vec3_mul(h,x), vec3_mul(up,-y))
           )
         );
 
   Vec3 dir = vec3_sub(pos, c->object.Position);
   dir = vec3_normalized(dir);
-  dir = vec3_mul(dir, 100);
+  dir = vec3_mul(dir, 100); //TODO length
 
   Ray r = {pos, dir};
-    
+  return r;
+}
+
+static Object* selected = NULL;
+static void
+_mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
+{
+  Evas_Event_Mouse_Down *ev = (Evas_Event_Mouse_Down*) event_info;
+  //elm_object_focus_set(o, EINA_TRUE);
+
+  Scene* s = evas_object_data_get(o, "scene");
+  Ray r = ray_from_click(s, ev->canvas.x, ev->canvas.y);
+
+  bool found = false;
+  double d;
+  Object* oh = NULL;
+
   Eina_List *list;
   Object *ob;
   EINA_LIST_FOREACH(s->objects, list, ob) {
-    //Sphere sphere = {ob->Position, 2};
-    //IntersectionRay ir = intersection_ray_sphere(r, sphere);
     IntersectionRay ir = intersection_ray_box(r, ob->mesh->box, ob->Position, ob->Orientation);
-    if (ir.hit) {
-      printf("COLLISION!!!!!!!!!!!!!!! with %s\n", ob->name);
-      printf("position %f, %f, %f \n", ir.position.X, ir.position.Y, ir.position.Z);
-      printf("normal %f, %f, %f \n", ir.normal.X, ir.normal.Y, ir.normal.Z);
-      selected = ob;
-      s->selected = ob;
-      if (selected != NULL ) {
-        Vec3 yep = quat_rotate_vec3(s->camera->object.Orientation, s->camera->local_offset);
-        Vec3 tt = vec3_sub(s->camera->object.Position, yep);
-        s->camera->origin = quat_rotate_around(quat_inverse(s->camera->object.Orientation), selected->Position, tt);
 
-        //TODO compute the z if we don't want the outline to display with depth
-        //s->quad_outline->Position.Z = -970.0f;
-        //printf("test :  %f\n", test);
-        //printf("selected position z :  %f\n", selected->Position.Z);
+    if (ir.hit) {
+      double diff = vec3_length2(vec3_sub(ir.position, s->camera->object.Position));
+
+      if ( (found && diff < d) || !found) {
+        found = true;
+        d = diff;
+        oh = ob;
       }
     }
+  }
+
+  if (oh != NULL) {
+    selected = oh;
+    s->selected = oh;
+    Vec3 yep = quat_rotate_vec3(s->camera->object.Orientation, s->camera->local_offset);
+    Vec3 tt = vec3_sub(s->camera->object.Position, yep);
+    s->camera->origin = quat_rotate_around(quat_inverse(s->camera->object.Orientation), selected->Position, tt);
+
+    //TODO compute the z if we don't want the outline to display with depth
+    //s->quad_outline->Position.Z = -970.0f;
+    //printf("test :  %f\n", test);
+    //printf("selected position z :  %f\n", selected->Position.Z);
   }
 
 }

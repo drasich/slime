@@ -186,6 +186,8 @@ intersection_ray_aabox(Ray ray, AABox box)
     out.normal.Y = zn;
   }
 
+  printf("ttttt : %f \n", t);
+  printf("ray direction : %f %f %f \n", ray.Direction.X, ray.Direction.Y, ray.Direction.Z);
   out.position = vec3_add(ray.Start, vec3_mul(ray.Direction,t));
   out.hit = true;
  
@@ -217,13 +219,8 @@ intersection_ray_box(Ray ray, AABox box, Vec3 position, Quat rotation)
   IntersectionRay ir = intersection_ray_aabox(newray, box);
 
   //transform back
-  //Quat iq = quat_conj(rotation);
-  //Quat iq = quat_inverse(rotation);
-  //ir.position = quat_rotate_vec3(rotation, ir.position);// o.Orientation.RotateVec3(position)
-  //ir.position = quat_rotate_vec3(iq, ir.position);// o.Orientation.RotateVec3(position)
-  //ir.position = vec3_add(ir.position, position);
-
-  //ir.normal = quat_rotate_vec3(rotation, ir.normal); //o.Orientation.RotateVec3(normal)
+  ir.position = local_to_world(r, ir.position);
+  ir.normal = quat_rotate_vec3(rotation, ir.normal);
 
   return ir;
 }
