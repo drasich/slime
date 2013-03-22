@@ -1,15 +1,16 @@
 #ifndef _VIEW_H__
 #define _VIEW_H__
 #include "matrix.h"
+#include "camera.h"
 
 typedef struct _View View;
 
 struct _View
 {
-  Matrix4 projection;
   struct _Context* context;
   Evas_Object* glview;
   Evas_Object* box;
+  Camera* camera;
 };
 
 View* create_view(Evas_Object *win);

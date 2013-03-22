@@ -165,13 +165,9 @@ _mouse_wheel(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *ev
   s->camera->object.Position = vec3_add(s->camera->object.Position, axis);
 }
 
-// Callbacks
 static void
-_init_gl(Evas_Object *obj)
+populate_scene(Scene* s)
 {
-  Scene* s = create_scene();
-  evas_object_data_set(obj, "scene", s);
-
   //Object* o = create_object_file("model/smallchar.bin");
   Object* o = create_object_file("model/cube.bin");
   o->name = "cube";
@@ -206,12 +202,6 @@ _init_gl(Evas_Object *obj)
   object_set_orientation(yep, q);
   scene_add_object(s,yep);
 
-  gl->glEnable(GL_DEPTH_TEST);
-  gl->glEnable(GL_STENCIL_TEST);
-  gl->glDepthFunc(GL_LEQUAL);
-  gl->glClearDepthf(1.0f);
-  gl->glClearStencil(0);
-
   //GLint bits;
   //gl->glGetIntegerv(GL_DEPTH_BITS, &bits);
   //printf("depth buffer %d\n\n", bits);
@@ -223,6 +213,21 @@ _init_gl(Evas_Object *obj)
   Vec4 toaa = quat_to_axis_angle(myq);
   printf(" toaa : %f, %f, %f, %f \n", toaa.X, toaa.Y, toaa.Z, toaa.W);
 
+}
+
+// Callbacks
+static void
+_init_gl(Evas_Object *obj)
+{
+  Scene* s = create_scene();
+  evas_object_data_set(obj, "scene", s);
+  populate_scene(s);
+
+  gl->glEnable(GL_DEPTH_TEST);
+  gl->glEnable(GL_STENCIL_TEST);
+  gl->glDepthFunc(GL_LEQUAL);
+  gl->glClearDepthf(1.0f);
+  gl->glClearStencil(0);
 }
 
 static void
