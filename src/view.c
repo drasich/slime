@@ -130,7 +130,7 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   }
 
   if (oh != NULL) {
-    s->selected = oh;
+    //s->selected = oh;
     v->context->object = oh;
     Vec3 yep = quat_rotate_vec3(v->camera->object.Orientation, v->camera->local_offset);
     Vec3 tt = vec3_sub(v->camera->object.Position, yep);
@@ -225,6 +225,7 @@ _init_gl(Evas_Object *obj)
   populate_scene(s);
   
   View* v = evas_object_data_get(obj, "view");
+  v->context->scene = s;
   v->camera = create_camera();
   v->camera->object.name = "camera";
   Vec3 p = {0,0,20};
@@ -233,6 +234,7 @@ _init_gl(Evas_Object *obj)
   Vec3 at = {0,0,0};
   camera_lookat(v->camera, at);
 
+  v->render = create_render();
 
   gl->glEnable(GL_DEPTH_TEST);
   gl->glEnable(GL_STENCIL_TEST);
@@ -263,12 +265,12 @@ _resize_gl(Evas_Object *obj)
    Scene* s = evas_object_data_get(obj, "scene");
    View* v = evas_object_data_get(obj, "view");
    camera_set_resolution(v->camera, w, h);
-   quad_resize(s->quad_outline->mesh, w, h);
-   quad_resize(s->quad_color->mesh, w, h);
+   quad_resize(v->render->quad_outline->mesh, w, h);
+   quad_resize(v->render->quad_color->mesh, w, h);
 
    //TODO
-   fbo_resize(s->fbo_all, w, h);
-   fbo_resize(s->fbo_selected, w, h);
+   fbo_resize(v->render->fbo_all, w, h);
+   fbo_resize(v->render->fbo_selected, w, h);
 }
 
 static void
@@ -293,7 +295,7 @@ _draw_gl(Evas_Object *obj)
 
    View* v = evas_object_data_get(obj, "view");
    view_update(v,0);
-   scene_draw(s, v->camera);
+   view_draw(v);
    gl->glFinish();
 }
 
@@ -398,3 +400,142 @@ view_update(View* v, double dt)
 {
   object_update((Object*)v->camera);
 }
+
+Render*
+create_render()
+{
+  Render* r = calloc(1, sizeof *r);
+  r->fbo_selected = create_fbo();
+  r->fbo_all = create_fbo();
+
+
+  r->quad_outline = create_object();
+  r->quad_outline->mesh = create_mesh_quad(100,100);
+  Vec3 t3 = {0,0,-100};
+  object_set_position(r->quad_outline, t3);
+  r->quad_outline->name = "quad";
+
+  r->quad_outline->mesh->shader = create_shader("shader/stencil.vert", "shader/stencil.frag");
+  shader_init_attribute(r->quad_outline->mesh->shader, "vertex", &r->quad_outline->mesh->attribute_vertex);
+  shader_init_uniform(r->quad_outline->mesh->shader, "matrix", &r->quad_outline->mesh->uniform_matrix);
+  shader_init_uniform(r->quad_outline->mesh->shader, "resolution", &r->quad_outline->mesh->uniform_resolution);
+
+  r->quad_color = create_object();
+  r->quad_color->mesh = create_mesh_quad(100,100);
+  object_set_position(r->quad_color, t3);
+  r->quad_color->name = "quad";
+
+  r->quad_color->mesh->shader = create_shader("shader/stencil.vert", "shader/quad.frag");
+  shader_init_attribute(r->quad_color->mesh->shader, "vertex", &r->quad_color->mesh->attribute_vertex);
+  shader_init_uniform(r->quad_color->mesh->shader, "matrix", &r->quad_color->mesh->uniform_matrix);
+  shader_init_uniform(r->quad_color->mesh->shader, "resolution", &r->quad_color->mesh->uniform_resolution);
+
+  return r;
+
+}
+
+void
+view_draw(View* v)
+{
+  Camera* c = v->camera;
+  Context* cx = v->context;
+  Render* r = v->render;
+  Scene* s = cx->scene;
+
+  Matrix4 cam_mat_inv, mo;
+
+  mat4_inverse(((Object*)c)->matrix, cam_mat_inv);
+  Matrix4* projection = &c->projection;
+  Matrix4* ortho = &c->orthographic;
+
+  //Render just selected to fbo
+  if (cx->object != NULL) {
+    fbo_use(r->fbo_selected);
+    gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT) ;
+    object_compute_matrix(cx->object, mo);
+    mat4_multiply(cam_mat_inv, mo, mo);
+    object_draw(cx->object, mo, *projection);
+    fbo_use_end();
+  }
+
+  //Render all objects to fbo to get depth for the lines.
+  fbo_use(r->fbo_all);
+  gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT) ;
+  //gl->glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
+  //gl->glClearStencil(0);
+  gl->glEnable(GL_STENCIL_TEST);
+  gl->glStencilFunc(GL_ALWAYS, 0x1, 0x1);
+  gl->glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+  Eina_List *l;
+  Object *o;
+  EINA_LIST_FOREACH(s->objects, l, o) {
+    object_compute_matrix(o, mo);
+    mat4_multiply(cam_mat_inv, mo, mo);
+    object_draw(o, mo, *projection);
+  }
+  //gl->glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
+
+  //TODO : test, can be removed
+  //
+  //int w = c->width;
+  //int h = c->height;
+  //printf(" w , h : %d, %d \n", w, h);
+  //GLuint mypixels[w*h];
+  //gl->glReadPixels(
+        //0, 
+        //0, 
+        //w, 
+        //h, 
+        //GL_DEPTH_STENCIL_OES, 
+        //GL_UNSIGNED_INT_24_8_OES, 
+        //mypixels);
+  //save_png(mypixels, w, h);
+
+  fbo_use_end();
+
+
+  //Render objects
+  EINA_LIST_FOREACH(s->objects, l, o) {
+    //object_compute_matrix(o, mo);
+    //mat4_multiply(cam_mat_inv, mo, mo);
+    mat4_multiply(cam_mat_inv, o->matrix, mo);
+    object_draw(o, mo, *projection);
+  }
+
+  //TODO avoid compute matrix 2 times
+  //Render lines
+  //gl->glClear(GL_DEPTH_BUFFER_BIT);
+  //EINA_LIST_FOREACH(s->objects, l, o) {
+    //object_compute_matrix(o, mo);
+    //mat4_multiply(cam_mat_inv, mo, mo);
+    ////TODO Fix how to use depth texture for lines
+    //if (o->line != NULL) o->line->id_texture = s->fbo_all->texture_depth_stencil_id;
+    //object_draw_lines(o, mo, *projection);
+  //}
+
+
+  //Render objects with quad
+  //object_compute_matrix(s->quad_color, mo);
+  //if (s->quad_color->mesh != NULL) 
+  //s->quad_color->mesh->id_texture = s->fbo_all->texture_color;
+  //object_draw(s->quad_color, mo, *ortho);
+
+
+  //Render outline with quad
+  object_compute_matrix(r->quad_outline, mo);
+  if (r->quad_outline->mesh != NULL) 
+  r->quad_outline->mesh->id_texture = r->fbo_selected->texture_depth_stencil_id;
+  object_draw(r->quad_outline, mo, *ortho);
+
+  //gl->glClear(GL_DEPTH_BUFFER_BIT);
+  //EINA_LIST_FOREACH(s->ortho, l, o) {
+    //object_compute_matrix(o, mo);
+    //if (o->mesh != NULL) o->mesh->id_texture = s->fbo_selected->texture_depth_stencil_id;
+    //object_draw(o, mo, *ortho);
+    ////if (o->mesh != NULL) o->mesh->id_texture = s->fbo_all->texture_color;
+    ////object_draw(o, mo, *ortho);
+  //}
+  
+}
+

@@ -11,14 +11,6 @@ struct _Scene {
   //list of objects
   Eina_List* objects;
   Eina_List* ortho;
-  struct View* view;
-
-  Object* quad_outline;
-  Object* quad_color;
-  Fbo* fbo_selected;
-  Fbo* fbo_all;
-
-  Object* selected; //TODO put in context
 };
 
 Scene* create_scene();
