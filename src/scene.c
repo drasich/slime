@@ -8,6 +8,7 @@ create_scene()
   s->objects = NULL;
   s->ortho = NULL;
   eina_init();
+  /*
   s->camera = create_camera();
   s->camera->object.name = "camera";
   Vec3 v = {0,0,20};
@@ -15,8 +16,7 @@ create_scene()
   s->camera->object.Position = v;
   Vec3 at = {0,0,0};
   camera_lookat(s->camera, at);
-  Object* c = (Object*) s->camera;
-  mat4_pos_ori(c->Position, c->Orientation, c->matrix);
+  */
 
   s->fbo_selected = create_fbo();
   s->fbo_all = create_fbo();
@@ -84,14 +84,14 @@ scene_destroy(Scene* s)
 }
 
 void
-scene_draw(Scene* s)
+scene_draw(Scene* s, Camera* c)
 {
   Matrix4 cam_mat_inv, mo;
 
   //TODO save the inverse camera and compute only if there was a change.
-  mat4_inverse(((Object*)(s->camera))->matrix, cam_mat_inv);
-  Matrix4* projection = &s->camera->projection;
-  Matrix4* ortho = &s->camera->orthographic;
+  mat4_inverse(((Object*)c)->matrix, cam_mat_inv);
+  Matrix4* projection = &c->projection;
+  Matrix4* ortho = &c->orthographic;
 
   //Render just selected to fbo
   if (s->selected != NULL) {
@@ -123,8 +123,8 @@ scene_draw(Scene* s)
 
   //TODO : test, can be removed
   /*
-  int w = s->camera->width;
-  int h = s->camera->height;
+  int w = c->width;
+  int h = c->height;
   //printf(" w , h : %d, %d \n", w, h);
   GLuint mypixels[w*h];
   gl->glReadPixels(
@@ -203,6 +203,6 @@ scene_update(Scene* s)
     object_update(o);
 
   //TODO only update camera if there is a movement
-  object_update((Object*)s->camera);
+  //object_update((Object*)s->camera);
 }
 

@@ -12,7 +12,6 @@ struct _Scene {
   Eina_List* objects;
   Eina_List* ortho;
   struct View* view;
-  Camera* camera;
 
   Object* quad_outline;
   Object* quad_color;
@@ -25,7 +24,7 @@ struct _Scene {
 Scene* create_scene();
 void scene_add_object(Scene* s, Object* o);
 void scene_add_object_ortho(Scene* s, Object* o);
-void scene_draw(Scene* s);
+void scene_draw(Scene* s, Camera* c);
 void scene_update(Scene* s);
 
 void scene_destroy(Scene* s);

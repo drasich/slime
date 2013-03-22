@@ -16,9 +16,9 @@ _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, 
   if (!strcmp(ev->keyname, "Escape")) elm_exit();
 }
 
-static void rotate_camera(Scene* s, float x, float y)
+static void rotate_camera(View* v, float x, float y)
 {
-  Camera* cam = s->camera;
+  Camera* cam = v->camera;
   Object* c = (Object*) cam;
 
   cam->yaw += 0.005f*x;
@@ -30,7 +30,7 @@ static void rotate_camera(Scene* s, float x, float y)
 
   c->Orientation = result;
 
-  Object* o = s->selected;
+  Object* o = v->context->object;
   if (o == NULL) return;
 
   camera_rotate_around(cam, result, o->Position);
@@ -43,24 +43,23 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   //elm_object_focus_set(o, EINA_TRUE);
 
   if (ev->buttons & 1 == 1){
-    Scene* s = evas_object_data_get(o, "scene");
+    View* v = evas_object_data_get(o, "view");
     float x = ev->cur.canvas.x - ev->prev.canvas.x;
     float y = ev->cur.canvas.y - ev->prev.canvas.y;
 
     const Evas_Modifier * mods = ev->modifiers;
     if (evas_key_modifier_is_set(mods, "Shift")) {
       Vec3 t = {-x*0.05f, y*0.05f, 0};
-      camera_pan(s->camera, t);
+      camera_pan(v->camera, t);
     } else {
-      rotate_camera(s, x, y);
+      rotate_camera(v, x, y);
     }
   }
 }
 
 Ray
-ray_from_click(Scene* s, double x, double y)
+ray_from_click(Camera* c, double x, double y)
 {
-  Camera* c = s->camera;
   double near = c->near;
   Vec3 camz = quat_rotate_vec3(c->object.Orientation, vec3(0,0,-1));
   Vec3 up = quat_rotate_vec3(c->object.Orientation, vec3(0,1,0));
@@ -106,7 +105,8 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   //elm_object_focus_set(o, EINA_TRUE);
 
   Scene* s = evas_object_data_get(o, "scene");
-  Ray r = ray_from_click(s, ev->canvas.x, ev->canvas.y);
+  View* v = evas_object_data_get(o, "view");
+  Ray r = ray_from_click(v->camera, ev->canvas.x, ev->canvas.y);
 
   bool found = false;
   double d;
@@ -118,7 +118,7 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
     IntersectionRay ir = intersection_ray_box(r, ob->mesh->box, ob->Position, ob->Orientation);
 
     if (ir.hit) {
-      double diff = vec3_length2(vec3_sub(ir.position, s->camera->object.Position));
+      double diff = vec3_length2(vec3_sub(ir.position, v->camera->object.Position));
 
       if ( (found && diff < d) || !found) {
         found = true;
@@ -131,9 +131,10 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
 
   if (oh != NULL) {
     s->selected = oh;
-    Vec3 yep = quat_rotate_vec3(s->camera->object.Orientation, s->camera->local_offset);
-    Vec3 tt = vec3_sub(s->camera->object.Position, yep);
-    s->camera->origin = quat_rotate_around(quat_inverse(s->camera->object.Orientation), s->selected->Position, tt);
+    v->context->object = oh;
+    Vec3 yep = quat_rotate_vec3(v->camera->object.Orientation, v->camera->local_offset);
+    Vec3 tt = vec3_sub(v->camera->object.Position, yep);
+    v->camera->origin = quat_rotate_around(quat_inverse(v->camera->object.Orientation), v->context->object->Position, tt);
 
     //TODO compute the z if we don't want the outline to display with depth
     //s->quad_outline->Position.Z = -970.0f;
@@ -157,12 +158,12 @@ _mouse_wheel(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *ev
 {
   Evas_Event_Mouse_Wheel *ev = (Evas_Event_Mouse_Wheel*) event_info;
 
-  Scene* s = evas_object_data_get(o, "scene");
+  View* v = evas_object_data_get(o, "view");
   //float x = ev->cur.canvas.x - ev->prev.canvas.x;
   //float y = ev->cur.canvas.y - ev->prev.canvas.y;
   Vec3 axis = {0, 0, ev->z};
   axis = vec3_mul(axis, 0.5f);
-  s->camera->object.Position = vec3_add(s->camera->object.Position, axis);
+  v->camera->object.Position = vec3_add(v->camera->object.Position, axis);
 }
 
 static void
@@ -222,6 +223,16 @@ _init_gl(Evas_Object *obj)
   Scene* s = create_scene();
   evas_object_data_set(obj, "scene", s);
   populate_scene(s);
+  
+  View* v = evas_object_data_get(obj, "view");
+  v->camera = create_camera();
+  v->camera->object.name = "camera";
+  Vec3 p = {0,0,20};
+  v->camera->origin = p;
+  v->camera->object.Position = p;
+  Vec3 at = {0,0,0};
+  camera_lookat(v->camera, at);
+
 
   gl->glEnable(GL_DEPTH_TEST);
   gl->glEnable(GL_STENCIL_TEST);
@@ -250,7 +261,8 @@ _resize_gl(Evas_Object *obj)
    gl->glViewport(0, 0, w, h);
 
    Scene* s = evas_object_data_get(obj, "scene");
-   camera_set_resolution(s->camera, w, h);
+   View* v = evas_object_data_get(obj, "view");
+   camera_set_resolution(v->camera, w, h);
    quad_resize(s->quad_outline->mesh, w, h);
    quad_resize(s->quad_color->mesh, w, h);
 
@@ -279,7 +291,9 @@ _draw_gl(Evas_Object *obj)
    Scene* s = evas_object_data_get(obj, "scene");
    scene_update(s);
 
-   scene_draw(s);
+   View* v = evas_object_data_get(obj, "view");
+   view_update(v,0);
+   scene_draw(s, v->camera);
    gl->glFinish();
 }
 
@@ -352,6 +366,7 @@ _create_glview(View* view, Evas_Object* win)
   evas_object_smart_callback_add(bt, "clicked", _on_done, win);
   */
 
+
   return glview;
 
 }
@@ -372,7 +387,14 @@ void
 view_destroy(View* v)
 {
   printf("destroy view\n");
+  //TODO free camera
+  //TODO free scene here?
   free(v->context);
   free(v);
 }
 
+void
+view_update(View* v, double dt)
+{
+  object_update((Object*)v->camera);
+}

@@ -47,7 +47,6 @@ camera_lookat(Camera* c, Vec3 at)
   Quat qp = quat_angle_axis(c->pitch, vec3(1,0,0));
   
   o->Orientation = quat_mul(qy, qp);
-
 }
 
 void
