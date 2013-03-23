@@ -55,4 +55,13 @@ struct _Repere {
 Vec3 world_to_local(Repere r, Vec3 v);
 Vec3 local_to_world(Repere r, Vec3 v);
 
+typedef struct _Triangle Triangle;
+struct _Triangle {
+  Vec3 v0;
+  Vec3 v1;
+  Vec3 v2;
+};
+
+IntersectionRay intersection_ray_triangle(Ray ray, Triangle, double min);
+
 #endif

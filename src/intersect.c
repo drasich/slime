@@ -242,3 +242,17 @@ local_to_world(Repere r, Vec3 v)
   return out;
 }
 
+
+IntersectionRay
+intersection_ray_triangle(Ray r, Triangle t, double min)
+{
+  const double NO_INT = DBL_MAX;
+
+  Vec3 e1 = vec3_sub(t.v1, t.v0);
+  Vec3 e2 = vec3_sub(t.v2, t.v1);
+
+  Vec3 n = vec3_cross(e1,e2);
+
+  double dot = vec3_dot(n, r.Direction);
+
+}
