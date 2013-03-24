@@ -2,6 +2,7 @@
 #define __intersect__
 #include "vec.h"
 #include "quat.h"
+#include "mesh.h"
 #include <stdbool.h>
 
 typedef struct _Ray Ray;
@@ -36,12 +37,6 @@ struct _IntersectionRay {
 IntersectionRay intersection_ray_plane(Ray ray, Plane plane);
 IntersectionRay intersection_ray_sphere(Ray ray, Sphere sphere);
 
-typedef struct _AABox AABox;
-struct _AABox {
-  Vec3 Min;
-  Vec3 Max;
-};
-
 //TODO Intersection ray - aaabox
 IntersectionRay intersection_ray_aabox(Ray ray, AABox box);
 IntersectionRay intersection_ray_box(Ray ray, AABox box, Vec3 position, Quat rotation);
@@ -63,5 +58,6 @@ struct _Triangle {
 };
 
 IntersectionRay intersection_ray_triangle(Ray ray, Triangle, double min);
+IntersectionRay intersection_ray_mesh(Ray ray, Mesh* m);
 
 #endif

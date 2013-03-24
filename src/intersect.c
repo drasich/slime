@@ -48,8 +48,6 @@ IntersectionRay
 intersection_ray_aabox(Ray ray, AABox box)
 {
   IntersectionRay out = { .hit = false, .inside = true};
-  printf("pass 00 \n");
-
   double xt, xn;
 
   if (ray.Start.X < box.Min.X) {
@@ -76,8 +74,6 @@ intersection_ray_aabox(Ray ray, AABox box)
     xt = -1;
   }
 
-  printf("pass 10 \n");
-
   double yt, yn;
   if (ray.Start.Y < box.Min.Y) {
     yt = box.Min.Y - ray.Start.Y;
@@ -100,8 +96,6 @@ intersection_ray_aabox(Ray ray, AABox box)
   } else {
     yt = -1;
   }
-
-  printf("pass 20 \n");
 
   double zt, zn;
   if (ray.Start.Z < box.Min.Z) {
@@ -126,10 +120,7 @@ intersection_ray_aabox(Ray ray, AABox box)
     zt = -1;
   }
 
-  printf("pass 30 \n");
-
   if (out.inside) {
-    printf("we are inside!!!! \n");
     out.hit = true;
     return out;
   }
@@ -145,8 +136,7 @@ intersection_ray_aabox(Ray ray, AABox box)
     t = zt;
   }
 
-  printf("did you arrive here\n");
-  //printf("posistion %f, %f, %f \n", ir.position.X, ir.position.Y, ir.position.Z);
+  //printf("position %f, %f, %f \n", ir.position.X, ir.position.Y, ir.position.Z);
 
   double x, y, z;
 
@@ -186,8 +176,6 @@ intersection_ray_aabox(Ray ray, AABox box)
     out.normal.Y = zn;
   }
 
-  printf("ttttt : %f \n", t);
-  printf("ray direction : %f %f %f \n", ray.Direction.X, ray.Direction.Y, ray.Direction.Z);
   out.position = vec3_add(ray.Start, vec3_mul(ray.Direction,t));
   out.hit = true;
  
@@ -197,15 +185,6 @@ intersection_ray_aabox(Ray ray, AABox box)
 IntersectionRay
 intersection_ray_box(Ray ray, AABox box, Vec3 position, Quat rotation)
 {
-  /*
-  Repere r = { vec3(1,1,0), quat_angle_axis(3.141519/2, vec3(0,0,1))};
-  Vec3 a = vec3(2,2,0);
-  a = world_to_local(r, a);
-  printf("local to world : %f %f %f\n", a.X, a.Y, a.Z);
-  */
-  printf("old ray start %f, %f, %f \n", ray.Start.X, ray.Start.Y, ray.Start.Z);
-  printf("old ray direction %f, %f, %f \n", ray.Direction.X, ray.Direction.Y, ray.Direction.Z);
-
   Repere r = {position, rotation};
   //transform the ray in box/object coord
   Ray newray;
@@ -213,9 +192,6 @@ intersection_ray_box(Ray ray, AABox box, Vec3 position, Quat rotation)
   newray.Direction = world_to_local(r, vec3_add(ray.Direction, ray.Start));
   newray.Direction = vec3_sub(newray.Direction, newray.Start);
 
-  printf("new ray start %f, %f, %f \n", newray.Start.X, newray.Start.Y, newray.Start.Z);
-  printf("new ray direction %f, %f, %f \n", newray.Direction.X, newray.Direction.Y, newray.Direction.Z);
-          
   IntersectionRay ir = intersection_ray_aabox(newray, box);
 
   //transform back
@@ -246,6 +222,7 @@ local_to_world(Repere r, Vec3 v)
 IntersectionRay
 intersection_ray_triangle(Ray r, Triangle t, double min)
 {
+  IntersectionRay out = { .hit = false};
   const double NO_INT = DBL_MAX;
 
   Vec3 e1 = vec3_sub(t.v1, t.v0);
@@ -254,5 +231,117 @@ intersection_ray_triangle(Ray r, Triangle t, double min)
   Vec3 n = vec3_cross(e1,e2);
 
   double dot = vec3_dot(n, r.Direction);
+
+  if (!(dot < 0.0)) {
+    return out;
+  }
+
+  double d = vec3_dot(n, t.v0);
+
+  double tt = d - vec3_dot(n, r.Start);
+
+  if (!(tt<= 0.0)) return out;
+
+  if (!(tt >= dot*min)) {
+    return out;
+  }
+
+  tt /= dot;
+  //assert(tt >= 0.0);
+  //assert(tt <= min);
+
+  Vec3 p = vec3_add(r.Start, vec3_mul(r.Direction, tt));
+
+  double a0, a1, a2;
+  double b0, b1, b2;
+  if ( fabs(n.X) > fabs(n.Y)) {
+    if (fabs(n.X) > fabs(n.Z)) {
+      a0 = p.Y - t.v0.Y;
+      a1 = t.v1.Y - t.v0.Y;
+      a2 = t.v2.Y - t.v0.Y;
+
+      b0 = p.Z - t.v0.Z;
+      b1 = t.v1.Z - t.v0.Z;
+      b2 = t.v2.Z - t.v0.Z;
+    } else {
+      a0 = p.X - t.v0.X;
+      a1 = t.v1.X - t.v0.X;
+      a2 = t.v2.X - t.v0.X;
+
+      b0 = p.Y - t.v0.Y;
+      b1 = t.v1.Y - t.v0.Y;
+      b2 = t.v2.Y - t.v0.Y;
+    }
+  } else {
+    if (fabs(n.Y) > fabs(n.Z)) {
+      a0 = p.X - t.v0.X;
+      a1 = t.v1.X - t.v0.X;
+      a2 = t.v2.X - t.v0.X;
+
+      b0 = p.Z - t.v0.Z;
+      b1 = t.v1.Z - t.v0.Z;
+      b2 = t.v2.Z - t.v0.Z;
+    } else {
+      a0 = p.X - t.v0.X;
+      a1 = t.v1.X - t.v0.X;
+      a2 = t.v2.X - t.v0.X;
+
+      b0 = p.Y - t.v0.Y;
+      b1 = t.v1.Y - t.v0.Y;
+      b2 = t.v2.Y - t.v0.Y;
+    }
+  }
+
+  double temp = a1* b2 - b1*a2;
+  if (!(temp != 0.0)) return out;
+
+  temp = 1.0 / temp;
+
+  double alpha = (a0 * b2 - b0 * a2) * temp;
+  if (!(alpha >= 0.0)) return out;
+
+  double beta = (a1 * b0 - b1 * a0) * temp;
+  if (!(beta >= 0.0)) return out;
+
+  float gamma = 1.0 - alpha - beta;
+  if (!(gamma >= 0.0)) {
+    return out;
+  }
+
+  out.hit = true;
+  out.position = p;
+
+  return out;
+
+}
+
+IntersectionRay
+intersection_ray_mesh(Ray ray, Mesh* m)
+{
+  int i;
+  for (i = 0; i < m->indices_len / 3; ++i) {
+    Vec3 v0 = { 
+      m->vertices[i*9],
+      m->vertices[i*9 + 1],
+      m->vertices[i*9 + 2]
+    };
+    Vec3 v1 = { 
+      m->vertices[i*9 + 3],
+      m->vertices[i*9 + 4],
+      m->vertices[i*9 + 5]
+    };
+    Vec3 v2 = { 
+      m->vertices[i*9 + 6],
+      m->vertices[i*9 + 7],
+      m->vertices[i*9 + 8]
+    };
+    Triangle tri = { v0, v1, v2};
+
+    IntersectionRay ir = intersection_ray_triangle(ray,tri,1);
+    if (ir.hit) return ir;
+  }
+
+  IntersectionRay out = { .hit = false};
+  return out;
 
 }

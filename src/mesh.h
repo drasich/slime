@@ -3,7 +3,6 @@
 #include "shader.h"
 #include "matrix.h"
 #include <stdbool.h>
-#include "intersect.h" //TODO shouldn't need this. for aabox for now, remove later
 
 typedef struct _Weight Weight;
 struct _Weight

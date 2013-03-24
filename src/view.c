@@ -116,8 +116,12 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   Object *ob;
   EINA_LIST_FOREACH(s->objects, list, ob) {
     IntersectionRay ir = intersection_ray_box(r, ob->mesh->box, ob->Position, ob->Orientation);
-
+    //if (ir.hit)
+    //  ir = intersection_ray_mesh(r, ob->mesh);
+    
     if (ir.hit) {
+
+
       double diff = vec3_length2(vec3_sub(ir.position, v->camera->object.Position));
 
       if ( (found && diff < d) || !found) {
@@ -213,6 +217,22 @@ populate_scene(Scene* s)
   Quat myq = mat4_get_quat(la);
   Vec4 toaa = quat_to_axis_angle(myq);
   printf(" toaa : %f, %f, %f, %f \n", toaa.X, toaa.Y, toaa.Z, toaa.W);
+
+  Triangle tri = { 
+    vec3(0,0,-10), 
+    vec3(10,0,-10), 
+    vec3(5,5,-10)
+  };
+  Ray r = {
+    vec3(2,2,0),
+    vec3(0,0,-100)
+  };
+
+  IntersectionRay ir = intersection_ray_triangle(r,tri,1);
+  if (ir.hit)
+    printf("!!!!!!!!!!!!!!!there is a collision \n");
+  else
+    printf("!!!!!!!!!!!!!!!no collision \n");
 
 }
 

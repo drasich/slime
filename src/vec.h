@@ -37,4 +37,12 @@ Vec3 vec3_cross(Vec3 v1, Vec3 v2);
 
 double vec4_dot(Vec4 v1, Vec4 v2);
 
+//move in geometry.h or something
+typedef struct _AABox AABox;
+struct _AABox {
+  Vec3 Min;
+  Vec3 Max;
+};
+
+
 #endif
