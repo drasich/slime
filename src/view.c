@@ -116,19 +116,15 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   Object *ob;
   EINA_LIST_FOREACH(s->objects, list, ob) {
     IntersectionRay ir = intersection_ray_box(r, ob->mesh->box, ob->Position, ob->Orientation);
-    //if (ir.hit)
-    //  ir = intersection_ray_mesh(r, ob->mesh);
+    if (ir.hit)
+      ir = intersection_ray_object(r, ob);
     
     if (ir.hit) {
-
-
       double diff = vec3_length2(vec3_sub(ir.position, v->camera->object.Position));
-
       if ( (found && diff < d) || !found) {
         found = true;
         d = diff;
         oh = ob;
-        //TODO mesh collision
       }
     }
   }
@@ -153,7 +149,7 @@ _mouse_up(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, 
 {
   Evas_Event_Mouse_Up *ev = (Evas_Event_Mouse_Up*)event_info;
   //if (ev->button != 1) return;
-  printf("MOUSE: up   @ %4i %4i\n", ev->canvas.x, ev->canvas.y);
+  //printf("MOUSE: up   @ %4i %4i\n", ev->canvas.x, ev->canvas.y);
   //evas_object_hide(indicator[0]);
 }
 
@@ -174,7 +170,7 @@ static void
 populate_scene(Scene* s)
 {
   //Object* o = create_object_file("model/smallchar.bin");
-  Object* o = create_object_file("model/cube.bin");
+  Object* o = create_object_file("model/triangle.bin");
   o->name = "cube";
   //Object* o = create_object_file("model/simpleplane.bin");
   //TODO free shader
@@ -191,7 +187,7 @@ populate_scene(Scene* s)
   Vec3 axis2 = {0,0,1};
   Quat q2 = quat_angle_axis(3.14159f/4.f, axis2);
   q = quat_mul(q, q2);
-  object_set_orientation(o, q2);
+  //object_set_orientation(o, q2);
   scene_add_object(s,o);
 
   //animation_play(o, "walkquat", LOOP);

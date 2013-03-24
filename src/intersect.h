@@ -2,7 +2,7 @@
 #define __intersect__
 #include "vec.h"
 #include "quat.h"
-#include "mesh.h"
+#include "object.h"
 #include <stdbool.h>
 
 typedef struct _Ray Ray;
@@ -58,6 +58,6 @@ struct _Triangle {
 };
 
 IntersectionRay intersection_ray_triangle(Ray ray, Triangle, double min);
-IntersectionRay intersection_ray_mesh(Ray ray, Mesh* m);
+IntersectionRay intersection_ray_object(Ray ray, Object* o);
 
 #endif
