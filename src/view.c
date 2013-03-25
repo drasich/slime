@@ -140,30 +140,6 @@ populate_scene(Scene* s)
   //GLint bits;
   //gl->glGetIntegerv(GL_DEPTH_BITS, &bits);
   //printf("depth buffer %d\n\n", bits);
-  Matrix4 la;
-  Vec3 at = {1,0,-1};
-  Vec3 up = {0,1,0};
-  mat4_lookat(la, vec3_zero(), at, up);
-  Quat myq = mat4_get_quat(la);
-  Vec4 toaa = quat_to_axis_angle(myq);
-  printf(" toaa : %f, %f, %f, %f \n", toaa.X, toaa.Y, toaa.Z, toaa.W);
-
-  Triangle tri = { 
-    vec3(0,0,-10), 
-    vec3(10,0,-10), 
-    vec3(5,5,-10)
-  };
-  Ray r = {
-    vec3(2,2,0),
-    vec3(0,0,-100)
-  };
-
-  IntersectionRay ir = intersection_ray_triangle(r,tri,1);
-  if (ir.hit)
-    printf("!!!!!!!!!!!!!!!there is a collision \n");
-  else
-    printf("!!!!!!!!!!!!!!!no collision \n");
-
 }
 
 // Callbacks
