@@ -65,3 +65,45 @@ camera_pan(Camera* c, Vec3 t)
   t = quat_rotate_vec3(c->object.Orientation, t);
   c->object.Position = vec3_add(c->object.Position, t);
 }
+
+Ray
+ray_from_screen(Camera* c, double x, double y, float length)
+{
+  double near = c->near;
+  Vec3 camz = quat_rotate_vec3(c->object.Orientation, vec3(0,0,-1));
+  Vec3 up = quat_rotate_vec3(c->object.Orientation, vec3(0,1,0));
+  Vec3 h = vec3_cross(camz, up);
+  h = vec3_normalized(h);
+  double l = vec3_length(h);
+  double vl = tan(c->fovy/2.0) * near;
+
+  // used to do this : elm_glview_size_get(o, &width, &height);
+  int width = c->width, height = c->height;
+  double aspect = (double)width/ (double)height;
+  double vh = vl * aspect;
+
+  up = vec3_mul(up, vl);
+  h = vec3_mul(h, vh);
+
+  x -= (double)width / 2.0;
+  y -= (double)height / 2.0;
+
+  y /= (double)height / 2.0;
+  x /= (double)width / 2.0;
+
+  Vec3 pos = vec3_add(
+        c->object.Position, 
+        vec3_add(
+          vec3_mul(camz,near),
+          vec3_add(vec3_mul(h,x), vec3_mul(up,-y))
+          )
+        );
+
+  Vec3 dir = vec3_sub(pos, c->object.Position);
+  dir = vec3_normalized(dir);
+  dir = vec3_mul(dir, length);
+
+  Ray r = {pos, dir};
+  return r;
+}
+

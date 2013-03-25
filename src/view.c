@@ -5,6 +5,7 @@
 #include "scene.h"
 #include "gl.h"
 #include "context.h"
+#include "control.h"
 #include "intersect.h"
 #define __UNUSED__
 
@@ -13,27 +14,10 @@ _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, 
 {
   Evas_Event_Key_Down *ev = (Evas_Event_Key_Down*)event_info;
   printf("KEY: down, keyname: %s , key %s \n", ev->keyname, ev->key);
-  if (!strcmp(ev->keyname, "Escape")) elm_exit();
-}
 
-static void rotate_camera(View* v, float x, float y)
-{
-  Camera* cam = v->camera;
-  Object* c = (Object*) cam;
-
-  cam->yaw += 0.005f*x;
-  cam->pitch += 0.005f*y;
-
-  Quat qy = quat_angle_axis(cam->yaw, vec3(0,1,0));
-  Quat qp = quat_angle_axis(cam->pitch, vec3(1,0,0));
-  Quat result = quat_mul(qy, qp);
-
-  c->Orientation = result;
-
-  Object* o = v->context->object;
-  if (o == NULL) return;
-
-  camera_rotate_around(cam, result, o->Position);
+  View* v = evas_object_data_get(o, "view");
+  Control* cl = v->control;
+  control_key_down(cl, ev);
 }
 
 static void
@@ -42,60 +26,9 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   Evas_Event_Mouse_Move *ev = (Evas_Event_Mouse_Move*) event_info;
   //elm_object_focus_set(o, EINA_TRUE);
 
-  if (ev->buttons & 1 == 1){
-    View* v = evas_object_data_get(o, "view");
-    float x = ev->cur.canvas.x - ev->prev.canvas.x;
-    float y = ev->cur.canvas.y - ev->prev.canvas.y;
-
-    const Evas_Modifier * mods = ev->modifiers;
-    if (evas_key_modifier_is_set(mods, "Shift")) {
-      Vec3 t = {-x*0.05f, y*0.05f, 0};
-      camera_pan(v->camera, t);
-    } else {
-      rotate_camera(v, x, y);
-    }
-  }
-}
-
-Ray
-ray_from_click(Camera* c, double x, double y)
-{
-  double near = c->near;
-  Vec3 camz = quat_rotate_vec3(c->object.Orientation, vec3(0,0,-1));
-  Vec3 up = quat_rotate_vec3(c->object.Orientation, vec3(0,1,0));
-  Vec3 h = vec3_cross(camz, up);
-  h = vec3_normalized(h);
-  double l = vec3_length(h);
-  double vl = tan(c->fovy/2.0) * near;
-
-  // used to do this : elm_glview_size_get(o, &width, &height);
-  int width = c->width, height = c->height;
-  double aspect = (double)width/ (double)height;
-  double vh = vl * aspect;
-
-  up = vec3_mul(up, vl);
-  h = vec3_mul(h, vh);
-
-  x -= (double)width / 2.0;
-  y -= (double)height / 2.0;
-
-  y /= (double)height / 2.0;
-  x /= (double)width / 2.0;
-
-  Vec3 pos = vec3_add(
-        c->object.Position, 
-        vec3_add(
-          vec3_mul(camz,near),
-          vec3_add(vec3_mul(h,x), vec3_mul(up,-y))
-          )
-        );
-
-  Vec3 dir = vec3_sub(pos, c->object.Position);
-  dir = vec3_normalized(dir);
-  dir = vec3_mul(dir, 100); //TODO length
-
-  Ray r = {pos, dir};
-  return r;
+  View* v = evas_object_data_get(o, "view");
+  Control* cl = v->control;
+  control_mouse_move(cl, ev);
 }
 
 static void
@@ -106,7 +39,9 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
 
   Scene* s = evas_object_data_get(o, "scene");
   View* v = evas_object_data_get(o, "view");
-  Ray r = ray_from_click(v->camera, ev->canvas.x, ev->canvas.y);
+  Control* cl = v->control;
+  control_mouse_down(cl, ev);
+  Ray r = ray_from_screen(v->camera, ev->canvas.x, ev->canvas.y, 100);
 
   bool found = false;
   double d;
@@ -130,7 +65,6 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   }
 
   if (oh != NULL) {
-    //s->selected = oh;
     v->context->object = oh;
     Vec3 yep = quat_rotate_vec3(v->camera->object.Orientation, v->camera->local_offset);
     Vec3 tt = vec3_sub(v->camera->object.Position, yep);
@@ -170,7 +104,7 @@ static void
 populate_scene(Scene* s)
 {
   //Object* o = create_object_file("model/smallchar.bin");
-  Object* o = create_object_file("model/triangle.bin");
+  Object* o = create_object_file("model/cube.bin");
   o->name = "cube";
   //Object* o = create_object_file("model/simpleplane.bin");
   //TODO free shader
@@ -395,6 +329,7 @@ create_view(Evas_Object *win)
   View *view = calloc(1,sizeof *view);
 
   view->context = calloc(1,sizeof *view->context);
+  view->control = create_control(view);
   view->glview = _create_glview(view, win);
   evas_object_data_set(view->glview, "view", view);
 
@@ -408,6 +343,7 @@ view_destroy(View* v)
   //TODO free camera
   //TODO free scene here?
   free(v->context);
+  free(v->control);
   free(v);
 }
 

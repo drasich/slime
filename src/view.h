@@ -19,6 +19,7 @@ typedef struct _View View;
 struct _View
 {
   struct _Context* context;
+  struct _Control* control;
   Evas_Object* glview;
   Evas_Object* box;
   Camera* camera;

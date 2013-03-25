@@ -11,7 +11,7 @@ intersection_ray_plane(Ray ray, Plane plane)
   IntersectionRay out = { .hit = false};
 
   if (dn != 0) {
-    double d = -vec3_dot(plane.Normal, plane.Point);
+    double d = vec3_dot(plane.Normal, plane.Point);
     double p0n = vec3_dot(ray.Start, plane.Normal);
     double t = (d - p0n) / dn;
     out.hit = true;
