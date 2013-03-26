@@ -15,9 +15,12 @@ struct _Control{
   struct _View* view;
   int state;
   Vec3 start;
+  Vec3 mouse_start;
+  Vec3 mouse_current;
   Eina_List* undo;
   Eina_List* redo;
 };
+
 
 Control* create_control(struct _View* v);
 void control_set_state(Control* c, int state);

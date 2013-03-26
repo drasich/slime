@@ -54,6 +54,9 @@ static void rotate_camera(View* v, float x, float y)
 void
 control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
 {
+  c->mouse_current.X = e->cur.canvas.x;
+  c->mouse_current.Y = e->cur.canvas.y;
+
   View* v = c->view;
   if (c->state == IDLE) {
     if (e->buttons & 1 == 1){
@@ -89,6 +92,7 @@ control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
 {
   if (c->state == MOVE) {
     c->state = IDLE;
+
     Operation* op = calloc(1, sizeof *op);
     op->do_cb = operation_move_object_do;
     op->undo_cb = operation_move_object_undo;
@@ -102,6 +106,7 @@ control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
   }
 
 }
+
 
 void 
 control_key_down(Control* c, Evas_Event_Key_Down *e)
