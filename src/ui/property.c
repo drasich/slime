@@ -53,9 +53,11 @@ property_create(Evas_Object* win)
   */
 
   property_add(win, bx, "name", "value");
+  property_add(win, bx, "x", "5");
+  property_add(win, bx, "y", "6");
+  property_add(win, bx, "z", "7");
 
   return frame;
-
 }
 
 Evas_Object* 
@@ -99,3 +101,8 @@ property_add(Evas_Object* win, Evas_Object* bx, char* name, char* value)
   return label;
 
 }
+
+void property_change(char* name, char* value)
+{
+}
+
