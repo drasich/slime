@@ -1,4 +1,5 @@
 #include <Elementary.h>
+#include <Eina.h>
 #include "property.h"
 
 Evas_Object*
@@ -104,5 +105,6 @@ property_add(Evas_Object* win, Evas_Object* bx, char* name, char* value)
 
 void property_change(char* name, char* value)
 {
+  
 }
 

@@ -32,6 +32,19 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
 }
 
 static void
+_view_select_object(View *v, Object *o)
+{
+  v->context->object = o;
+  Vec3 offset = quat_rotate_vec3(v->camera->object.Orientation, v->camera->local_offset);
+  Vec3 origin = vec3_sub(v->camera->object.Position, offset);
+  v->camera->origin = quat_rotate_around(quat_inverse(v->camera->object.Orientation), v->context->object->Position, origin);
+
+  //TODO tell properties to change, through control?
+  //or emit a signal to say object selected has changed and catch this signal in properties, and other possible widgets
+  //control_update_properties(v->control);
+}
+
+static void
 _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
 {
   Evas_Event_Mouse_Down *ev = (Evas_Event_Mouse_Down*) event_info;
@@ -45,7 +58,7 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
 
   bool found = false;
   double d;
-  Object* oh = NULL;
+  Object* clicked = NULL;
 
   Eina_List *list;
   Object *ob;
@@ -59,16 +72,13 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
       if ( (found && diff < d) || !found) {
         found = true;
         d = diff;
-        oh = ob;
+        clicked = ob;
       }
     }
   }
 
-  if (oh != NULL) {
-    v->context->object = oh;
-    Vec3 yep = quat_rotate_vec3(v->camera->object.Orientation, v->camera->local_offset);
-    Vec3 tt = vec3_sub(v->camera->object.Position, yep);
-    v->camera->origin = quat_rotate_around(quat_inverse(v->camera->object.Orientation), v->context->object->Position, tt);
+  if (clicked != NULL) {
+    _view_select_object(v, clicked);
 
     //TODO compute the z if we don't want the outline to display with depth
     //s->quad_outline->Position.Z = -970.0f;
