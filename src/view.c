@@ -461,10 +461,12 @@ view_draw(View* v)
 
 
   //Render outline with quad
-  object_compute_matrix(r->quad_outline, mo);
-  if (r->quad_outline->mesh != NULL) 
-  r->quad_outline->mesh->id_texture = r->fbo_selected->texture_depth_stencil_id;
-  object_draw(r->quad_outline, mo, *ortho);
+  if (cx->object != NULL) {
+    object_compute_matrix(r->quad_outline, mo);
+    if (r->quad_outline->mesh != NULL) 
+    r->quad_outline->mesh->id_texture = r->fbo_selected->texture_depth_stencil_id;
+    object_draw(r->quad_outline, mo, *ortho);
+  }
 
   //gl->glClear(GL_DEPTH_BUFFER_BIT);
   //EINA_LIST_FOREACH(s->ortho, l, o) {
