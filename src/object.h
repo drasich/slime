@@ -23,6 +23,8 @@ struct _Object {
   Animation* animation;
   Line* line;
   Matrix4 matrix; //computed from position and orientation
+  Eina_Value data_position;
+  Eina_Value data_rotation;
 };
 
 void object_init(Object* o);

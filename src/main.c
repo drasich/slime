@@ -1,6 +1,5 @@
 #include <Elementary.h>
 #include "view.h"
-#include "ui/property.h"
 #define __UNUSED__
 
 static View* view;
@@ -43,7 +42,7 @@ create_window()
   Evas_Object* panes = create_panes(win);
   view = create_view(win);
   Evas_Object* glview = view->glview;
-  Evas_Object* property = property_create(win);
+  Evas_Object* property = view->property->root;
 
   //elm_object_part_content_set(panes, "left", glview);
   elm_object_part_content_set(panes, "left", view->box);

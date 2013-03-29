@@ -114,6 +114,8 @@ Object* create_object()
 {
   Object* o = calloc(1, sizeof(Object));
   object_init(o);
+  eina_value_setup(&o->data_position, EINA_VALUE_TYPE_DOUBLE);
+  eina_value_set(&o->data_position, 777);
   return o;
 }
 

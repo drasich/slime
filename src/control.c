@@ -81,6 +81,7 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
       IntersectionRay ir =  intersection_ray_plane(r, p);
       if (ir.hit) {
         o->Position = ir.position;
+        property_update(v->property, o);
       }
     }
   }
@@ -136,10 +137,11 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
       Object* o = v->context->object;
       if (o != NULL) {
         o->Position = c->start;
+        property_update(v->property, o);
       }
     }
-
   }
+
 }
 
 void 
@@ -187,7 +189,8 @@ control_redo(Control* c)
   }
 }
 
-void control_clean_redo(Control* c)
+void
+control_clean_redo(Control* c)
 {
   Operation *op;
 
@@ -198,3 +201,4 @@ void control_clean_redo(Control* c)
   }
 
 }
+

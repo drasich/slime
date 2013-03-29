@@ -64,7 +64,7 @@ def build(bld):
       use='elementary png',
       #includes = ['include'],
       #includes = 'include indefini/include proto',
-      includes = 'include proto',
+      includes = 'src include proto',
       defines = ['EDITOR']
       )
 

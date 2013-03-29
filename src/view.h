@@ -3,6 +3,7 @@
 #include "matrix.h"
 #include "camera.h"
 #include "fbo.h"
+#include "ui/property.h"
 
 typedef struct _Render Render;
 struct _Render
@@ -21,6 +22,7 @@ struct _View
   struct _Context* context;
   struct _Control* control;
   Evas_Object* glview;
+  Property* property;
   Evas_Object* box;
   Camera* camera;
   Render* render;

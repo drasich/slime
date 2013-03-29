@@ -6,6 +6,7 @@
 #include "gl.h"
 #include "context.h"
 #include "control.h"
+#include "ui/property.h"
 #include "intersect.h"
 #define __UNUSED__
 
@@ -41,7 +42,7 @@ _view_select_object(View *v, Object *o)
 
   //TODO tell properties to change, through control?
   //or emit a signal to say object selected has changed and catch this signal in properties, and other possible widgets
-  //control_update_properties(v->control);
+  property_update(v->property, o);
 }
 
 static void
@@ -317,6 +318,8 @@ create_view(Evas_Object *win)
   view->context = calloc(1,sizeof *view->context);
   view->control = create_control(view);
   view->glview = _create_glview(view, win);
+  //view->property = property_create(win);
+  view->property = create_property(win, view->context);
   evas_object_data_set(view->glview, "view", view);
 
   return view;

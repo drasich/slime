@@ -1,5 +1,19 @@
 #ifndef __ui_property__
 #define __ui_property__
+#include "object.h"
+#include "context.h"
+
+typedef struct _Property Property;
+
+struct _Property
+{
+  Evas_Object* root;
+  Evas_Object* box;
+
+  Evas_Object* entry_x;
+  Evas_Object* entry_y;
+  Evas_Object* entry_z;
+};
 
 Evas_Object* property_create(Evas_Object* win);
 
@@ -9,5 +23,9 @@ Evas_Object* property_add(
       char* name, 
       char* value);
 
-void property_change(char* name, char* value);
+void property_update(Property* p, Object* o);
+Property* create_property(Evas_Object* win, Context* context);
+
+
+
 #endif
