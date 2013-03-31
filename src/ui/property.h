@@ -7,14 +7,11 @@ typedef struct _Property Property;
 
 struct _Property
 {
-  Context *context;
   Evas_Object* root;
   Evas_Object* box;
 
+  Context *context;
   Eina_Hash *properties;
-  Evas_Object* entry_x;
-  Evas_Object* entry_y;
-  Evas_Object* entry_z;
 };
 
 Evas_Object* property_create(Evas_Object* win);
