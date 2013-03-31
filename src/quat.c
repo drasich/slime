@@ -324,3 +324,14 @@ Vec3 quat_rotate_around(Quat q, Vec3 pivot, Vec3 mypoint)
 
 }
 
+Vec3
+quat_to_euler(Quat q)
+{
+  Vec3 v = {
+    atan2(2*(q.W*q.X + q.Y*q.Z), 1- (q.X*q.X + q.Y*q.Y)),
+    asin(2*(q.W*q.Y - q.Z*q.X)),
+    atan2(2*(q.W*q.Z + q.X*q.Y), 1- (q.Y*q.Y + q.Z*q.Z))
+  };
+  return v;
+
+}

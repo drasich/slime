@@ -151,6 +151,11 @@ populate_scene(Scene* s)
   //GLint bits;
   //gl->glGetIntegerv(GL_DEPTH_BITS, &bits);
   //printf("depth buffer %d\n\n", bits);
+  Quat qqqy = quat_angle_axis(3.14159f/2.f, vec3(0,1,0));
+  Quat qqqp = quat_angle_axis(3.14159f/2.f, axis);
+  Quat qqqr = quat_mul(qqqy, qqqp);
+  Vec3 yo = quat_to_euler(qqqr);
+  printf("euler : %f, %f, %f \n", yo.X, yo.Y, yo.Z);
 }
 
 // Callbacks
