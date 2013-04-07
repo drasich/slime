@@ -42,11 +42,15 @@ camera_lookat(Camera* c, Vec3 at)
 
   c->yaw = atan2(d.X,-d.Z);
   c->pitch = atan2(-d.Y,-d.Z);
-
-  Quat qy = quat_angle_axis(c->yaw, vec3(0,1,0));
-  Quat qp = quat_angle_axis(c->pitch, vec3(1,0,0));
+ 
+  //Quat qy = quat_angle_axis(c->yaw, vec3(0,1,0));
+  //Quat qp = quat_angle_axis(c->pitch, vec3(1,0,0));
   
-  o->Orientation = quat_mul(qy, qp);
+  //TODO angles
+  o->angles.X = c->pitch/M_PI*180.0;
+  o->angles.Y = c->yaw/M_PI*180.0;
+  o->Orientation = quat_angles_rad(c->pitch, c->yaw,0);
+  //o->Orientation = quat_mul(qy, qp);
 }
 
 void
@@ -55,7 +59,6 @@ camera_rotate_around(Camera* c, Quat q, Vec3 pivot)
   Vec3 def = quat_rotate_around(q, pivot, c->origin);
   Vec3 doff = quat_rotate_vec3(q, c->local_offset);
   c->object.Position = vec3_add(def, doff);
-
 }
 
 void

@@ -38,11 +38,15 @@ static void rotate_camera(View* v, float x, float y)
   cam->yaw += 0.005f*x;
   cam->pitch += 0.005f*y;
 
+  //TODO angles
   Quat qy = quat_angle_axis(cam->yaw, vec3(0,1,0));
   Quat qp = quat_angle_axis(cam->pitch, vec3(1,0,0));
   Quat result = quat_mul(qy, qp);
 
-  c->Orientation = result;
+  c->angles.X = cam->pitch/M_PI*180.0;
+  c->angles.Y = cam->yaw/M_PI*180.0;
+
+  //c->Orientation = result;
 
   Object* o = v->context->object;
   if (o == NULL) return;

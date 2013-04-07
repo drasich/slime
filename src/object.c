@@ -45,6 +45,7 @@ object_draw_lines(Object* o, Matrix4 world, Matrix4 projection)
 void
 object_compute_matrix(Object* o, Matrix4 mat)
 {
+  o->Orientation = quat_angles_deg(o->angles.Y, o->angles.X, o->angles.Z);
   Matrix4 mt, mr;
   mat4_set_translation(mt, o->Position);
   mat4_set_rotation_quat(mr, o->Orientation);
@@ -75,6 +76,7 @@ _animation_update(Object* o, float dt)
 void
 object_update(Object* o)
 {
+  o->Orientation = quat_angles_deg(o->angles.Y, o->angles.X, o->angles.Z);
   mat4_pos_ori(o->Position, o->Orientation, o->matrix);
 
   if (o->animation != NULL) {
@@ -163,6 +165,7 @@ object_set_position(Object* o, Vec3 v)
 void 
 object_set_orientation(Object* o, Quat q)
 {
+  printf("remove this function for now!!!!!!!!!!!!\n");
   o->Orientation = q;
 }
 

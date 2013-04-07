@@ -56,6 +56,12 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
     o->Position.Y = v;
   } else if (!strcmp(name, "z")) {
     o->Position.Z = v;
+  } else if (!strcmp(name, "yaw")) {
+    o->angles.Y = v;
+  } else if (!strcmp(name, "pitch")) {
+    o->angles.X = v;
+  } else if (!strcmp(name, "roll")) {
+    o->angles.Z = v;
   }
 
 }

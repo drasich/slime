@@ -333,5 +333,27 @@ quat_to_euler(Quat q)
     atan2(2*(q.W*q.Z + q.X*q.Y), 1- (q.Y*q.Y + q.Z*q.Z))
   };
   return v;
-
 }
+
+Quat
+quat_angles_rad(double yaw, double pitch, double roll)
+{
+  Quat qy = quat_angle_axis(yaw, vec3(0,1,0));
+  Quat qp = quat_angle_axis(pitch, vec3(1,0,0));
+  Quat qr = quat_angle_axis(roll, vec3(0,0,1));
+
+  Quat q1 =  quat_mul(qy, qp);
+  return quat_mul(q1, qr);
+}
+
+Quat
+quat_angles_deg(double yaw, double pitch, double roll)
+{
+  double r = M_PI/180.0;
+
+  return quat_angles_rad(
+        yaw*r,
+        pitch*r,
+        roll*r);
+}
+

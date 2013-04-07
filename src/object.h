@@ -13,6 +13,7 @@ typedef struct _Object Object;
 struct _Object {
   Vec3 Position;
   Quat Orientation;
+  Vec3 angles;
   //components array
   //Mesh component
   //Box component
