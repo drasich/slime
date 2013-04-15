@@ -237,7 +237,8 @@ line_draw(Line* l)
 	gl->glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void line_destroy(Line* l)
+void
+line_destroy(Line* l)
 {
   shader_destroy(l->shader);
   free(l->shader);
@@ -248,3 +249,22 @@ void line_destroy(Line* l)
   //free(l->vertices_gl);
   free(l);
 }
+
+void 
+line_add_grid(Line* l, int num, int space)
+{
+  int i;
+  for ( i = -num; i <= num; ++i) {
+    Vec3 p1 = vec3(i*space, 0, -space*num);
+    Vec3 p2 = vec3(i*space, 0, space*num);
+    line_add(l, p1, p2);
+  }
+
+  for ( i = -num; i <= num; ++i) {
+    Vec3 p1 = vec3(-space*num, 0, i*space);
+    Vec3 p2 = vec3(-space*num, 0, i*space);
+    line_add(l, p1, p2);
+  }
+
+}
+

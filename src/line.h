@@ -41,6 +41,7 @@ void line_draw(Line* line);
 Line* create_line();
 void line_add(Line* line, Vec3 p1, Vec3 p2);
 void line_add_box(Line* line, AABox box);
+void line_add_grid(Line* line, int num, int space);
 void line_clear(Line* line);
 
 
