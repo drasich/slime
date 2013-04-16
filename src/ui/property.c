@@ -140,6 +140,37 @@ property_add_spinner(Property *p, Evas_Object* win, Evas_Object* bx, char* name)
   return en;
 }
 
+static Evas_Object*
+property_add_fileselect(Property *p, Evas_Object* win, Evas_Object* bx, char* name)
+{
+  Evas_Object *en, *bx2, *label;
+
+  en = elm_spinner_add(win);
+  evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
+  //elm_spinner_value_set(en, atof(value));
+  evas_object_show(en);
+  elm_box_pack_end(bx, en);
+
+  evas_object_name_set(en, name);
+  
+  elm_spinner_min_max_set(en, -DBL_MAX, DBL_MAX);
+  char s[50];
+  sprintf(s, "%s : %s", name, "%f");
+  elm_spinner_label_format_set(en, s);
+
+  evas_object_name_set(en, name);
+
+  eina_hash_add(
+        p->properties,
+        name,
+        en);
+  evas_object_smart_callback_add(en, "changed", _entry_changed_cb, p->context);
+
+  return en;
+
+}
+
 
 void
 property_update(Property* p, Object* o)
@@ -217,6 +248,7 @@ create_property(Evas_Object* win, Context* context)
   eo = property_add_spinner(p, win, bx, "yaw");
   eo = property_add_spinner(p, win, bx, "pitch");
   eo = property_add_spinner(p, win, bx, "roll");
+  eo = property_add_fileselect(p, win, bx, "mesh");
 
   p->root = frame;
   p->box = bx;
