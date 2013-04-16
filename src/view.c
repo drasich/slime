@@ -266,7 +266,7 @@ _del(void *data __UNUSED__, Evas *evas __UNUSED__, Evas_Object *obj, void *event
 static Evas_Object*
 _create_glview(View* view, Evas_Object* win)
 {
-  Evas_Object *bx, *bt, *glview;
+  Evas_Object *bx, *glview;
   Ecore_Animator *ani;
 
   view->box = elm_box_add(win);
@@ -300,18 +300,53 @@ _create_glview(View* view, Evas_Object* win)
   evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_UP, _mouse_up, NULL);
   evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_WHEEL, _mouse_wheel, NULL);
 
-  /*
-  bt = elm_button_add(win);
-  elm_object_text_set(bt, "OK");
-  evas_object_size_hint_align_set(bt, EVAS_HINT_FILL, EVAS_HINT_FILL);
-  evas_object_size_hint_weight_set(bt, EVAS_HINT_EXPAND, 0.0);
-  elm_box_pack_end(bx, bt);
-  evas_object_show(bt);
-  evas_object_smart_callback_add(bt, "clicked", _on_done, win);
-  */
-
-
   return glview;
+}
+
+static void
+_add_buttons(View* v, Evas_Object* win)
+{
+  Evas_Object* fs_bt, *ic, *bt;
+
+  ic = elm_icon_add(win);
+  elm_icon_standard_set(ic, "file");
+  evas_object_size_hint_aspect_set(ic, EVAS_ASPECT_CONTROL_VERTICAL, 1, 1);
+
+  fs_bt = elm_fileselector_button_add(win);
+  elm_object_focus_allow_set(fs_bt, 0);
+  elm_fileselector_button_path_set(fs_bt, "/home/chris");
+  elm_object_text_set(fs_bt, "Select a file");
+  elm_object_part_content_set(fs_bt, "icon", ic);
+
+  //elm_box_pack_end(vbox, fs_bt);
+  evas_object_show(fs_bt);
+  evas_object_show(ic);
+
+  int r,g,b,a;
+  evas_object_color_get(fs_bt, &r,&g,&b,&a);
+  a = 200;
+  evas_object_color_set(fs_bt, r,g,b,a);
+  evas_object_color_set(ic, r,g,b,a);
+  evas_object_resize(fs_bt, 100, 25);
+  evas_object_move(fs_bt, 15, 15);
+
+  //evas_object_smart_callback_add(fs_bt, "file,chosen", _file_chosen, actors);
+
+
+  bt = elm_button_add(win);
+  elm_object_focus_allow_set(bt, 0);
+
+  elm_object_text_set(bt, "New object");
+  evas_object_show(bt);
+
+  evas_object_color_set(bt, r,g,b,a);
+  evas_object_resize(bt, 100, 25);
+  evas_object_move(bt, 15, 45);
+  evas_object_data_set(bt, "view", v);
+  //evas_object_smart_callback_add(bt, "clicked", _new_object, actors);
+  //view->addObjectToHide(bt);
+  //view->addObjectToHide(fs_bt);
+
 
 }
 
@@ -323,6 +358,9 @@ create_view(Evas_Object *win)
   view->context = calloc(1,sizeof *view->context);
   view->control = create_control(view);
   view->glview = _create_glview(view, win);
+
+  _add_buttons(view, win);
+
   //view->property = property_create(win);
   view->property = create_property(win, view->context);
   evas_object_data_set(view->glview, "view", view);
@@ -423,20 +461,21 @@ view_draw(View* v)
   //gl->glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 
   //TODO : test, can be removed
-  //
-  //int w = c->width;
-  //int h = c->height;
-  //printf(" w , h : %d, %d \n", w, h);
-  //GLuint mypixels[w*h];
-  //gl->glReadPixels(
-        //0, 
-        //0, 
-        //w, 
-        //h, 
-        //GL_DEPTH_STENCIL_OES, 
-        //GL_UNSIGNED_INT_24_8_OES, 
-        //mypixels);
-  //save_png(mypixels, w, h);
+  /*
+  int w = c->width;
+  int h = c->height;
+  printf(" w , h : %d, %d \n", w, h);
+  GLuint mypixels[w*h];
+  gl->glReadPixels(
+        0, 
+        0, 
+        w, 
+        h, 
+        GL_DEPTH_STENCIL_OES, 
+        GL_UNSIGNED_INT_24_8_OES, 
+        mypixels);
+  save_png(mypixels, w, h);
+  */
 
   fbo_use_end();
 
@@ -451,14 +490,16 @@ view_draw(View* v)
 
   //TODO avoid compute matrix 2 times
   //Render lines
-  //gl->glClear(GL_DEPTH_BUFFER_BIT);
-  //EINA_LIST_FOREACH(s->objects, l, o) {
-    //object_compute_matrix(o, mo);
-    //mat4_multiply(cam_mat_inv, mo, mo);
-    ////TODO Fix how to use depth texture for lines
-    //if (o->line != NULL) o->line->id_texture = s->fbo_all->texture_depth_stencil_id;
-    //object_draw_lines(o, mo, *projection);
-  //}
+  /*
+  gl->glClear(GL_DEPTH_BUFFER_BIT);
+  EINA_LIST_FOREACH(s->objects, l, o) {
+    object_compute_matrix(o, mo);
+    mat4_multiply(cam_mat_inv, mo, mo);
+    //TODO Fix how to use depth texture for lines
+    if (o->line != NULL) o->line->id_texture = r->fbo_all->texture_depth_stencil_id;
+    object_draw_lines(o, mo, *projection);
+  }
+  */
 
 
   //Render objects with quad
