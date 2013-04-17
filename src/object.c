@@ -1,6 +1,7 @@
 #include "object.h"
 #include "gl.h"
 #include "read.h"
+#include "camera.h"
 
 void
 object_init(Object* o)
@@ -41,6 +42,16 @@ object_draw_lines(Object* o, Matrix4 world, Matrix4 projection)
     line_draw(o->line);
   }
 }
+
+void
+object_draw_lines_camera(Object* o, Matrix4 world, struct _Camera* c)
+{
+  if (o->line != NULL) {
+    line_prepare_draw(o->line, world, c);
+    line_draw(o->line);
+  }
+}
+
 
 void
 object_compute_matrix(Object* o, Matrix4 mat)

@@ -456,6 +456,7 @@ view_draw(View* v)
   EINA_LIST_FOREACH(s->objects, l, o) {
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
+    //mat4_multiply(cam_mat_inv, o->matrix, mo);
     object_draw(o, mo, *projection);
   }
   //gl->glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
@@ -482,24 +483,27 @@ view_draw(View* v)
 
   //Render objects
   EINA_LIST_FOREACH(s->objects, l, o) {
-    //object_compute_matrix(o, mo);
-    //mat4_multiply(cam_mat_inv, mo, mo);
-    mat4_multiply(cam_mat_inv, o->matrix, mo);
+    object_compute_matrix(o, mo);
+    mat4_multiply(cam_mat_inv, mo, mo);
+    //mat4_multiply(cam_mat_inv, o->matrix, mo);
     object_draw(o, mo, *projection);
   }
 
   //TODO avoid compute matrix 2 times
   //Render lines
-  /*
+  //*
   gl->glClear(GL_DEPTH_BUFFER_BIT);
   EINA_LIST_FOREACH(s->objects, l, o) {
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
+    //mat4_multiply(cam_mat_inv, o->matrix, mo);
     //TODO Fix how to use depth texture for lines
-    if (o->line != NULL) o->line->id_texture = r->fbo_all->texture_depth_stencil_id;
-    object_draw_lines(o, mo, *projection);
+    if (o->line != NULL) { o->line->id_texture = r->fbo_all->texture_depth_stencil_id;
+    }
+    //object_draw_lines(o, mo, *projection);
+    object_draw_lines_camera(o, mo, c);
   }
-  */
+  //*/
 
 
   //Render objects with quad

@@ -1,4 +1,6 @@
 #include "line.h"
+#include "camera.h"
+
 
 Line* 
 create_line()
@@ -166,6 +168,24 @@ line_set_matrices(Line* l, Matrix4 mat, Matrix4 projection)
   float width = 1200;
   float height = 400;
   gl->glUniform2f(l->uniform_resolution, width, height);
+}
+
+void
+line_prepare_draw(Line* l, Matrix4 mat, struct _Camera* c)
+{
+  shader_use(l->shader);
+
+  Matrix4* projection = &c->projection;
+
+  Matrix4 tm;
+  mat4_multiply(*projection, mat, tm);
+  mat4_transpose(tm, tm);
+  mat4_to_gl(tm, l->matrix);
+  gl->glUniformMatrix4fv(l->uniform_matrix, 1, GL_FALSE, l->matrix);
+  float width = c->width;
+  float height = c->height;
+  gl->glUniform2f(l->uniform_resolution, width, height);
+
 }
 
 void 

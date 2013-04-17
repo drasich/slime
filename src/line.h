@@ -4,6 +4,8 @@
 #include "matrix.h"
 #include <stdbool.h>
 
+struct _Camera;
+
 typedef struct _Line Line;
 
 struct _Line
@@ -35,6 +37,7 @@ void line_init(Line* line);
 void line_resend(Line* line);
 
 void line_set_matrices(Line* line, Matrix4 mat, Matrix4 projection);
+void line_prepare_draw(Line* l, Matrix4 mat, struct _Camera* c);
 
 void line_draw(Line* line);
 

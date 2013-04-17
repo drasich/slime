@@ -32,6 +32,7 @@ void object_init(Object* o);
 void object_destroy(Object* o);
 void object_draw(Object* o, Matrix4 world, Matrix4 projection);
 void object_draw_lines(Object* o, Matrix4 world, Matrix4 projection);
+void object_draw_lines_camera(Object* o, Matrix4 world, struct _Camera* c);
 
 void object_update(Object* o);
 //void object_add_component(Component* c);
