@@ -21,6 +21,7 @@ struct _Camera
 
   Vec3 origin;
   Vec3 local_offset;
+  Vec3 center;
 };
 
 Camera* create_camera();
@@ -38,6 +39,9 @@ void camera_lookat(Camera* c, Vec3 at);
 void camera_rotate_around(Camera* c, Quat q, Vec3 pivot);
 
 void camera_pan(Camera* c, Vec3 t);
+
+void camera_recalculate_origin(Camera* c);
+
 Ray ray_from_screen(Camera* c, double x, double y, float length);
 
 #endif

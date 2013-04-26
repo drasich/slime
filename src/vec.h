@@ -1,5 +1,6 @@
 #ifndef __vec__
 #define __vec__
+#include <stdbool.h>
 
 typedef struct _Vec3 Vec3;
 
@@ -36,6 +37,8 @@ double vec3_dot(Vec3 v1, Vec3 v2);
 Vec3 vec3_cross(Vec3 v1, Vec3 v2);
 
 double vec4_dot(Vec4 v1, Vec4 v2);
+
+bool vec3_equal(Vec3 v1, Vec3 v2);
 
 //move in geometry.h or something
 typedef struct _AABox AABox;

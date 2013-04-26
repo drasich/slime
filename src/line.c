@@ -348,19 +348,26 @@ void
 line_add_grid(Line* l, int num, int space)
 {
   Vec4 color = vec4(1,1,1,0.1);
+  Vec4 xc = vec4(0,1,0,0.4);
+  Vec4 zc = vec4(1,0,0,0.4);
+
   int i;
   for ( i = -num; i <= num; ++i) {
     Vec3 p1 = vec3(i*space, 0, -space*num);
     Vec3 p2 = vec3(i*space, 0, space*num);
+    if (i == 0)
+    line_add_color(l, p1, p2, xc);
+    else
     line_add_color(l, p1, p2, color);
-    printf("adding a line from %f, %f, %f to %f, %f, %f\n", p1.X, p1.Y, p1.Z, p2.X, p2.Y, p2.Z);
   }
 
   for ( i = -num; i <= num; ++i) {
     Vec3 p1 = vec3(-space*num, 0, i*space);
     Vec3 p2 = vec3(space*num, 0, i*space);
+    if (i == 0)
+    line_add_color(l, p1, p2, zc);
+    else
     line_add_color(l, p1, p2,color);
-    printf("adding a line from %f, %f, %f to %f, %f, %f\n", p1.X, p1.Y, p1.Z, p2.X, p2.Y, p2.Z);
   }
 
 }

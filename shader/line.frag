@@ -7,7 +7,8 @@ void main (void)
   vec4 tz = texture2D(texture, vec2(gl_FragCoord.x/resolution.x,gl_FragCoord.y/resolution.y));
 
   float eps = 0.0001f;
-  if (gl_FragCoord.z <= tz.r + eps ) {
+  //if (gl_FragCoord.z <= tz.r + eps ) {
+  if (gl_FragCoord.z < tz.r ) {
     //gl_FragColor = vec4(0,1,0,1);
     gl_FragColor = vcolor;
   }

@@ -46,12 +46,16 @@ static void rotate_camera(View* v, float x, float y)
   c->angles.X = cam->pitch/M_PI*180.0;
   c->angles.Y = cam->yaw/M_PI*180.0;
 
-  //c->Orientation = result;
-
   Object* o = v->context->object;
-  if (o == NULL) return;
 
-  camera_rotate_around(cam, result, o->Position);
+  if (o != NULL) {
+    if (!vec3_equal(o->Position, cam->center)) {
+      cam->center = o->Position;
+      camera_recalculate_origin(cam);
+    }
+  }
+
+  camera_rotate_around(cam, result, cam->center);
 }
 
 

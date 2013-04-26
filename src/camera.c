@@ -50,7 +50,12 @@ camera_lookat(Camera* c, Vec3 at)
   o->angles.X = c->pitch/M_PI*180.0;
   o->angles.Y = c->yaw/M_PI*180.0;
   o->Orientation = quat_angles_rad(c->pitch, c->yaw,0);
+  // can also use this 
+  o->Orientation = quat_angles_deg(o->angles.Y, o->angles.X, o->angles.Z);
   //o->Orientation = quat_mul(qy, qp);
+
+  c->center = at;
+  camera_recalculate_origin(c);
 }
 
 void
@@ -110,3 +115,12 @@ ray_from_screen(Camera* c, double x, double y, float length)
   return r;
 }
 
+void
+camera_recalculate_origin(Camera* cam)
+{
+  Object* c = (Object*) cam;
+
+  Vec3 offset = quat_rotate_vec3(c->Orientation, cam->local_offset);
+  Vec3 origin = vec3_sub(c->Position, offset);
+  cam->origin = quat_rotate_around(quat_inverse(c->Orientation), cam->center, origin);
+}

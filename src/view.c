@@ -36,9 +36,6 @@ static void
 _view_select_object(View *v, Object *o)
 {
   v->context->object = o;
-  Vec3 offset = quat_rotate_vec3(v->camera->object.Orientation, v->camera->local_offset);
-  Vec3 origin = vec3_sub(v->camera->object.Position, offset);
-  v->camera->origin = quat_rotate_around(quat_inverse(v->camera->object.Orientation), v->context->object->Position, origin);
 
   //TODO tell properties to change, through control?
   //or emit a signal to say object selected has changed and catch this signal in properties, and other possible widgets
@@ -178,8 +175,9 @@ _init_gl(Evas_Object *obj)
   v->camera = create_camera();
   v->camera->object.name = "camera";
   Vec3 p = {20,5,20};
-  v->camera->origin = p;
-  v->camera->object.Position = p;
+  //v->camera->origin = p;
+  //v->camera->object.Position = p;
+  camera_pan(v->camera, p);
   Vec3 at = {0,0,0};
   camera_lookat(v->camera, at);
 
