@@ -22,13 +22,17 @@ object_destroy(Object* o)
 void
 object_draw(Object* o, Matrix4 world, Matrix4 projection)
 {
-  if (!strcmp("quad", o->mesh->name ) ){
-    mesh_set_matrices(o->mesh, world, projection);
-    quad_draw(o->mesh);
-  }
-  else if (o->mesh != NULL) {
-    mesh_set_matrices(o->mesh, world, projection);
-    mesh_draw(o->mesh);
+  if (o->mesh != NULL) {
+    if (!strcmp("quad", o->mesh->name ) ){
+      //TODO change this if
+      mesh_set_matrices(o->mesh, world, projection);
+      quad_draw(o->mesh);
+    }
+    else
+     {
+      mesh_set_matrices(o->mesh, world, projection);
+      mesh_draw(o->mesh);
+     }
     //mesh_draw_no_indices(o->mesh);
   }
 
@@ -151,7 +155,7 @@ Object* create_object_file(const char* path)
       Mesh* mesh = create_mesh_file(f);
       object_add_component_mesh(o, mesh);
       o->line = create_line();
-      line_add_box(o->line, mesh->box);
+      line_add_box(o->line, mesh->box, vec4(0,1,0,0.2));
       line_init(o->line);
     }
     else if (!strcmp(type, "armature")){

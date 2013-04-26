@@ -7,7 +7,8 @@ create_line()
 {
   Line* l = calloc(1, sizeof *l);
   //TODO name, shader
-  l->vertices = eina_inarray_new(sizeof(GLfloat), 2);
+  l->vertices = eina_inarray_new(sizeof(GLfloat), 3);
+  l->colors = eina_inarray_new(sizeof(GLfloat), 4);
   return l;
 }
 
@@ -29,11 +30,50 @@ line_add(Line* l, Vec3 p1, Vec3 p2)
   f = p2.Z;
   eina_inarray_push(l->vertices, &f); 
 
+  f = 1.0f;
+  int i;
+  for (i = 0; i < 8; ++i) { 
+    eina_inarray_push(l->colors, &f);
+  }
+
   l->need_resend = true;
 }
 
 void
-line_add_box(Line* l, AABox box)
+line_add_color(Line* l, Vec3 p1, Vec3 p2, Vec4 color)
+{
+  GLfloat f;
+  f = p1.X;
+  eina_inarray_push(l->vertices, &f);
+  f = p1.Y;
+  eina_inarray_push(l->vertices, &f);
+  f = p1.Z;
+  eina_inarray_push(l->vertices, &f);
+
+  f = p2.X;
+  eina_inarray_push(l->vertices, &f);
+  f = p2.Y;
+  eina_inarray_push(l->vertices, &f);
+  f = p2.Z;
+  eina_inarray_push(l->vertices, &f); 
+
+  int i;
+  for (i = 0; i < 2; ++i) { 
+    f = color.X;
+    eina_inarray_push(l->colors, &f);
+    f = color.Y;
+    eina_inarray_push(l->colors, &f);
+    f = color.Z;
+    eina_inarray_push(l->colors, &f);
+    f = color.W;
+    eina_inarray_push(l->colors, &f);
+  }
+
+  l->need_resend = true;
+}
+
+void
+line_add_box(Line* l, AABox box, Vec4 color)
 {
   printf("begin addbox : %d \n", l->vertices->len);
 
@@ -45,55 +85,55 @@ line_add_box(Line* l, AABox box)
   
   p1 = vec3(min.X, min.Y, max.Z);
   p2 = vec3(max.X, min.Y, max.Z);
-  line_add(l, p1, p2);
+  line_add_color(l, p1, p2, color);
 
   p1 = vec3(min.X, max.Y, max.Z);
   p2 = vec3(max.X, max.Y, max.Z);
-  line_add(l, p1, p2);
+  line_add_color(l, p1, p2, color);
 
   p1 = vec3(min.X, min.Y, max.Z);
   p2 = vec3(min.X, max.Y, max.Z);
-  line_add(l, p1, p2);
+  line_add_color(l, p1, p2, color);
 
   p1 = vec3(max.X, min.Y, max.Z);
   p2 = vec3(max.X, max.Y, max.Z);
-  line_add(l, p1, p2);
+  line_add_color(l, p1, p2, color);
 
   ////////////////
 
   p1 = vec3(min.X, min.Y, min.Z);
   p2 = vec3(max.X, min.Y, min.Z);
-  line_add(l, p1, p2);
+  line_add_color(l, p1, p2, color);
 
   p1 = vec3(min.X, max.Y, min.Z);
   p2 = vec3(max.X, max.Y, min.Z);
-  line_add(l, p1, p2);
+  line_add_color(l, p1, p2, color);
 
   p1 = vec3(min.X, min.Y, min.Z);
   p2 = vec3(min.X, max.Y, min.Z);
-  line_add(l, p1, p2);
+  line_add_color(l, p1, p2, color);
 
   p1 = vec3(max.X, min.Y, min.Z);
   p2 = vec3(max.X, max.Y, min.Z);
-  line_add(l, p1, p2);
+  line_add_color(l, p1, p2, color);
 
   /////////////////////////
 
   p1 = vec3(min.X, min.Y, min.Z);
   p2 = vec3(min.X, min.Y, max.Z);
-  line_add(l, p1, p2);
+  line_add_color(l, p1, p2, color);
 
   p1 = vec3(min.X, max.Y, min.Z);
   p2 = vec3(min.X, max.Y, max.Z);
-  line_add(l, p1, p2);
+  line_add_color(l, p1, p2, color);
 
   p1 = vec3(max.X, min.Y, min.Z);
   p2 = vec3(max.X, min.Y, max.Z);
-  line_add(l, p1, p2);
+  line_add_color(l, p1, p2, color);
 
   p1 = vec3(max.X, max.Y, min.Z);
   p2 = vec3(max.X, max.Y, max.Z);
-  line_add(l, p1, p2);
+  line_add_color(l, p1, p2, color);
 
   printf("finish addbox : %d \n", l->vertices->len);
 
@@ -114,9 +154,19 @@ line_init(Line* l)
     //l->vertices_gl,
     GL_DYNAMIC_DRAW);
 
+  gl->glGenBuffers(1, &l->buffer_colors);
+  gl->glBindBuffer(GL_ARRAY_BUFFER, l->buffer_colors);
+  
+  gl->glBufferData(
+    GL_ARRAY_BUFFER,
+    l->colors->len * l->colors->member_size,
+    l->colors->members,
+    GL_DYNAMIC_DRAW);
+
   l->shader = malloc(sizeof(Shader));
   shader_init(l->shader, "shader/line.vert", "shader/line.frag");
   shader_init_attribute(l->shader, "vertex", &l->attribute_vertex);
+  shader_init_attribute(l->shader, "color", &l->attribute_color);
   shader_init_uniform(l->shader, "matrix", &l->uniform_matrix);
   shader_init_uniform(l->shader, "texture", &l->uniform_texture);
   shader_init_uniform(l->shader, "resolution", &l->uniform_resolution);
@@ -150,6 +200,15 @@ line_resend(Line* l)
     0,
     l->vertices->len * l->vertices->member_size,
     l->vertices->members);
+    //l->vertices_len*sizeof(GLfloat),
+    //l->vertices_gl);
+    
+  gl->glBindBuffer(GL_ARRAY_BUFFER, l->buffer_colors);
+  gl->glBufferSubData(
+    GL_ARRAY_BUFFER,
+    0,
+    l->colors->len * l->colors->member_size,
+    l->colors->members);
     //l->vertices_len*sizeof(GLfloat),
     //l->vertices_gl);
   l->need_resend = false;
@@ -241,6 +300,7 @@ line_draw(Line* l)
     0,
     0);
 
+
   /*
    // Debug, can be remove
   printf("vertices len : %d \n", l->vertices->len);
@@ -250,10 +310,22 @@ line_draw(Line* l)
   }
   */
 
+  gl->glBindBuffer(GL_ARRAY_BUFFER, l->buffer_colors);
+  gl->glEnableVertexAttribArray(l->attribute_color);
+  
+  gl->glVertexAttribPointer(
+    l->attribute_color,
+    4,
+    GL_FLOAT,
+    GL_FALSE,
+    0,
+    0);
+
   gl->glDrawArrays(GL_LINES,0, l->vertices->len/3);
 
   gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
   gl->glDisableVertexAttribArray(l->attribute_vertex);
+  gl->glDisableVertexAttribArray(l->attribute_color);
 	gl->glBindTexture(GL_TEXTURE_2D, 0);
 }
 
@@ -264,26 +336,31 @@ line_destroy(Line* l)
   free(l->shader);
 
   gl->glDeleteBuffers(1,&l->buffer_vertices);
+  gl->glDeleteBuffers(1,&l->buffer_colors);
 
   eina_inarray_free(l->vertices);
   //free(l->vertices_gl);
+  eina_inarray_free(l->colors);
   free(l);
 }
 
 void 
 line_add_grid(Line* l, int num, int space)
 {
+  Vec4 color = vec4(1,1,1,0.1);
   int i;
   for ( i = -num; i <= num; ++i) {
     Vec3 p1 = vec3(i*space, 0, -space*num);
     Vec3 p2 = vec3(i*space, 0, space*num);
-    line_add(l, p1, p2);
+    line_add_color(l, p1, p2, color);
+    printf("adding a line from %f, %f, %f to %f, %f, %f\n", p1.X, p1.Y, p1.Z, p2.X, p2.Y, p2.Z);
   }
 
   for ( i = -num; i <= num; ++i) {
     Vec3 p1 = vec3(-space*num, 0, i*space);
-    Vec3 p2 = vec3(-space*num, 0, i*space);
-    line_add(l, p1, p2);
+    Vec3 p2 = vec3(space*num, 0, i*space);
+    line_add_color(l, p1, p2,color);
+    printf("adding a line from %f, %f, %f to %f, %f, %f\n", p1.X, p1.Y, p1.Z, p2.X, p2.Y, p2.Z);
   }
 
 }

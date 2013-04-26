@@ -12,6 +12,7 @@ struct _Line
 {
   char* name;
   GLuint buffer_vertices;
+  GLuint buffer_colors;
   GLuint id_texture;
 
   GLfloat*  vertices_gl;
@@ -21,11 +22,13 @@ struct _Line
   Matrix4GL matrix;
 
   Eina_Inarray* vertices;
+  Eina_Inarray* colors;
 
   GLint uniform_matrix;
   GLint uniform_texture;
   GLint uniform_resolution;
   GLuint attribute_vertex;
+  GLuint attribute_color;
   
   bool need_resend;
 
@@ -43,7 +46,8 @@ void line_draw(Line* line);
 
 Line* create_line();
 void line_add(Line* line, Vec3 p1, Vec3 p2);
-void line_add_box(Line* line, AABox box);
+void line_add_color(Line* line, Vec3 p1, Vec3 p2, Vec4 color);
+void line_add_box(Line* line, AABox box, Vec4 color);
 void line_add_grid(Line* line, int num, int space);
 void line_clear(Line* line);
 

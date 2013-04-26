@@ -64,6 +64,7 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   Eina_List *list;
   Object *ob;
   EINA_LIST_FOREACH(s->objects, list, ob) {
+    if (!ob->mesh) continue;
     IntersectionRay ir = intersection_ray_box(r, ob->mesh->box, ob->Position, ob->Orientation);
     if (ir.hit)
       ir = intersection_ray_object(r, ob);
@@ -124,7 +125,7 @@ populate_scene(Scene* s)
   mesh_init_attributes(o->mesh);
   mesh_init_uniforms(o->mesh);
 
-  Vec3 t = {-0,-4,-5};
+  Vec3 t = {0,0,0};
   //Vec3 t = {0,0,0};
   object_set_position(o, t);
   Vec3 axis = {1,0,0};
@@ -143,10 +144,16 @@ populate_scene(Scene* s)
   mesh_init_uniforms(yep->mesh);
 
   yep->name = "2222222";
-  Vec3 t2 = {0,-5,-20};
+  Vec3 t2 = {-10,0,0};
   object_set_position(yep, t2);
   object_set_orientation(yep, q);
   scene_add_object(s,yep);
+
+  Object* grid = create_object();
+  scene_add_object(s,grid);
+  grid->line = create_line();
+  line_add_grid(grid->line, 100, 10);
+  line_init(grid->line);
 
   //GLint bits;
   //gl->glGetIntegerv(GL_DEPTH_BITS, &bits);
@@ -170,7 +177,7 @@ _init_gl(Evas_Object *obj)
   v->context->scene = s;
   v->camera = create_camera();
   v->camera->object.name = "camera";
-  Vec3 p = {0,0,20};
+  Vec3 p = {20,5,20};
   v->camera->origin = p;
   v->camera->object.Position = p;
   Vec3 at = {0,0,0};
