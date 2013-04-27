@@ -52,7 +52,7 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   View* v = evas_object_data_get(o, "view");
   Control* cl = v->control;
   control_mouse_down(cl, ev);
-  Ray r = ray_from_screen(v->camera, ev->canvas.x, ev->canvas.y, 100);
+  Ray r = ray_from_screen(v->camera, ev->canvas.x, ev->canvas.y, 1000);
 
   bool found = false;
   double d;
@@ -105,8 +105,8 @@ _mouse_wheel(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *ev
   //float x = ev->cur.canvas.x - ev->prev.canvas.x;
   //float y = ev->cur.canvas.y - ev->prev.canvas.y;
   Vec3 axis = {0, 0, ev->z};
-  axis = vec3_mul(axis, 0.5f);
-  v->camera->object.Position = vec3_add(v->camera->object.Position, axis);
+  axis = vec3_mul(axis, 1.5f);
+  camera_pan(v->camera, axis);
 }
 
 static void
