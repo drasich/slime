@@ -125,17 +125,12 @@ populate_scene(Scene* s)
   Vec3 t = {0,0,0};
   //Vec3 t = {0,0,0};
   object_set_position(o, t);
-  Vec3 axis = {1,0,0};
-  Quat q = quat_angle_axis(3.14159f/2.f, axis);
-  Vec3 axis2 = {0,0,1};
-  Quat q2 = quat_angle_axis(3.14159f/4.f, axis2);
-  q = quat_mul(q, q2);
-  //object_set_orientation(o, q2);
   scene_add_object(s,o);
 
   //animation_play(o, "walkquat", LOOP);
 
   Object* yep = create_object_file("model/smallchar.bin");
+  //animation_play(yep, "walkquat", LOOP);
   yep->mesh->shader = shader_simple;
   mesh_init_attributes(yep->mesh);
   mesh_init_uniforms(yep->mesh);
@@ -143,7 +138,6 @@ populate_scene(Scene* s)
   yep->name = "2222222";
   Vec3 t2 = {-10,0,0};
   object_set_position(yep, t2);
-  object_set_orientation(yep, q);
   scene_add_object(s,yep);
 
   Object* grid = create_object();
@@ -155,11 +149,6 @@ populate_scene(Scene* s)
   //GLint bits;
   //gl->glGetIntegerv(GL_DEPTH_BITS, &bits);
   //printf("depth buffer %d\n\n", bits);
-  Quat qqqy = quat_angle_axis(3.14159f/2.f, vec3(0,1,0));
-  Quat qqqp = quat_angle_axis(3.14159f/2.f, axis);
-  Quat qqqr = quat_mul(qqqy, qqqp);
-  Vec3 yo = quat_to_euler(qqqr);
-  printf("euler : %f, %f, %f \n", yo.X, yo.Y, yo.Z);
 }
 
 // Callbacks
