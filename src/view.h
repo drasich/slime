@@ -26,6 +26,7 @@ struct _View
   Evas_Object* box;
   Camera* camera;
   Render* render;
+  Object* repere;
 };
 
 View* create_view(Evas_Object *win);

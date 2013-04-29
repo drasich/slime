@@ -232,6 +232,7 @@ _draw_gl(Evas_Object *obj)
    View* v = evas_object_data_get(obj, "view");
    view_update(v,0);
    view_draw(v);
+
    gl->glFinish();
 }
 
@@ -344,6 +345,17 @@ _add_buttons(View* v, Evas_Object* win)
 
 }
 
+Object* _create_repere()
+{
+  Object* o = create_object();
+  o->line = create_line();
+  line_add_color(o->line, vec3(0,0,0), vec3(1,0,0), vec4(1,0,0,1));
+  line_add_color(o->line, vec3(0,0,0), vec3(0,1,0), vec4(0,1,0,1));
+  line_add_color(o->line, vec3(0,0,0), vec3(0,0,1), vec4(0,0,1,1));
+  line_init(o->line);
+}
+
+
 View*
 create_view(Evas_Object *win)
 {
@@ -352,6 +364,8 @@ create_view(Evas_Object *win)
   view->context = calloc(1,sizeof *view->context);
   view->control = create_control(view);
   view->glview = _create_glview(view, win);
+
+  //view->repere = _create_repere();
 
   _add_buttons(view, win);
 
@@ -523,6 +537,9 @@ view_draw(View* v)
     ////if (o->mesh != NULL) o->mesh->id_texture = s->fbo_all->texture_color;
     ////object_draw(o, mo, *ortho);
   //}
+
+
+  //object_draw(v->repere, mo, *projection);
   
 }
 
