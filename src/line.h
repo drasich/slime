@@ -27,6 +27,8 @@ struct _Line
   GLint uniform_matrix;
   GLint uniform_texture;
   GLint uniform_resolution;
+  GLint uniform_use_depth;
+  GLint uniform_depth;
   GLuint attribute_vertex;
   GLuint attribute_color;
   
@@ -50,6 +52,7 @@ void line_add_color(Line* line, Vec3 p1, Vec3 p2, Vec4 color);
 void line_add_box(Line* line, AABox box, Vec4 color);
 void line_add_grid(Line* line, int num, int space);
 void line_clear(Line* line);
+void line_set_use_depth(Line* l, bool b);
 
 
 #endif

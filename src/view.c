@@ -151,6 +151,19 @@ populate_scene(Scene* s)
   //printf("depth buffer %d\n\n", bits);
 }
 
+Object* _create_repere()
+{
+  Object* o = create_object();
+  o->line = create_line();
+  line_add_color(o->line, vec3(0,0,0), vec3(1,0,0), vec4(1,0,0,1));
+  line_add_color(o->line, vec3(0,0,0), vec3(0,1,0), vec4(0,1,0,1));
+  line_add_color(o->line, vec3(0,0,0), vec3(0,0,1), vec4(0,0,1,1));
+  line_init(o->line);
+  line_set_use_depth(o->line, false);
+  return o;
+}
+
+
 // Callbacks
 static void
 _init_gl(Evas_Object *obj)
@@ -160,6 +173,7 @@ _init_gl(Evas_Object *obj)
   populate_scene(s);
   
   View* v = evas_object_data_get(obj, "view");
+  v->repere = _create_repere();
   v->context->scene = s;
   v->camera = create_camera();
   v->camera->object.name = "camera";
@@ -345,16 +359,6 @@ _add_buttons(View* v, Evas_Object* win)
 
 }
 
-Object* _create_repere()
-{
-  Object* o = create_object();
-  o->line = create_line();
-  line_add_color(o->line, vec3(0,0,0), vec3(1,0,0), vec4(1,0,0,1));
-  line_add_color(o->line, vec3(0,0,0), vec3(0,1,0), vec4(0,1,0,1));
-  line_add_color(o->line, vec3(0,0,0), vec3(0,0,1), vec4(0,0,1,1));
-  line_init(o->line);
-}
-
 
 View*
 create_view(Evas_Object *win)
@@ -364,8 +368,6 @@ create_view(Evas_Object *win)
   view->context = calloc(1,sizeof *view->context);
   view->control = create_control(view);
   view->glview = _create_glview(view, win);
-
-  //view->repere = _create_repere();
 
   _add_buttons(view, win);
 
@@ -513,6 +515,13 @@ view_draw(View* v)
   }
   //*/
 
+  //TODO wip repere
+  gl->glClear(GL_DEPTH_BUFFER_BIT);
+  object_compute_matrix(v->repere, mo);
+  v->repere->line->id_texture = r->fbo_all->texture_depth_stencil_id;
+  mat4_multiply(cam_mat_inv, mo, mo);
+  object_draw_lines_camera(v->repere, mo, c);
+
 
   //Render objects with quad
   //object_compute_matrix(s->quad_color, mo);
@@ -537,9 +546,6 @@ view_draw(View* v)
     ////if (o->mesh != NULL) o->mesh->id_texture = s->fbo_all->texture_color;
     ////object_draw(o, mo, *ortho);
   //}
-
-
-  //object_draw(v->repere, mo, *projection);
-  
+ 
 }
 

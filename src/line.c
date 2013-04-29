@@ -170,6 +170,9 @@ line_init(Line* l)
   shader_init_uniform(l->shader, "matrix", &l->uniform_matrix);
   shader_init_uniform(l->shader, "texture", &l->uniform_texture);
   shader_init_uniform(l->shader, "resolution", &l->uniform_resolution);
+  shader_init_uniform(l->shader, "use_depth", &l->uniform_use_depth);
+
+  line_set_use_depth(l, true);
 
 }
 
@@ -227,6 +230,13 @@ line_set_matrices(Line* l, Matrix4 mat, Matrix4 projection)
   float width = 1200;
   float height = 400;
   gl->glUniform2f(l->uniform_resolution, width, height);
+}
+
+void
+line_set_use_depth(Line* l, bool b)
+{
+  shader_use(l->shader);
+  gl->glUniform1i(l->uniform_use_depth, b?1:0);
 }
 
 void
