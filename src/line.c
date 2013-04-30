@@ -9,6 +9,7 @@ create_line()
   //TODO name, shader
   l->vertices = eina_inarray_new(sizeof(GLfloat), 3);
   l->colors = eina_inarray_new(sizeof(GLfloat), 4);
+  l->use_perspective = true;
   return l;
 }
 
@@ -245,6 +246,8 @@ line_prepare_draw(Line* l, Matrix4 mat, struct _Camera* c)
   shader_use(l->shader);
 
   Matrix4* projection = &c->projection;
+  if (!l->use_perspective)
+  projection = &c->orthographic;
 
   Matrix4 tm;
   mat4_multiply(*projection, mat, tm);
@@ -380,5 +383,11 @@ line_add_grid(Line* l, int num, int space)
     line_add_color(l, p1, p2,color);
   }
 
+}
+
+void
+line_set_use_perspective(Line* l, bool b)
+{
+  l->use_perspective = b;
 }
 

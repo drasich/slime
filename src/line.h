@@ -33,6 +33,7 @@ struct _Line
   GLuint attribute_color;
   
   bool need_resend;
+  bool use_perspective;
 
   GLuint fbo;
   GLuint rb;
@@ -53,6 +54,7 @@ void line_add_box(Line* line, AABox box, Vec4 color);
 void line_add_grid(Line* line, int num, int space);
 void line_clear(Line* line);
 void line_set_use_depth(Line* l, bool b);
+void line_set_use_perspective(Line* l, bool b);
 
 
 #endif

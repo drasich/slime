@@ -155,11 +155,13 @@ Object* _create_repere()
 {
   Object* o = create_object();
   o->line = create_line();
-  line_add_color(o->line, vec3(0,0,0), vec3(1,0,0), vec4(1,0,0,1));
-  line_add_color(o->line, vec3(0,0,0), vec3(0,1,0), vec4(0,1,0,1));
-  line_add_color(o->line, vec3(0,0,0), vec3(0,0,1), vec4(0,0,1,1));
+  float z = 0;
+  line_add_color(o->line, vec3(0,0,0), vec3(100,0,0), vec4(1,0,0,1));
+  line_add_color(o->line, vec3(0,0,0), vec3(0,100,0), vec4(0,1,0,1));
+  line_add_color(o->line, vec3(0,0,0), vec3(0,0,100), vec4(0,0,1,1));
   line_init(o->line);
   line_set_use_depth(o->line, false);
+  line_set_use_perspective(o->line, false);
   return o;
 }
 
