@@ -585,10 +585,8 @@ view_draw(View* v)
   mat4_set_identity(id);
   mat4_inverse(id, cam_mat_inv);
   v->camera_repere->Position = vec3(-v->camera->width/2.0 +m, -v->camera->height/2.0 + m, -10);
-  //v->camera_repere->Position = vec3(0, 0, -10);
-  //v->camera_repere->angles = v->camera->object.angles;
-  //v->camera_repere->angles.Y = v->camera->object.angles;
-  object_compute_matrix(v->camera_repere, mo);
+  v->camera_repere->Orientation = quat_inverse(v->camera->object.Orientation);
+  object_compute_matrix_with_quat(v->camera_repere, mo);
   v->camera_repere->line->id_texture = r->fbo_all->texture_depth_stencil_id;
   mat4_multiply(cam_mat_inv, mo, mo);
   object_draw_lines_camera(v->camera_repere, mo, c);

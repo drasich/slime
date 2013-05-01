@@ -25,8 +25,8 @@ camera_update_projection(Camera* c)
 void
 camera_update_orthographic(Camera* c)
 {
-  mat4_set_orthographic(c->orthographic, c->width/2, c->height/2, c->near, c->far);
-  //mat4_set_orthographic(c->orthographic, c->width/2, c->height/2, -1000, c->far);
+ // mat4_set_orthographic(c->orthographic, c->width/2, c->height/2, c->near, c->far);
+  mat4_set_orthographic(c->orthographic, c->width/2, c->height/2, -1000, c->far);
 }
 
 void 

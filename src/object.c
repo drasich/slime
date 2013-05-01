@@ -67,6 +67,40 @@ object_compute_matrix(Object* o, Matrix4 mat)
   mat4_multiply(mt, mr, mat);
 }
 
+void
+object_compute_matrix_with_angles(Object* o, Matrix4 mat)
+{
+  o->Orientation = quat_angles_deg(o->angles.Y, o->angles.X, o->angles.Z);
+  object_compute_matrix_with_quat(o, mat);
+   /*
+  Matrix4 mt, mr;
+  mat4_set_translation(mt, o->Position);
+  mat4_set_rotation_quat(mr, o->Orientation);
+  mat4_multiply(mt, mr, mat);
+  */
+}
+
+
+void
+object_compute_matrix_with_quat(Object* o, Matrix4 mat)
+{
+  Matrix4 mt, mr;
+  mat4_set_translation(mt, o->Position);
+  mat4_set_rotation_quat(mr, o->Orientation);
+  mat4_multiply(mt, mr, mat);
+}
+
+void
+object_compute_matrix_with_pos_quat(Object* o, Matrix4 mat, Vec3 v, Quat q)
+{
+  Matrix4 mt, mr;
+  mat4_set_translation(mt, v);
+  mat4_set_rotation_quat(mr, q);
+  mat4_multiply(mt, mr, mat);
+}
+
+
+
 static void
 _animation_update(Object* o, float dt)
 {
