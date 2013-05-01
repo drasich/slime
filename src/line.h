@@ -29,6 +29,7 @@ struct _Line
   GLint uniform_resolution;
   GLint uniform_use_depth;
   GLint uniform_depth;
+  GLint uniform_size_fixed;
   GLuint attribute_vertex;
   GLuint attribute_color;
   
@@ -55,6 +56,7 @@ void line_add_grid(Line* line, int num, int space);
 void line_clear(Line* line);
 void line_set_use_depth(Line* l, bool b);
 void line_set_use_perspective(Line* l, bool b);
+void line_set_size_fixed(Line* l, bool b);
 
 
 #endif

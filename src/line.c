@@ -172,9 +172,10 @@ line_init(Line* l)
   shader_init_uniform(l->shader, "texture", &l->uniform_texture);
   shader_init_uniform(l->shader, "resolution", &l->uniform_resolution);
   shader_init_uniform(l->shader, "use_depth", &l->uniform_use_depth);
+  shader_init_uniform(l->shader, "size_fixed", &l->uniform_size_fixed);
 
   line_set_use_depth(l, true);
-
+  line_set_size_fixed(l, false);
 }
 
 void
@@ -391,3 +392,9 @@ line_set_use_perspective(Line* l, bool b)
   l->use_perspective = b;
 }
 
+void
+line_set_size_fixed(Line* l, bool b)
+{
+  shader_use(l->shader);
+  gl->glUniform1i(l->uniform_size_fixed, b?1:0);
+}

@@ -140,29 +140,30 @@ populate_scene(Scene* s)
   object_set_position(yep, t2);
   scene_add_object(s,yep);
 
-  Object* grid = create_object();
-  scene_add_object(s,grid);
-  grid->line = create_line();
-  line_add_grid(grid->line, 100, 10);
-  line_init(grid->line);
-
   //GLint bits;
   //gl->glGetIntegerv(GL_DEPTH_BITS, &bits);
   //printf("depth buffer %d\n\n", bits);
 }
 
-Object* _create_repere()
+Object* _create_repere(float u)
 {
   Object* o = create_object();
   o->line = create_line();
-  float z = 0;
-  line_add_color(o->line, vec3(0,0,0), vec3(100,0,0), vec4(1,0,0,1));
-  line_add_color(o->line, vec3(0,0,0), vec3(0,100,0), vec4(0,1,0,1));
-  line_add_color(o->line, vec3(0,0,0), vec3(0,0,100), vec4(0,0,1,1));
+  line_add_color(o->line, vec3(0,0,0), vec3(u,0,0), vec4(1,0,0,1));
+  line_add_color(o->line, vec3(0,0,0), vec3(0,u,0), vec4(0,1,0,1));
+  line_add_color(o->line, vec3(0,0,0), vec3(0,0,u), vec4(0,0,1,1));
   line_init(o->line);
   line_set_use_depth(o->line, false);
-  line_set_use_perspective(o->line, false);
   return o;
+}
+
+Object* _create_grid()
+{
+  Object* grid = create_object();
+  grid->line = create_line();
+  line_add_grid(grid->line, 100, 10);
+  line_init(grid->line);
+  return grid;
 }
 
 
@@ -175,7 +176,12 @@ _init_gl(Evas_Object *obj)
   populate_scene(s);
   
   View* v = evas_object_data_get(obj, "view");
-  v->repere = _create_repere();
+  v->repere = _create_repere(1);
+  line_set_size_fixed(v->repere->line, true);
+  v->camera_repere = _create_repere(40);
+  v->camera_repere->Position = vec3(10,10, -10);
+  line_set_use_perspective(v->camera_repere->line, false);
+  v->grid = _create_grid();
   v->context->scene = s;
   v->camera = create_camera();
   v->camera->object.name = "camera";
@@ -492,6 +498,13 @@ view_draw(View* v)
 
   fbo_use_end();
 
+  //draw grid
+  gl->glClear(GL_DEPTH_BUFFER_BIT);
+  object_compute_matrix(v->grid, mo);
+  v->grid->line->id_texture = r->fbo_all->texture_depth_stencil_id;
+  mat4_multiply(cam_mat_inv, mo, mo);
+  object_draw_lines_camera(v->grid, mo, c);
+
 
   //Render objects
   EINA_LIST_FOREACH(s->objects, l, o) {
@@ -503,7 +516,7 @@ view_draw(View* v)
 
   //TODO avoid compute matrix 2 times
   //Render lines
-  //*
+  /*
   gl->glClear(GL_DEPTH_BUFFER_BIT);
   EINA_LIST_FOREACH(s->objects, l, o) {
     object_compute_matrix(o, mo);
@@ -515,14 +528,31 @@ view_draw(View* v)
     //object_draw_lines(o, mo, *projection);
     object_draw_lines_camera(o, mo, c);
   }
-  //*/
-
-  //TODO wip repere
+  */
+  //Render lines only selected
   gl->glClear(GL_DEPTH_BUFFER_BIT);
-  object_compute_matrix(v->repere, mo);
-  v->repere->line->id_texture = r->fbo_all->texture_depth_stencil_id;
-  mat4_multiply(cam_mat_inv, mo, mo);
-  object_draw_lines_camera(v->repere, mo, c);
+  if (cx->object != NULL) {
+    o = cx->object;
+    object_compute_matrix(o, mo);
+    mat4_multiply(cam_mat_inv, mo, mo);
+    //mat4_multiply(cam_mat_inv, o->matrix, mo);
+    //TODO Fix how to use depth texture for lines
+    if (o->line != NULL) { o->line->id_texture = r->fbo_all->texture_depth_stencil_id;
+    }
+    //object_draw_lines(o, mo, *projection);
+    object_draw_lines_camera(o, mo, c);
+  }
+
+  //repere
+  if (cx->object != NULL) {
+    gl->glClear(GL_DEPTH_BUFFER_BIT);
+    v->repere->Position = cx->object->Position;
+    v->repere->angles = cx->object->angles;
+    object_compute_matrix(v->repere, mo);
+    v->repere->line->id_texture = r->fbo_all->texture_depth_stencil_id;
+    mat4_multiply(cam_mat_inv, mo, mo);
+    object_draw_lines_camera(v->repere, mo, c);
+  }
 
 
   //Render objects with quad
@@ -548,6 +578,20 @@ view_draw(View* v)
     ////if (o->mesh != NULL) o->mesh->id_texture = s->fbo_all->texture_color;
     ////object_draw(o, mo, *ortho);
   //}
+
+  gl->glClear(GL_DEPTH_BUFFER_BIT);
+  float m = 40;
+  Matrix4 id;
+  mat4_set_identity(id);
+  mat4_inverse(id, cam_mat_inv);
+  v->camera_repere->Position = vec3(-v->camera->width/2.0 +m, -v->camera->height/2.0 + m, -10);
+  //v->camera_repere->Position = vec3(0, 0, -10);
+  //v->camera_repere->angles = v->camera->object.angles;
+  //v->camera_repere->angles.Y = v->camera->object.angles;
+  object_compute_matrix(v->camera_repere, mo);
+  v->camera_repere->line->id_texture = r->fbo_all->texture_depth_stencil_id;
+  mat4_multiply(cam_mat_inv, mo, mo);
+  object_draw_lines_camera(v->camera_repere, mo, c);
  
 }
 
