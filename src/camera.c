@@ -4,7 +4,11 @@ Camera*
 create_camera()
 {
   Camera* c = calloc(1,sizeof *c);
+  //c->fovy = 70.0 /180.0 *M_PI;
+  //c->fovy_base = 70.0 /180.0 *M_PI;
   c->fovy = M_PI/4.0;
+  c->fovy_base = M_PI/4.0;
+  c->height_base = 400;
   c->near = 1.0f;
   c->far = 1000.0f;
   return c;
@@ -14,6 +18,7 @@ void
 camera_update_projection(Camera* c)
 {
   c->aspect = (float)c->width/(float)c->height;
+  c->fovy = c->fovy_base * (float)c->height/(float)c->height_base;
   mat4_set_perspective(c->projection, c->fovy, c->aspect , c->near, c->far);
 }
 

@@ -12,11 +12,13 @@ struct _Camera
   Matrix4 orthographic;
   //other things like fov etc..
   float fovy;
+  float fovy_base;
   float near;
   float far;
   float aspect;
   int width;
   int height;
+  int height_base;
   double yaw, pitch, roll;
 
   Vec3 origin;
