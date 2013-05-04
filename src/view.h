@@ -4,6 +4,7 @@
 #include "camera.h"
 #include "fbo.h"
 #include "ui/property.h"
+#include "ui/tree.h"
 
 typedef struct _Render Render;
 struct _Render
@@ -23,6 +24,7 @@ struct _View
   struct _Control* control;
   Evas_Object* glview;
   Property* property;
+  Tree* tree;
   Evas_Object* box;
   Camera* camera;
   Render* render;

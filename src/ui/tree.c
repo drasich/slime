@@ -118,12 +118,23 @@ create_widget_tree(Evas_Object* win, Context* context)
   Tree *t = calloc(1, sizeof *t);
   t->context = context;
 
-  Evas_Object *gl, *bx, *bx2, *rd1, *rd2;
+  Evas_Object *gl, *bx, *rd1, *rd2, *frame;
+
+  frame = elm_frame_add(win);
+  t->root = frame;
+  elm_object_text_set(frame, "Tree");
+  evas_object_size_hint_weight_set(frame, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_fill_set(frame, EVAS_HINT_FILL, 0.0);
+
+  evas_object_show(frame);
 
   bx = elm_box_add(win);
+  t->box = bx;
   evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   //elm_win_resize_object_add(win, bx);
   evas_object_show(bx);
+
+  elm_object_content_set(frame, bx);
 
   gl = elm_genlist_add(win);
   evas_object_size_hint_align_set(gl, EVAS_HINT_FILL, EVAS_HINT_FILL);
