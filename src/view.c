@@ -171,11 +171,13 @@ Object* _create_grid()
 static void
 _init_gl(Evas_Object *obj)
 {
+  View* v = evas_object_data_get(obj, "view");
+  
   Scene* s = create_scene();
   evas_object_data_set(obj, "scene", s);
+  s->view = v;
   populate_scene(s);
-  
-  View* v = evas_object_data_get(obj, "view");
+
   v->repere = _create_repere(1);
   line_set_size_fixed(v->repere->line, true);
   v->camera_repere = _create_repere(40);
@@ -321,6 +323,17 @@ _create_glview(View* view, Evas_Object* win)
 }
 
 static void
+_new_object(void            *data,
+             Evas_Object *obj,
+             void            *event_info)
+{
+  View* v = (View*) data;
+  printf("new object\n");
+  tree_add_object(v->tree, NULL);
+
+}
+
+static void
 _add_buttons(View* v, Evas_Object* win)
 {
   Evas_Object* fs_bt, *ic, *bt;
@@ -360,7 +373,7 @@ _add_buttons(View* v, Evas_Object* win)
   evas_object_resize(bt, 100, 25);
   evas_object_move(bt, 15, 45);
   evas_object_data_set(bt, "view", v);
-  //evas_object_smart_callback_add(bt, "clicked", _new_object, actors);
+  evas_object_smart_callback_add(bt, "clicked", _new_object, v);
   //view->addObjectToHide(bt);
   //view->addObjectToHide(fs_bt);
 

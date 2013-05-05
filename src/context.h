@@ -8,4 +8,6 @@ struct _Context{
   struct _Scene* scene;
 };
 
+void context_set_object(Context* c, struct _Object* o);
+
 #endif

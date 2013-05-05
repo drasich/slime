@@ -11,6 +11,7 @@ struct _Scene {
   //list of objects
   Eina_List* objects;
   Eina_List* ortho;
+  struct _View* view;
 };
 
 Scene* create_scene();
