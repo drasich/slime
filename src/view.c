@@ -152,7 +152,6 @@ Object* _create_repere(float u)
   line_add_color(o->line, vec3(0,0,0), vec3(u,0,0), vec4(1,0,0,1));
   line_add_color(o->line, vec3(0,0,0), vec3(0,u,0), vec4(0,1,0,1));
   line_add_color(o->line, vec3(0,0,0), vec3(0,0,u), vec4(0,0,1,1));
-  line_init(o->line);
   line_set_use_depth(o->line, false);
   return o;
 }
@@ -162,7 +161,6 @@ Object* _create_grid()
   Object* grid = create_object();
   grid->line = create_line();
   line_add_grid(grid->line, 100, 10);
-  line_init(grid->line);
   return grid;
 }
 
@@ -354,7 +352,7 @@ _add_buttons(View* v, Evas_Object* win)
 
   int r,g,b,a;
   evas_object_color_get(fs_bt, &r,&g,&b,&a);
-  a = 200;
+  a = 150;
   evas_object_color_set(fs_bt, r,g,b,a);
   evas_object_color_set(ic, r,g,b,a);
   evas_object_resize(fs_bt, 100, 25);

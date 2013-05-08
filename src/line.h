@@ -35,6 +35,10 @@ struct _Line
   
   bool need_resend;
   bool use_perspective;
+  bool use_depth;
+  bool use_size_fixed;
+
+  bool is_init;
 
   GLuint fbo;
   GLuint rb;

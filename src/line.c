@@ -10,6 +10,7 @@ create_line()
   l->vertices = eina_inarray_new(sizeof(GLfloat), 3);
   l->colors = eina_inarray_new(sizeof(GLfloat), 4);
   l->use_perspective = true;
+  l->use_depth = false;
   return l;
 }
 
@@ -174,8 +175,7 @@ line_init(Line* l)
   shader_init_uniform(l->shader, "use_depth", &l->uniform_use_depth);
   shader_init_uniform(l->shader, "size_fixed", &l->uniform_size_fixed);
 
-  line_set_use_depth(l, true);
-  line_set_size_fixed(l, false);
+  l->is_init = true;
 }
 
 void
@@ -237,13 +237,16 @@ line_set_matrices(Line* l, Matrix4 mat, Matrix4 projection)
 void
 line_set_use_depth(Line* l, bool b)
 {
-  shader_use(l->shader);
-  gl->glUniform1i(l->uniform_use_depth, b?1:0);
+  l->use_depth = b;
 }
 
 void
 line_prepare_draw(Line* l, Matrix4 mat, struct _Camera* c)
 {
+  if (!l->is_init) {
+    line_init(l);
+  }
+
   shader_use(l->shader);
 
   Matrix4* projection = &c->projection;
@@ -259,12 +262,16 @@ line_prepare_draw(Line* l, Matrix4 mat, struct _Camera* c)
   float height = c->height;
   gl->glUniform2f(l->uniform_resolution, width, height);
 
+  gl->glUniform1i(l->uniform_use_depth, l->use_depth?1:0);
+  gl->glUniform1i(l->uniform_size_fixed, l->use_size_fixed?1:0);
 }
 
 void 
 line_draw(Line* l)
 {
-  if (l->need_resend) {
+  if (!l->is_init) {
+    line_init(l);
+  } else if (l->need_resend) {
     line_resend(l);
   }
 
@@ -346,11 +353,13 @@ line_draw(Line* l)
 void
 line_destroy(Line* l)
 {
-  shader_destroy(l->shader);
-  free(l->shader);
+  if (l->is_init) {
+    shader_destroy(l->shader);
+    free(l->shader);
 
-  gl->glDeleteBuffers(1,&l->buffer_vertices);
-  gl->glDeleteBuffers(1,&l->buffer_colors);
+    gl->glDeleteBuffers(1,&l->buffer_vertices);
+    gl->glDeleteBuffers(1,&l->buffer_colors);
+  }
 
   eina_inarray_free(l->vertices);
   //free(l->vertices_gl);
@@ -395,6 +404,5 @@ line_set_use_perspective(Line* l, bool b)
 void
 line_set_size_fixed(Line* l, bool b)
 {
-  shader_use(l->shader);
-  gl->glUniform1i(l->uniform_size_fixed, b?1:0);
+  l->use_size_fixed = b;
 }

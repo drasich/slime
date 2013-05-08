@@ -75,6 +75,8 @@ struct _Mesh
   GLint uniform_wireframe;
   GLint uniform_texture;
   GLint uniform_resolution;
+
+  bool is_init;
 };
 
 void mesh_read_file(Mesh* mesh, FILE* f);

@@ -189,8 +189,8 @@ Object* create_object_file(const char* path)
       Mesh* mesh = create_mesh_file(f);
       object_add_component_mesh(o, mesh);
       o->line = create_line();
+      line_set_use_depth(o->line, true);
       line_add_box(o->line, mesh->box, vec4(0,1,0,0.2));
-      line_init(o->line);
     }
     else if (!strcmp(type, "armature")){
       Armature* armature = create_armature_file(f);

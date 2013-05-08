@@ -194,6 +194,7 @@ mesh_init(Mesh* m)
           GL_DYNAMIC_DRAW);
   }
 
+  m->is_init = true;
 }
 
 void
@@ -285,6 +286,9 @@ mesh_set_matrices(Mesh* mesh, Matrix4 mat, Matrix4 projection)
 void
 mesh_draw(Mesh* m)
 {
+  if (!m->is_init) {
+    mesh_init(m);
+  }
   shader_use(m->shader);
 
   gl->glActiveTexture(GL_TEXTURE0);
@@ -358,7 +362,7 @@ create_mesh_file(FILE* f)
   printf("come here ~~~~~~~~~~~~~~~~ 22222222\n");
   Mesh* m = calloc(1,sizeof(Mesh));
   mesh_read_file(m, f);
-  mesh_init(m);
+  //mesh_init(m);
   //mesh_read_file_no_indices(m, f);
   //mesh_init_no_indices(m);
   return m;
@@ -399,6 +403,10 @@ mesh_init_uniforms(Mesh* m)
 void
 mesh_destroy(Mesh* m)
 {
+  //TODO clean non opengl data
+
+  if (!m->is_init) return;
+
   gl->glDeleteBuffers(1,&m->buffer_vertices);
   gl->glDeleteBuffers(1,&m->buffer_normals);
   
