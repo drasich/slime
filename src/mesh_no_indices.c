@@ -393,8 +393,6 @@ create_mesh_quad(int w, int h)
     m->uvs[11] = 0;
   }
 
-  quad_init(m);
-
   return m;
 }
    
@@ -478,11 +476,17 @@ quad_init(Mesh* m)
           GL_DYNAMIC_DRAW);
   }
   */
+
+  m->is_init = true;
 }
 
 void
 quad_draw(Mesh* m)
 {
+  if (!m->is_init) {
+    quad_init(m);
+  }
+
   shader_use(m->shader);
 
   gl->glActiveTexture(GL_TEXTURE0);

@@ -24,13 +24,14 @@ stringFromFile(char* path)
 }
 
 void 
-shader_init(Shader* shader, char* vert_path, char* frag_path)
+shader_init(Shader* s)
 {
-  char* vert = stringFromFile(vert_path);
-  char* frag = stringFromFile(frag_path);
-  shader_init_string(shader, vert, frag);
+  char* vert = stringFromFile(s->vert_path);
+  char* frag = stringFromFile(s->frag_path);
+  shader_init_string(s, vert, frag);
   free(vert);
   free(frag);
+  s->is_init = true;
 }
 
 void
@@ -116,6 +117,9 @@ shader_init_uniform(Shader* s, char* uni_name, GLint* uni)
 void
 shader_use(Shader* s)
 {
+  if (!s->is_init) {
+    shader_init(s);
+  }
   gl->glUseProgram(s->program);
 }
 
@@ -130,7 +134,8 @@ shader_destroy(Shader* s)
 Shader* 
 create_shader(char* vert_path, char* frag_path)
 {
-  Shader* s = malloc(sizeof(Shader));
-  shader_init(s, vert_path, frag_path);
+  Shader* s = calloc(1,sizeof(Shader));
+  s->vert_path = vert_path;
+  s->frag_path = frag_path;
   return s;
 };

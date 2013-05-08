@@ -194,6 +194,10 @@ mesh_init(Mesh* m)
           GL_DYNAMIC_DRAW);
   }
 
+  shader_use(m->shader);
+  mesh_init_attributes(m);
+  mesh_init_uniforms(m);
+
   m->is_init = true;
 }
 

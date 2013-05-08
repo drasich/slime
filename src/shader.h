@@ -1,6 +1,7 @@
 #ifndef __shader__
 #define __shader__
 #include "gl.h"
+#include "stdbool.h"
 
 typedef struct _Shader Shader;
 typedef char GLchar; // currently not in 1.7.3 and 1.7.4 but is in svn.
@@ -10,12 +11,15 @@ struct _Shader
   GLuint vert_shader;
   GLuint frag_shader;
   GLuint program;
+  char* vert_path;
+  char* frag_path;
+  bool is_init;
 };
 
 
 //void load_shader(Evas_Object *gl);
 char* stringFromFile(char* path);
-void shader_init(Shader* shader, char* vert_path, char* frag_path);
+void shader_init(Shader* shader);
 
 void shader_init_string(
       Shader* s, 

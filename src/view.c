@@ -109,42 +109,6 @@ _mouse_wheel(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *ev
   camera_pan(v->camera, axis);
 }
 
-static void
-populate_scene(Scene* s)
-{
-  //Object* o = create_object_file("model/smallchar.bin");
-  Object* o = create_object_file("model/cube.bin");
-  o->name = "cube";
-  //Object* o = create_object_file("model/simpleplane.bin");
-  //TODO free shader
-  Shader* shader_simple = create_shader("shader/simple.vert", "shader/simple.frag");
-  o->mesh->shader = shader_simple;
-  mesh_init_attributes(o->mesh);
-  mesh_init_uniforms(o->mesh);
-
-  Vec3 t = {0,0,0};
-  //Vec3 t = {0,0,0};
-  object_set_position(o, t);
-  scene_add_object(s,o);
-
-  //animation_play(o, "walkquat", LOOP);
-
-  Object* yep = create_object_file("model/smallchar.bin");
-  //animation_play(yep, "walkquat", LOOP);
-  yep->mesh->shader = shader_simple;
-  mesh_init_attributes(yep->mesh);
-  mesh_init_uniforms(yep->mesh);
-
-  yep->name = "2222222";
-  Vec3 t2 = {-10,0,0};
-  object_set_position(yep, t2);
-  scene_add_object(s,yep);
-
-  //GLint bits;
-  //gl->glGetIntegerv(GL_DEPTH_BITS, &bits);
-  //printf("depth buffer %d\n\n", bits);
-}
-
 Object* _create_repere(float u)
 {
   Object* o = create_object();
@@ -171,18 +135,13 @@ _init_gl(Evas_Object *obj)
 {
   View* v = evas_object_data_get(obj, "view");
   
-  Scene* s = create_scene();
-  evas_object_data_set(obj, "scene", s);
-  s->view = v;
-  populate_scene(s);
-
+  /*
   v->repere = _create_repere(1);
   line_set_size_fixed(v->repere->line, true);
   v->camera_repere = _create_repere(40);
   v->camera_repere->Position = vec3(10,10, -10);
   line_set_use_perspective(v->camera_repere->line, false);
   v->grid = _create_grid();
-  v->context->scene = s;
   v->camera = create_camera();
   v->camera->object.name = "camera";
   Vec3 p = {20,5,20};
@@ -191,6 +150,7 @@ _init_gl(Evas_Object *obj)
   camera_pan(v->camera, p);
   Vec3 at = {0,0,0};
   camera_lookat(v->camera, at);
+  */
 
   v->render = create_render();
 
@@ -378,6 +338,24 @@ _add_buttons(View* v, Evas_Object* win)
 
 }
 
+static void
+_create_view_objects(View* v)
+{
+  v->repere = _create_repere(1);
+  line_set_size_fixed(v->repere->line, true);
+  v->camera_repere = _create_repere(40);
+  v->camera_repere->Position = vec3(10,10, -10);
+  line_set_use_perspective(v->camera_repere->line, false);
+  v->grid = _create_grid();
+  v->camera = create_camera();
+  v->camera->object.name = "camera";
+  Vec3 p = {20,5,20};
+  //v->camera->origin = p;
+  //v->camera->object.Position = p;
+  camera_pan(v->camera, p);
+  Vec3 at = {0,0,0};
+  camera_lookat(v->camera, at);
+}
 
 View*
 create_view(Evas_Object *win)
@@ -394,6 +372,8 @@ create_view(Evas_Object *win)
   view->property = create_property(win, view->context);
   view->tree = create_widget_tree(win, view->context);
   evas_object_data_set(view->glview, "view", view);
+
+  _create_view_objects(view);
 
   return view;
 }
@@ -422,7 +402,6 @@ create_render()
   r->fbo_selected = create_fbo();
   r->fbo_all = create_fbo();
 
-
   r->quad_outline = create_object();
   r->quad_outline->mesh = create_mesh_quad(100,100);
   Vec3 t3 = {0,0,-100};
@@ -430,6 +409,7 @@ create_render()
   r->quad_outline->name = "quad";
 
   r->quad_outline->mesh->shader = create_shader("shader/stencil.vert", "shader/stencil.frag");
+  shader_use(r->quad_outline->mesh->shader);
   shader_init_attribute(r->quad_outline->mesh->shader, "vertex", &r->quad_outline->mesh->attribute_vertex);
   shader_init_uniform(r->quad_outline->mesh->shader, "matrix", &r->quad_outline->mesh->uniform_matrix);
   shader_init_uniform(r->quad_outline->mesh->shader, "resolution", &r->quad_outline->mesh->uniform_resolution);
@@ -440,6 +420,7 @@ create_render()
   r->quad_color->name = "quad";
 
   r->quad_color->mesh->shader = create_shader("shader/stencil.vert", "shader/quad.frag");
+  shader_use(r->quad_color->mesh->shader);
   shader_init_attribute(r->quad_color->mesh->shader, "vertex", &r->quad_color->mesh->attribute_vertex);
   shader_init_uniform(r->quad_color->mesh->shader, "matrix", &r->quad_color->mesh->uniform_matrix);
   shader_init_uniform(r->quad_color->mesh->shader, "resolution", &r->quad_color->mesh->uniform_resolution);

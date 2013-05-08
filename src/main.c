@@ -1,10 +1,11 @@
 #include <Elementary.h>
 #include "view.h"
+#include "scene.h"
 #define __UNUSED__
 
 static View* view;
 
-void
+static void
 create_workspace(Evas_Object* parent)
 {
 
@@ -30,7 +31,7 @@ win_del(void *data, Evas_Object *obj, void *event_info)
   elm_exit();
 }
 
-void
+static void
 create_window()
 {
   Evas_Object *win;
@@ -54,6 +55,7 @@ create_window()
   elm_object_part_content_set(panes, "right", hpanes);
 
   elm_panes_content_left_size_set(panes, 0.75f);
+
 
   /*
   Evas_Object* box = elm_box_add(win);
@@ -79,11 +81,21 @@ create_window()
   evas_object_show(win);
 }
 
+static void 
+build_scene()
+{
+  Scene* s = create_scene();
+  evas_object_data_set(view->glview, "scene", s);
+  s->view = view;
+  view->context->scene = s;
+}
+
 EAPI_MAIN int
 elm_main(int argc, char **argv)
 {
   elm_config_preferred_engine_set("opengl_x11");
   create_window();
+  build_scene();
   elm_config_preferred_engine_set(NULL);
 
   elm_run();
