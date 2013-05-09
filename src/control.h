@@ -2,7 +2,8 @@
 #define __control__
 #include <Elementary.h>
 #include "vec.h"
-#include "object.h"
+#include "scene.h"
+//#include "object.h"
 
 typedef struct _Control Control;
 
@@ -40,6 +41,14 @@ struct _Operation {
   void* data;
 };
 
+
+void control_add_operation(Control* c, Operation* op);
+void control_undo(Control* c);
+void control_redo(Control* c);
+
+void control_clean_redo(Control* c);
+
+///////////////////////////////////////////////
 typedef struct _Op_Move_Object Op_Move_Object;
 struct _Op_Move_Object
 {
@@ -51,10 +60,17 @@ struct _Op_Move_Object
 void operation_move_object_do(void* data);
 void operation_move_object_undo(void* data);
 
-void control_add_operation(Control* c, Operation* op);
-void control_undo(Control* c);
-void control_redo(Control* c);
+////////////////////////////////////////////
+typedef struct _Op_Add_Object Op_Add_Object;
+struct _Op_Add_Object
+{
+  Scene* s;
+  Object* o;
+};
 
-void control_clean_redo(Control* c);
+void operation_add_object_do(void* data);
+void operation_add_object_undo(void* data);
+////////////////////////////////////////////
+
 
 #endif

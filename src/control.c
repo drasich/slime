@@ -115,19 +115,18 @@ _op_move_object(Object* o, Vec3 start, Vec3 end)
 }
 
 static Operation* 
-_op_add_object(Object* o, Vec3 start, Vec3 end)
+_op_add_object(Scene* s, Object* o)
 {
   Operation* op = calloc(1, sizeof *op);
 
-  op->do_cb = operation_move_object_do;
-  op->undo_cb = operation_move_object_undo;
+  op->do_cb = operation_add_object_do;
+  op->undo_cb = operation_add_object_undo;
 
-  Op_Move_Object* omo = calloc(1, sizeof *omo);
-  omo->o = o;
-  omo->start = start;
-  omo->end = end;
+  Op_Add_Object* od = calloc(1, sizeof *od);
+  od->s = s;
+  od->o = o;
 
-  op->data = omo;
+  op->data = od;
 
   return op;
 }
@@ -241,5 +240,20 @@ control_clean_redo(Control* c)
     free(op);
   }
 
+}
+
+
+void 
+operation_add_object_do(void* data)
+{
+  Op_Add_Object* od = (Op_Add_Object*) data;
+  //TODO add the object
+}
+
+void 
+operation_add_object_undo(void* data)
+{
+  Op_Add_Object* od = (Op_Add_Object*) data;
+  //TODO remove object
 }
 
