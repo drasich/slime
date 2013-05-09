@@ -148,6 +148,14 @@ control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
 
 }
 
+void
+control_add_object(Control* c, Scene* s, Object* o)
+{
+    Operation* op = _op_add_object(s,o);
+    control_add_operation(c, op);
+    op->do_cb(op->data);
+}
+
 
 void 
 control_key_down(Control* c, Evas_Event_Key_Down *e)
@@ -247,13 +255,13 @@ void
 operation_add_object_do(void* data)
 {
   Op_Add_Object* od = (Op_Add_Object*) data;
-  //TODO add the object
+  scene_add_object(od->s, od->o);
 }
 
 void 
 operation_add_object_undo(void* data)
 {
   Op_Add_Object* od = (Op_Add_Object*) data;
-  //TODO remove object
+  scene_remove_object(od->s, od->o);
 }
 

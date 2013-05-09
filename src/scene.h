@@ -16,6 +16,7 @@ struct _Scene {
 
 Scene* create_scene();
 void scene_add_object(Scene* s, Object* o);
+void scene_remove_object(Scene* s, Object* o);
 void scene_add_object_ortho(Scene* s, Object* o);
 void scene_draw(Scene* s, Camera* c);
 void scene_update(Scene* s);

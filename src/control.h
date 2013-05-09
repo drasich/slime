@@ -70,6 +70,7 @@ struct _Op_Add_Object
 
 void operation_add_object_do(void* data);
 void operation_add_object_undo(void* data);
+void control_add_object(Control* c, Scene* s, Object* o);
 ////////////////////////////////////////////
 
 

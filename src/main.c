@@ -1,6 +1,7 @@
 #include <Elementary.h>
 #include "view.h"
 #include "scene.h"
+#include "control.h"
 #define __UNUSED__
 
 static View* view;
@@ -76,10 +77,44 @@ create_window()
   */
 
 
-  evas_object_resize(win, 800/3, 400/3);
-  //evas_object_resize(win, 1200, 400);
+  //evas_object_resize(win, 800/3, 400/3);
+  evas_object_resize(win, 1200, 400);
   evas_object_show(win);
 }
+
+static void
+populate_scene(Control* c, Scene* s)
+{
+  //Object* o = create_object_file("model/smallchar.bin");
+  Object* o = create_object_file("model/cube.bin");
+  o->name = "cube";
+  //Object* o = create_object_file("model/simpleplane.bin");
+  //TODO free shader
+  Shader* shader_simple = create_shader("shader/simple.vert", "shader/simple.frag");
+  o->mesh->shader = shader_simple;
+
+  Vec3 t = {0,0,0};
+  //Vec3 t = {0,0,0};
+  object_set_position(o, t);
+  //scene_add_object(s,o);
+  control_add_object(c, s, o);
+
+  //animation_play(o, "walkquat", LOOP);
+
+  Object* yep = create_object_file("model/smallchar.bin");
+  //animation_play(yep, "walkquat", LOOP);
+  yep->mesh->shader = shader_simple;
+
+  yep->name = "2222222";
+  Vec3 t2 = {-10,0,0};
+  object_set_position(yep, t2);
+  control_add_object(c,s,yep);
+
+  //GLint bits;
+  //gl->glGetIntegerv(GL_DEPTH_BITS, &bits);
+  //printf("depth buffer %d\n\n", bits);
+}
+
 
 static void 
 build_scene()
@@ -88,6 +123,8 @@ build_scene()
   evas_object_data_set(view->glview, "scene", s);
   s->view = view;
   view->context->scene = s;
+  populate_scene(view->control, s);
+
 }
 
 EAPI_MAIN int
