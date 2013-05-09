@@ -96,20 +96,53 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
 
 }
 
+static Operation* 
+_op_move_object(Object* o, Vec3 start, Vec3 end)
+{
+  Operation* op = calloc(1, sizeof *op);
+
+  op->do_cb = operation_move_object_do;
+  op->undo_cb = operation_move_object_undo;
+
+  Op_Move_Object* omo = calloc(1, sizeof *omo);
+  omo->o = o;
+  omo->start = start;
+  omo->end = end;
+
+  op->data = omo;
+
+  return op;
+}
+
+static Operation* 
+_op_add_object(Object* o, Vec3 start, Vec3 end)
+{
+  Operation* op = calloc(1, sizeof *op);
+
+  op->do_cb = operation_move_object_do;
+  op->undo_cb = operation_move_object_undo;
+
+  Op_Move_Object* omo = calloc(1, sizeof *omo);
+  omo->o = o;
+  omo->start = start;
+  omo->end = end;
+
+  op->data = omo;
+
+  return op;
+}
+
+
 void 
 control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
 {
   if (c->state == MOVE) {
     c->state = IDLE;
 
-    Operation* op = calloc(1, sizeof *op);
-    op->do_cb = operation_move_object_do;
-    op->undo_cb = operation_move_object_undo;
-    Op_Move_Object* omo = calloc(1, sizeof *omo);
-    omo->o = c->view->context->object; //TODO
-    omo->end = omo->o->Position; //TODO
-    omo->start = c->start;
-    op->data = omo;
+    Operation* op = _op_move_object(
+          c->view->context->object, //TODO
+          c->start,
+          c->view->context->object->Position); //TODO
 
     control_add_operation(c, op);
   }
