@@ -26,6 +26,7 @@ struct _Control{
 Control* create_control(struct _View* v);
 void control_set_state(Control* c, int state);
 void control_move(Control* c);
+void control_center_camera(Control* c);
 
 void control_mouse_move(Control* c, Evas_Event_Mouse_Move *e);
 void control_mouse_down(Control* c, Evas_Event_Mouse_Down *e);

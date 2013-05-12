@@ -30,6 +30,27 @@ control_move(Control* c)
 
 }
 
+void
+control_center_camera(Control* c)
+{
+  View* v = c->view;
+  Object* o = v->context->object;
+  Camera* cam = v->camera;
+  if (o != NULL && c->state == IDLE) {
+    //TODO get the distance from the size of the object on the screen
+    Vec3 v = vec3(0,0,30);
+    v = quat_rotate_vec3(cam->object.Orientation, v);
+    v = vec3_add(v, o->Position);
+
+    //TODO write a camera_set_position function
+    cam->object.Position = v;
+    camera_recalculate_origin(cam);
+
+  }
+
+}
+
+
 static void rotate_camera(View* v, float x, float y)
 {
   Camera* cam = v->camera;
@@ -178,7 +199,16 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
     } else if (!strcmp(e->keyname, "y")
           && evas_key_modifier_is_set(mods, "Control")) {
       control_redo(c);
+    } else if (!strcmp(e->keyname, "f")) {
+      Object* o = v->context->object;
+      if (o != NULL) {
+        //enter move mode
+        control_center_camera(c);
+      }
+
     }
+
+
   } else if (c->state == MOVE) {
     if (!strcmp(e->keyname, "Escape")) {
       c->state = IDLE;
