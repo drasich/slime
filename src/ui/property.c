@@ -124,7 +124,9 @@ property_add_spinner(Property *p, Evas_Object* win, Evas_Object* bx, char* name)
 
   evas_object_name_set(en, name);
   
+  elm_spinner_step_set(en, 0.1);
   elm_spinner_min_max_set(en, -DBL_MAX, DBL_MAX);
+
   char s[50];
   sprintf(s, "%s : %s", name, "%f");
   elm_spinner_label_format_set(en, s);
