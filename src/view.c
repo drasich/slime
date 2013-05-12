@@ -24,13 +24,20 @@ _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, 
 static void
 _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
 {
-  Evas_Event_Mouse_Move *ev = (Evas_Event_Mouse_Move*) event_info;
   //elm_object_focus_set(o, EINA_TRUE);
+  Evas_Event_Mouse_Move *ev = (Evas_Event_Mouse_Move*) event_info;
 
   View* v = evas_object_data_get(o, "view");
   Control* cl = v->control;
   control_mouse_move(cl, ev);
 }
+
+static void
+_mouse_in(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
+{
+  elm_object_focus_set(o, EINA_TRUE);
+}
+
 
 static void
 _view_select_object(View *v, Object *o)
@@ -276,6 +283,7 @@ _create_glview(View* view, Evas_Object* win)
   evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_DOWN, _mouse_down, NULL);
   evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_UP, _mouse_up, NULL);
   evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_WHEEL, _mouse_wheel, NULL);
+  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_IN, _mouse_in, NULL);
 
   return glview;
 }
@@ -285,6 +293,7 @@ _new_object(void            *data,
              Evas_Object *obj,
              void            *event_info)
 {
+  return;
   View* v = (View*) data;
   printf("new object\n");
   tree_add_object(v->tree, NULL);

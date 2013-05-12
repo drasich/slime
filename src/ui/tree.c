@@ -11,8 +11,6 @@ static Elm_Genlist_Item_Class *itc4;
 char *gl4_text_get(void *data, Evas_Object *obj __UNUSED__, const char *part __UNUSED__)
 {
   char buf[256];
-  snprintf(buf, sizeof(buf), "Item mode ");
-  return strdup(buf);
   Object* o = (Object*) data;
   snprintf(buf, sizeof(buf), "%s", o->name);
   return strdup(buf);
@@ -56,7 +54,7 @@ static void
 gl4_sel(void *data, Evas_Object *obj __UNUSED__, void *event_info)
 {
    Elm_Object_Item *glit = event_info;
-   int depth = elm_genlist_item_expanded_depth_get(glit);
+   //int depth = elm_genlist_item_expanded_depth_get(glit);
    //printf("expanded depth for selected item is %d", depth);
 
    Context* context = (Context*) data;
@@ -161,15 +159,15 @@ create_widget_tree(Evas_Object* win, Context* context)
   itc1->func.state_get = gl4_state_get;
   itc1->func.del       = gl4_del;
 
-  elm_genlist_item_append(gli, itc1,
-        (void *)1/* item data */, NULL/* parent */, ELM_GENLIST_ITEM_NONE, gl4_sel/* func */,
-        NULL/* func data */);
-  elm_genlist_item_append(gli, itc1,
-        (void *)2/* item data */, NULL/* parent */, ELM_GENLIST_ITEM_NONE, gl4_sel/* func */,
-        NULL/* func data */);
-  elm_genlist_item_append(gli, itc1,
-        (void *)3/* item data */, NULL/* parent */, ELM_GENLIST_ITEM_NONE, gl4_sel/* func */,
-        NULL/* func data */);
+  //elm_genlist_item_append(gli, itc1,
+        //(void *)1/* item data */, NULL/* parent */, ELM_GENLIST_ITEM_NONE, gl4_sel/* func */,
+        //NULL/* func data */);
+  //elm_genlist_item_append(gli, itc1,
+        //(void *)2/* item data */, NULL/* parent */, ELM_GENLIST_ITEM_NONE, gl4_sel/* func */,
+        //NULL/* func data */);
+  //elm_genlist_item_append(gli, itc1,
+        //(void *)3/* item data */, NULL/* parent */, ELM_GENLIST_ITEM_NONE, gl4_sel/* func */,
+        //NULL/* func data */);
 
   elm_genlist_item_class_ref(itc1);
   elm_genlist_item_class_free(itc1);
@@ -204,11 +202,11 @@ tree_add_object(Tree* t,  Object* o)
    itc1->func.del = gl4_del;
 
    elm_genlist_item_append(t->gl, itc1,
-                                  (void *)(long)55/* item data */,
+                                  o,//(void *)(long)55/* item data */,
                                   NULL, //elm_genlist_item_parent_get(gli_selected),
                                   ELM_GENLIST_ITEM_NONE,
-                                  NULL/* func */, NULL/* func data */);
-
+                                  //NULL/* func */, NULL/* func data */);
+                                  gl4_sel, t->context);
 
   return;
 
@@ -218,6 +216,7 @@ tree_add_object(Tree* t,  Object* o)
         o, NULL/* parent */, ELM_GENLIST_ITEM_TREE, gl4_sel/* func */,
         //NULL/* func data */);
    t->context);
+
 
 
   // if it was a NONE then go into TREE (if you add children)

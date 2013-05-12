@@ -153,7 +153,7 @@ control_add_object(Control* c, Scene* s, Object* o)
 {
     Operation* op = _op_add_object(s,o);
     control_add_operation(c, op);
-    op->do_cb(op->data);
+    op->do_cb(c, op->data);
 }
 
 
@@ -200,14 +200,14 @@ control_add_operation(Control* c, Operation* op)
 }
 
 void 
-operation_move_object_do(void* data)
+operation_move_object_do(Control* c, void* data)
 {
   Op_Move_Object* od = (Op_Move_Object*) data;
   od->o->Position = od->end;
 }
 
 void 
-operation_move_object_undo(void* data)
+operation_move_object_undo(Control* c, void* data)
 {
   Op_Move_Object* od = (Op_Move_Object*) data;
   od->o->Position = od->start;
@@ -219,7 +219,7 @@ control_undo(Control* c)
   Eina_List* l = eina_list_last(c->undo);
   if (l) {
     Operation* op = l->data;
-    op->undo_cb(op->data);
+    op->undo_cb(c, op->data);
     c->redo = eina_list_append(c->redo, op);
     c->undo = eina_list_remove_list(c->undo, l);
   }
@@ -231,7 +231,7 @@ control_redo(Control* c)
   Eina_List* l = eina_list_last(c->redo);
   if (l) {
     Operation* op = l->data;
-    op->do_cb(op->data);
+    op->do_cb(c, op->data);
     c->undo = eina_list_append(c->undo, op);
     c->redo = eina_list_remove_list(c->redo, l);
   }
@@ -250,16 +250,17 @@ control_clean_redo(Control* c)
 
 }
 
-
 void 
-operation_add_object_do(void* data)
+operation_add_object_do(Control* c, void* data)
 {
   Op_Add_Object* od = (Op_Add_Object*) data;
   scene_add_object(od->s, od->o);
+  //TODO add an entry in the tree
+  tree_add_object(c->view->tree,  od->o);
 }
 
 void 
-operation_add_object_undo(void* data)
+operation_add_object_undo(Control*c, void* data)
 {
   Op_Add_Object* od = (Op_Add_Object*) data;
   scene_remove_object(od->s, od->o);

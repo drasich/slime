@@ -31,8 +31,8 @@ void control_mouse_move(Control* c, Evas_Event_Mouse_Move *e);
 void control_mouse_down(Control* c, Evas_Event_Mouse_Down *e);
 void control_key_down(Control* c, Evas_Event_Key_Down *e);
 
-typedef void (*do_cb)(void* data);
-typedef void (*undo_cb)(void* data);
+typedef void (*do_cb)(Control* c, void* data);
+typedef void (*undo_cb)(Control* c, void* data);
 
 typedef struct _Operation Operation;
 struct _Operation {
@@ -57,8 +57,8 @@ struct _Op_Move_Object
   Vec3 end;
 };
 
-void operation_move_object_do(void* data);
-void operation_move_object_undo(void* data);
+void operation_move_object_do(Control *c, void* data);
+void operation_move_object_undo(Control *c, void* data);
 
 ////////////////////////////////////////////
 typedef struct _Op_Add_Object Op_Add_Object;
@@ -68,8 +68,8 @@ struct _Op_Add_Object
   Object* o;
 };
 
-void operation_add_object_do(void* data);
-void operation_add_object_undo(void* data);
+void operation_add_object_do(Control *c, void* data);
+void operation_add_object_undo(Control *c, void* data);
 void control_add_object(Control* c, Scene* s, Object* o);
 ////////////////////////////////////////////
 
