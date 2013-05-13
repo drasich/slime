@@ -18,6 +18,7 @@ struct _Tree
 Tree* create_widget_tree(Evas_Object* win, Context* context);
 void tree_add_object(Tree* t,  struct _Object* o);
 
+void tree_update(Tree* t, struct _Object* o);
 
 
 #endif

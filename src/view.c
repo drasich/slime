@@ -47,6 +47,7 @@ _view_select_object(View *v, Object *o)
   //TODO tell properties to change, through control?
   //or emit a signal to say object selected has changed and catch this signal in properties, and other possible widgets
   property_update(v->property, o);
+  tree_update(v->tree, o);
 }
 
 static void

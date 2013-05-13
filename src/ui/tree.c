@@ -225,3 +225,9 @@ tree_add_object(Tree* t,  Object* o)
 
 
 }
+
+void
+tree_update(Tree* t, Object* o)
+{
+
+}
