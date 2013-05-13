@@ -148,9 +148,25 @@ _op_add_object(Scene* s, Object* o)
   od->o = o;
 
   op->data = od;
-
   return op;
 }
+
+static Operation* 
+_op_remove_object(Scene* s, Object* o)
+{
+  Operation* op = calloc(1, sizeof *op);
+
+  op->do_cb = operation_remove_object_do;
+  op->undo_cb = operation_remove_object_undo;
+
+  Op_Remove_Object* od = calloc(1, sizeof *od);
+  od->s = s;
+  od->o = o;
+
+  op->data = od;
+  return op;
+}
+
 
 
 void 
@@ -294,5 +310,31 @@ operation_add_object_undo(Control*c, void* data)
 {
   Op_Add_Object* od = (Op_Add_Object*) data;
   scene_remove_object(od->s, od->o);
+  tree_remove_object(c->view->tree,  od->o);
+}
+
+
+void 
+operation_remove_object_do(Control *c, void* data)
+{
+  Op_Remove_Object* od = (Op_Remove_Object*) data;
+  scene_remove_object(od->s, od->o);
+  tree_remove_object(c->view->tree,  od->o);
+}
+
+void
+operation_remove_object_undo(Control *c, void* data)
+{
+  Op_Remove_Object* od = (Op_Remove_Object*) data;
+  scene_add_object(od->s, od->o);
+  tree_add_object(c->view->tree,  od->o);
+}
+
+void
+control_remove_object(Control* c, Scene* s, Object* o)
+{
+  Operation* op = _op_remove_object(s,o);
+  control_add_operation(c, op);
+  op->do_cb(c, op->data);
 }
 

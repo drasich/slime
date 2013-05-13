@@ -74,5 +74,15 @@ void operation_add_object_undo(Control *c, void* data);
 void control_add_object(Control* c, Scene* s, Object* o);
 ////////////////////////////////////////////
 
+typedef struct _Op_Remove_Object Op_Remove_Object;
+struct _Op_Remove_Object
+{
+  Scene* s;
+  Object* o;
+};
+
+void operation_remove_object_do(Control *c, void* data);
+void operation_remove_object_undo(Control *c, void* data);
+void control_remove_object(Control* c, Scene* s, Object* o);
 
 #endif

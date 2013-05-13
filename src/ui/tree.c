@@ -243,3 +243,25 @@ tree_update(Tree* t, Object* o)
     elm_genlist_item_selected_set(item, EINA_TRUE);
   }
 }
+
+
+void
+tree_remove_object(Tree* t,  Object* o)
+{
+  Elm_Object_Item* item = elm_genlist_first_item_get(t->gl);
+  if (!item) return;
+
+  Object* eo = (Object*) elm_object_item_data_get(item);
+
+  while (eo != o && item) {
+    item = elm_genlist_item_next_get(item);
+    eo = (Object*) elm_object_item_data_get(item);
+  }
+
+  if (o == eo) {
+    elm_object_item_del(item);
+  }
+
+  return;
+}
+
