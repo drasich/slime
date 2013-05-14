@@ -221,6 +221,12 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
         //enter move mode
         control_center_camera(c);
       }
+    } else if (!strcmp(e->keyname, "x")) {
+      Object* o = v->context->object;
+      Scene* s = v->context->scene;
+      if (o != NULL) {
+        control_remove_object(c, s, o);
+      }
 
     }
 
@@ -301,7 +307,6 @@ operation_add_object_do(Control* c, void* data)
 {
   Op_Add_Object* od = (Op_Add_Object*) data;
   scene_add_object(od->s, od->o);
-  //TODO add an entry in the tree
   tree_add_object(c->view->tree,  od->o);
 }
 
@@ -311,6 +316,11 @@ operation_add_object_undo(Control*c, void* data)
   Op_Add_Object* od = (Op_Add_Object*) data;
   scene_remove_object(od->s, od->o);
   tree_remove_object(c->view->tree,  od->o);
+
+  if (od->o == c->view->context->object &&  od->s == c->view->context->scene){
+    c->view->context->object = NULL;
+  }
+  //TODO context if object was the object in the context remove it
 }
 
 
@@ -320,6 +330,11 @@ operation_remove_object_do(Control *c, void* data)
   Op_Remove_Object* od = (Op_Remove_Object*) data;
   scene_remove_object(od->s, od->o);
   tree_remove_object(c->view->tree,  od->o);
+
+  if (od->o == c->view->context->object &&  od->s == c->view->context->scene){
+    c->view->context->object = NULL;
+  }
+
 }
 
 void
