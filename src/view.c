@@ -35,7 +35,22 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
 
   Evas_Object* r = v->select_rect;
 
-  evas_object_resize(r, ev->cur.canvas.x - startx,ev->cur.canvas.y - starty);
+  int yepx = ev->cur.canvas.x - startx;
+  int yepy = ev->cur.canvas.y - starty;
+
+  int sx = startx;
+  int sy = starty;
+  if (yepx <0) {
+    sx = ev->cur.canvas.x;
+    yepx *= -1;
+  }
+  if (yepy <0) {
+    sy = ev->cur.canvas.y;
+    yepy *= -1;
+  }
+
+  evas_object_move(r, sx, sy);
+  evas_object_resize(r, yepx, yepy);
 }
 
 static void
