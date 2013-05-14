@@ -21,6 +21,8 @@ _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, 
   control_key_down(cl, ev);
 }
 
+static float startx = 0, starty = 0;
+
 static void
 _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
 {
@@ -30,6 +32,10 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   View* v = evas_object_data_get(o, "view");
   Control* cl = v->control;
   control_mouse_move(cl, ev);
+
+  Evas_Object* r = v->select_rect;
+
+  evas_object_resize(r, ev->cur.canvas.x - startx,ev->cur.canvas.y - starty);
 }
 
 static void
@@ -51,6 +57,20 @@ _view_select_object(View *v, Object *o)
 }
 
 static void
+_makeRect(View* v, Scene* s, Evas_Event_Mouse_Down* ev)
+{
+  printf("make rect : \n");
+
+  Evas_Object* r = v->select_rect;
+
+  evas_object_resize(r, 1,1);
+  evas_object_move(r, ev->canvas.x, ev->canvas.y);
+  startx = ev->canvas.x;
+  starty = ev->canvas.y;
+  evas_object_show(r);
+}
+
+static void
 _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
 {
   Evas_Event_Mouse_Down *ev = (Evas_Event_Mouse_Down*) event_info;
@@ -60,6 +80,11 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   View* v = evas_object_data_get(o, "view");
   Control* cl = v->control;
   control_mouse_down(cl, ev);
+
+  if (ev->button == 3){
+    _makeRect(v, s, ev);
+  }
+
   Ray r = ray_from_screen(v->camera, ev->canvas.x, ev->canvas.y, 1000);
 
   bool found = false;
@@ -365,6 +390,14 @@ _create_view_objects(View* v)
   camera_pan(v->camera, p);
   Vec3 at = {0,0,0};
   camera_lookat(v->camera, at);
+
+
+  Evas* e = evas_object_evas_get(v->glview);
+  Evas_Object* r = evas_object_rectangle_add(e);
+  evas_object_color_set(r, 255, 255, 255, 155);
+  evas_object_resize(r, 0,0);
+  evas_object_hide(r);
+  v->select_rect = r;
 }
 
 View*

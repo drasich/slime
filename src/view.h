@@ -31,6 +31,8 @@ struct _View
   Object* repere;
   Object* grid;
   Object* camera_repere;
+
+  Evas_Object* select_rect;
 };
 
 View* create_view(Evas_Object *win);

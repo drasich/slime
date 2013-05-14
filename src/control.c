@@ -218,7 +218,6 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
     } else if (!strcmp(e->keyname, "f")) {
       Object* o = v->context->object;
       if (o != NULL) {
-        //enter move mode
         control_center_camera(c);
       }
     } else if (!strcmp(e->keyname, "x")) {
@@ -227,9 +226,7 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
       if (o != NULL) {
         control_remove_object(c, s, o);
       }
-
     }
-
 
   } else if (c->state == MOVE) {
     if (!strcmp(e->keyname, "Escape")) {
