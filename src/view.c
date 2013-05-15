@@ -30,8 +30,10 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   Evas_Event_Mouse_Move *ev = (Evas_Event_Mouse_Move*) event_info;
 
   View* v = evas_object_data_get(o, "view");
-  Control* cl = v->control;
-  control_mouse_move(cl, ev);
+
+  //if (ev->button == 3 ){
+  const Evas_Modifier * mods = ev->modifiers;
+  if (evas_key_modifier_is_set(mods, "Control")) {
 
   Evas_Object* r = v->select_rect;
 
@@ -51,6 +53,11 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
 
   evas_object_move(r, sx, sy);
   evas_object_resize(r, yepx, yepy);
+  return;
+  }
+
+  Control* cl = v->control;
+  control_mouse_move(cl, ev);
 }
 
 static void
@@ -96,8 +103,11 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   Control* cl = v->control;
   control_mouse_down(cl, ev);
 
-  if (ev->button == 3){
+  //if (ev->button == 3 ){
+  const Evas_Modifier * mods = ev->modifiers;
+  if (evas_key_modifier_is_set(mods, "Control")) {
     _makeRect(v, s, ev);
+    return;
   }
 
   Ray r = ray_from_screen(v->camera, ev->canvas.x, ev->canvas.y, 1000);
@@ -409,7 +419,8 @@ _create_view_objects(View* v)
 
   Evas* e = evas_object_evas_get(v->glview);
   Evas_Object* r = evas_object_rectangle_add(e);
-  evas_object_color_set(r, 255, 255, 255, 155);
+  int a = 15;
+  evas_object_color_set(r, a, a, a, a);
   evas_object_resize(r, 0,0);
   evas_object_hide(r);
   v->select_rect = r;
