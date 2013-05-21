@@ -375,3 +375,32 @@ intersection_ray_object(Ray ray, Object* o)
   return out;
 }
 
+bool
+frustum_is_in(Frustum* f, Vec3 p)
+{
+  Vec3 v = vec3_sub(p, f->start);
+  Vec3 dirn = vec3_normalized(f->direction);
+  float pcz = vec3_dot(v, dirn);
+  if (pcz > f->far || pcz < f->near) {
+    return false;
+  }
+
+  Vec3 right = vec3_cross(f->direction, f->up);
+
+  float pcx = vec3_dot(v, right);
+  float pcy = vec3_dot(v, f->up);
+  
+  float h = pcz * 2.0f * tan(f->fovy/2.0f);
+  //printf("float h, pcy :  : %f, %f \n", h, pcy);
+  if ( -h/2.0f > pcy || pcy > h/2.0f)
+  return false;
+
+
+  float w = pcz * 2.0f * tan(f->fovx/2.0f);
+  //printf("float w, pcz :  : %f, %f \n", w, pcx);
+  if ( -w/2.0f > pcx || pcx > w/2.0f)
+  return false;
+
+  return true;
+}
+

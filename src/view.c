@@ -462,6 +462,7 @@ void
 view_update(View* v, double dt)
 {
   object_update((Object*)v->camera);
+
 }
 
 Render*
@@ -570,6 +571,13 @@ view_draw(View* v)
 
   //Render objects
   EINA_LIST_FOREACH(s->objects, l, o) {
+
+    Frustum f;
+    camera_get_frustum(v->camera, &f);
+    
+    bool b = frustum_is_in(&f, o->Position);
+    if (!b) continue;
+
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
     //mat4_multiply(cam_mat_inv, o->matrix, mo);

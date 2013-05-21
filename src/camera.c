@@ -130,3 +130,16 @@ camera_recalculate_origin(Camera* cam)
   Vec3 origin = vec3_sub(c->Position, offset);
   cam->origin = quat_rotate_around(quat_inverse(c->Orientation), cam->center, origin);
 }
+
+void
+camera_get_frustum(Camera* c, Frustum* out)
+{
+  out->near = c->near;
+  out->far = c->far;
+  out->direction = quat_rotate_vec3(c->object.Orientation, vec3(0,0,-1));
+  out->start = c->object.Position;
+  out->up = quat_rotate_vec3(c->object.Orientation, vec3(0,1,0));
+  out->fovy = c->fovy;
+  out->fovx = c->fovy* c->aspect;
+}
+

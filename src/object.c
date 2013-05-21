@@ -138,8 +138,6 @@ object_update(Object* o)
       played = true;
     }
   }
-
-
 }
 
 /*

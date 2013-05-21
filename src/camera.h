@@ -3,6 +3,7 @@
 #include "object.h"
 #include "matrix.h"
 #include "intersect.h" //TODO remove
+#include "geometry.h"
 
 typedef struct _Camera Camera;
 struct _Camera
@@ -45,5 +46,9 @@ void camera_pan(Camera* c, Vec3 t);
 void camera_recalculate_origin(Camera* c);
 
 Ray ray_from_screen(Camera* c, double x, double y, float length);
+
+void camera_get_frustum(Camera* c, Frustum* out);
+
+
 
 #endif
