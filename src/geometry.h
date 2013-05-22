@@ -46,7 +46,7 @@ struct _Frustum {
   Vec3 direction;
   Vec3 up;
   float fovy;
-  float fovx;
+  float aspect;
 };
 
 

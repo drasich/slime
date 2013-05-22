@@ -391,13 +391,13 @@ frustum_is_in(Frustum* f, Vec3 p)
   float pcy = vec3_dot(v, f->up);
   
   float h = pcz * 2.0f * tan(f->fovy/2.0f);
-  //printf("float h, pcy :  : %f, %f \n", h, pcy);
   if ( -h/2.0f > pcy || pcy > h/2.0f)
   return false;
 
 
   //float w = pcz * 2.0f * tan(f->fovx/2.0f);
-  float w = h * f->fovx/f->fovy;
+  //float w = h * f->fovx/f->fovy;
+  float w = h * f->aspect;
   //printf("float w, pcz :  : %f, %f \n", w, pcx);
   if ( -w/2.0f > pcx || pcx > w/2.0f)
   return false;

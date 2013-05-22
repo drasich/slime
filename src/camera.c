@@ -140,9 +140,6 @@ camera_get_frustum(Camera* c, Frustum* out)
   out->start = c->object.Position;
   out->up = quat_rotate_vec3(c->object.Orientation, vec3(0,1,0));
   out->fovy = c->fovy;
-  out->fovx = c->fovy* c->aspect;
-  printf("fovy %f \n", c->fovy);
-  printf("fovx %f \n", out->fovx);
-  //printf("aspect %f \n", c->aspect);
+  out->aspect = c->aspect;
 }
 
