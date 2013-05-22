@@ -49,5 +49,15 @@ struct _Frustum {
   float aspect;
 };
 
+void frustum_set(
+      Frustum* f, 
+      float near, 
+      float far, 
+      Vec3 start, 
+      Vec3 direction,
+      Vec3 up,
+      float fovy,
+      float aspect);
+
 
 #endif

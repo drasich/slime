@@ -30,5 +30,6 @@ IntersectionRay intersection_ray_object(Ray ray, Object* o);
 
 
 bool frustum_is_in(Frustum* f, Vec3 p);
+bool frustum_is_in_rect(Frustum* f, Vec3 p, float left, float top, float width, float height);
 
 #endif

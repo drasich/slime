@@ -405,3 +405,15 @@ frustum_is_in(Frustum* f, Vec3 p)
   return true;
 }
 
+bool frustum_is_in_rect(
+      Frustum* f,
+      Vec3 p,
+      float left,
+      float top,
+      float width,
+      float height)
+{
+
+  return true;
+
+}

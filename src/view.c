@@ -23,6 +23,59 @@ _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, 
 
 static float startx = 0, starty = 0;
 
+static frustum_from_rect(
+      Frustum* f, 
+      Camera* c, 
+      float left,
+      float top,
+      float width,
+      float height)
+{
+  Vec3 camdir = quat_rotate_vec3(c->object.Orientation, vec3(0,0,-1));
+  Vec3 camup = quat_rotate_vec3(c->object.Orientation, vec3(0,1,0));
+  Vec3 camright = vec3_cross(camdir, camup);
+  double cam_height = tan(c->fovy/2.0)*c->near*2.0f;
+  double cam_width = cam_height* c->aspect;
+
+  float width_ratio = cam_width/c->width;
+  float height_ratio = cam_height/c->height;
+
+  /*
+  double rl = -cam_width/2 + left*width_ratio;
+  double rt = cam_height/2 - top*height_ratio;
+  double rw = width* width_ratio;
+  double rh = height* height_ratio;
+
+  double cx = rl + rw/2.0f;
+  double cy = rt - rh/2.0f;
+  */
+
+  double cx = -c->width + left + width/2.0f;
+  cx *= width_ratio;
+  double cy = c->height - top - height/2.0f;
+  cy *= height_ratio;
+
+  Vec3 ccenter = vec3_add(c->object.Position, vec3_mul(camdir, c->near));
+  Vec3 center = vec3_add(ccenter, vec3_mul(camright, cx));
+  center = vec3_add(center, vec3_mul(camup, cy));
+  
+  Vec3 dir = vec3_sub(center, c->object.Position);
+  dir = vec3_normalized(dir);
+  Quat qq = quat_between_vec(ccenter, center);
+  qq = quat_mul(c->object.Orientation, qq);
+
+  frustum_set(
+        f,
+        c->near, 
+        c->far,
+        c->object.Position, 
+        quat_rotate_vec3(c->object.Orientation, vec3(0,0,-1)),
+        quat_rotate_vec3(c->object.Orientation, vec3(0,1,0)),
+        c->fovy,
+        c->aspect);
+
+}
+
 static void
 _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
 {
@@ -53,6 +106,17 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
 
   evas_object_move(r, sx, sy);
   evas_object_resize(r, yepx, yepy);
+
+
+  Camera* c = v->camera;
+  Frustum f;
+  frustum_from_rect(&f, c, sx, sy, yepx, yepy);
+
+  /*
+  bool b = frustum_is_in(&f, o->Position);
+  if (!b) continue;
+      */
+
   return;
   }
 
