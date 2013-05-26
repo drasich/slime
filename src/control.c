@@ -228,6 +228,8 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
       if (o != NULL) {
         control_remove_object(c, s, o);
       }
+    } else if (!strcmp(e->keyname, "a")) {
+      context_clean_objects(v->context);
     }
 
   } else if (c->state == MOVE) {

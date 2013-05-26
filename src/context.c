@@ -10,6 +10,7 @@ void
 context_clean_objects(Context* c)
 {
   c->objects = eina_list_free(c->objects);
+  c->object = NULL;
 }
 
 void

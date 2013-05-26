@@ -591,6 +591,7 @@ view_draw(View* v)
   //Render just selected to fbo
   //TODO make it work for all objects
   Object* cxo = context_get_object(cx);
+  /*
   if (cxo != NULL) {
     fbo_use(r->fbo_selected);
     gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT) ;
@@ -599,6 +600,21 @@ view_draw(View* v)
     object_draw(cxo, mo, *projection);
     fbo_use_end();
   }
+  */
+
+  Eina_List *l;
+  Object *o;
+  Eina_List* cxol = context_get_objects(cx);
+
+  fbo_use(r->fbo_selected);
+  gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT) ;
+  EINA_LIST_FOREACH(cxol, l, o) {
+    object_compute_matrix(o, mo);
+    mat4_multiply(cam_mat_inv, mo, mo);
+    object_draw(o, mo, *projection);
+  }
+  fbo_use_end();
+
 
   //Render all objects to fbo to get depth for the lines.
   fbo_use(r->fbo_all);
@@ -609,8 +625,6 @@ view_draw(View* v)
   gl->glStencilFunc(GL_ALWAYS, 0x1, 0x1);
   gl->glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
-  Eina_List *l;
-  Object *o;
   EINA_LIST_FOREACH(s->objects, l, o) {
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
