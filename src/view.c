@@ -109,8 +109,19 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
 
 
   Camera* c = v->camera;
-  Frustum f;
-  frustum_from_rect(&f, c, sx, sy, yepx, yepy);
+  //Frustum f;
+  //frustum_from_rect(&f, c, sx, sy, yepx, yepy);
+
+  Plane planes[6];
+  camera_get_frustum_planes_rect(c, planes, sx, sy, yepx, yepy );
+  //camera_get_frustum_planes_rect(c, planes, 0, 0, c->width, c->height );
+  //camera_get_frustum_planes(c, planes);
+
+  if (planes_is_in(planes, 6, vec3(0,0,0)))
+  printf("!!!!!!!!!! is in\n");
+  else
+  printf("WWWWWWWWWWW is NOTin\n");
+
 
   /*
   bool b = frustum_is_in(&f, o->Position);

@@ -143,3 +143,145 @@ camera_get_frustum(Camera* c, Frustum* out)
   out->aspect = c->aspect;
 }
 
+void
+camera_get_frustum_planes(Camera* c, Plane* p)
+{
+  //near plane
+  Vec3 direction = quat_rotate_vec3(c->object.Orientation, vec3(0,0,-1));
+  Vec3 right = quat_rotate_vec3(c->object.Orientation, vec3(1,0,0));
+  Vec3 up = quat_rotate_vec3(c->object.Orientation, vec3(0,1,0));
+
+  p[0].Point = vec3_add(c->object.Position, vec3_mul(direction, c->near));
+  p[0].Normal = direction;
+
+  //far plane
+  p[1].Point = vec3_add(c->object.Position, vec3_mul(direction, c->far));
+  p[1].Normal = vec3_mul(direction, -1);
+
+  //up plane
+  float hh = tan(c->fovy/2)* c->near;
+  Vec3 upd = vec3_add(
+        vec3_mul(direction, c->near),
+        vec3_mul(up, hh));
+
+  p[2].Point = c->object.Position;
+  Vec3 nn = vec3_normalized(vec3_cross(right, upd));
+  p[2].Normal = vec3_mul(nn, -1);
+
+  /*
+  printf(" upd : %f, %f, %f \n", upd.X, upd.Y, upd.Z);
+  printf(" up : %f, %f, %f \n", up.X, up.Y, up.Z);
+  printf(" up plane normal : %f, %f, %f \n", nn.X, nn.Y, nn.Z);
+  */
+
+  //down plane
+  p[3].Point = c->object.Position;
+  Vec3 downd = vec3_add(
+        vec3_mul(direction, c->near),
+        vec3_mul(up, -hh));
+  nn = vec3_normalized(vec3_cross(right, downd));
+  //p[3].Normal = vec3_mul(nn, -1);
+  p[3].Normal = nn;
+
+
+  //right plane
+  float hw = hh * c->aspect;
+  p[4].Point = c->object.Position;
+  Vec3 rightd = vec3_add(
+        vec3_mul(direction, c->near),
+        vec3_mul(right, hw));
+  nn = vec3_normalized(vec3_cross(up, rightd));
+  //p[4].Normal = vec3_mul(nn, -1);
+  p[4].Normal = nn;
+
+  //left plane
+  p[5].Point = c->object.Position;
+  Vec3 leftd = vec3_add(
+        vec3_mul(direction, c->near),
+        vec3_mul(right, -hw));
+  nn = vec3_normalized(vec3_cross(up, leftd));
+  p[5].Normal = vec3_mul(nn, -1);
+
+}
+
+void
+camera_get_frustum_planes_rect(
+      Camera* c,
+      Plane* p,
+      float left, float top, float width, float height)
+{
+
+  printf("beginning l,tp,w,h : %f, %f, %f, %f\n", left, top, width, height);
+
+  Vec3 direction = quat_rotate_vec3(c->object.Orientation, vec3(0,0,-1));
+  Vec3 right = quat_rotate_vec3(c->object.Orientation, vec3(1,0,0));
+  Vec3 up = quat_rotate_vec3(c->object.Orientation, vec3(0,1,0));
+
+  //near plane
+  p[0].Point = vec3_add(c->object.Position, vec3_mul(direction, c->near));
+  p[0].Normal = direction;
+
+  //far plane
+  p[1].Point = vec3_add(c->object.Position, vec3_mul(direction, c->far));
+  p[1].Normal = vec3_mul(direction, -1);
+
+  //up plane
+  float hh = tan(c->fovy/2)* c->near;
+  top = top * hh / (c->height/2.0f);
+  height = height * hh / (c->height/2.0f);
+
+  float th = hh - top;
+  printf("hh is : %f\n", hh);
+  printf("top is : %f\n", top);
+  printf("th is : %f\n", th);
+  Vec3 upd = vec3_add(
+        vec3_mul(direction, c->near),
+        vec3_mul(up, th));
+
+  p[2].Point = c->object.Position;
+  Vec3 nn = vec3_normalized(vec3_cross(right, upd));
+  p[2].Normal = vec3_mul(nn, -1);
+
+  //down plane
+  float bh = hh - (top + height);
+  printf("height is : %f\n", height);
+  printf("bh is : %f\n", bh);
+  p[3].Point = c->object.Position;
+  Vec3 downd = vec3_add(
+        vec3_mul(direction, c->near),
+        vec3_mul(up, bh));
+  nn = vec3_normalized(vec3_cross(right, downd));
+  //p[3].Normal = vec3_mul(nn, -1);
+  p[3].Normal = nn;
+
+
+  //right plane
+  float hw = hh * c->aspect;
+  left = left * hw / (c->width/2.0f);
+  width = width * hw / (c->width/2.0f);
+
+  float rw = -hw + (left + width);
+  p[4].Point = c->object.Position;
+  Vec3 rightd = vec3_add(
+        vec3_mul(direction, c->near),
+        vec3_mul(right, rw));
+  nn = vec3_normalized(vec3_cross(up, rightd));
+  //p[4].Normal = vec3_mul(nn, -1);
+  p[4].Normal = nn;
+
+  //left plane
+  float lw = -hw + left;
+  p[5].Point = c->object.Position;
+  Vec3 leftd = vec3_add(
+        vec3_mul(direction, c->near),
+        vec3_mul(right, lw));
+  nn = vec3_normalized(vec3_cross(up, leftd));
+  p[5].Normal = vec3_mul(nn, -1);
+
+  /*
+  printf(" leftd : %f, %f, %f \n", leftd.X, leftd.Y, leftd.Z);
+  printf(" up : %f, %f, %f \n", up.X, up.Y, up.Z);
+  printf(" up plane normal : %f, %f, %f \n", nn.X, nn.Y, nn.Z);
+  */
+
+}
