@@ -145,7 +145,7 @@ _mouse_in(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event
 static void
 _view_select_object(View *v, Object *o)
 {
-  v->context->object = o;
+  context_add_object(v->context, o);
 
   //TODO tell properties to change, through control?
   //or emit a signal to say object selected has changed and catch this signal in properties, and other possible widgets
@@ -589,12 +589,14 @@ view_draw(View* v)
   Matrix4* ortho = &c->orthographic;
 
   //Render just selected to fbo
-  if (cx->object != NULL) {
+  //TODO make it work for all objects
+  Object* cxo = context_get_object(cx);
+  if (cxo != NULL) {
     fbo_use(r->fbo_selected);
     gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT) ;
-    object_compute_matrix(cx->object, mo);
+    object_compute_matrix(cxo, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
-    object_draw(cx->object, mo, *projection);
+    object_draw(cxo, mo, *projection);
     fbo_use_end();
   }
 
@@ -676,8 +678,8 @@ view_draw(View* v)
   */
   //Render lines only selected
   gl->glClear(GL_DEPTH_BUFFER_BIT);
-  if (cx->object != NULL) {
-    o = cx->object;
+  if (cxo != NULL) {
+    o = cxo;
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
     //mat4_multiply(cam_mat_inv, o->matrix, mo);
@@ -689,10 +691,10 @@ view_draw(View* v)
   }
 
   //repere
-  if (cx->object != NULL) {
+  if (cxo != NULL) {
     gl->glClear(GL_DEPTH_BUFFER_BIT);
-    v->repere->Position = cx->object->Position;
-    v->repere->angles = cx->object->angles;
+    v->repere->Position = cxo->Position;
+    v->repere->angles = cxo->angles;
     object_compute_matrix(v->repere, mo);
     v->repere->line->id_texture = r->fbo_all->texture_depth_stencil_id;
     mat4_multiply(cam_mat_inv, mo, mo);
@@ -708,7 +710,7 @@ view_draw(View* v)
 
 
   //Render outline with quad
-  if (cx->object != NULL) {
+  if (cxo != NULL) {
     object_compute_matrix(r->quad_outline, mo);
     if (r->quad_outline->mesh != NULL) 
     r->quad_outline->mesh->id_texture = r->fbo_selected->texture_depth_stencil_id;

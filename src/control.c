@@ -22,7 +22,7 @@ void
 control_move(Control* c)
 {
   View* v = c->view;
-  Object* o = v->context->object;
+  Object* o = context_get_object(v->context);
   if (o != NULL && c->state != MOVE) {
     c->state = MOVE;
     c->start = o->Position;
@@ -34,7 +34,7 @@ void
 control_center_camera(Control* c)
 {
   View* v = c->view;
-  Object* o = v->context->object;
+  Object* o = context_get_object(v->context);
   Camera* cam = v->camera;
   if (o != NULL && c->state == IDLE) {
     //TODO get the distance from the size of the object on the screen
@@ -67,7 +67,7 @@ static void rotate_camera(View* v, float x, float y)
   c->angles.X = cam->pitch/M_PI*180.0;
   c->angles.Y = cam->yaw/M_PI*180.0;
 
-  Object* o = v->context->object;
+  Object* o = context_get_object(v->context);
 
   if (o != NULL) {
     if (!vec3_equal(o->Position, cam->center)) {
@@ -101,7 +101,7 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
       }
     }
   } else if (c->state == MOVE) {
-    Object* o = v->context->object;
+    Object* o = context_get_object(v->context);
     if (o != NULL) {
       float x = e->cur.canvas.x;
       float y = e->cur.canvas.y;
@@ -175,10 +175,13 @@ control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
   if (c->state == MOVE) {
     c->state = IDLE;
 
+    //TODO
+    Object* o = context_get_object(c->view->context);
+
     Operation* op = _op_move_object(
-          c->view->context->object, //TODO
+          o,
           c->start,
-          c->view->context->object->Position); //TODO
+          o->Position);
 
     control_add_operation(c, op);
   }
@@ -198,13 +201,15 @@ void
 control_key_down(Control* c, Evas_Event_Key_Down *e)
 {
   View* v = c->view;
+  Scene* s = v->context->scene;
+  Object* o = context_get_object(v->context);
+
   const Evas_Modifier * mods = e->modifiers;
 
   if (c->state == IDLE) {
     if (!strcmp(e->keyname, "Escape")) {
       elm_exit();
     } else if ( !strcmp(e->keyname, "g")) {
-      Object* o = v->context->object;
       if (o != NULL) {
         //enter move mode
         control_move(c);
@@ -216,13 +221,10 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
           && evas_key_modifier_is_set(mods, "Control")) {
       control_redo(c);
     } else if (!strcmp(e->keyname, "f")) {
-      Object* o = v->context->object;
       if (o != NULL) {
         control_center_camera(c);
       }
     } else if (!strcmp(e->keyname, "x")) {
-      Object* o = v->context->object;
-      Scene* s = v->context->scene;
       if (o != NULL) {
         control_remove_object(c, s, o);
       }
@@ -231,7 +233,6 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
   } else if (c->state == MOVE) {
     if (!strcmp(e->keyname, "Escape")) {
       c->state = IDLE;
-      Object* o = v->context->object;
       if (o != NULL) {
         o->Position = c->start;
         property_update(v->property, o);
@@ -314,8 +315,11 @@ operation_add_object_undo(Control*c, void* data)
   scene_remove_object(od->s, od->o);
   tree_remove_object(c->view->tree,  od->o);
 
-  if (od->o == c->view->context->object &&  od->s == c->view->context->scene){
-    c->view->context->object = NULL;
+  Object* o = context_get_object(c->view->context);
+
+  if (od->o == o &&  od->s == c->view->context->scene){
+    //c->view->context->object = NULL;
+    context_remove_object(c->view->context, o);
   }
   //TODO context if object was the object in the context remove it
 }
@@ -328,8 +332,11 @@ operation_remove_object_do(Control *c, void* data)
   scene_remove_object(od->s, od->o);
   tree_remove_object(c->view->tree,  od->o);
 
-  if (od->o == c->view->context->object &&  od->s == c->view->context->scene){
-    c->view->context->object = NULL;
+  Object* o = context_get_object(c->view->context);
+
+  if (od->o == o &&  od->s == c->view->context->scene){
+    //c->view->context->object = NULL;
+    context_remove_object(c->view->context, o);
   }
 
 }

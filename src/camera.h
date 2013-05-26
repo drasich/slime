@@ -52,7 +52,10 @@ Ray ray_from_screen(Camera* c, double x, double y, float length);
 void camera_get_frustum(Camera* c, Frustum* out);
 
 void camera_get_frustum_planes(Camera* c, Plane* p);
-void camera_get_frustum_planes_rect(Camera*c, Plane*p, float left, float top, float width, float height);
+void camera_get_frustum_planes_rect(
+      Camera*c,
+      Plane* out_planes,
+      float left, float top, float width, float height);
 
 
 #endif

@@ -44,7 +44,7 @@ static void
 _entry_changed_cb(void *data, Evas_Object *obj, void *event)
 {
   Context *c = data;
-  Object *o = c->object;
+  Object *o = context_get_object(c);
   if (o == NULL) return;
 
   double v =  elm_spinner_value_get(obj);
