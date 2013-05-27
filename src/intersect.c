@@ -420,14 +420,16 @@ bool frustum_is_in_rect(
 bool
 plane_is_in(Plane p, Vec3 v)
 {
+  /*
   printf("testing plane \n");
   printf(" point : %f, %f, %f\n", p.Point.X, p.Point.Y, p.Point.Z);
   printf(" normal : %f, %f, %f\n", p.Normal.X, p.Normal.Y, p.Normal.Z);
   printf(" with v : %f, %f, %f\n", v.X, v.Y, v.Z);
+  */
   Vec3 pos = vec3_sub(v, p.Point);
-  printf(" pos is : %f, %f, %f\n", pos.X, pos.Y, pos.Z);
+  //printf(" pos is : %f, %f, %f\n", pos.X, pos.Y, pos.Z);
   float dot = vec3_dot(pos, p.Normal);
-  printf("dot is : %f \n", dot);
+  //printf("dot is : %f \n", dot);
   return dot >= 0;
 }
 

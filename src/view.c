@@ -547,19 +547,27 @@ view_update(View* v, double dt)
 
   Plane planes[6];
   camera_get_frustum_planes(v->camera, planes);
+  r->objects = eina_list_free(r->objects);
 
   EINA_LIST_FOREACH(s->objects, l, o) {
     //TODO compute the box from the axis aligned box
     //and the orientation of the object
     OBox b;
+    aabox_to_obox(o->mesh->box, b, o->Orientation);
+    int i = 0;
+    for (i = 0; i<8; ++i) {
+      b[i] = vec3_add(b[i], o->Position);
+      //printf("box[%d] : %f, %f, %f\n", i, b[i].X, b[i].Y, b[i].Z);
+    }
     if (planes_is_box_in_allow_false_positives(planes, 6, b)) {
+    //if (planes_is_in(planes, 6, o->Position)) {
       r->objects = eina_list_append(r->objects, o);
     }
     //algo :
     // frustum_is_box_in
-    
-
   }
+
+  //printf("objects to draw : %d\n", eina_list_count(r->objects));
 
 }
 
@@ -678,8 +686,8 @@ view_draw(View* v)
     Frustum f;
     camera_get_frustum(v->camera, &f);
     
-    bool b = frustum_is_in(&f, o->Position);
-    if (!b) continue;
+    //bool b = frustum_is_in(&f, o->Position);
+    //if (!b) continue;
 
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
