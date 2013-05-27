@@ -40,4 +40,13 @@ aabox_to_obox(AABox a, OBox o, Quat q)
   o[1] = vec3_add(o[0], vec3_mul(x, a.Max.X - a.Min.X));
   o[2] = vec3_add(o[0], vec3_mul(y, a.Max.Y - a.Min.Y));
   o[3] = vec3_add(o[0], vec3_mul(z, a.Max.Z - a.Min.Z));
+
+  o[4] = vec3_add(
+            vec3_add(
+              vec3_mul(x, a.Max.X), 
+              vec3_mul(y, a.Max.Y)),
+            vec3_mul(z, a.Max.Z));
+  o[5] = vec3_add(o[4], vec3_mul(x, a.Min.X - a.Max.X));
+  o[6] = vec3_add(o[4], vec3_mul(y, a.Min.Y - a.Max.Y));
+  o[7] = vec3_add(o[4], vec3_mul(z, a.Min.Z - a.Max.Z));
 }
