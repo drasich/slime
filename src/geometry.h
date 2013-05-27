@@ -79,7 +79,7 @@ struct _OBox {
 };
 */
 
-void aabox_to_obox(AABox a, OBox o, Quat q);
+void aabox_to_obox(AABox a, OBox o, Vec3 v, Quat q);
 
 
 

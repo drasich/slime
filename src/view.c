@@ -88,7 +88,7 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   const Evas_Modifier * mods = ev->modifiers;
   if (evas_key_modifier_is_set(mods, "Control")) {
 
-  Evas_Object* r = v->select_rect;
+  Evas_Object* rect = v->select_rect;
 
   int yepx = ev->cur.canvas.x - startx;
   int yepy = ev->cur.canvas.y - starty;
@@ -104,8 +104,8 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
     yepy *= -1;
   }
 
-  evas_object_move(r, sx, sy);
-  evas_object_resize(r, yepx, yepy);
+  evas_object_move(rect, sx, sy);
+  evas_object_resize(rect, yepx, yepy);
 
 
   Camera* c = v->camera;
@@ -117,10 +117,22 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   //camera_get_frustum_planes_rect(c, planes, 0, 0, c->width, c->height );
   //camera_get_frustum_planes(c, planes);
 
+  /*
   if (planes_is_in(planes, 6, vec3(0,0,0)))
   printf("!!!!!!!!!! is in\n");
   else
   printf("WWWWWWWWWWW is NOTin\n");
+  */
+
+  Render* r = v->render;
+
+  Eina_List *l;
+  Object *o;
+  EINA_LIST_FOREACH(r->objects, l, o) {
+    OBox b;
+    aabox_to_obox(o->mesh->box, b, o->Position, o->Orientation);
+    //TODO check if theobject is in the rect
+  }
 
 
   /*
@@ -553,12 +565,14 @@ view_update(View* v, double dt)
     //TODO compute the box from the axis aligned box
     //and the orientation of the object
     OBox b;
-    aabox_to_obox(o->mesh->box, b, o->Orientation);
+    aabox_to_obox(o->mesh->box, b, o->Position, o->Orientation);
+    /*
     int i = 0;
     for (i = 0; i<8; ++i) {
       b[i] = vec3_add(b[i], o->Position);
       //printf("box[%d] : %f, %f, %f\n", i, b[i].X, b[i].Y, b[i].Z);
     }
+    */
     if (planes_is_box_in_allow_false_positives(planes, 6, b)) {
     //if (planes_is_in(planes, 6, o->Position)) {
       r->objects = eina_list_append(r->objects, o);
@@ -645,7 +659,7 @@ view_draw(View* v)
   gl->glStencilFunc(GL_ALWAYS, 0x1, 0x1);
   gl->glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
-  EINA_LIST_FOREACH(s->objects, l, o) {
+  EINA_LIST_FOREACH(r->objects, l, o) {
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
     //mat4_multiply(cam_mat_inv, o->matrix, mo);
@@ -681,7 +695,7 @@ view_draw(View* v)
 
 
   //Render objects
-  EINA_LIST_FOREACH(s->objects, l, o) {
+  EINA_LIST_FOREACH(r->objects, l, o) {
 
     Frustum f;
     camera_get_frustum(v->camera, &f);
@@ -699,7 +713,7 @@ view_draw(View* v)
   //Render lines
   /*
   gl->glClear(GL_DEPTH_BUFFER_BIT);
-  EINA_LIST_FOREACH(s->objects, l, o) {
+  EINA_LIST_FOREACH(r->objects, l, o) {
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
     //mat4_multiply(cam_mat_inv, o->matrix, mo);
@@ -735,14 +749,6 @@ view_draw(View* v)
     object_draw_lines_camera(v->repere, mo, c);
   }
 
-
-  //Render objects with quad
-  //object_compute_matrix(s->quad_color, mo);
-  //if (s->quad_color->mesh != NULL) 
-  //s->quad_color->mesh->id_texture = s->fbo_all->texture_color;
-  //object_draw(s->quad_color, mo, *ortho);
-
-
   //Render outline with quad
   if (cxo != NULL) {
     object_compute_matrix(r->quad_outline, mo);
@@ -750,15 +756,6 @@ view_draw(View* v)
     r->quad_outline->mesh->id_texture = r->fbo_selected->texture_depth_stencil_id;
     object_draw(r->quad_outline, mo, *ortho);
   }
-
-  //gl->glClear(GL_DEPTH_BUFFER_BIT);
-  //EINA_LIST_FOREACH(s->ortho, l, o) {
-    //object_compute_matrix(o, mo);
-    //if (o->mesh != NULL) o->mesh->id_texture = s->fbo_selected->texture_depth_stencil_id;
-    //object_draw(o, mo, *ortho);
-    ////if (o->mesh != NULL) o->mesh->id_texture = s->fbo_all->texture_color;
-    ////object_draw(o, mo, *ortho);
-  //}
 
   gl->glClear(GL_DEPTH_BUFFER_BIT);
   float m = 40;
