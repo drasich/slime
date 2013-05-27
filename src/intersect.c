@@ -442,45 +442,48 @@ bool planes_is_in(Plane* p, int nb_planes, Vec3 v)
   return true;
 }
 
-enum {
-  INSIDE,
-  OUTSIDE,
-  INTERSECT
-};
 
-int
-planes_is_box_in_allow_false_positives(Plane* o, int nb_planes, AABox b)
+bool
+frustum_is_box_in_false_positives(Frustum* f, OBox b)
 {
+  //TODO first test if one point of the box is inside of frustum with the radar test
+  //if yes then return true
+  int i;
+  for (i = 0; i < 8; ++i){
+    if (frustum_is_in(f, b[i])) return true;
+  }
 
-	int result = INSIDE, out = 0,in = 0;
+  //we didn't return so do planes is in box (function below)
+
+  return false;
+}
+
+bool
+planes_is_box_in_allow_false_positives(Plane* p, int nb_planes, OBox b)
+{
+	int i, out, in;
 
 	// for each plane do ...
-  int i;
-	for(i=0; i < nb_planes; i++) {
+	for(i=0; i < nb_planes; ++i) {
 
-		// reset counters for corners in and out
-		out=0;in=0;
+		out=0;
+    in=0;
 		// for each corner of the box do ...
 		// get out of the cycle as soon as a box as corners
 		// both inside and out of the frustum
     int k;
 		for (k = 0; k < 8 && (in==0 || out==0); k++) {
 
-			// is the corner outside or inside
-      //TODO
-      /*
-			if (pl[i].distance(b.getVertex(k)) < 0)
-				out++;
-			else
-				in++;
-        */
+			// is the corner on the good or bad side of the plane
+      if (plane_is_in(p[i], b[k]))
+        ++in;
+      else
+        ++out;
 		}
 		//if all corners are out
 		if (!in)
-			return (OUTSIDE);
-		// if some corners are out and others are in
-		else if (out)
-			result = INTERSECT;
+			return false;
 	}
-	return(result);
- }
+	return true;
+}
+

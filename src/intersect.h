@@ -33,5 +33,6 @@ bool frustum_is_in(Frustum* f, Vec3 p);
 bool frustum_is_in_rect(Frustum* f, Vec3 p, float left, float top, float width, float height);
 
 bool planes_is_in(Plane*, int nb_planes, Vec3 p);
+bool planes_is_box_in_allow_false_positives(Plane* p, int nb_planes, OBox b);
 
 #endif

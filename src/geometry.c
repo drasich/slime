@@ -20,3 +20,24 @@ void frustum_set(
   f->fovy = fovy;
   f->aspect = aspect;
 }
+
+void
+aabox_to_obox(AABox a, OBox o, Quat q)
+{
+  Vec3 x = quat_rotate_vec3(q, vec3(1,0,0));
+  Vec3 y = quat_rotate_vec3(q, vec3(0,1,0));
+  Vec3 z = quat_rotate_vec3(q, vec3(0,0,1));
+
+  //Vec3 min = quat_rotate_vec3(q, a.Min);
+  //Vec3 max = quat_rotate_vec3(q, a.Max);
+
+  //o[0] = min;
+  o[0] = vec3_add(
+            vec3_add(
+              vec3_mul(x, a.Min.X), 
+              vec3_mul(y, a.Min.Y)),
+            vec3_mul(z, a.Min.Z));
+  o[1] = vec3_add(o[0], vec3_mul(x, a.Max.X - a.Min.X));
+  o[2] = vec3_add(o[0], vec3_mul(y, a.Max.Y - a.Min.Y));
+  o[3] = vec3_add(o[0], vec3_mul(z, a.Max.Z - a.Min.Z));
+}

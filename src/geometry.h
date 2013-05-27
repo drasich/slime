@@ -66,5 +66,21 @@ struct _AABox {
 };
 
 
+typedef Vec3 OBox[8];
+/*
+typedef struct _OBox OBox;
+struct _OBox {
+  Vec3 MinX;
+  Vec3 MaxX;
+  Vec3 MinY;
+  Vec3 MaxY;
+  Vec3 MinZ;
+  Vec3 MaxZ;
+};
+*/
+
+void aabox_to_obox(AABox a, OBox o, Quat q);
+
+
 
 #endif

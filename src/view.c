@@ -545,10 +545,16 @@ view_update(View* v, double dt)
   Eina_List *l;
   Object *o;
 
-  EINA_LIST_FOREACH(s->objects, l, o) {
-    //TODO
-    //if object is in frustum put in in r->objects
+  Plane planes[6];
+  camera_get_frustum_planes(v->camera, planes);
 
+  EINA_LIST_FOREACH(s->objects, l, o) {
+    //TODO compute the box from the axis aligned box
+    //and the orientation of the object
+    OBox b;
+    if (planes_is_box_in_allow_false_positives(planes, 6, b)) {
+      r->objects = eina_list_append(r->objects, o);
+    }
     //algo :
     // frustum_is_box_in
     
