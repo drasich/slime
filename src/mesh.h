@@ -2,6 +2,7 @@
 #define __mesh__
 #include "shader.h"
 #include "matrix.h"
+#include "geometry.h"
 #include <stdbool.h>
 
 typedef struct _Weight Weight;

@@ -2,6 +2,7 @@
 #define __line__
 #include "shader.h"
 #include "matrix.h"
+#include "geometry.h"
 #include <stdbool.h>
 
 struct _Camera;

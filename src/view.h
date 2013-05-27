@@ -13,6 +13,8 @@ struct _Render
   Object* quad_color;
   Fbo* fbo_selected;
   Fbo* fbo_all;
+
+  Eina_List* objects;
 };
 
 

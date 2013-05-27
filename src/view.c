@@ -538,6 +538,23 @@ view_update(View* v, double dt)
 {
   object_update((Object*)v->camera);
 
+  Context* cx = v->context;
+  Render* r = v->render;
+  Scene* s = cx->scene;
+
+  Eina_List *l;
+  Object *o;
+
+  EINA_LIST_FOREACH(s->objects, l, o) {
+    //TODO
+    //if object is in frustum put in in r->objects
+
+    //algo :
+    // frustum_is_box_in
+    
+
+  }
+
 }
 
 Render*
@@ -588,20 +605,9 @@ view_draw(View* v)
   Matrix4* projection = &c->projection;
   Matrix4* ortho = &c->orthographic;
 
-  //Render just selected to fbo
-  //TODO make it work for all objects
   Object* cxo = context_get_object(cx);
-  /*
-  if (cxo != NULL) {
-    fbo_use(r->fbo_selected);
-    gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT) ;
-    object_compute_matrix(cxo, mo);
-    mat4_multiply(cam_mat_inv, mo, mo);
-    object_draw(cxo, mo, *projection);
-    fbo_use_end();
-  }
-  */
 
+  //Render just selected to fbo
   Eina_List *l;
   Object *o;
   Eina_List* cxol = context_get_objects(cx);

@@ -59,5 +59,12 @@ void frustum_set(
       float fovy,
       float aspect);
 
+typedef struct _AABox AABox;
+struct _AABox {
+  Vec3 Min;
+  Vec3 Max;
+};
+
+
 
 #endif
