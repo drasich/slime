@@ -132,7 +132,12 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   EINA_LIST_FOREACH(r->objects, l, o) {
     OBox b;
     aabox_to_obox(o->mesh->box, b, o->Position, o->Orientation);
-    //TODO don't add false positives
+    //TODO don't add false positives : use a different method,
+    //for each triandle of the mesh, do:
+    //check if any of the 3 points are inside with frustum_is_in. if yes then return true
+    //else for each planes :
+    //
+    //  do the separating axis test
     if (planes_is_box_in_allow_false_positives(planes, 6, b)) {
       context_add_object(v->context, o);
     }
