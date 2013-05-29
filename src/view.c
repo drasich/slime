@@ -126,12 +126,16 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
 
   Render* r = v->render;
 
+  context_clean_objects(v->context);
   Eina_List *l;
   Object *o;
   EINA_LIST_FOREACH(r->objects, l, o) {
     OBox b;
     aabox_to_obox(o->mesh->box, b, o->Position, o->Orientation);
-    //TODO check if theobject is in the rect
+    //TODO don't add false positives
+    if (planes_is_box_in_allow_false_positives(planes, 6, b)) {
+      context_add_object(v->context, o);
+    }
   }
 
 

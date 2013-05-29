@@ -55,3 +55,4 @@ aabox_to_obox(AABox a, OBox o, Vec3 p, Quat q)
     o[i] = vec3_add(o[i], p);
   }
 }
+
