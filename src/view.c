@@ -84,9 +84,9 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
 
   View* v = evas_object_data_get(o, "view");
 
-  //if (ev->button == 3 ){
   const Evas_Modifier * mods = ev->modifiers;
-  if (evas_key_modifier_is_set(mods, "Control")) {
+  if ( evas_key_modifier_is_set(mods, "Control") &&
+        (ev->buttons & 1) != 0 ) {
 
   Evas_Object* rect = v->select_rect;
 
@@ -242,12 +242,15 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
 }
 
 static void
-_mouse_up(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, void *event_info)
+_mouse_up(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
 {
   Evas_Event_Mouse_Up *ev = (Evas_Event_Mouse_Up*)event_info;
   //if (ev->button != 1) return;
   //printf("MOUSE: up   @ %4i %4i\n", ev->canvas.x, ev->canvas.y);
   //evas_object_hide(indicator[0]);
+  View* v = evas_object_data_get(o, "view");
+  Evas_Object* rect = v->select_rect;
+  evas_object_hide(rect);
 }
 
 static void
