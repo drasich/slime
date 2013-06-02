@@ -22,7 +22,7 @@ Evas_Object* property_add(
       char* name, 
       char* value);
 
-void property_update(Property* p, Object* o);
+void property_update(Property* p, Eina_List* objects);
 Property* create_property(Evas_Object* win, Context* context);
 
 

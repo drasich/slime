@@ -171,7 +171,7 @@ _view_select_object(View *v, Object *o)
 
   //TODO tell properties to change, through control?
   //or emit a signal to say object selected has changed and catch this signal in properties, and other possible widgets
-  property_update(v->property, o);
+  property_update(v->property, v->context->objects);
   tree_update(v->tree, o);
 }
 
@@ -253,6 +253,7 @@ _mouse_up(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event
   View* v = evas_object_data_get(o, "view");
   Evas_Object* rect = v->select_rect;
   evas_object_hide(rect);
+  property_update(v->property, v->context->objects);
 }
 
 static void

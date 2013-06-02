@@ -60,7 +60,6 @@ gl4_sel(void *data, Evas_Object *obj __UNUSED__, void *event_info)
    Context* context = (Context*) data;
    if (context) { 
      context_clean_objects(context);
-     //context_set_object(context, (Object*) elm_object_item_data_get(glit));
      context_add_object(context, (Object*) elm_object_item_data_get(glit));
    }
 }

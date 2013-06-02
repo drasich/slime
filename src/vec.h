@@ -3,6 +3,7 @@
 #include "vec2.h"
 #include <stdbool.h>
 
+//#define PRINT_VEC3 
 typedef struct _Vec3 Vec3;
 
 struct _Vec3 {

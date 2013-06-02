@@ -175,11 +175,21 @@ property_add_fileselect(Property *p, Evas_Object* win, Evas_Object* bx, char* na
 
 
 void
-property_update(Property* p, Object* o)
+property_update(Property* p, Eina_List* objects)
 {
-  Vec3 v = o->Position;
+  Eina_List *l;
+  Object *o;
+  float i = 0;
+  Vec3 v = vec3_zero();
 
-  elm_spinner_value_set(eina_hash_find(p->properties, "x"), v.Y );
+  EINA_LIST_FOREACH(objects, l, o) {
+    v = vec3_add(v, o->Position);
+    i++;
+  }
+
+  if ( i > 0) v = vec3_mul(v, 1.0/i);
+
+  elm_spinner_value_set(eina_hash_find(p->properties, "x"), v.X );
   elm_spinner_value_set(eina_hash_find(p->properties, "y"), v.Y );
   elm_spinner_value_set(eina_hash_find(p->properties, "z"), v.Z );
 }

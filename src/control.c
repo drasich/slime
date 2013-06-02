@@ -140,14 +140,13 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
       Vec3 translation = vec3_sub(ir.position, irstart.position);
       Eina_List *l;
       Object *o;
-      Vec3 v = vec3_zero();
       int i = 0;
       EINA_LIST_FOREACH(objects, l, o) {
         Vec3* origin = (Vec3*) eina_inarray_nth(c->positions, i);
         o->Position = vec3_add(*origin, translation);
         ++i;
       }
-      //property_update(v->property, o);
+      property_update(v->property, objects);
     }
   }
 
