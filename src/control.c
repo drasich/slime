@@ -205,7 +205,7 @@ _op_remove_object(Scene* s, Eina_List* objects)
 
 
 
-void 
+bool
 control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
 {
   if (c->state == MOVE) {
@@ -221,8 +221,10 @@ control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
           o->Position);
 
     control_add_operation(c, op);
+    return true;
   }
 
+  return false;
 }
 
 void

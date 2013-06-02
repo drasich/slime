@@ -198,7 +198,8 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   Scene* s = evas_object_data_get(o, "scene");
   View* v = evas_object_data_get(o, "view");
   Control* cl = v->control;
-  control_mouse_down(cl, ev);
+  if (control_mouse_down(cl, ev))
+    return;
 
   //if (ev->button == 3 ){
   const Evas_Modifier * mods = ev->modifiers;
@@ -646,8 +647,6 @@ view_draw(View* v)
   Matrix4* projection = &c->projection;
   Matrix4* ortho = &c->orthographic;
 
-  Object* cxo = context_get_object(cx);
-
   //Render just selected to fbo
   Eina_List *l;
   Object *o;
@@ -761,11 +760,8 @@ view_draw(View* v)
   }
 
   //repere
-  //if (cxo != NULL) {
-  //if (cxol_size > 0) {
   if (last_obj) {
     gl->glClear(GL_DEPTH_BUFFER_BIT);
-    //v->repere->Position = cxo->Position;
     v->repere->Position = repere_position;
     v->repere->angles = last_obj->angles;
     object_compute_matrix(v->repere, mo);
@@ -775,7 +771,7 @@ view_draw(View* v)
   }
 
   //Render outline with quad
-  if (cxo != NULL) {
+  if (last_obj) {
     object_compute_matrix(r->quad_outline, mo);
     if (r->quad_outline->mesh != NULL) 
     r->quad_outline->mesh->id_texture = r->fbo_selected->texture_depth_stencil_id;

@@ -30,7 +30,7 @@ void control_move(Control* c);
 void control_center_camera(Control* c);
 
 void control_mouse_move(Control* c, Evas_Event_Mouse_Move *e);
-void control_mouse_down(Control* c, Evas_Event_Mouse_Down *e);
+bool control_mouse_down(Control* c, Evas_Event_Mouse_Down *e);
 void control_key_down(Control* c, Evas_Event_Key_Down *e);
 
 typedef void (*do_cb)(Control* c, void* data);
@@ -54,7 +54,6 @@ void control_clean_redo(Control* c);
 typedef struct _Op_Move_Object Op_Move_Object;
 struct _Op_Move_Object
 {
-  //Object* o;
   Eina_List* objects;
   Vec3 translation;
 };
@@ -79,7 +78,6 @@ typedef struct _Op_Remove_Object Op_Remove_Object;
 struct _Op_Remove_Object
 {
   Scene* s;
-  Object* o;
   Eina_List* objects;
 };
 
