@@ -16,8 +16,9 @@ struct _Control{
   struct _View* view;
   int state;
   Vec3 start;
-  Vec3 mouse_start;
+  Vec2 mouse_start;
   Vec3 mouse_current;
+  Eina_Inarray* positions;
   Eina_List* undo;
   Eina_List* redo;
 };
@@ -53,9 +54,9 @@ void control_clean_redo(Control* c);
 typedef struct _Op_Move_Object Op_Move_Object;
 struct _Op_Move_Object
 {
-  Object* o;
-  Vec3 start;
-  Vec3 end;
+  //Object* o;
+  Eina_List* objects;
+  Vec3 translation;
 };
 
 void operation_move_object_do(Control *c, void* data);
@@ -79,10 +80,11 @@ struct _Op_Remove_Object
 {
   Scene* s;
   Object* o;
+  Eina_List* objects;
 };
 
 void operation_remove_object_do(Control *c, void* data);
 void operation_remove_object_undo(Control *c, void* data);
-void control_remove_object(Control* c, Scene* s, Object* o);
+void control_remove_object(Control* c, Scene* s, Eina_List* objects);
 
 #endif

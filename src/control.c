@@ -18,14 +18,37 @@ control_set_state(Control* c, int state)
   c->state = state;
 }
 
+Vec3
+_objects_center(Control* c, Eina_List* objects)
+{
+  int size = eina_list_count(objects);
+  c->positions = eina_inarray_new (sizeof(Vec3), size);
+  Eina_List *l;
+  Object *o;
+  Vec3 v = vec3_zero();
+  EINA_LIST_FOREACH(objects, l, o) {
+    vec3_add(v, o->Position);
+    eina_inarray_push(c->positions, &o->Position);
+  }
+
+  vec3_mul(v, 1.0/(float)size);
+}
+
 void
 control_move(Control* c)
 {
   View* v = c->view;
+  int x, y;
+  //evas_pointer_output_xy_get(evas_object_evas_get(v->glview), &x, &y);
+  evas_pointer_canvas_xy_get(evas_object_evas_get(v->glview), &x, &y);
+  Vec2 mousepos = vec2(x,y);
+  //printf("mouse pos : %f, %f \n", mousepos.X, mousepos.Y);
   Object* o = context_get_object(v->context);
   if (o != NULL && c->state != MOVE) {
     c->state = MOVE;
-    c->start = o->Position;
+    //c->start = o->Position;
+    c->start = _objects_center(c, context_get_objects(v->context));
+    c->mouse_start = mousepos;
   }
 
 }
@@ -101,24 +124,37 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
       }
     }
   } else if (c->state == MOVE) {
-    Object* o = context_get_object(v->context);
-    if (o != NULL) {
-      float x = e->cur.canvas.x;
-      float y = e->cur.canvas.y;
-      Ray r = ray_from_screen(v->camera, x, y, 1);
-      Plane p = { c->start, quat_rotate_vec3(v->camera->object.Orientation, vec3(0,0,-1)) };
-      IntersectionRay ir =  intersection_ray_plane(r, p);
-      if (ir.hit) {
-        o->Position = ir.position;
-        property_update(v->property, o);
+    Eina_List* objects = context_get_objects(v->context);
+    Plane p = { c->start, quat_rotate_vec3(v->camera->object.Orientation, vec3(0,0,-1)) };
+
+    Ray rstart = ray_from_screen(v->camera, c->mouse_start.X, c->mouse_start.Y, 1);
+
+    float x = e->cur.canvas.x;
+    float y = e->cur.canvas.y;
+    Ray r = ray_from_screen(v->camera, x, y, 1);
+
+    IntersectionRay ir =  intersection_ray_plane(r, p);
+    IntersectionRay irstart =  intersection_ray_plane(rstart, p);
+    
+    if (ir.hit && irstart.hit) {
+      Vec3 translation = vec3_sub(ir.position, irstart.position);
+      Eina_List *l;
+      Object *o;
+      Vec3 v = vec3_zero();
+      int i = 0;
+      EINA_LIST_FOREACH(objects, l, o) {
+        Vec3* origin = (Vec3*) eina_inarray_nth(c->positions, i);
+        o->Position = vec3_add(*origin, translation);
+        ++i;
       }
+      //property_update(v->property, o);
     }
   }
 
 }
 
 static Operation* 
-_op_move_object(Object* o, Vec3 start, Vec3 end)
+_op_move_object(Eina_List* objects, Vec3 start, Vec3 end)
 {
   Operation* op = calloc(1, sizeof *op);
 
@@ -126,9 +162,8 @@ _op_move_object(Object* o, Vec3 start, Vec3 end)
   op->undo_cb = operation_move_object_undo;
 
   Op_Move_Object* omo = calloc(1, sizeof *omo);
-  omo->o = o;
-  omo->start = start;
-  omo->end = end;
+  omo->objects = eina_list_clone(objects);
+  omo->translation = vec3_sub(end, start);
 
   op->data = omo;
 
@@ -152,7 +187,8 @@ _op_add_object(Scene* s, Object* o)
 }
 
 static Operation* 
-_op_remove_object(Scene* s, Object* o)
+//_op_remove_object(Scene* s, Object* o)
+_op_remove_object(Scene* s, Eina_List* objects)
 {
   Operation* op = calloc(1, sizeof *op);
 
@@ -161,7 +197,7 @@ _op_remove_object(Scene* s, Object* o)
 
   Op_Remove_Object* od = calloc(1, sizeof *od);
   od->s = s;
-  od->o = o;
+  od->objects = eina_list_clone(objects);
 
   op->data = od;
   return op;
@@ -177,9 +213,10 @@ control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
 
     //TODO
     Object* o = context_get_object(c->view->context);
+    Eina_List* objects = context_get_objects(c->view->context);
 
     Operation* op = _op_move_object(
-          o,
+          objects,
           c->start,
           o->Position);
 
@@ -203,6 +240,7 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
   View* v = c->view;
   Scene* s = v->context->scene;
   Object* o = context_get_object(v->context);
+  Eina_List* objects = context_get_objects(v->context);
 
   const Evas_Modifier * mods = e->modifiers;
 
@@ -210,10 +248,8 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
     if (!strcmp(e->keyname, "Escape")) {
       elm_exit();
     } else if ( !strcmp(e->keyname, "g")) {
-      if (o != NULL) {
-        //enter move mode
-        control_move(c);
-      }
+      //enter move mode
+      control_move(c);
     } else if (!strcmp(e->keyname, "z") 
           && evas_key_modifier_is_set(mods, "Control")) {
       control_undo(c);
@@ -226,7 +262,7 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
       }
     } else if (!strcmp(e->keyname, "x")) {
       if (o != NULL) {
-        control_remove_object(c, s, o);
+        control_remove_object(c, s, objects);
       }
     } else if (!strcmp(e->keyname, "a")) {
       context_clean_objects(v->context);
@@ -235,10 +271,17 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
   } else if (c->state == MOVE) {
     if (!strcmp(e->keyname, "Escape")) {
       c->state = IDLE;
-      if (o != NULL) {
-        o->Position = c->start;
-        property_update(v->property, o);
+
+      // put back the objects to original position
+      Eina_List *l;
+      Object *o;
+      int i = 0;
+      EINA_LIST_FOREACH(objects, l, o) {
+        Vec3* origin = (Vec3*) eina_inarray_nth(c->positions, i);
+        o->Position = *origin;
+        i++;
       }
+
     }
   }
 
@@ -251,18 +294,30 @@ control_add_operation(Control* c, Operation* op)
   control_clean_redo(c);
 }
 
+
 void 
 operation_move_object_do(Control* c, void* data)
 {
   Op_Move_Object* od = (Op_Move_Object*) data;
-  od->o->Position = od->end;
+
+  Eina_List *l;
+  Object *o;
+  EINA_LIST_FOREACH(od->objects, l, o) {
+    o->Position = vec3_add(o->Position, od->translation);
+  }
+
 }
 
 void 
 operation_move_object_undo(Control* c, void* data)
 {
   Op_Move_Object* od = (Op_Move_Object*) data;
-  od->o->Position = od->start;
+
+  Eina_List *l;
+  Object *o;
+  EINA_LIST_FOREACH(od->objects, l, o) {
+    o->Position = vec3_sub(o->Position, od->translation);
+  }
 }
 
 void
@@ -331,30 +386,41 @@ void
 operation_remove_object_do(Control *c, void* data)
 {
   Op_Remove_Object* od = (Op_Remove_Object*) data;
-  scene_remove_object(od->s, od->o);
-  tree_remove_object(c->view->tree,  od->o);
+  Context* context = c->view->context;
 
-  Object* o = context_get_object(c->view->context);
-
-  if (od->o == o &&  od->s == c->view->context->scene){
-    //c->view->context->object = NULL;
-    context_remove_object(c->view->context, o);
+  Eina_List *l;
+  Object *o;
+  EINA_LIST_FOREACH(od->objects, l, o) {
+    scene_remove_object(od->s, o);
+    tree_remove_object(c->view->tree,  o);
+    if (od->s == context->scene){
+      if (eina_list_data_find(context->objects, o)) {
+        context_remove_object(context, o);
+      }
+    }
   }
-
 }
 
 void
 operation_remove_object_undo(Control *c, void* data)
 {
   Op_Remove_Object* od = (Op_Remove_Object*) data;
-  scene_add_object(od->s, od->o);
-  tree_add_object(c->view->tree,  od->o);
+  Context* context = c->view->context;
+
+  Eina_List *l;
+  Object *o;
+  EINA_LIST_FOREACH(od->objects, l, o) {
+    scene_add_object(od->s, o);
+    tree_add_object(c->view->tree,  o);
+  }
+
 }
 
 void
-control_remove_object(Control* c, Scene* s, Object* o)
+//control_remove_object(Control* c, Scene* s, Object* o)
+control_remove_object(Control* c, Scene* s, Eina_List* objects)
 {
-  Operation* op = _op_remove_object(s,o);
+  Operation* op = _op_remove_object(s,objects);
   control_add_operation(c, op);
   op->do_cb(c, op->data);
 }

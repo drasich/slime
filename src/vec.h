@@ -1,5 +1,6 @@
 #ifndef __vec__
 #define __vec__
+#include "vec2.h"
 #include <stdbool.h>
 
 typedef struct _Vec3 Vec3;
@@ -20,6 +21,7 @@ struct _Vec4 {
 };
 
 Vec3 vec3_zero();
+
 Vec3 vec3(double x, double y, double z);
 Vec4 vec4(double x, double y, double z, double w);
 

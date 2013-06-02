@@ -166,6 +166,7 @@ _mouse_in(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event
 static void
 _view_select_object(View *v, Object *o)
 {
+  context_clean_objects(v->context);
   context_add_object(v->context, o);
 
   //TODO tell properties to change, through control?
@@ -736,10 +737,11 @@ view_draw(View* v)
     object_draw_lines_camera(o, mo, c);
   }
   */
+
   //Render lines only selected
   gl->glClear(GL_DEPTH_BUFFER_BIT);
-  if (cxo != NULL) {
-    o = cxo;
+  Vec3 repere_position = vec3_zero();
+  EINA_LIST_FOREACH(cxol, l, o) {
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
     //mat4_multiply(cam_mat_inv, o->matrix, mo);
@@ -748,13 +750,24 @@ view_draw(View* v)
     }
     //object_draw_lines(o, mo, *projection);
     object_draw_lines_camera(o, mo, c);
+    repere_position = vec3_add(repere_position, o->Position);
+  }
+
+  int cxol_size = eina_list_count(cxol);
+  Object* last_obj = NULL;
+  if (cxol_size > 0) {
+    repere_position = vec3_mul(repere_position, 1.0/(float)cxol_size);
+    last_obj = (Object*) eina_list_last(cxol)->data;
   }
 
   //repere
-  if (cxo != NULL) {
+  //if (cxo != NULL) {
+  //if (cxol_size > 0) {
+  if (last_obj) {
     gl->glClear(GL_DEPTH_BUFFER_BIT);
-    v->repere->Position = cxo->Position;
-    v->repere->angles = cxo->angles;
+    //v->repere->Position = cxo->Position;
+    v->repere->Position = repere_position;
+    v->repere->angles = last_obj->angles;
     object_compute_matrix(v->repere, mo);
     v->repere->line->id_texture = r->fbo_all->texture_depth_stencil_id;
     mat4_multiply(cam_mat_inv, mo, mo);

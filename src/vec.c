@@ -38,7 +38,6 @@ vec4(double x, double y, double z, double w)
   return v;
 }
 
-
 double
 vec3_length(Vec3 v)
 {
