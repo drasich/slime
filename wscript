@@ -56,7 +56,10 @@ def build(bld):
   #bld.exec_command('protoc -I=proto -I=/usr/include  --descriptor_set_out=proto/basedescriptor.proto --cpp_out=proto proto/base.proto')
 
   #cpp_files = bld.path.ant_glob('src/*.cpp proto/*.cc')
-  cpp_files = bld.path.ant_glob('src/*.c src/ui/*.c')
+  #cpp_files = bld.path.ant_glob('src/*.c src/ui/*.c')
+  cpp_files = bld.path.ant_glob('src/*.c')
+  #cpp_files += bld.path.ant_glob('src/ui/*.c')
+  cpp_files += bld.path.ant_glob('src/*/*.c')
   bld.program(
       source= cpp_files, 
       target='slime', 

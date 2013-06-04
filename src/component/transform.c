@@ -28,16 +28,16 @@ _descriptor_init(void)
 
   ADD_BASIC(X, EET_T_DOUBLE);
   ADD_BASIC(Y, EET_T_DOUBLE);
-  ADD_BASIC(z, EET_T_DOUBLE);
+  ADD_BASIC(Z, EET_T_DOUBLE);
 
 #undef ADD_BASIC
 
 #define ADD_SUB(member, sub_type) \
   EET_DATA_DESCRIPTOR_ADD_SUB             \
-  (_vec3_descriptor, Vec3, # member, member, sub_type)
+  (_transform_descriptor, Transform, # member, member, sub_type)
 
-  ADD_BASIC(position, _vec3_descriptor);
-  ADD_BASIC(angles, _vec3_descriptor);
+  ADD_SUB(position, _vec3_descriptor);
+  ADD_SUB(angles, _vec3_descriptor);
 
 #undef ADD_SUB
 }
@@ -67,8 +67,8 @@ test_load(const char *filename)
 
   t = eet_data_read(ef, _transform_descriptor, TRANSFORM_FILE_ENTRY);
 
-  prinf(" position : %f, %f, %f \n", t->position.X, t->position.Y, t->position.Z);
-  prinf(" angles : %f, %f, %f \n", t->angles.X, t->angles.Y, t->angles.Z);
+  printf(" position : %f, %f, %f \n", t->position.X, t->position.Y, t->position.Z);
+  printf(" angles : %f, %f, %f \n", t->angles.X, t->angles.Y, t->angles.Z);
   
   return t;
 }
