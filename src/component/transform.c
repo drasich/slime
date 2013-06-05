@@ -2,13 +2,13 @@
 //#include <Eina.h>
 #include <Eet.h>
 
-static const char VEC3_FILE_ENTRY[] = "vec3";
+static const char VEC3_FILE_ENTRY[] = "Vec3";
 
 static Eet_Data_Descriptor *_vec3_descriptor;
 static Eet_Data_Descriptor *_transform_descriptor;
 
 
-static const char TRANSFORM_FILE_ENTRY[] = "transform";
+static const char TRANSFORM_FILE_ENTRY[] = "Transform";
 
 
 static void
@@ -22,6 +22,7 @@ _descriptor_init(void)
   EET_EINA_STREAM_DATA_DESCRIPTOR_CLASS_SET(&eddc, Transform);
   _transform_descriptor = eet_data_descriptor_stream_new(&eddc);
 
+  /*
 #define ADD_BASIC(member, eet_type) \
   EET_DATA_DESCRIPTOR_ADD_BASIC             \
   (_vec3_descriptor, Vec3, # member, member, eet_type)
@@ -40,6 +41,19 @@ _descriptor_init(void)
   ADD_SUB(angles, _vec3_descriptor);
 
 #undef ADD_SUB
+o*/
+
+#define ADD_BASIC(member, eet_type) \
+  EET_DATA_DESCRIPTOR_ADD_BASIC             \
+  (_transform_descriptor, Transform, # member, member, eet_type)
+  ADD_BASIC(test, EET_T_DOUBLE);
+  ADD_BASIC(position.X, EET_T_DOUBLE);
+  ADD_BASIC(position.Y, EET_T_DOUBLE);
+  ADD_BASIC(position.Z, EET_T_DOUBLE);
+  ADD_BASIC(angles.X, EET_T_DOUBLE);
+  ADD_BASIC(angles.Y, EET_T_DOUBLE);
+  ADD_BASIC(angles.Z, EET_T_DOUBLE);
+#undef ADD_BASIC
 }
 
 static void
@@ -52,9 +66,10 @@ _descriptor_shutdown(void)
 static Transform*
 test_create()
 {
-  Transform* t = calloc(1, sizeof t);
+  Transform* t = calloc(1, sizeof *t);
   t->position = vec3(1,2,3);
   t->angles = vec3(4,5,6);
+  t->test = 9.8765;
   return t;
 }
 
@@ -63,13 +78,14 @@ test_load(const char *filename)
 {
   Transform *t;
   Eet_File *ef = eet_open(filename, EET_FILE_MODE_READ);
-  fprintf(stderr, "error reading file %s \n", filename);
+  if (!ef) {
+    fprintf(stderr, "error reading file %s \n", filename);
+    return NULL;
+  }
 
   t = eet_data_read(ef, _transform_descriptor, TRANSFORM_FILE_ENTRY);
-
-  printf(" position : %f, %f, %f \n", t->position.X, t->position.Y, t->position.Z);
-  printf(" angles : %f, %f, %f \n", t->angles.X, t->angles.Y, t->angles.Z);
-  
+  eet_close(ef);
+ 
   return t;
 }
 
@@ -78,10 +94,43 @@ test_save(
       const Transform *t,
       const char *filename)
 {
-  char tmp[256];
+  //char tmp[256];
   Eina_Bool ret;
-  //Eet_File *ef = eet_open(
-  //TODO
+  Eet_File *ef = eet_open(filename, EET_FILE_MODE_WRITE);
+  if (!ef) {
+    fprintf(stderr, "error reading file %s \n", filename);
+    return EINA_FALSE;
+  }
+
+  ret = eet_data_write(ef, _transform_descriptor, TRANSFORM_FILE_ENTRY, t, EINA_TRUE);
+  eet_close(ef);
+  if (ret) {
+    printf("return value for save looks ok \n");
+  }
+  else
+    printf("return value for save NOT OK \n");
+
+  return ret;
+}
+
+void test_test()
+{
+  Transform* t;
+  eet_init();
+  _descriptor_init();
+  t = test_load("test.eet");
+
+  if (!t) {
+    t = test_create();
+    printf("I have to create\n");
+  }
+
+  printf(" position : %f, %f, %f \n", t->position.X, t->position.Y, t->position.Z);
+  printf(" angles : %f, %f, %f \n", t->angles.X, t->angles.Y, t->angles.Z);
+  printf(" test : %f \n", t->test);
+  
+  test_save(t, "test.eet");
+  _descriptor_shutdown();
 }
 
 

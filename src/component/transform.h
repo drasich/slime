@@ -6,8 +6,10 @@ typedef struct
 {
   Vec3 position;
   Vec3 angles;
+  double test;
 
 } Transform;
 
+void test_test();
 
 #endif

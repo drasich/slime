@@ -77,8 +77,8 @@ create_window()
   */
 
 
-  //evas_object_resize(win, 800/3, 400/3);
-  evas_object_resize(win, 1200, 400);
+  evas_object_resize(win, 800/3, 400/3);
+  //evas_object_resize(win, 1200, 400);
   evas_object_show(win);
 }
 
@@ -127,6 +127,7 @@ build_scene()
 
 }
 
+#include "component/transform.h"
 EAPI_MAIN int
 elm_main(int argc, char **argv)
 {
@@ -136,6 +137,7 @@ elm_main(int argc, char **argv)
   create_window();
   build_scene();
   elm_config_preferred_engine_set(NULL);
+  test_test();
 
   elm_run();
   elm_shutdown();
