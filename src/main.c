@@ -138,6 +138,7 @@ elm_main(int argc, char **argv)
   build_scene();
   elm_config_preferred_engine_set(NULL);
   test_test();
+  test_display();
 
   elm_run();
   elm_shutdown();

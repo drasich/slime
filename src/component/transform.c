@@ -134,3 +134,28 @@ void test_test()
 }
 
 
+void test_display()
+{
+  Eina_Inarray * iarr;
+  iarr = eina_inarray_new(sizeof(Prop), 0);
+  Prop p1 =  {"test", 0};
+  Prop p2 =  {"position.X", 4};
+  Prop p3 =  {"position.Y", 4};
+  Prop p4 =  {"position.Z", 4};
+  eina_inarray_push(iarr, &p1);
+  eina_inarray_push(iarr, &p2);
+  eina_inarray_push(iarr, &p3);
+  eina_inarray_push(iarr, &p4);
+
+  Prop *p;
+  EINA_INARRAY_FOREACH(iarr, p)
+   printf("name: %s , tupe: %d\n", p->name, p->type);
+
+  Transform* t = test_create();
+
+  double test =  t->position.X;
+
+//#define GET_PROP(type, member) \
+ // ( # member, member)
+  
+}

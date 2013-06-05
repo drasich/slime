@@ -12,4 +12,10 @@ typedef struct
 
 void test_test();
 
+typedef struct
+{
+  const char* name;
+  int type;
+} Prop;
+
 #endif
