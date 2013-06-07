@@ -539,7 +539,6 @@ create_view(Evas_Object *win)
 
   _add_buttons(view, win);
 
-  //view->property = property_create(win);
   view->property = create_property(win, view->context);
   view->tree = create_widget_tree(win, view->context);
   evas_object_data_set(view->glview, "view", view);

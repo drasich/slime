@@ -1,4 +1,5 @@
 #include "component/transform.h"
+#include "ui/property.h" //TODO change/remove
 //#include <Eina.h>
 #include <Eet.h>
 
@@ -133,29 +134,38 @@ void test_test()
   _descriptor_shutdown();
 }
 
-
 void test_display()
 {
-  Eina_Inarray * iarr;
-  iarr = eina_inarray_new(sizeof(Prop), 0);
-  Prop p1 =  {"test", 0};
-  Prop p2 =  {"position.X", 4};
-  Prop p3 =  {"position.Y", 4};
-  Prop p4 =  {"position.Z", 4};
-  eina_inarray_push(iarr, &p1);
-  eina_inarray_push(iarr, &p2);
-  eina_inarray_push(iarr, &p3);
-  eina_inarray_push(iarr, &p4);
+  Eina_Inarray * iarr = create_property_set();
+
+  ADD_PROP(iarr, Transform, test, EET_T_DOUBLE);
+  ADD_PROP(iarr, Transform, position.X, EET_T_DOUBLE);
+  ADD_PROP(iarr, Transform, position.Y, EET_T_DOUBLE);
+  ADD_PROP(iarr, Transform, position.Z, EET_T_DOUBLE);
+
+  Transform yep = { vec3(1.98,2,3), vec3(4,5,6), 7};
+  printf("size of double %d \n", sizeof(double));
 
   Prop *p;
-  EINA_INARRAY_FOREACH(iarr, p)
-   printf("name: %s , tupe: %d\n", p->name, p->type);
+  EINA_INARRAY_FOREACH(iarr, p) {
+   printf("name: %s , type: %d, offset: %d\n", p->name, p->type, p->offset);
+   printf("   value is : ");
+   switch(p->type) {
+     case EET_T_DOUBLE:
+        {
+         double d;
+         memcpy(&d, (void*)&yep + p->offset, sizeof d);
+         printf("%f\n",d);
+        }
+         break;
+     default:
+       printf("novalue \n ");
+   }
+  }
 
   Transform* t = test_create();
 
   double test =  t->position.X;
 
-//#define GET_PROP(type, member) \
- // ( # member, member)
   
 }

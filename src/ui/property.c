@@ -2,44 +2,6 @@
 #include <Eina.h>
 #include "property.h"
 
-Evas_Object*
-property_create(Evas_Object* win)
-{
-  Evas_Object *frame, *scroller, *bx;
-
-  scroller = elm_scroller_add(win);
-  evas_object_size_hint_weight_set(scroller, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  evas_object_size_hint_fill_set(scroller, EVAS_HINT_FILL, EVAS_HINT_FILL);
-  evas_object_show(scroller);
-  elm_scroller_bounce_set(scroller, EINA_FALSE, EINA_TRUE);
-  //elm_scroller_policy_set(scroller, ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_ON);
-
-  frame = elm_frame_add(win);
-  elm_object_text_set(frame, "Properties");
-  evas_object_size_hint_weight_set(frame, EVAS_HINT_EXPAND, 0.0);
-  evas_object_size_hint_fill_set(frame, EVAS_HINT_FILL, 0.0);
-
-  //elm_box_pack_end(bigbox, frame);
-  evas_object_show(frame);
-
-
-  bx = elm_box_add(win);
-  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  elm_box_align_set(bx, 0.0, 0.0);
-  evas_object_show(bx);
-
-  //elm_object_content_set(frame, bx);
-  elm_object_content_set(frame, scroller);
-  elm_object_content_set(scroller, bx);
-
-
-  property_add(win, bx, "x", "5");
-  property_add(win, bx, "y", "6");
-  property_add(win, bx, "z", "7");
-
-  return frame;
-}
-
 static void
 _entry_changed_cb(void *data, Evas_Object *obj, void *event)
 {
@@ -47,27 +9,23 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
   Object *o = context_get_object(c);
   if (o == NULL) return;
 
-  double v =  elm_spinner_value_get(obj);
-  const char *name = evas_object_name_get(obj);
+  Prop* p = evas_object_data_get(obj, "property");
 
-  if (!strcmp(name, "x")) {
-    o->Position.X = v;
-  } else if (!strcmp(name, "y")) {
-    o->Position.Y = v;
-  } else if (!strcmp(name, "z")) {
-    o->Position.Z = v;
-  } else if (!strcmp(name, "yaw")) {
-    o->angles.Y = v;
-  } else if (!strcmp(name, "pitch")) {
-    o->angles.X = v;
-  } else if (!strcmp(name, "roll")) {
-    o->angles.Z = v;
-  }
-
+  switch(p->type) {
+    case EET_T_DOUBLE:
+       {
+        double v =  elm_spinner_value_get(obj);
+        memcpy((void*)o + p->offset, &v, sizeof v);
+       }
+      break;
+    default:
+      fprintf (stderr, "type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
+      break;
+   }
 }
 
 Evas_Object* 
-property_add(Evas_Object* win, Evas_Object* bx, char* name, char* value)
+property_add_entry(Evas_Object* win, Evas_Object* bx, char* name, char* value)
 {
   Evas_Object *en, *bx2, *label;
 
@@ -142,6 +100,41 @@ property_add_spinner(Property *p, Evas_Object* win, Evas_Object* bx, char* name)
   return en;
 }
 
+static Evas_Object* 
+_property_add_spinner(Property *pw, Prop* p)
+{
+  Evas_Object *en, *bx2, *label;
+
+  en = elm_spinner_add(pw->win);
+  evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
+  //elm_spinner_value_set(en, atof(value));
+  evas_object_show(en);
+  elm_box_pack_end(pw->box, en);
+
+  evas_object_name_set(en, p->name);
+  
+  elm_spinner_step_set(en, 0.1);
+  elm_spinner_min_max_set(en, -DBL_MAX, DBL_MAX);
+
+  char s[50];
+  sprintf(s, "%s : %s", p->name, "%f");
+  elm_spinner_label_format_set(en, s);
+
+  evas_object_name_set(en, p->name);
+
+  eina_hash_add(
+        pw->properties,
+        p->name,
+        en);
+  evas_object_smart_callback_add(en, "changed", _entry_changed_cb, pw->context);
+
+  evas_object_data_set(en, "property", p);
+
+  return en;
+}
+
+
 static Evas_Object*
 property_add_fileselect(Property *p, Evas_Object* win, Evas_Object* bx, char* name)
 {
@@ -175,23 +168,40 @@ property_add_fileselect(Property *p, Evas_Object* win, Evas_Object* bx, char* na
 
 
 void
-property_update(Property* p, Eina_List* objects)
+property_update(Property* pw, Eina_List* objects)
 {
   Eina_List *l;
-  Object *o;
+  Object *o = NULL;
+  Object *last = NULL;
   float i = 0;
   Vec3 v = vec3_zero();
 
   EINA_LIST_FOREACH(objects, l, o) {
     v = vec3_add(v, o->Position);
+    last = o;
     i++;
   }
 
-  if ( i > 0) v = vec3_mul(v, 1.0/i);
-
-  elm_spinner_value_set(eina_hash_find(p->properties, "x"), v.X );
-  elm_spinner_value_set(eina_hash_find(p->properties, "y"), v.Y );
-  elm_spinner_value_set(eina_hash_find(p->properties, "z"), v.Z );
+  if (last != NULL) {
+    Prop *p;
+    EINA_INARRAY_FOREACH(pw->arr, p) {
+      //printf("name: %s , type: %d, offset: %d\n", p->name, p->type, p->offset);
+      //printf("   value is : ");
+      switch(p->type) {
+        case EET_T_DOUBLE:
+           {
+            double d;
+            memcpy(&d, (void*)last + p->offset, sizeof d);
+            //printf("%f\n",d);
+            elm_spinner_value_set(eina_hash_find(pw->properties, p->name), d );
+           }
+          break;
+        default:
+          //printf("novalue \n ");
+          break;
+      }
+    }
+  }
 }
 
 static void
@@ -215,12 +225,59 @@ _property_entry_foreach_cb(
   return EINA_TRUE;
 }
 
+void
+property_set(Property* pw, Eina_Inarray* a)
+{
+  pw->arr = a;
+
+  Prop *p;
+  EINA_INARRAY_FOREACH(a, p) {
+   printf("name: %s , type: %d, offset: %d\n", p->name, p->type, p->offset);
+   printf("   value is : ");
+   switch(p->type) {
+     case EET_T_DOUBLE:
+        {
+         //double d;
+         //memcpy(&d, (void*)&yep + p->offset, sizeof d);
+         //printf("%f\n",d);
+         _property_add_spinner(pw, p);
+        }
+         break;
+     default:
+       printf("novalue \n ");
+   }
+  }
+}
+
+Eina_Inarray* create_property_set()
+{
+  return eina_inarray_new(sizeof(Prop), 0);
+}
+
+#include "component/transform.h"
+void my_test(Property* pw)
+{
+  Eina_Inarray * iarr = create_property_set();
+
+  /*
+  ADD_PROP(iarr, Transform, test, EET_T_DOUBLE);
+  ADD_PROP(iarr, Transform, position.X, EET_T_DOUBLE);
+  ADD_PROP(iarr, Transform, position.Y, EET_T_DOUBLE);
+  ADD_PROP(iarr, Transform, position.Z, EET_T_DOUBLE);
+  */
+  ADD_PROP(iarr, Object, Position.X, EET_T_DOUBLE);
+  ADD_PROP(iarr, Object, Position.Y, EET_T_DOUBLE);
+  ADD_PROP(iarr, Object, Position.Z, EET_T_DOUBLE);
+
+  property_set(pw, iarr);
+}
+
 Property* 
 create_property(Evas_Object* win, Context* context)
 {
   Property *p = calloc(1, sizeof *p);
   p->context = context;
-  //p->root = property_create(win);
+  p->win = win;
 
   Evas_Object *frame, *scroller, *bx;
 
@@ -238,12 +295,14 @@ create_property(Evas_Object* win, Context* context)
 
   //elm_box_pack_end(bigbox, frame);
   evas_object_show(frame);
+  p->root = frame;
 
 
   bx = elm_box_add(win);
   evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   elm_box_align_set(bx, 0.0, 0.0);
   evas_object_show(bx);
+  p->box = bx;
 
   //elm_object_content_set(frame, bx);
   elm_object_content_set(frame, scroller);
@@ -252,8 +311,9 @@ create_property(Evas_Object* win, Context* context)
   p->properties = NULL;
   p->properties = eina_hash_string_superfast_new(_property_entry_free_cb);
 
+  /*
   Evas_Object *eo;
-  eo = property_add_spinner(p, win, bx, "x");
+  eo = _property_add_spinner(p, "x");
   eo = property_add_spinner(p, win, bx, "y");
   eo = property_add_spinner(p, win, bx, "z");
 
@@ -261,10 +321,10 @@ create_property(Evas_Object* win, Context* context)
   eo = property_add_spinner(p, win, bx, "pitch");
   eo = property_add_spinner(p, win, bx, "roll");
   eo = property_add_fileselect(p, win, bx, "mesh");
+  */
 
-  p->root = frame;
-  p->box = bx;
+  my_test(p);
+
   return p;
 }
-
 
