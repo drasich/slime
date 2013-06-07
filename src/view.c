@@ -510,7 +510,7 @@ _create_view_objects(View* v)
   line_set_use_perspective(v->camera_repere->line, false);
   v->grid = _create_grid();
   v->camera = create_camera();
-  v->camera->object.name = "camera";
+  v->camera->object.name = eina_stringshare_add("camera");
   Vec3 p = {20,5,20};
   //v->camera->origin = p;
   //v->camera->object.Position = p;
@@ -610,7 +610,7 @@ create_render()
   r->quad_outline->mesh = create_mesh_quad(100,100);
   Vec3 t3 = {0,0,-100};
   object_set_position(r->quad_outline, t3);
-  r->quad_outline->name = "quad";
+  r->quad_outline->name = eina_stringshare_add("quad");
 
   r->quad_outline->mesh->shader = create_shader("shader/stencil.vert", "shader/stencil.frag");
   shader_use(r->quad_outline->mesh->shader);
@@ -621,7 +621,7 @@ create_render()
   r->quad_color = create_object();
   r->quad_color->mesh = create_mesh_quad(100,100);
   object_set_position(r->quad_color, t3);
-  r->quad_color->name = "quad";
+  r->quad_color->name = eina_stringshare_add("quad");
 
   r->quad_color->mesh->shader = create_shader("shader/stencil.vert", "shader/quad.frag");
   shader_use(r->quad_color->mesh->shader);

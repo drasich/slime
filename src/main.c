@@ -68,7 +68,7 @@ populate_scene(Control* c, Scene* s)
 {
   //Object* o = create_object_file("model/smallchar.bin");
   Object* o = create_object_file("model/cube.bin");
-  o->name = "cube";
+  o->name = eina_stringshare_add("cube");
   //Object* o = create_object_file("model/simpleplane.bin");
   //TODO free shader
   Shader* shader_simple = create_shader("shader/simple.vert", "shader/simple.frag");
@@ -86,7 +86,7 @@ populate_scene(Control* c, Scene* s)
   //animation_play(yep, "walkquat", LOOP);
   yep->mesh->shader = shader_simple;
 
-  yep->name = "2222222";
+  yep->name = eina_stringshare_add("2222222");
   Vec3 t2 = {-10,0,0};
   object_set_position(yep, t2);
   control_add_object(c,s,yep);
