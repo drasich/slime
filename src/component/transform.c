@@ -1,5 +1,5 @@
 #include "component/transform.h"
-#include "ui/property.h" //TODO change/remove
+#include "ui/property_view.h" //TODO change/remove
 //#include <Eina.h>
 #include <Eet.h>
 

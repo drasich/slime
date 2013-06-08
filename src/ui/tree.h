@@ -14,12 +14,12 @@ struct _Tree
   Context *context;
 };
 
-//void tree_update(Property* p, Object* o);
 Tree* create_widget_tree(Evas_Object* win, Context* context);
 void tree_add_object(Tree* t,  struct _Object* o);
 void tree_remove_object(Tree* t,  struct _Object* o);
 
-void tree_update(Tree* t, struct _Object* o);
+void tree_select_object(Tree* t, struct _Object* o);
+void tree_update_object(Tree* t, struct _Object* o);
 
 
 #endif

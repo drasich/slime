@@ -6,7 +6,7 @@
 #include "gl.h"
 #include "context.h"
 #include "control.h"
-#include "ui/property.h"
+#include "ui/property_view.h"
 #include "intersect.h"
 #define __UNUSED__
 
@@ -172,7 +172,7 @@ _view_select_object(View *v, Object *o)
   //TODO tell properties to change, through control?
   //or emit a signal to say object selected has changed and catch this signal in properties, and other possible widgets
   property_update(v->property, v->context->objects);
-  tree_update(v->tree, o);
+  tree_select_object(v->tree, o);
 }
 
 static void
@@ -254,6 +254,7 @@ _mouse_up(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event
   Evas_Object* rect = v->select_rect;
   evas_object_hide(rect);
   property_update(v->property, v->context->objects);
+  tree_select_object(v->tree, v->context->object);
 }
 
 static void
@@ -539,7 +540,7 @@ create_view(Evas_Object *win)
 
   _add_buttons(view, win);
 
-  view->property = create_property(win, view->context);
+  view->property = create_property(win, view->context, view->control);
   view->tree = create_widget_tree(win, view->context);
   evas_object_data_set(view->glview, "view", view);
 

@@ -1,13 +1,15 @@
 #include <Elementary.h>
 #include <Eina.h>
-#include "property.h"
+#include "ui/property_view.h"
 
 static void
 _entry_changed_cb(void *data, Evas_Object *obj, void *event)
 {
   //TODO handle when there are many objects
 
-  Context *c = data;
+  PropertyView* pw = data;
+
+  Context *c = pw->context;
   Object *o = context_get_object(c);
   if (o == NULL) return;
 
@@ -33,10 +35,16 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
       fprintf (stderr, "type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
       break;
    }
+
+  //TODO
+  fprintf (stderr, "TODO: signal control that we are currently changing stuff.  at %s, line %d\n",__FILE__, __LINE__);
+  Control* ct = pw->control;
+  //control_property_changed(ct, o, Prop);
+
 }
 
 static Evas_Object* 
-_property_add_entry(Property *pw, Prop* p)
+_property_add_entry(PropertyView *pw, Prop* p)
 {
   Evas_Object *en, *bx2, *label;
 
@@ -75,7 +83,7 @@ _property_add_entry(Property *pw, Prop* p)
         p->name,
         en);
 
-  evas_object_smart_callback_add(en, "changed", _entry_changed_cb, pw->context);
+  evas_object_smart_callback_add(en, "changed", _entry_changed_cb, pw);
   evas_object_data_set(en, "property", p);
 
 
@@ -89,7 +97,7 @@ _property_add_entry(Property *pw, Prop* p)
 }
 
 static Evas_Object* 
-_property_add_spinner(Property *pw, Prop* p)
+_property_add_spinner(PropertyView *pw, Prop* p)
 {
   Evas_Object *en, *label;
 
@@ -107,6 +115,7 @@ _property_add_spinner(Property *pw, Prop* p)
 
   char s[50];
   sprintf(s, "%s : %s", p->name, "%f");
+
   elm_spinner_label_format_set(en, s);
 
   evas_object_name_set(en, p->name);
@@ -115,7 +124,7 @@ _property_add_spinner(Property *pw, Prop* p)
         pw->properties,
         p->name,
         en);
-  evas_object_smart_callback_add(en, "changed", _entry_changed_cb, pw->context);
+  evas_object_smart_callback_add(en, "changed", _entry_changed_cb, pw);
 
   evas_object_data_set(en, "property", p);
 
@@ -124,7 +133,7 @@ _property_add_spinner(Property *pw, Prop* p)
 
 
 static Evas_Object*
-property_add_fileselect(Property *p, Evas_Object* win, Evas_Object* bx, char* name)
+property_add_fileselect(PropertyView *p, Evas_Object* win, Evas_Object* bx, char* name)
 {
   Evas_Object *en, *bx2, *label;
 
@@ -156,7 +165,7 @@ property_add_fileselect(Property *p, Evas_Object* win, Evas_Object* bx, char* na
 
 
 void
-property_update(Property* pw, Eina_List* objects)
+property_update(PropertyView* pw, Eina_List* objects)
 {
   Eina_List *l;
   Object *o = NULL;
@@ -221,7 +230,7 @@ _property_entry_foreach_cb(
 }
 
 void
-property_set(Property* pw, Eina_Inarray* a)
+property_set(PropertyView* pw, Eina_Inarray* a)
 {
   pw->arr = a;
 
@@ -248,12 +257,7 @@ property_set(Property* pw, Eina_Inarray* a)
   }
 }
 
-Eina_Inarray* create_property_set()
-{
-  return eina_inarray_new(sizeof(Prop), 0);
-}
-
-void object_init_array_properties(Property* pw)
+void object_init_array_properties(PropertyView* pw)
 {
   Eina_Inarray * iarr = create_property_set();
 
@@ -268,11 +272,12 @@ void object_init_array_properties(Property* pw)
   property_set(pw, iarr);
 }
 
-Property* 
-create_property(Evas_Object* win, Context* context)
+PropertyView* 
+create_property(Evas_Object* win, Context* context, Control* control)
 {
-  Property *p = calloc(1, sizeof *p);
+  PropertyView *p = calloc(1, sizeof *p);
   p->context = context;
+  p->control = control;
   p->win = win;
 
   Evas_Object *frame, *scroller, *bx;

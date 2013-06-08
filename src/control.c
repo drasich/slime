@@ -152,6 +152,13 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
 
 }
 
+/*
+void
+control_property_changed(Control* c, Object* o, Prop* p)
+{
+}
+*/
+
 static Operation* 
 _op_move_object(Eina_List* objects, Vec3 start, Vec3 end)
 {

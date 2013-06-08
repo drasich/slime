@@ -228,8 +228,8 @@ tree_add_object(Tree* t,  Object* o)
 
 }
 
-void
-tree_update(Tree* t, Object* o)
+static Elm_Object_Item*
+_tree_get_item(Tree* t, Object* o)
 { 
   Elm_Object_Item* item = elm_genlist_first_item_get(t->gl);
   if (!item) return;
@@ -242,9 +242,41 @@ tree_update(Tree* t, Object* o)
   }
 
   if (o == eo) {
-    elm_genlist_item_selected_set(item, EINA_TRUE);
+    return item;
+  }
+  return NULL;
+}
+
+
+void
+tree_select_object(Tree* t, Object* o)
+{
+  Elm_Object_Item* item = _tree_get_item(t, o);
+
+  if (item)
+  elm_genlist_item_selected_set(item, EINA_TRUE);
+
+}
+
+void
+tree_update_object(Tree* t, Object* o)
+{ 
+  Elm_Object_Item* item = elm_genlist_first_item_get(t->gl);
+  if (!item) return;
+
+  Object* eo = (Object*) elm_object_item_data_get(item);
+
+  while (eo != o && item) {
+    item = elm_genlist_item_next_get(item);
+    eo = (Object*) elm_object_item_data_get(item);
+  }
+
+  if (o == eo) {
+    elm_genlist_item_update(item);
   }
 }
+
+
 
 
 void

@@ -4,6 +4,7 @@
 #include "vec.h"
 #include "scene.h"
 //#include "object.h"
+#include "property.h"
 
 typedef struct _Control Control;
 
@@ -32,6 +33,8 @@ void control_center_camera(Control* c);
 void control_mouse_move(Control* c, Evas_Event_Mouse_Move *e);
 bool control_mouse_down(Control* c, Evas_Event_Mouse_Down *e);
 void control_key_down(Control* c, Evas_Event_Key_Down *e);
+
+void control_property_changed(Control* c, Object* o, Prop* p);
 
 typedef void (*do_cb)(Control* c, void* data);
 typedef void (*undo_cb)(Control* c, void* data);
