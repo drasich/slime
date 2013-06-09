@@ -138,11 +138,11 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
     //else for each planes :
     //
     //  do the separating axis test
-    if (planes_is_box_in_allow_false_positives(planes, 6, b)) {
+    //if (planes_is_box_in_allow_false_positives(planes, 6, b)) {
+    if (planes_is_in_object(planes, 6, o)) {
       context_add_object(v->context, o);
     }
   }
-
 
   /*
   bool b = frustum_is_in(&f, o->Position);
@@ -254,6 +254,7 @@ _mouse_up(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event
   Evas_Object* rect = v->select_rect;
   evas_object_hide(rect);
   property_update(v->property, v->context->objects);
+  if (v->context->object)
   tree_select_object(v->tree, v->context->object);
 }
 

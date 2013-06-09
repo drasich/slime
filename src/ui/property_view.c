@@ -1,6 +1,7 @@
 #include <Elementary.h>
 #include <Eina.h>
 #include "ui/property_view.h"
+#include "property.h"
 
 static void
 _entry_changed_cb(void *data, Evas_Object *obj, void *event)
@@ -13,7 +14,7 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
   Object *o = context_get_object(c);
   if (o == NULL) return;
 
-  Prop* p = evas_object_data_get(obj, "property");
+  Property* p = evas_object_data_get(obj, "property");
 
   switch(p->type) {
     case EET_T_DOUBLE:
@@ -36,15 +37,12 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
       break;
    }
 
-  //TODO
-  fprintf (stderr, "TODO: signal control that we are currently changing stuff.  at %s, line %d\n",__FILE__, __LINE__);
   Control* ct = pw->control;
-  //control_property_changed(ct, o, Prop);
-
+  control_property_changed(ct, o, p);
 }
 
 static Evas_Object* 
-_property_add_entry(PropertyView *pw, Prop* p)
+_property_add_entry(PropertyView *pw, Property* p)
 {
   Evas_Object *en, *bx2, *label;
 
@@ -74,18 +72,14 @@ _property_add_entry(PropertyView *pw, Prop* p)
   elm_box_pack_end(bx2, en);
 
   evas_object_name_set(en, p->name);
-  //evas_object_smart_callback_add(
-   //     en, "changed,user", property_changed_cb, operator_);
-
 
   eina_hash_add(
         pw->properties,
         p->name,
         en);
 
-  evas_object_smart_callback_add(en, "changed", _entry_changed_cb, pw);
+  evas_object_smart_callback_add(en, "changed,user", _entry_changed_cb, pw);
   evas_object_data_set(en, "property", p);
-
 
   elm_entry_context_menu_disabled_set(en, EINA_TRUE);
   
@@ -97,7 +91,7 @@ _property_add_entry(PropertyView *pw, Prop* p)
 }
 
 static Evas_Object* 
-_property_add_spinner(PropertyView *pw, Prop* p)
+_property_add_spinner(PropertyView *pw, Property* p)
 {
   Evas_Object *en, *label;
 
@@ -163,6 +157,35 @@ property_add_fileselect(PropertyView *p, Evas_Object* win, Evas_Object* bx, char
 
 }
 
+static void
+_property_update_object(PropertyView* pw, Object* o)
+{
+  Property *p;
+  EINA_INARRAY_FOREACH(pw->arr, p) {
+    //printf("name: %s , type: %d, offset: %d\n", p->name, p->type, p->offset);
+    //printf("   value is : ");
+    switch(p->type) {
+      case EET_T_DOUBLE:
+         {
+          double d;
+          memcpy(&d, (void*)o + p->offset, sizeof d);
+          //printf("%f\n",d);
+          elm_spinner_value_set(eina_hash_find(pw->properties, p->name), d );
+         }
+        break;
+      case EET_T_STRING:
+         {
+          const char** str = (void*)o + p->offset;
+          elm_object_text_set(eina_hash_find(pw->properties, p->name), *str );
+          printf("how many time you come here\n");
+         }
+        break;
+      default:
+        fprintf (stderr, "type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
+        break;
+    }
+  }
+}
 
 void
 property_update(PropertyView* pw, Eina_List* objects)
@@ -179,33 +202,14 @@ property_update(PropertyView* pw, Eina_List* objects)
     i++;
   }
 
-  if (last != NULL) {
-    Prop *p;
-    EINA_INARRAY_FOREACH(pw->arr, p) {
-      //printf("name: %s , type: %d, offset: %d\n", p->name, p->type, p->offset);
-      //printf("   value is : ");
-      switch(p->type) {
-        case EET_T_DOUBLE:
-           {
-            double d;
-            memcpy(&d, (void*)last + p->offset, sizeof d);
-            //printf("%f\n",d);
-            elm_spinner_value_set(eina_hash_find(pw->properties, p->name), d );
-           }
-          break;
-        case EET_T_STRING:
-           {
-            const char** str = (void*)last + p->offset;
-            elm_object_text_set(eina_hash_find(pw->properties, p->name), *str );
-            printf("how many time you come here\n");
-           }
-          break;
-        default:
-          fprintf (stderr, "type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
-          break;
-      }
-    }
+  if (i == 1) {
+    _property_update_object(pw, last);
   }
+  else {
+    //just update the transform
+
+  }
+
 }
 
 static void
@@ -234,7 +238,7 @@ property_set(PropertyView* pw, Eina_Inarray* a)
 {
   pw->arr = a;
 
-  Prop *p;
+  Property *p;
   EINA_INARRAY_FOREACH(a, p) {
    printf("name: %s , type: %d, offset: %d\n", p->name, p->type, p->offset);
    printf("   value is : ");
@@ -257,7 +261,8 @@ property_set(PropertyView* pw, Eina_Inarray* a)
   }
 }
 
-void object_init_array_properties(PropertyView* pw)
+Eina_Inarray* 
+object_init_array_properties()
 {
   Eina_Inarray * iarr = create_property_set();
 
@@ -269,8 +274,25 @@ void object_init_array_properties(PropertyView* pw)
   ADD_PROP(iarr, Object, angles.Y, EET_T_DOUBLE);
   ADD_PROP(iarr, Object, angles.Z, EET_T_DOUBLE);
 
-  property_set(pw, iarr);
+  return iarr;
+
 }
+
+static Eina_Inarray*
+_objects_init_array_properties()
+{
+  Eina_Inarray* iarr = create_property_set();
+
+  ADD_PROP(iarr, Object, Position.X, EET_T_DOUBLE);
+  ADD_PROP(iarr, Object, Position.Y, EET_T_DOUBLE);
+  ADD_PROP(iarr, Object, Position.Z, EET_T_DOUBLE);
+  ADD_PROP(iarr, Object, angles.X, EET_T_DOUBLE);
+  ADD_PROP(iarr, Object, angles.Y, EET_T_DOUBLE);
+  ADD_PROP(iarr, Object, angles.Z, EET_T_DOUBLE);
+  return iarr;
+
+}
+
 
 PropertyView* 
 create_property(Evas_Object* win, Context* context, Control* control)
@@ -312,7 +334,8 @@ create_property(Evas_Object* win, Context* context, Control* control)
   p->properties = NULL;
   p->properties = eina_hash_string_superfast_new(_property_entry_free_cb);
 
-  object_init_array_properties(p);
+  Eina_Inarray* arr = object_init_array_properties();
+  property_set(p,arr);
 
   return p;
 }

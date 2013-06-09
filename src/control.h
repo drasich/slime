@@ -34,7 +34,7 @@ void control_mouse_move(Control* c, Evas_Event_Mouse_Move *e);
 bool control_mouse_down(Control* c, Evas_Event_Mouse_Down *e);
 void control_key_down(Control* c, Evas_Event_Key_Down *e);
 
-void control_property_changed(Control* c, Object* o, Prop* p);
+void control_property_changed(Control* c, Object* o, Property* p);
 
 typedef void (*do_cb)(Control* c, void* data);
 typedef void (*undo_cb)(Control* c, void* data);

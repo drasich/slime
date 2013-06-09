@@ -1,6 +1,5 @@
 #include "component/transform.h"
-#include "ui/property_view.h" //TODO change/remove
-//#include <Eina.h>
+#include "property.h"
 #include <Eet.h>
 
 static const char VEC3_FILE_ENTRY[] = "Vec3";
@@ -146,7 +145,7 @@ void test_display()
   Transform yep = { vec3(1.98,2,3), vec3(4,5,6), 7};
   printf("size of double %d \n", sizeof(double));
 
-  Prop *p;
+  Property *p;
   EINA_INARRAY_FOREACH(iarr, p) {
    printf("name: %s , type: %d, offset: %d\n", p->name, p->type, p->offset);
    printf("   value is : ");

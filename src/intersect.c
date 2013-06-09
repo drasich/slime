@@ -489,3 +489,152 @@ planes_is_box_in_allow_false_positives(Plane* p, int nb_planes, OBox b)
 	return true;
 }
 
+
+bool
+planes_is_in_object(Plane* p, int nb_planes, Object* o)
+{
+  Mesh* m = o->mesh;
+  if (!m) return false;
+
+  Repere r = {o->Position, o->Orientation};
+  Quat iq = quat_conj(r.rotation);
+
+  int i;
+  for (i = 0; i< nb_planes; i++) {
+    Vec3 point = p[i].Point;
+    p[i].Point =  world_to_local(r, point);
+    //p[i].Normal = quat_rotate_vec3(iq,p[i].Normal);
+    p[i].Normal = world_to_local(r, vec3_add(p[i].Normal, point));
+    p[i].Normal = vec3_sub(p[i].Normal, p[i].Point);
+
+    //newray.Direction = world_to_local(r, vec3_add(ray.Direction, ray.Start));
+    //newray.Direction = vec3_sub(newray.Direction, newray.Start);
+  }
+
+  for (i = 0; i < m->indices_len; i+=3) {
+    int id = m->indices[i];
+    Vec3 v0 = { 
+      m->vertices[id*3],
+      m->vertices[id*3 + 1],
+      m->vertices[id*3 + 2]
+    };
+    id = m->indices[i+1];
+    Vec3 v1 = { 
+      m->vertices[id*3],
+      m->vertices[id*3 + 1],
+      m->vertices[id*3 + 2]
+    };
+    id = m->indices[i+2];
+    Vec3 v2 = { 
+      m->vertices[id*3],
+      m->vertices[id*3 + 1],
+      m->vertices[id*3 + 2]
+    };
+    Triangle tri = { v0, v1, v2};
+    if (planes_is_in_triangle(p, nb_planes, tri)) return true;
+  }
+
+  return false;
+}
+
+
+static IntersectionPlaneTriangle
+_intersection_plane_triangle(Plane p, Triangle t)
+{
+  IntersectionPlaneTriangle ipt = { false, { vec3_zero(), vec3_zero()} };
+
+  bool b0 = plane_is_in(p, t.v0);
+  bool b1 = plane_is_in(p, t.v1);
+  bool b2 = plane_is_in(p, t.v2);
+
+  Ray r0, r1;
+
+  if (b0 != b1) {
+    ipt.intersect = true;
+    if (b0 != b2) {
+      //bo is alone
+      r0.Start = t.v0;
+      r0.Direction = vec3_sub(t.v1, t.v0);
+      r1.Start = t.v0;
+      r1.Direction = vec3_sub(t.v2, t.v0);
+    }
+    else {
+      //b1 is alone
+      r0.Start = t.v1;
+      r0.Direction = vec3_sub(t.v0, t.v1);
+      r1.Start = t.v1;
+      r1.Direction = vec3_sub(t.v2, t.v1);
+    }
+  }
+  else if ( b0 != b2){
+    ipt.intersect = true;
+    //b2 is alone
+    r0.Start = t.v2;
+    r0.Direction = vec3_sub(t.v0, t.v2);
+    r1.Start = t.v2;
+    r1.Direction = vec3_sub(t.v1, t.v2);
+  }
+
+  if (ipt.intersect) {
+    IntersectionRay ir0 = intersection_ray_plane(r0, p);
+    IntersectionRay ir1 = intersection_ray_plane(r1, p);
+    ipt.segment.p0 = ir0.position;
+    ipt.segment.p1 = ir1.position;
+  }
+
+  //there is at least one point in the plane
+  //we need to test if the intersection of the
+  //plane and the triangle is in the frustum
+
+  return ipt;
+}
+
+bool
+planes_is_in_triangle(Plane* p, int nb_planes, Triangle t)
+{
+  int i;
+  bool point_is_in = true;
+  for (i = 0; i< nb_planes; i++) {
+    if (!plane_is_in(p[i], t.v0)) {
+      point_is_in = false;
+      break;
+    }
+  }
+
+  if (point_is_in) return true;
+
+  point_is_in = true;
+  for (i = 0; i< nb_planes; i++) {
+    if (!plane_is_in(p[i], t.v1)) {
+      point_is_in = false;
+      break;
+    }
+  }
+
+  if (point_is_in) return true;
+
+  point_is_in = true;
+  for (i = 0; i< nb_planes; i++) {
+    if (!plane_is_in(p[i], t.v2)) {
+      point_is_in = false;
+      break;
+    }
+  }
+
+  if (point_is_in) return true;
+
+  //TODO stuff here when points are not inside the plan
+  // like axis separating test
+
+  for (i = 0; i< nb_planes; i++) {
+    IntersectionPlaneTriangle ipt = _intersection_plane_triangle(p[i], t);
+    if (ipt.intersect) {
+      //check if segment intersect the plane or frustum
+      //il ne suffit pas de juste tester les points
+      
+    }
+  }
+
+  return false;
+}
+

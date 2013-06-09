@@ -7,10 +7,12 @@
 #include "armature.h"
 #include "animation.h"
 #include "line.h"
+#include "component/transform.h"
 
 typedef struct _Object Object;
 
 struct _Object {
+  Transform transform;
   Vec3 Position;
   Quat Orientation;
   Vec3 angles;

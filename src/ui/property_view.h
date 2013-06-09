@@ -3,7 +3,6 @@
 #include "object.h"
 #include "context.h"
 #include "control.h"
-#include "property.h"
 
 typedef struct _PropertyView PropertyView;
 
@@ -17,6 +16,7 @@ struct _PropertyView
   Eina_Hash *properties;
   Evas_Object* win;
   Eina_Inarray *arr;
+  Eina_Inarray *array_objects;
 };
 
 Evas_Object* property_add_entry(

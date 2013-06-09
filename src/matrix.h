@@ -2,6 +2,8 @@
 #define __matrix__
 #include "gl.h"
 #include "quat.h"
+#undef near
+#undef far
 
 // matrices are row major in this code:
 // 0 1 2 3

@@ -3,6 +3,8 @@
 #include "vec.h"
 #include "quat.h"
 #include <stdbool.h>
+#undef near
+#undef far
 
 typedef struct _Ray Ray;
 
@@ -80,6 +82,14 @@ struct _OBox {
 */
 
 void aabox_to_obox(AABox a, OBox o, Vec3 v, Quat q);
+
+
+typedef struct _Segment Segment;
+
+struct _Segment {
+  Vec3 p0;
+  Vec3 p1;
+};
 
 
 

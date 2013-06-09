@@ -152,12 +152,18 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
 
 }
 
-/*
 void
-control_property_changed(Control* c, Object* o, Prop* p)
+control_property_changed(Control* c, Object* o, Property* p)
 {
+  //TODO add emitter in the arguments to know where the property was changed
+  tree_update_object(c->view->tree, o);
+  //TODO when create tree and property view, make something like control_add_listener(control, tree)
+  //so we can tell the listeners there was a change
+
+  //TODO undo/redo for property change with an operation
+  //printf("prop change\n");
+
 }
-*/
 
 static Operation* 
 _op_move_object(Eina_List* objects, Vec3 start, Vec3 end)
