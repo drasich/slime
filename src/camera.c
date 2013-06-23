@@ -217,6 +217,9 @@ camera_get_frustum_planes_rect(
   Vec3 right = quat_rotate_vec3(c->object.Orientation, vec3(1,0,0));
   Vec3 up = quat_rotate_vec3(c->object.Orientation, vec3(0,1,0));
 
+  //plane order:
+  //near, far, up, down, right, left
+
   //near plane
   p[0].Point = vec3_add(c->object.Position, vec3_mul(direction, c->near));
   p[0].Normal = direction;
@@ -283,5 +286,56 @@ camera_get_frustum_planes_rect(
   printf(" up : %f, %f, %f \n", up.X, up.Y, up.Z);
   printf(" up plane normal : %f, %f, %f \n", nn.X, nn.Y, nn.Z);
   */
+}
+
+void camera_get_frustum_points_rect(
+      Camera*c,
+      Vec3* out_planes,
+      float left, float top, float width, float height)
+{
+  Vec3 direction = quat_rotate_vec3(c->object.Orientation, vec3(0,0,-1));
+  Vec3 right = quat_rotate_vec3(c->object.Orientation, vec3(1,0,0));
+  Vec3 up = quat_rotate_vec3(c->object.Orientation, vec3(0,1,0));
+
+  //near plane
+  Vec3 nearcenter = vec3_add(c->object.Position, vec3_mul(direction, c->near));
+
+  //far plane
+  Vec3 farcenter = vec3_add(c->object.Position, vec3_mul(direction, c->far));
+
+  float hh = tan(c->fovy/2)* c->near;
+  top = top * hh / (c->height/2.0f);
+  height = height * hh / (c->height/2.0f);
+  float th = hh - top;
+  float bh = hh - (top + height);
+
+  float hw = hh * c->aspect;
+  left = left * hw / (c->width/2.0f);
+  width = width * hw / (c->width/2.0f);
+  float lw = -hw + left;
+  float rw = -hw + (left + width);
+
+  Vec3 near_topleft = vec3_add(nearcenter,
+        vec3_mul(right, lw));
+
+  near_topleft = vec3_add(near_topleft,
+        vec3_mul(up, th));
+
+  printf("topleft : %f, %f, %f \n", near_topleft.X, near_topleft.Y, near_topleft.Z);
+
+  Vec3 near_topright = vec3_add(nearcenter,
+        vec3_mul(right, rw));
+
+  near_topright = vec3_add(near_topright,
+        vec3_mul(up, th));
+
+
+  //point order :
+  //
+  //near topleft, topright, bottom right, bottom left
+  //
+  //far topleft, topright, bottom right, bottom left
+
 
 }
+

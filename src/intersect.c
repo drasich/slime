@@ -582,10 +582,6 @@ _intersection_plane_triangle(Plane p, Triangle t)
     ipt.segment.p1 = ir1.position;
   }
 
-  //there is at least one point in the plane
-  //we need to test if the intersection of the
-  //plane and the triangle is in the frustum
-
   return ipt;
 }
 
@@ -629,6 +625,11 @@ planes_is_in_triangle(Plane* p, int nb_planes, Triangle t)
   for (i = 0; i< nb_planes; i++) {
     IntersectionPlaneTriangle ipt = _intersection_plane_triangle(p[i], t);
     if (ipt.intersect) {
+      //
+      //there is at least one point in the plane
+      //we need to test if the intersection of the
+      //plane and the triangle is in the frustum
+
       //check if segment intersect the plane or frustum
       //il ne suffit pas de juste tester les points
       

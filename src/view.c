@@ -114,15 +114,10 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
 
   Plane planes[6];
   camera_get_frustum_planes_rect(c, planes, sx, sy, yepx, yepy );
-  //camera_get_frustum_planes_rect(c, planes, 0, 0, c->width, c->height );
-  //camera_get_frustum_planes(c, planes);
 
-  /*
-  if (planes_is_in(planes, 6, vec3(0,0,0)))
-  printf("!!!!!!!!!! is in\n");
-  else
-  printf("WWWWWWWWWWW is NOTin\n");
-  */
+  Vec3 points[8];
+  camera_get_frustum_points_rect(c, points, sx, sy, yepx, yepy );
+
 
   Render* r = v->render;
 
