@@ -290,7 +290,7 @@ camera_get_frustum_planes_rect(
 
 void camera_get_frustum_points_rect(
       Camera*c,
-      Vec3* out_planes,
+      Vec3* p,
       float left, float top, float width, float height)
 {
   Vec3 direction = quat_rotate_vec3(c->object.Orientation, vec3(0,0,-1));
@@ -315,21 +315,6 @@ void camera_get_frustum_points_rect(
   float lw = -hw + left;
   float rw = -hw + (left + width);
 
-  Vec3 near_topleft = vec3_add(nearcenter,
-        vec3_mul(right, lw));
-
-  near_topleft = vec3_add(near_topleft,
-        vec3_mul(up, th));
-
-  printf("topleft : %f, %f, %f \n", near_topleft.X, near_topleft.Y, near_topleft.Z);
-
-  Vec3 near_topright = vec3_add(nearcenter,
-        vec3_mul(right, rw));
-
-  near_topright = vec3_add(near_topright,
-        vec3_mul(up, th));
-
-
   //point order :
   //
   //near topleft, topright, bottom right, bottom left
@@ -337,5 +322,170 @@ void camera_get_frustum_points_rect(
   //far topleft, topright, bottom right, bottom left
 
 
+  // planes order : near, far, up, down, right, left
+
+  //near
+  p[0] =
+   vec3_add(
+         vec3_add(nearcenter, vec3_mul(right, lw)),
+         vec3_mul(up, th)
+         );
+
+  //printf("topleft : %f, %f, %f \n", p[0].X, p[0].Y, p[0].Z);
+
+  p[1] = 
+   vec3_add(
+         vec3_add(nearcenter, vec3_mul(right, rw)),
+         vec3_mul(up, th)
+         );
+
+  //printf("topright : %f, %f, %f \n", p[1].X, p[1].Y, p[1].Z);
+
+  p[2] = 
+   vec3_add(
+         vec3_add(nearcenter, vec3_mul(right, rw)),
+         vec3_mul(up, bh)
+         );
+
+  //printf("bottomright : %f, %f, %f \n", p[2].X, p[2].Y, p[2].Z);
+
+  p[3] = 
+   vec3_add(
+         vec3_add(nearcenter, vec3_mul(right, lw)),
+         vec3_mul(up, bh)
+         );
+
+  //printf("bottomleft : %f, %f, %f \n", p[3].X, p[3].Y, p[3].Z);
+
+
+  // far TODO change values
+  float ratio = c->far/c->near;
+  p[4] =
+   vec3_add(
+         vec3_add(farcenter, vec3_mul(right, ratio*lw)),
+         vec3_mul(up, ratio*th)
+         );
+
+  p[5] = 
+   vec3_add(
+         vec3_add(farcenter, vec3_mul(right, ratio*rw)),
+         vec3_mul(up, ratio*th)
+         );
+
+  p[6] = 
+   vec3_add(
+         vec3_add(farcenter, vec3_mul(right, ratio*rw)),
+         vec3_mul(up, ratio*bh)
+         );
+
+  p[7] = 
+   vec3_add(
+         vec3_add(farcenter, vec3_mul(right, ratio*lw)),
+         vec3_mul(up, ratio*bh)
+         );
+  
+  //up 
+  // near left, far left, far right, near right
+  p[8] =
+   vec3_add(
+         vec3_add(nearcenter, vec3_mul(right, lw)),
+         vec3_mul(up, th)
+         );
+
+  p[9] = 
+   vec3_add(
+         vec3_add(farcenter, vec3_mul(right, ratio*lw)),
+         vec3_mul(up, ratio*th)
+         );
+
+  p[10] = 
+   vec3_add(
+         vec3_add(farcenter, vec3_mul(right, ratio*rw)),
+         vec3_mul(up, ratio*th)
+         );
+
+  p[11] = 
+   vec3_add(
+         vec3_add(nearcenter, vec3_mul(right, lw)),
+         vec3_mul(up, th)
+         );
+
+  //bottom
+  // near left, far left, far right, near right
+  p[12] =
+   vec3_add(
+         vec3_add(nearcenter, vec3_mul(right, lw)),
+         vec3_mul(up, bh)
+         );
+
+  p[13] = 
+   vec3_add(
+         vec3_add(farcenter, vec3_mul(right, ratio*lw)),
+         vec3_mul(up, ratio*bh)
+         );
+
+  p[14] = 
+   vec3_add(
+         vec3_add(farcenter, vec3_mul(right, ratio*rw)),
+         vec3_mul(up, ratio*bh)
+         );
+
+  p[15] = 
+   vec3_add(
+         vec3_add(nearcenter, vec3_mul(right, lw)),
+         vec3_mul(up, bh)
+         );
+
+  //left
+  // near bottom, far bottom, far up, near up
+  p[16] =
+   vec3_add(
+         vec3_add(nearcenter, vec3_mul(right, lw)),
+         vec3_mul(up, bh)
+         );
+
+  p[17] = 
+   vec3_add(
+         vec3_add(farcenter, vec3_mul(right, ratio*lw)),
+         vec3_mul(up, ratio*bh)
+         );
+
+  p[18] = 
+   vec3_add(
+         vec3_add(farcenter, vec3_mul(right, ratio*lw)),
+         vec3_mul(up, ratio*th)
+         );
+
+  p[19] = 
+   vec3_add(
+         vec3_add(nearcenter, vec3_mul(right, lw)),
+         vec3_mul(up, th)
+         );
+
+  //right
+  // near bottom, far bottom, far up, near up
+  p[20] =
+   vec3_add(
+         vec3_add(nearcenter, vec3_mul(right, rw)),
+         vec3_mul(up, bh)
+         );
+
+  p[21] = 
+   vec3_add(
+         vec3_add(farcenter, vec3_mul(right, ratio*rw)),
+         vec3_mul(up, ratio*bh)
+         );
+
+  p[22] = 
+   vec3_add(
+         vec3_add(farcenter, vec3_mul(right, ratio*rw)),
+         vec3_mul(up, ratio*th)
+         );
+
+  p[23] = 
+   vec3_add(
+         vec3_add(nearcenter, vec3_mul(right, rw)),
+         vec3_mul(up, th)
+         );
 }
 

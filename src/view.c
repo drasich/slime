@@ -115,7 +115,7 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   Plane planes[6];
   camera_get_frustum_planes_rect(c, planes, sx, sy, yepx, yepy );
 
-  Vec3 points[8];
+  Vec3 points[24];
   camera_get_frustum_points_rect(c, points, sx, sy, yepx, yepy );
 
 
@@ -134,7 +134,7 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
     //
     //  do the separating axis test
     //if (planes_is_box_in_allow_false_positives(planes, 6, b)) {
-    if (planes_is_in_object(planes, 6, o)) {
+    if (planes_is_in_object(planes, 6, points, o)) {
       context_add_object(v->context, o);
     }
   }

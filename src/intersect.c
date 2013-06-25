@@ -491,7 +491,7 @@ planes_is_box_in_allow_false_positives(Plane* p, int nb_planes, OBox b)
 
 
 bool
-planes_is_in_object(Plane* p, int nb_planes, Object* o)
+planes_is_in_object(Plane* p, int nb_planes, Vec3* points, Object* o)
 {
   Mesh* m = o->mesh;
   if (!m) return false;
@@ -531,7 +531,7 @@ planes_is_in_object(Plane* p, int nb_planes, Object* o)
       m->vertices[id*3 + 2]
     };
     Triangle tri = { v0, v1, v2};
-    if (planes_is_in_triangle(p, nb_planes, tri)) return true;
+    if (planes_is_in_triangle(p, nb_planes, points, tri)) return true;
   }
 
   return false;
@@ -586,7 +586,13 @@ _intersection_plane_triangle(Plane p, Triangle t)
 }
 
 bool
-planes_is_in_triangle(Plane* p, int nb_planes, Triangle t)
+_check_inter(Plane p, Vec3 v0, Vec3 v1, Vec3 v2, Vec3 v3, Segment s)
+{
+  return false;
+}
+
+bool
+planes_is_in_triangle(Plane* p, int nb_planes, Vec3* points, Triangle t)
 {
   int i;
   bool point_is_in = true;
@@ -625,6 +631,8 @@ planes_is_in_triangle(Plane* p, int nb_planes, Triangle t)
   for (i = 0; i< nb_planes; i++) {
     IntersectionPlaneTriangle ipt = _intersection_plane_triangle(p[i], t);
     if (ipt.intersect) {
+      
+      _check_inter(p[i], points[0], points[1], points[2], points[3], ipt.segment);
       //
       //there is at least one point in the plane
       //we need to test if the intersection of the

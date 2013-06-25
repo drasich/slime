@@ -35,8 +35,8 @@ bool frustum_is_in_rect(Frustum* f, Vec3 p, float left, float top, float width, 
 bool planes_is_in(Plane*, int nb_planes, Vec3 p);
 bool planes_is_box_in_allow_false_positives(Plane* p, int nb_planes, OBox b);
 
-bool planes_is_in_object(Plane* p, int nb_planes, Object* o);
-bool planes_is_in_triangle(Plane* p, int nb_planes, Triangle t);
+bool planes_is_in_object(Plane* p, int nb_planes, Vec3* points, Object* o);
+bool planes_is_in_triangle(Plane* p, int nb_planes, Vec3* points, Triangle t);
 
 typedef struct _IntersectionPlaneTriangle IntersectionPlaneTriangle;
 struct _IntersectionPlaneTriangle {
