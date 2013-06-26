@@ -115,27 +115,19 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   Plane planes[6];
   camera_get_frustum_planes_rect(c, planes, sx, sy, yepx, yepy );
 
-  Vec3 points[24];
-  camera_get_frustum_points_rect(c, points, sx, sy, yepx, yepy );
-
-
   Render* r = v->render;
 
   context_clean_objects(v->context);
   Eina_List *l;
   Object *o;
   EINA_LIST_FOREACH(r->objects, l, o) {
+    //first test the box and then test the object/mesh
     OBox b;
     aabox_to_obox(o->mesh->box, b, o->Position, o->Orientation);
-    //TODO don't add false positives : use a different method,
-    //for each triandle of the mesh, do:
-    //check if any of the 3 points are inside with frustum_is_in. if yes then return true
-    //else for each planes :
-    //
-    //  do the separating axis test
-    //if (planes_is_box_in_allow_false_positives(planes, 6, b)) {
-    if (planes_is_in_object(planes, 6, points, o)) {
-      context_add_object(v->context, o);
+    if (planes_is_box_in_allow_false_positives(planes, 6, b)) {
+      if (planes_is_in_object(planes, 6, o)) {
+        context_add_object(v->context, o);
+      }
     }
   }
 

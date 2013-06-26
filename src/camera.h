@@ -57,10 +57,5 @@ void camera_get_frustum_planes_rect(
       Plane* out_planes,
       float left, float top, float width, float height);
 
-void camera_get_frustum_points_rect(
-      Camera*c,
-      Vec3* out_planes,
-      float left, float top, float width, float height);
-
 
 #endif
