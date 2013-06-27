@@ -18,7 +18,7 @@ control_set_state(Control* c, int state)
   c->state = state;
 }
 
-Vec3
+static Vec3
 _objects_center(Control* c, Eina_List* objects)
 {
   int size = eina_list_count(objects);
@@ -27,11 +27,13 @@ _objects_center(Control* c, Eina_List* objects)
   Object *o;
   Vec3 v = vec3_zero();
   EINA_LIST_FOREACH(objects, l, o) {
-    vec3_add(v, o->Position);
+    v = vec3_add(v, o->Position);
     eina_inarray_push(c->positions, &o->Position);
   }
 
-  vec3_mul(v, 1.0/(float)size);
+  v = vec3_mul(v, 1.0/(float)size);
+
+  return v;
 }
 
 void
@@ -166,7 +168,7 @@ control_property_changed(Control* c, Object* o, Property* p)
 }
 
 static Operation* 
-_op_move_object(Eina_List* objects, Vec3 start, Vec3 end)
+_op_move_object(Eina_List* objects, Vec3 translation)
 {
   Operation* op = calloc(1, sizeof *op);
 
@@ -175,7 +177,7 @@ _op_move_object(Eina_List* objects, Vec3 start, Vec3 end)
 
   Op_Move_Object* omo = calloc(1, sizeof *omo);
   omo->objects = eina_list_clone(objects);
-  omo->translation = vec3_sub(end, start);
+  omo->translation = translation;
 
   op->data = omo;
 
@@ -215,8 +217,6 @@ _op_remove_object(Scene* s, Eina_List* objects)
   return op;
 }
 
-
-
 bool
 control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
 {
@@ -227,10 +227,11 @@ control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
     Object* o = context_get_object(c->view->context);
     Eina_List* objects = context_get_objects(c->view->context);
 
+    Vec3 center = _objects_center(c, objects);
+
     Operation* op = _op_move_object(
           objects,
-          c->start,
-          o->Position);
+          vec3_sub(center, c->start));
 
     control_add_operation(c, op);
     return true;
