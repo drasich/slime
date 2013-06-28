@@ -431,13 +431,40 @@ _create_glview(View* view, Evas_Object* win)
 }
 
 static void
+_file_chosen(void *data, Evas_Object *obj __UNUSED__, void *event_info)
+{
+  const char *file = event_info;
+  View* v = data;
+  if (file)
+   {
+    printf("File chosen: %s\n", file);
+    Object* yep = create_object_file(file);
+    yep->mesh->shader = v->control->shader_simple;
+
+    yep->name = eina_stringshare_add("new_object");
+    Vec3 cp = v->camera->object.Position;
+    Vec3 direction = quat_rotate_vec3(v->camera->object.Orientation, vec3(0,0,-1));
+    cp = vec3_add(
+          cp,
+          vec3_mul(direction, 30));
+    
+    object_set_position(yep, cp);
+    control_add_object(v->control, v->context->scene, yep);
+
+   }
+  else
+    printf("selection canceled\n");
+}
+
+
+static void
 _new_object(void            *data,
              Evas_Object *obj,
              void            *event_info)
 {
+  printf("new object\n");
   return;
   View* v = (View*) data;
-  printf("new object\n");
   tree_add_object(v->tree, NULL);
 
 }
@@ -453,7 +480,7 @@ _add_buttons(View* v, Evas_Object* win)
 
   fs_bt = elm_fileselector_button_add(win);
   elm_object_focus_allow_set(fs_bt, 0);
-  elm_fileselector_button_path_set(fs_bt, "/home/chris");
+  elm_fileselector_button_path_set(fs_bt, "/home/chris/code/slime/model");
   elm_object_text_set(fs_bt, "Select a file");
   elm_object_part_content_set(fs_bt, "icon", ic);
 
@@ -469,7 +496,7 @@ _add_buttons(View* v, Evas_Object* win)
   evas_object_resize(fs_bt, 100, 25);
   evas_object_move(fs_bt, 15, 15);
 
-  //evas_object_smart_callback_add(fs_bt, "file,chosen", _file_chosen, actors);
+  evas_object_smart_callback_add(fs_bt, "file,chosen", _file_chosen, v);
 
 
   bt = elm_button_add(win);

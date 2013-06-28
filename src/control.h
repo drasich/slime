@@ -22,6 +22,7 @@ struct _Control{
   Eina_Inarray* positions;
   Eina_List* undo;
   Eina_List* redo;
+  Shader* shader_simple;//TODO remove from here
 };
 
 

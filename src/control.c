@@ -10,6 +10,8 @@ create_control(View* v)
   c->state = IDLE;
   c->view = v;
   c->redo = NULL;
+  c->shader_simple = create_shader("shader/simple.vert", "shader/simple.frag");
+  return c;
 }
 
 void
@@ -243,9 +245,13 @@ control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
 void
 control_add_object(Control* c, Scene* s, Object* o)
 {
+  printf("scene %p \n", s);
     Operation* op = _op_add_object(s,o);
+  printf("add object 00 \n");
     control_add_operation(c, op);
+  printf("add object 10\n");
     op->do_cb(c, op->data);
+  printf("add object 20\n");
 }
 
 
