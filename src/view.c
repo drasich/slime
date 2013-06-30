@@ -437,11 +437,20 @@ _file_chosen(void *data, Evas_Object *obj __UNUSED__, void *event_info)
   View* v = data;
   if (file)
    {
-    printf("File chosen: %s\n", file);
     Object* yep = create_object_file(file);
+    const char *slash = strrchr(file, '/');
+    const char *dot = strrchr(file, '.');
+    if (slash && dot) {
+      int size = dot - (slash+1);
+      char* dup = strndup(slash+1, size);
+      yep->name = eina_stringshare_add(dup);
+      free(dup);
+    }
+    else
+    yep->name = eina_stringshare_add("new_object");
+
     yep->mesh->shader = v->control->shader_simple;
 
-    yep->name = eina_stringshare_add("new_object");
     Vec3 cp = v->camera->object.Position;
     Vec3 direction = quat_rotate_vec3(v->camera->object.Orientation, vec3(0,0,-1));
     cp = vec3_add(
@@ -450,6 +459,12 @@ _file_chosen(void *data, Evas_Object *obj __UNUSED__, void *event_info)
     
     object_set_position(yep, cp);
     control_add_object(v->control, v->context->scene, yep);
+
+    Eina_List* l = context_get_objects(v->context);
+    //context_clean_objects(v->context);
+    if (eina_list_count(l) == 0) {
+      context_add_object(v->context, yep);
+    }
 
    }
   else
@@ -481,8 +496,12 @@ _add_buttons(View* v, Evas_Object* win)
   fs_bt = elm_fileselector_button_add(win);
   elm_object_focus_allow_set(fs_bt, 0);
   elm_fileselector_button_path_set(fs_bt, "/home/chris/code/slime/model");
-  elm_object_text_set(fs_bt, "Select a file");
+  elm_object_text_set(fs_bt, "Add object");
   elm_object_part_content_set(fs_bt, "icon", ic);
+  elm_fileselector_button_expandable_set(fs_bt, EINA_TRUE);
+  //elm_fileselector_mode_set(fs_bt, ELM_FILESELECTOR_LIST);
+  elm_fileselector_button_inwin_mode_set(fs_bt, EINA_TRUE);
+
 
   //elm_box_pack_end(vbox, fs_bt);
   evas_object_show(fs_bt);
@@ -502,7 +521,7 @@ _add_buttons(View* v, Evas_Object* win)
   bt = elm_button_add(win);
   elm_object_focus_allow_set(bt, 0);
 
-  elm_object_text_set(bt, "New object");
+  elm_object_text_set(bt, "Add empty");
   evas_object_show(bt);
 
   evas_object_color_set(bt, r,g,b,a);
