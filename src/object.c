@@ -7,7 +7,7 @@ void
 object_init(Object* o)
 {
   quat_set_identity(&o->Orientation);
-  o->name = eina_stringshare_add("dance");
+  //o->name = eina_stringshare_add("dance");
 }
 
 void

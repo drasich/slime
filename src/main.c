@@ -1,5 +1,6 @@
 #include <Elementary.h>
 #include "view.h"
+#include "ui/tree.h"
 #include "scene.h"
 #include "control.h"
 #define __UNUSED__

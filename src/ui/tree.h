@@ -2,6 +2,7 @@
 #define __ui_tree__
 //#include "object.h"
 #include "context.h"
+#include "view.h"
 
 typedef struct _Tree Tree;
 
@@ -14,7 +15,8 @@ struct _Tree
   Context *context;
 };
 
-Tree* create_widget_tree(Evas_Object* win, Context* context);
+//Tree* create_widget_tree(Evas_Object* win, Context* context);
+Tree* create_widget_tree(Evas_Object* win, View* view);
 void tree_add_object(Tree* t,  struct _Object* o);
 void tree_remove_object(Tree* t,  struct _Object* o);
 

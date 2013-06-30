@@ -7,6 +7,7 @@
 #include "context.h"
 #include "control.h"
 #include "ui/property_view.h"
+#include "ui/tree.h"
 #include "intersect.h"
 #define __UNUSED__
 
@@ -460,27 +461,32 @@ _file_chosen(void *data, Evas_Object *obj __UNUSED__, void *event_info)
     object_set_position(yep, cp);
     control_add_object(v->control, v->context->scene, yep);
 
-    Eina_List* l = context_get_objects(v->context);
-    //context_clean_objects(v->context);
-    if (eina_list_count(l) == 0) {
-      context_add_object(v->context, yep);
-    }
-
+    context_clean_objects(v->context);
+    context_add_object(v->context, yep);
    }
-  else
-    printf("selection canceled\n");
 }
 
 
 static void
-_new_object(void            *data,
+_new_empty(void            *data,
              Evas_Object *obj,
              void            *event_info)
 {
-  printf("new object\n");
-  return;
+  Object* yep = create_object();
+  yep->name = eina_stringshare_add("empty");
   View* v = (View*) data;
-  tree_add_object(v->tree, NULL);
+
+  Vec3 cp = v->camera->object.Position;
+  Vec3 direction = quat_rotate_vec3(v->camera->object.Orientation, vec3(0,0,-1));
+  cp = vec3_add(
+        cp,
+        vec3_mul(direction, 30));
+
+  object_set_position(yep, cp);
+  control_add_object(v->control, v->context->scene, yep);
+
+  context_clean_objects(v->context);
+  context_add_object(v->context, yep);
 
 }
 
@@ -528,7 +534,7 @@ _add_buttons(View* v, Evas_Object* win)
   evas_object_resize(bt, 100, 25);
   evas_object_move(bt, 15, 45);
   evas_object_data_set(bt, "view", v);
-  evas_object_smart_callback_add(bt, "clicked", _new_object, v);
+  evas_object_smart_callback_add(bt, "clicked", _new_empty, v);
   //view->addObjectToHide(bt);
   //view->addObjectToHide(fs_bt);
 
@@ -575,7 +581,7 @@ create_view(Evas_Object *win)
   _add_buttons(view, win);
 
   view->property = create_property(win, view->context, view->control);
-  view->tree = create_widget_tree(win, view->context);
+  view->tree = create_widget_tree(win, view);
   evas_object_data_set(view->glview, "view", view);
 
   _create_view_objects(view);
@@ -611,8 +617,7 @@ view_update(View* v, double dt)
   r->objects = eina_list_free(r->objects);
 
   EINA_LIST_FOREACH(s->objects, l, o) {
-    //TODO compute the box from the axis aligned box
-    //and the orientation of the object
+    if (!o->mesh) continue;
     OBox b;
     aabox_to_obox(o->mesh->box, b, o->Position, o->Orientation);
     /*

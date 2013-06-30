@@ -1,10 +1,10 @@
-#ifndef _VIEW_H__
-#define _VIEW_H__
+#ifndef __VIEW_H__
+#define __VIEW_H__
 #include "matrix.h"
 #include "camera.h"
 #include "fbo.h"
 #include "ui/property_view.h"
-#include "ui/tree.h"
+//#include "ui/tree.h"
 
 typedef struct _Render Render;
 struct _Render
@@ -26,7 +26,7 @@ struct _View
   struct _Control* control;
   Evas_Object* glview;
   PropertyView* property;
-  Tree* tree;
+  struct _Tree* tree;
   Evas_Object* box;
   Camera* camera;
   Render* render;

@@ -2,6 +2,8 @@
 #include <Eina.h>
 #include "tree.h"
 #include "object.h"
+#include "view.h"
+#include "ui/property_view.h"
 #define __UNUSED__
 
 static Elm_Genlist_Item_Class *itc1;
@@ -61,6 +63,9 @@ gl4_sel(void *data, Evas_Object *obj __UNUSED__, void *event_info)
    if (context) { 
      context_clean_objects(context);
      context_add_object(context, (Object*) elm_object_item_data_get(glit));
+     //TODO chris
+     //property_update(v->property, v->context->objects);
+     //tree_select_object(v->tree, o);
    }
 }
 
@@ -124,10 +129,10 @@ _tree_effect_disable_cb(void *data, Evas_Object *obj __UNUSED__, void *event_inf
 
 
 Tree* 
-create_widget_tree(Evas_Object* win, Context* context)
+create_widget_tree(Evas_Object* win, struct _View* v)
 {
   Tree *t = calloc(1, sizeof *t);
-  t->context = context;
+  t->context = v->context;
 
   Evas_Object *gli, *bx, *rd1, *rd2, *frame;
 
