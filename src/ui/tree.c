@@ -59,13 +59,12 @@ gl4_sel(void *data, Evas_Object *obj __UNUSED__, void *event_info)
    //int depth = elm_genlist_item_expanded_depth_get(glit);
    //printf("expanded depth for selected item is %d", depth);
 
-   Context* context = (Context*) data;
-   if (context) { 
+   View* v = data;
+   if (v) { 
+     Context* context = v->context;
      context_clean_objects(context);
      context_add_object(context, (Object*) elm_object_item_data_get(glit));
-     //TODO chris
-     //property_update(v->property, v->context->objects);
-     //tree_select_object(v->tree, o);
+     property_update(v->property, context->objects);
    }
 }
 
@@ -133,6 +132,7 @@ create_widget_tree(Evas_Object* win, struct _View* v)
 {
   Tree *t = calloc(1, sizeof *t);
   t->context = v->context;
+  t->view = v;
 
   Evas_Object *gli, *bx, *rd1, *rd2, *frame;
 
@@ -213,7 +213,7 @@ tree_add_object(Tree* t,  Object* o)
                                   NULL, //elm_genlist_item_parent_get(gli_selected),
                                   ELM_GENLIST_ITEM_NONE,
                                   //NULL/* func */, NULL/* func data */);
-                                  gl4_sel, t->context);
+                                  gl4_sel, t->view);
 
   return;
 

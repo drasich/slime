@@ -13,6 +13,7 @@ struct _Tree
   Evas_Object* gl;
 
   Context *context;
+  View *view;
 };
 
 //Tree* create_widget_tree(Evas_Object* win, Context* context);
