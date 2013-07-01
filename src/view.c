@@ -242,7 +242,7 @@ _mouse_up(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event
   Evas_Object* rect = v->select_rect;
   evas_object_hide(rect);
   property_update(v->property, v->context->objects);
-  if (v->context->object)
+  if (eina_list_count(v->context->objects) == 0)
   tree_select_object(v->tree, v->context->object);
 }
 
