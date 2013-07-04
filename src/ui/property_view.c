@@ -261,8 +261,8 @@ property_set(PropertyView* pw, Eina_Inarray* a)
   }
 }
 
-Eina_Inarray* 
-object_init_array_properties()
+static Eina_Inarray* 
+_object_init_array_properties()
 {
   Eina_Inarray * iarr = create_property_set();
 
@@ -275,22 +275,21 @@ object_init_array_properties()
   ADD_PROP(iarr, Object, angles.Z, EET_T_DOUBLE);
 
   return iarr;
-
 }
 
-static Eina_Inarray*
-_objects_init_array_properties()
+static Eina_Inarray* 
+_multiple_objects_init_array_properties()
 {
-  Eina_Inarray* iarr = create_property_set();
+  Eina_Inarray * iarr = create_property_set();
 
-  ADD_PROP(iarr, Object, Position.X, EET_T_DOUBLE);
-  ADD_PROP(iarr, Object, Position.Y, EET_T_DOUBLE);
-  ADD_PROP(iarr, Object, Position.Z, EET_T_DOUBLE);
-  ADD_PROP(iarr, Object, angles.X, EET_T_DOUBLE);
-  ADD_PROP(iarr, Object, angles.Y, EET_T_DOUBLE);
-  ADD_PROP(iarr, Object, angles.Z, EET_T_DOUBLE);
+  ADD_PROP(iarr, Multiple_Objects_Selection, center.X, EET_T_DOUBLE);
+  ADD_PROP(iarr, Multiple_Objects_Selection, center.Y, EET_T_DOUBLE);
+  ADD_PROP(iarr, Multiple_Objects_Selection, center.Z, EET_T_DOUBLE);
+  ADD_PROP(iarr, Multiple_Objects_Selection, rotation.X, EET_T_DOUBLE);
+  ADD_PROP(iarr, Multiple_Objects_Selection, rotation.Y, EET_T_DOUBLE);
+  ADD_PROP(iarr, Multiple_Objects_Selection, rotation.Z, EET_T_DOUBLE);
+
   return iarr;
-
 }
 
 
@@ -334,7 +333,8 @@ create_property(Evas_Object* win, Context* context, Control* control)
   p->properties = NULL;
   p->properties = eina_hash_string_superfast_new(_property_entry_free_cb);
 
-  Eina_Inarray* arr = object_init_array_properties();
+  Eina_Inarray* arr = _object_init_array_properties();
+  p->array_multiple_objects = _multiple_objects_init_array_properties();
   property_set(p,arr);
 
   return p;

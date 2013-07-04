@@ -16,7 +16,7 @@ struct _PropertyView
   Eina_Hash *properties;
   Evas_Object* win;
   Eina_Inarray *arr;
-  Eina_Inarray *array_objects;
+  Eina_Inarray *array_multiple_objects;
 };
 
 Evas_Object* property_add_entry(

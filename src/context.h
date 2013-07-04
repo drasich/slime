@@ -1,6 +1,13 @@
 #ifndef __context__
 #define __context__
 #include <Eina.h>
+#include "vec.h"
+
+typedef struct _Multiple_Objects_Selection Multiple_Objects_Selection;
+struct _Multiple_Objects_Selection{
+  Vec3 center;
+  Vec3 rotation;
+};
 
 typedef struct _Context Context;
 
@@ -8,6 +15,7 @@ struct _Context{
   Eina_List* objects;
   struct _Object* object;
   struct _Scene* scene;
+  Multiple_Objects_Selection mos;
 };
 
 struct _Object;
