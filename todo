@@ -1,6 +1,6 @@
 handle properties when multiple objects selected
-handle tree when multiple objects selected
 => make a structure in context with position and rotation
+call control instead of property_update, tree_update.
 
 be able to change mesh in the properties
 be able to add/remove properties (make some kind of component = group properties)

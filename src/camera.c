@@ -211,8 +211,6 @@ camera_get_frustum_planes_rect(
       float left, float top, float width, float height)
 {
 
-  printf("beginning l,tp,w,h : %f, %f, %f, %f\n", left, top, width, height);
-
   Vec3 direction = quat_rotate_vec3(c->object.Orientation, vec3(0,0,-1));
   Vec3 right = quat_rotate_vec3(c->object.Orientation, vec3(1,0,0));
   Vec3 up = quat_rotate_vec3(c->object.Orientation, vec3(0,1,0));
@@ -234,9 +232,6 @@ camera_get_frustum_planes_rect(
   height = height * hh / (c->height/2.0f);
 
   float th = hh - top;
-  printf("hh is : %f\n", hh);
-  printf("top is : %f\n", top);
-  printf("th is : %f\n", th);
   Vec3 upd = vec3_add(
         vec3_mul(direction, c->near),
         vec3_mul(up, th));
@@ -247,8 +242,6 @@ camera_get_frustum_planes_rect(
 
   //down plane
   float bh = hh - (top + height);
-  printf("height is : %f\n", height);
-  printf("bh is : %f\n", bh);
   p[3].Point = c->object.Position;
   Vec3 downd = vec3_add(
         vec3_mul(direction, c->near),

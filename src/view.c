@@ -238,12 +238,17 @@ _mouse_up(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event
   //if (ev->button != 1) return;
   //printf("MOUSE: up   @ %4i %4i\n", ev->canvas.x, ev->canvas.y);
   //evas_object_hide(indicator[0]);
+  //
   View* v = evas_object_data_get(o, "view");
   Evas_Object* rect = v->select_rect;
   evas_object_hide(rect);
-  property_update(v->property, v->context->objects);
-  if (eina_list_count(v->context->objects) == 0)
-  tree_select_object(v->tree, v->context->object);
+
+  Eina_List* selected_objects = eina_list_clone(v->context->objects);
+  property_update(v->property, selected_objects);
+  tree_unselect_all(v->tree);
+  tree_select_objects(v->tree, selected_objects);
+
+  eina_list_free(selected_objects);
 }
 
 static void

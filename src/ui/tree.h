@@ -22,7 +22,9 @@ void tree_add_object(Tree* t,  struct _Object* o);
 void tree_remove_object(Tree* t,  struct _Object* o);
 
 void tree_select_object(Tree* t, struct _Object* o);
+void tree_select_objects(Tree* t, Eina_List* objects);
 void tree_update_object(Tree* t, struct _Object* o);
 
+void tree_unselect_all(Tree* t);
 
 #endif
