@@ -203,9 +203,11 @@ property_update(PropertyView* pw, Eina_List* objects)
   }
 
   if (i == 1) {
+    property_set(pw, pw->arr);
     _property_update_object(pw, last);
   }
   else {
+    property_set(pw, pw->array_multiple_objects);
     //just update the transform
 
   }
@@ -215,7 +217,7 @@ property_update(PropertyView* pw, Eina_List* objects)
 static void
 _property_entry_free_cb(void *data)
 {
-   free(data);
+   //free(data);
 }
 
 static Eina_Bool
@@ -234,9 +236,18 @@ _property_entry_foreach_cb(
 }
 
 void
+property_clean(PropertyView* pw)
+{
+  eina_hash_free(pw->properties);
+  pw->properties = NULL;
+  pw->properties = eina_hash_string_superfast_new(_property_entry_free_cb);
+  elm_box_clear(pw->box);
+}
+
+void
 property_set(PropertyView* pw, Eina_Inarray* a)
 {
-  pw->arr = a;
+  property_clean(pw);
 
   Property *p;
   EINA_INARRAY_FOREACH(a, p) {
@@ -331,11 +342,11 @@ create_property(Evas_Object* win, Context* context, Control* control)
   elm_object_content_set(scroller, bx);
 
   p->properties = NULL;
-  p->properties = eina_hash_string_superfast_new(_property_entry_free_cb);
+  //p->properties = eina_hash_string_superfast_new(_property_entry_free_cb);
 
-  Eina_Inarray* arr = _object_init_array_properties();
+  p->arr = _object_init_array_properties();
   p->array_multiple_objects = _multiple_objects_init_array_properties();
-  property_set(p,arr);
+  property_set(p,p->arr);
 
   return p;
 }
