@@ -5,6 +5,7 @@
 #include "control.h"
 
 typedef struct _PropertyView PropertyView;
+typedef struct _MyProp MyProp;
 
 struct _PropertyView
 {
@@ -17,6 +18,20 @@ struct _PropertyView
   Evas_Object* win;
   Eina_Inarray *arr;
   Eina_Inarray *array_multiple_objects;
+  MyProp* current;
+  Evas_Object* scroller;
+
+  MyProp* oneobj;
+  MyProp* manyobj;
+};
+
+struct _MyProp
+{
+  Evas_Object* win;
+  Evas_Object* box;
+  Eina_Inarray *arr;
+  Eina_Hash *properties;
+  PropertyView *pw;
 };
 
 Evas_Object* property_add_entry(
@@ -27,6 +42,8 @@ Evas_Object* property_add_entry(
 
 void property_update(PropertyView* p, Eina_List* objects);
 PropertyView* create_property(Evas_Object* win, Context* context, Control* control);
-void property_set(PropertyView* pw, Eina_Inarray* a);
+void property_set(PropertyView* pw, MyProp* mp);
+
+
 
 #endif
