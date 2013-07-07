@@ -270,7 +270,6 @@ property_set(PropertyView* pw, MyProp* mp)
   }
 
   pw->current = mp;
-
 }
 
 static Eina_Inarray* 

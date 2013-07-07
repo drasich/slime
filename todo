@@ -1,5 +1,3 @@
-handle properties when multiple objects selected
-=> make a structure in context with position and rotation
 call control instead of property_update, tree_update.
 
 be able to change mesh in the properties
@@ -10,3 +8,6 @@ each object can be attributed a library or script
 the iibrary is inherited from an interface.
 
 
+//pour plus tard
+handle properties when multiple objects selected
+=> make a structure in context with position and rotation
