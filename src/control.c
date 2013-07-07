@@ -145,11 +145,15 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
       Eina_List *l;
       Object *o;
       int i = 0;
+      Vec3 center = vec3_zero();
       EINA_LIST_FOREACH(objects, l, o) {
         Vec3* origin = (Vec3*) eina_inarray_nth(c->positions, i);
         o->Position = vec3_add(*origin, translation);
         ++i;
+        center = vec3_add(center, o->Position);
       }
+      if (i>0) center = vec3_mul(center, 1.0f/ (float) i);
+      v->context->mos.center =  center;
       property_update(v->property, objects);
     }
   }
@@ -168,6 +172,14 @@ control_property_changed(Control* c, Object* o, Property* p)
   //printf("prop change\n");
 
 }
+
+void
+control_property_changed2(Control* c, void* data, Property* p)
+{
+  //printf("control 2 changed\n");
+
+}
+
 
 static Operation* 
 _op_move_object(Eina_List* objects, Vec3 translation)

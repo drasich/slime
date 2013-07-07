@@ -25,13 +25,19 @@ struct _PropertyView
   MyProp* manyobj;
 };
 
+typedef void (*property_changed)(Control* control, void* data, Property* p);
 struct _MyProp
 {
   Evas_Object* win;
   Evas_Object* box;
   Eina_Inarray *arr;
   Eina_Hash *properties;
-  PropertyView *pw;
+  //PropertyView *pw;
+  // add callbacks here if we want to call something when data has changed.
+  property_changed callback;
+  Control* control;
+
+  void* data;
 };
 
 Evas_Object* property_add_entry(
