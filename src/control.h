@@ -55,39 +55,4 @@ void control_redo(Control* c);
 
 void control_clean_redo(Control* c);
 
-///////////////////////////////////////////////
-typedef struct _Op_Move_Object Op_Move_Object;
-struct _Op_Move_Object
-{
-  Eina_List* objects;
-  Vec3 translation;
-};
-
-void operation_move_object_do(Control *c, void* data);
-void operation_move_object_undo(Control *c, void* data);
-
-////////////////////////////////////////////
-typedef struct _Op_Add_Object Op_Add_Object;
-struct _Op_Add_Object
-{
-  Scene* s;
-  Object* o;
-};
-
-void operation_add_object_do(Control *c, void* data);
-void operation_add_object_undo(Control *c, void* data);
-void control_add_object(Control* c, Scene* s, Object* o);
-////////////////////////////////////////////
-
-typedef struct _Op_Remove_Object Op_Remove_Object;
-struct _Op_Remove_Object
-{
-  Scene* s;
-  Eina_List* objects;
-};
-
-void operation_remove_object_do(Control *c, void* data);
-void operation_remove_object_undo(Control *c, void* data);
-void control_remove_object(Control* c, Scene* s, Eina_List* objects);
-
 #endif

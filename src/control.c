@@ -2,6 +2,7 @@
 #include "context.h"
 #include "object.h"
 #include "view.h"
+#include "operation.h"
 
 Control* 
 create_control(View* v)
@@ -78,7 +79,8 @@ control_center_camera(Control* c)
 }
 
 
-static void rotate_camera(View* v, float x, float y)
+static void 
+_rotate_camera(View* v, float x, float y)
 {
   Camera* cam = v->camera;
   Object* c = (Object*) cam;
@@ -124,7 +126,7 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
         Vec3 t = {-x*0.05f, y*0.05f, 0};
         camera_pan(v->camera, t);
       } else {
-        rotate_camera(v, x, y);
+        _rotate_camera(v, x, y);
       }
     }
   } else if (c->state == MOVE) {
@@ -254,18 +256,6 @@ control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
   return false;
 }
 
-void
-control_add_object(Control* c, Scene* s, Object* o)
-{
-  printf("scene %p \n", s);
-    Operation* op = _op_add_object(s,o);
-  printf("add object 00 \n");
-    control_add_operation(c, op);
-  printf("add object 10\n");
-    op->do_cb(c, op->data);
-  printf("add object 20\n");
-}
-
 
 void 
 control_key_down(Control* c, Evas_Event_Key_Down *e)
@@ -328,31 +318,6 @@ control_add_operation(Control* c, Operation* op)
 }
 
 
-void 
-operation_move_object_do(Control* c, void* data)
-{
-  Op_Move_Object* od = (Op_Move_Object*) data;
-
-  Eina_List *l;
-  Object *o;
-  EINA_LIST_FOREACH(od->objects, l, o) {
-    o->Position = vec3_add(o->Position, od->translation);
-  }
-
-}
-
-void 
-operation_move_object_undo(Control* c, void* data)
-{
-  Op_Move_Object* od = (Op_Move_Object*) data;
-
-  Eina_List *l;
-  Object *o;
-  EINA_LIST_FOREACH(od->objects, l, o) {
-    o->Position = vec3_sub(o->Position, od->translation);
-  }
-}
-
 void
 control_undo(Control* c)
 {
@@ -390,67 +355,20 @@ control_clean_redo(Control* c)
 
 }
 
-void 
-operation_add_object_do(Control* c, void* data)
+
+void
+control_add_object(Control* c, Scene* s, Object* o)
 {
-  Op_Add_Object* od = (Op_Add_Object*) data;
-  scene_add_object(od->s, od->o);
-  tree_add_object(c->view->tree,  od->o);
-}
-
-void 
-operation_add_object_undo(Control*c, void* data)
-{
-  Op_Add_Object* od = (Op_Add_Object*) data;
-  scene_remove_object(od->s, od->o);
-  tree_remove_object(c->view->tree,  od->o);
-
-  Object* o = context_get_object(c->view->context);
-
-  if (od->o == o &&  od->s == c->view->context->scene){
-    //c->view->context->object = NULL;
-    context_remove_object(c->view->context, o);
-  }
-  //TODO context if object was the object in the context remove it
-}
-
-
-void 
-operation_remove_object_do(Control *c, void* data)
-{
-  Op_Remove_Object* od = (Op_Remove_Object*) data;
-  Context* context = c->view->context;
-
-  Eina_List *l;
-  Object *o;
-  EINA_LIST_FOREACH(od->objects, l, o) {
-    scene_remove_object(od->s, o);
-    tree_remove_object(c->view->tree,  o);
-    if (od->s == context->scene){
-      if (eina_list_data_find(context->objects, o)) {
-        context_remove_object(context, o);
-      }
-    }
-  }
+  printf("scene %p \n", s);
+  Operation* op = _op_add_object(s,o);
+  printf("add object 00 \n");
+  control_add_operation(c, op);
+  printf("add object 10\n");
+  op->do_cb(c, op->data);
+  printf("add object 20\n");
 }
 
 void
-operation_remove_object_undo(Control *c, void* data)
-{
-  Op_Remove_Object* od = (Op_Remove_Object*) data;
-  Context* context = c->view->context;
-
-  Eina_List *l;
-  Object *o;
-  EINA_LIST_FOREACH(od->objects, l, o) {
-    scene_add_object(od->s, o);
-    tree_add_object(c->view->tree,  o);
-  }
-
-}
-
-void
-//control_remove_object(Control* c, Scene* s, Object* o)
 control_remove_object(Control* c, Scene* s, Eina_List* objects)
 {
   Operation* op = _op_remove_object(s,objects);
