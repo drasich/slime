@@ -27,9 +27,6 @@ struct _Control{
 
 
 Control* create_control(struct _View* v);
-void control_set_state(Control* c, int state);
-void control_move(Control* c);
-void control_center_camera(Control* c);
 
 void control_mouse_move(Control* c, Evas_Event_Mouse_Move *e);
 bool control_mouse_down(Control* c, Evas_Event_Mouse_Down *e);
@@ -52,7 +49,6 @@ struct _Operation {
 void control_add_operation(Control* c, Operation* op);
 void control_undo(Control* c);
 void control_redo(Control* c);
-
 void control_clean_redo(Control* c);
 
 #endif

@@ -22,7 +22,8 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
     case EET_T_DOUBLE:
        {
         double v =  elm_spinner_value_get(obj);
-        memcpy((void*)o + p->offset, &v, sizeof v);
+        //memcpy((void*)o + p->offset, &v, sizeof v);
+        memcpy((void*)o + p->offset, &v, p->size);
        }
       break;
     case EET_T_STRING:

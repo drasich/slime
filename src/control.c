@@ -15,12 +15,6 @@ create_control(View* v)
   return c;
 }
 
-void
-control_set_state(Control* c, int state)
-{
-  c->state = state;
-}
-
 static Vec3
 _objects_center(Control* c, Eina_List* objects)
 {
@@ -39,8 +33,8 @@ _objects_center(Control* c, Eina_List* objects)
   return v;
 }
 
-void
-control_move(Control* c)
+static void
+_control_move(Control* c)
 {
   View* v = c->view;
   int x, y;
@@ -58,8 +52,8 @@ control_move(Control* c)
 
 }
 
-void
-control_center_camera(Control* c)
+static void
+_control_center_camera(Control* c)
 {
   View* v = c->view;
   Object* o = context_get_object(v->context);
@@ -233,6 +227,26 @@ _op_remove_object(Scene* s, Eina_List* objects)
   return op;
 }
 
+static Operation* 
+_op_change_property(Object* o, Property* p, void* data)
+{
+  Operation* op = calloc(1, sizeof *op);
+
+  op->do_cb = operation_change_property_do;
+  op->undo_cb = operation_change_property_undo;
+
+  Op_Change_Property* od = calloc(1, sizeof *od);
+  od->o = o;
+  od->p = p;
+  //build the old data
+  //od->value_old = value_old;
+  od->value_new = data;
+
+  op->data = od;
+  return op;
+}
+
+
 bool
 control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
 {
@@ -272,7 +286,7 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
       elm_exit();
     } else if ( !strcmp(e->keyname, "g")) {
       //enter move mode
-      control_move(c);
+      _control_move(c);
     } else if (!strcmp(e->keyname, "z") 
           && evas_key_modifier_is_set(mods, "Control")) {
       control_undo(c);
@@ -281,7 +295,7 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
       control_redo(c);
     } else if (!strcmp(e->keyname, "f")) {
       if (o != NULL) {
-        control_center_camera(c);
+        _control_center_camera(c);
       }
     } else if (!strcmp(e->keyname, "x")) {
       if (o != NULL) {
@@ -375,4 +389,13 @@ control_remove_object(Control* c, Scene* s, Eina_List* objects)
   control_add_operation(c, op);
   op->do_cb(c, op->data);
 }
+
+void
+control_change_property(Control* c, Object* o, Property* p, void* data)
+{
+  Operation* op = _op_change_property(o, p, data);
+  control_add_operation(c, op);
+  op->do_cb(c, op->data);
+}
+
 

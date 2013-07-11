@@ -37,4 +37,19 @@ void operation_remove_object_do(Control *c, void* data);
 void operation_remove_object_undo(Control *c, void* data);
 void control_remove_object(Control* c, Scene* s, Eina_List* objects);
 
+
+/////////////////////////////////////////////////////
+typedef struct _Op_Change_Property Op_Change_Property;
+struct _Op_Change_Property
+{
+  Object* o;
+  Property* p;
+  void* value_old;
+  void* value_new;
+};
+
+void operation_change_property_do(Control *c, void* data);
+void operation_change_property_undo(Control *c, void* data);
+void control_change_property(Control* c, Object* o, Property* p, void* data);
+
 #endif
