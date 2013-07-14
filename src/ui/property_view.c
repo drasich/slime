@@ -46,8 +46,74 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
     mp->callback(ct, o, p);
   }
 
-  control_property_changed2(ct, o, p);
+  control_property_changed(ct, o, p);
 }
+
+static void
+_entry_activated_cb(void *data, Evas_Object *obj, void *event)
+{
+  printf("activated\n");
+  MyProp* mp = data;
+  const char* s = elm_object_text_get(obj);
+
+  if (strcmp(mp->value_saved, s)) {
+    //TODO register operation
+    Property* p = evas_object_data_get(obj, "property");
+    //control_register_property_change(mp->control, mp->data, p);
+    control_change_property(mp->control, mp->data, p, mp->value_saved, s);
+  }
+}
+
+static void
+_entry_aborted_cb(void *data, Evas_Object *obj, void *event)
+{
+  printf("aborted\n");
+  //TODO bring back the old value
+
+  MyProp* mp = data;
+  void* o = mp->data;
+  const char* s = elm_object_text_get(obj);
+
+  if (strcmp(mp->value_saved, s)) {
+    eina_stringshare_del(s);
+
+    Property* p = evas_object_data_get(obj, "property");
+    const char** str = (void*)o + p->offset;
+    *str = eina_stringshare_add(mp->value_saved);
+    elm_object_text_set(obj, *str);
+
+    Control* ct = mp->control;
+    control_property_changed(ct, o, p);
+  }
+
+}
+
+static void
+_entry_focused_cb(void *data, Evas_Object *obj, void *event)
+{
+  printf("focused\n");
+  //TODO save the value
+  MyProp* mp = data;
+  const char* s = elm_object_text_get(obj);
+  const char* str = eina_stringshare_add(s);
+  //TODO don't forget to eina_stringshare_del
+  mp->value_saved = str;
+}
+
+static void
+_entry_unfocused_cb(void *data, Evas_Object *obj, void *event)
+{
+  printf("unfocused\n");
+  //TODO register operation if value was changed
+  MyProp* mp = data;
+  const char* s = elm_object_text_get(obj);
+  if (strcmp(mp->value_saved, s)) {
+    //TODO register operation
+  }
+
+}
+
+
 
 static Evas_Object* 
 _property_add_entry(MyProp* mp, Property* p)
@@ -87,6 +153,10 @@ _property_add_entry(MyProp* mp, Property* p)
         en);
 
   evas_object_smart_callback_add(en, "changed,user", _entry_changed_cb, mp);
+  evas_object_smart_callback_add(en, "activated", _entry_activated_cb, mp);
+  evas_object_smart_callback_add(en, "aborted", _entry_aborted_cb, mp);
+  evas_object_smart_callback_add(en, "focused", _entry_focused_cb, mp);
+  evas_object_smart_callback_add(en, "unfocused", _entry_unfocused_cb, mp);
   evas_object_data_set(en, "property", p);
 
   elm_entry_context_menu_disabled_set(en, EINA_TRUE);
@@ -168,7 +238,7 @@ property_add_fileselect(PropertyView *p, Evas_Object* win, Evas_Object* bx, char
 
 }
 
-static void
+void
 _property_update_data(MyProp* mp, void* data)
 {
   Property *p;
@@ -224,7 +294,6 @@ property_update(PropertyView* pw, Eina_List* objects)
     //pw->manyobj->data = &pw->context->mos;
     //_property_update_data(pw->current, &pw->context->mos);
   }
-
 }
 
 static void

@@ -38,6 +38,7 @@ struct _MyProp
   Control* control;
 
   void* data;
+  const char* value_saved;
 };
 
 Evas_Object* property_add_entry(
@@ -49,6 +50,7 @@ Evas_Object* property_add_entry(
 void property_update(PropertyView* p, Eina_List* objects);
 PropertyView* create_property(Evas_Object* win, Context* context, Control* control);
 void property_set(PropertyView* pw, MyProp* mp);
+void _property_update_data(MyProp* mp, void* data);
 
 
 

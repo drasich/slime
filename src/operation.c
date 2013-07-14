@@ -115,6 +115,8 @@ _change_data(Object* o, Property* p, void *data)
       break;
    }
 
+  //TODO update the entry
+
 }
 
 void 
@@ -124,7 +126,6 @@ operation_change_property_do(Control *c, void* data)
   Property* p = opd->p;
   Object* o = opd->o;
   _change_data(o, p, opd->value_new);
-
 }
 
 void

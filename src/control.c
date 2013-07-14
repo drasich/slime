@@ -157,23 +157,20 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
 }
 
 void
-control_property_changed(Control* c, Object* o, Property* p)
+control_property_changed(Control* c, void* data, Property* p)
 {
-  //TODO add emitter in the arguments to know where the property was changed
-  tree_update_object(c->view->tree, o);
-  //TODO when create tree and property view, make something like control_add_listener(control, tree)
+  //if (sender != c->view->property) {
+  //Eina_List* objects = context_get_objects(c->view->context);
+  //property_update_prop(sender);
+  //}
+
+  if (!strcmp(p->name, "name")) {
+    tree_update_object(c->view->tree, data);
+  }
+
+  //TODO maybe: add emitter in the arguments to know where the property was changed
+  //TODO maybe: when create tree and property view, make something like control_add_listener(control, tree)
   //so we can tell the listeners there was a change
-
-  //TODO undo/redo for property change with an operation
-  //printf("prop change\n");
-
-}
-
-void
-control_property_changed2(Control* c, void* data, Property* p)
-{
-  //printf("control 2 changed\n");
-
 }
 
 
@@ -228,7 +225,7 @@ _op_remove_object(Scene* s, Eina_List* objects)
 }
 
 static Operation* 
-_op_change_property(Object* o, Property* p, void* data)
+_op_change_property(Object* o, Property* p, void* data_old, void* data_new)
 {
   Operation* op = calloc(1, sizeof *op);
 
@@ -238,9 +235,8 @@ _op_change_property(Object* o, Property* p, void* data)
   Op_Change_Property* od = calloc(1, sizeof *od);
   od->o = o;
   od->p = p;
-  //build the old data
-  //od->value_old = value_old;
-  od->value_new = data;
+  od->value_old = data_old;
+  od->value_new = data_new;
 
   op->data = od;
   return op;
@@ -391,11 +387,12 @@ control_remove_object(Control* c, Scene* s, Eina_List* objects)
 }
 
 void
-control_change_property(Control* c, Object* o, Property* p, void* data)
+control_change_property(Control* c, Object* o, Property* p, void* data_old, void* data_new)
 {
-  Operation* op = _op_change_property(o, p, data);
+  Operation* op = _op_change_property(o, p, data_old, data_new);
   control_add_operation(c, op);
   op->do_cb(c, op->data);
+  printf("change property with : %s, %s\n", data_old, data_new);
 }
 
 

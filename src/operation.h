@@ -50,6 +50,6 @@ struct _Op_Change_Property
 
 void operation_change_property_do(Control *c, void* data);
 void operation_change_property_undo(Control *c, void* data);
-void control_change_property(Control* c, Object* o, Property* p, void* data);
+void control_change_property(Control* c, Object* o, Property* p, void* data_old, void* data_new);
 
 #endif
