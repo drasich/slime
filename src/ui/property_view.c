@@ -68,7 +68,6 @@ static void
 _entry_aborted_cb(void *data, Evas_Object *obj, void *event)
 {
   printf("aborted\n");
-  //TODO bring back the old value
 
   MyProp* mp = data;
   void* o = mp->data;
@@ -92,7 +91,6 @@ static void
 _entry_focused_cb(void *data, Evas_Object *obj, void *event)
 {
   printf("focused\n");
-  //TODO save the value
   MyProp* mp = data;
   const char* s = elm_object_text_get(obj);
   const char* str = eina_stringshare_add(s);
@@ -104,11 +102,12 @@ static void
 _entry_unfocused_cb(void *data, Evas_Object *obj, void *event)
 {
   printf("unfocused\n");
-  //TODO register operation if value was changed
   MyProp* mp = data;
   const char* s = elm_object_text_get(obj);
   if (strcmp(mp->value_saved, s)) {
     //TODO register operation
+    Property* p = evas_object_data_get(obj, "property");
+    control_change_property(mp->control, mp->data, p, mp->value_saved, s);
   }
 
 }
@@ -295,6 +294,15 @@ property_update(PropertyView* pw, Eina_List* objects)
     //_property_update_data(pw->current, &pw->context->mos);
   }
 }
+
+void
+property_update2(PropertyView* pw, Object* o)
+{
+  if ( pw->oneobj->data == o) {
+    _property_update_data(pw->current, o);
+  }
+}
+
 
 static void
 _property_entry_free_cb(void *data)

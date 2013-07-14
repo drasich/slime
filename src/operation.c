@@ -104,9 +104,10 @@ _change_data(Object* o, Property* p, void *data)
     case EET_T_STRING:
        {
         const char** str = (void*)o + p->offset;
-        eina_stringshare_del(*str);
+        //eina_stringshare_del(*str);
         const char* s = data;
-        *str = eina_stringshare_add(s);
+        //*str = eina_stringshare_add(s);
+        *str = s;
         //eina_stringshare_dump();
        }
       break;
@@ -126,6 +127,7 @@ operation_change_property_do(Control *c, void* data)
   Property* p = opd->p;
   Object* o = opd->o;
   _change_data(o, p, opd->value_new);
+  control_property_update2(c, o);
 }
 
 void
@@ -135,6 +137,7 @@ operation_change_property_undo(Control *c, void* data)
   Property* p = opd->p;
   Object* o = opd->o;
   _change_data(o, p, opd->value_old);
+  control_property_update2(c, o);
 }
 
 

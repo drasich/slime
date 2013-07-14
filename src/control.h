@@ -33,6 +33,7 @@ bool control_mouse_down(Control* c, Evas_Event_Mouse_Down *e);
 void control_key_down(Control* c, Evas_Event_Key_Down *e);
 
 void control_property_changed(Control* c, void* data, Property* p);
+void control_property_update2(Control* c, Object* o);
 
 typedef void (*do_cb)(Control* c, void* data);
 typedef void (*undo_cb)(Control* c, void* data);
