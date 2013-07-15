@@ -164,6 +164,9 @@ control_property_changed(Control* c, void* data, Property* p)
   //property_update_prop(sender);
   //}
 
+  //property_update2(c->view->property, data);
+  //tree_update_object(c->view->tree, data);
+
   if (!strcmp(p->name, "name")) {
     tree_update_object(c->view->tree, data);
   }
@@ -308,12 +311,19 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
       // put back the objects to original position
       Eina_List *l;
       Object *o;
+      Object *last;
       int i = 0;
       EINA_LIST_FOREACH(objects, l, o) {
         Vec3* origin = (Vec3*) eina_inarray_nth(c->positions, i);
         o->Position = *origin;
+        last = o;
         i++;
       }
+
+      //TODO chris
+      //control_property_update(c);
+      if (i == 1)
+      control_property_update2(c,last);
 
     }
   }
@@ -396,6 +406,11 @@ control_change_property(Control* c, Object* o, Property* p, void* data_old, void
   printf("change property with : %s, %s\n", data_old, data_new);
 }
 
+
+void control_property_update(Control* c)
+{
+  //property_update3(c->view->property);
+}
 
 void control_property_update2(Control* c, Object* o)
 {

@@ -46,7 +46,7 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
     mp->callback(ct, o, p);
   }
 
-  control_property_changed(ct, o, p);
+  control_property_update2(ct, o);
 }
 
 static void
@@ -241,7 +241,9 @@ void
 _property_update_data(MyProp* mp, void* data)
 {
   Property *p;
+
   EINA_INARRAY_FOREACH(mp->arr, p) {
+    Evas_Object* obj = eina_hash_find(mp->properties, p->name);
     //printf("name: %s , type: %d, offset: %d\n", p->name, p->type, p->offset);
     //printf("   value is : ");
     switch(p->type) {
@@ -250,14 +252,19 @@ _property_update_data(MyProp* mp, void* data)
           double d;
           memcpy(&d, (void*)data + p->offset, sizeof d);
           //printf("%f\n",d);
+          double old = elm_spinner_value_get(obj);
+          if (old != d) {
+          printf("value is different\n");
           elm_spinner_value_set(eina_hash_find(mp->properties, p->name), d );
+          }
          }
         break;
       case EET_T_STRING:
          {
           const char** str = (void*)data + p->offset;
-          elm_object_text_set(eina_hash_find(mp->properties, p->name), *str );
-          //printf("how many time you come here\n");
+          const char* s = elm_object_text_get(obj);
+          if (strcmp(*str,s)) 
+            elm_object_text_set(obj, *str );
          }
         break;
       default:
