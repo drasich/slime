@@ -35,6 +35,7 @@ context_add_object(Context* c, struct _Object* o)
 {
   if (!eina_list_data_find_list(c->objects, o)) {
     c->objects = eina_list_append(c->objects, o);
+
     _context_send_message(c, "add_object");
   }
 

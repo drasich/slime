@@ -1,9 +1,3 @@
-mouse down : select object
-mouse up : select object again
-tree select callback : add object, peut etre on ne peut rien y faire.
-
-call control instead of property_update, tree_update.
-
 be able to change mesh in the properties
 be able to add/remove properties (make some kind of component = group properties)
 be able to script an object and then go play/pause
