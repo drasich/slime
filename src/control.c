@@ -373,7 +373,6 @@ control_remove_object(Control* c, Scene* s, Eina_List* objects)
   op->do_cb(c, op->data);
 }
 
-//TODO rename these functions
 void
 control_change_property(Control* c, Object* o, Property* p, void* data_old, void* data_new)
 {
@@ -384,7 +383,8 @@ control_change_property(Control* c, Object* o, Property* p, void* data_old, void
 }
 
 
-void control_property_update(Control* c, Object* o)
+void
+control_property_update(Control* c, Object* o)
 {
   property_update2(c->view->property, o);
   tree_update_object(c->view->tree, o);

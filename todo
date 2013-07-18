@@ -1,4 +1,6 @@
-file operation.c _change_data function TODO.
+mouse down : select object
+mouse up : select object again
+tree select callback : add object, peut etre on ne peut rien y faire.
 
 call control instead of property_update, tree_update.
 

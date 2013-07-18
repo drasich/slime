@@ -435,6 +435,12 @@ _changed_multiple_object(Control* c, void* data, Property* p)
 
 }
 
+static void
+_context_property_msg_receive(Context* c, void* propertyview, const char* msg)
+{
+  printf("context msg received : %s\n", msg);
+
+}
 
 
 PropertyView* 
@@ -444,6 +450,8 @@ create_property(Evas_Object* win, Context* context, Control* control)
   p->context = context;
   p->control = control;
   p->win = win;
+
+  context_add_callback(context, _context_property_msg_receive, p);
 
   Evas_Object *frame, *scroller, *bx;
 

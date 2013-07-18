@@ -589,6 +589,7 @@ create_view(Evas_Object *win)
   view->tree = create_widget_tree(win, view);
   evas_object_data_set(view->glview, "view", view);
 
+
   _create_view_objects(view);
 
   return view;

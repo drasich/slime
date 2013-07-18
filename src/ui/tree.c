@@ -144,6 +144,7 @@ create_widget_tree(Evas_Object* win, struct _View* v)
 {
   Tree *t = calloc(1, sizeof *t);
   t->context = v->context;
+  t->control = v->control;
   t->view = v;
 
   Evas_Object *gli, *bx, *rd1, *rd2, *frame;

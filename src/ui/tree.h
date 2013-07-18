@@ -12,8 +12,9 @@ struct _Tree
   Evas_Object* box;
   Evas_Object* gl;
 
-  Context *context;
-  View *view;
+  Context* context;
+  View* view;
+  Control* control;
 };
 
 //Tree* create_widget_tree(Evas_Object* win, Context* context);

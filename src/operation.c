@@ -115,9 +115,6 @@ _change_data(Object* o, Property* p, void *data)
       fprintf (stderr, "type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
       break;
    }
-
-  //TODO update the entry
-
 }
 
 void 

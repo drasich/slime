@@ -3,6 +3,7 @@
 #include <Eina.h>
 #include "vec.h"
 
+
 typedef struct _Multiple_Objects_Selection Multiple_Objects_Selection;
 struct _Multiple_Objects_Selection{
   Vec3 center;
@@ -10,12 +11,16 @@ struct _Multiple_Objects_Selection{
 };
 
 typedef struct _Context Context;
+typedef void (*context_cb)(Context* c, void* listener, const char* msg);
+
 
 struct _Context{
   Eina_List* objects;
   struct _Object* object;
   struct _Scene* scene;
   Multiple_Objects_Selection mos;
+  Eina_List* cb;
+  Eina_List* listener;
 };
 
 struct _Object;
@@ -28,5 +33,9 @@ void context_remove_object(Context* c, struct _Object* o);
 
 struct _Object* context_get_object(Context* c);
 Eina_List* context_get_objects(Context* c);
+
+
+void context_add_callback(Context* c, context_cb cb, void* listener);
+
 
 #endif
