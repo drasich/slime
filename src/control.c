@@ -156,27 +156,6 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
 
 }
 
-void
-control_property_changed(Control* c, void* data, Property* p)
-{
-  //if (sender != c->view->property) {
-  //Eina_List* objects = context_get_objects(c->view->context);
-  //property_update_prop(sender);
-  //}
-
-  //property_update2(c->view->property, data);
-  //tree_update_object(c->view->tree, data);
-
-  if (!strcmp(p->name, "name")) {
-    tree_update_object(c->view->tree, data);
-  }
-
-  //TODO maybe: add emitter in the arguments to know where the property was changed
-  //TODO maybe: when create tree and property view, make something like control_add_listener(control, tree)
-  //so we can tell the listeners there was a change
-}
-
-
 static Operation* 
 _op_move_object(Eina_List* objects, Vec3 translation)
 {
@@ -320,10 +299,8 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
         i++;
       }
 
-      //TODO chris
-      //control_property_update(c);
       if (i == 1)
-      control_property_update2(c,last);
+      control_property_update(c,last);
 
     }
   }
@@ -407,12 +384,7 @@ control_change_property(Control* c, Object* o, Property* p, void* data_old, void
 }
 
 
-void control_property_update(Control* c)
-{
-  //property_update3(c->view->property);
-}
-
-void control_property_update2(Control* c, Object* o)
+void control_property_update(Control* c, Object* o)
 {
   property_update2(c->view->property, o);
   tree_update_object(c->view->tree, o);

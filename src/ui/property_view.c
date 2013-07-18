@@ -46,7 +46,7 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
     mp->callback(ct, o, p);
   }
 
-  control_property_update2(ct, o);
+  control_property_update(ct, o);
 }
 
 static void
@@ -82,7 +82,7 @@ _entry_aborted_cb(void *data, Evas_Object *obj, void *event)
     elm_object_text_set(obj, *str);
 
     Control* ct = mp->control;
-    control_property_changed(ct, o, p);
+    control_property_update(ct, o);
   }
 
 }
