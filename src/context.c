@@ -7,8 +7,10 @@ _context_send_message(Context* c, const char* msg)
   context_cb cb;
   int i = 0;
 
+
   EINA_LIST_FOREACH(c->cb, l, cb) {
-    cb(c, NULL, msg);
+    void* l = eina_list_nth(c->listener, i);
+    cb(c, l, msg);
     ++i;
   }
 }
@@ -25,6 +27,7 @@ context_clean_objects(Context* c)
 {
   c->objects = eina_list_free(c->objects);
   c->object = NULL;
+  _context_send_message(c, "clean_objects");
 }
 
 void
@@ -34,13 +37,18 @@ context_add_object(Context* c, struct _Object* o)
     c->objects = eina_list_append(c->objects, o);
     _context_send_message(c, "add_object");
   }
-  c->object = o;
+
+  if (c->object != o) {
+    c->object = o;
+    //_context_send_message(c, "mainobject_changed");
+  }
 }
 
 void
 context_remove_object(Context* c, struct _Object* o)
 {
   c->objects = eina_list_remove(c->objects, o);
+  _context_send_message(c, "remove_object");
 }
 
 struct _Object* 

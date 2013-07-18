@@ -3,7 +3,6 @@
 #include "tree.h"
 #include "object.h"
 #include "view.h"
-#include "ui/property_view.h"
 #define __UNUSED__
 
 static Elm_Genlist_Item_Class *itc1;
@@ -64,7 +63,6 @@ gl4_sel(void *data, Evas_Object *obj __UNUSED__, void *event_info)
      Context* context = v->context;
      //context_clean_objects(context);
      context_add_object(context, (Object*) elm_object_item_data_get(glit));
-     property_update(v->property, context->objects);
    }
 }
 
@@ -131,13 +129,19 @@ gl4_unselect(void *data __UNUSED__, Evas_Object *obj __UNUSED__, void *event_inf
    if (v) { 
      Context* context = v->context;
      context_remove_object(context, (Object*) elm_object_item_data_get(glit));
-     property_update(v->property, context->objects);
    }
 }
 
 
 
-
+static void
+_context_tree_msg_receive(Context* c, void* tree, const char* msg)
+{
+  if (!strcmp(msg, "clean_objects"))
+  tree_unselect_all(tree);
+  else if (!strcmp(msg, "add_object"))
+  tree_select_objects(tree, c->objects);
+}
 
 Tree* 
 create_widget_tree(Evas_Object* win, struct _View* v)
@@ -146,6 +150,8 @@ create_widget_tree(Evas_Object* win, struct _View* v)
   t->context = v->context;
   t->control = v->control;
   t->view = v;
+
+  context_add_callback(v->context, _context_tree_msg_receive, t);
 
   Evas_Object *gli, *bx, *rd1, *rd2, *frame;
 

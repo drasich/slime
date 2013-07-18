@@ -156,11 +156,6 @@ _view_select_object(View *v, Object *o)
 {
   context_clean_objects(v->context);
   context_add_object(v->context, o);
-
-  //TODO tell properties to change, through control?
-  //or emit a signal to say object selected has changed and catch this signal in properties, and other possible widgets
-  property_update(v->property, v->context->objects);
-  tree_select_object(v->tree, o);
 }
 
 static void
@@ -242,13 +237,6 @@ _mouse_up(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event
   View* v = evas_object_data_get(o, "view");
   Evas_Object* rect = v->select_rect;
   evas_object_hide(rect);
-
-  Eina_List* selected_objects = eina_list_clone(v->context->objects);
-  property_update(v->property, selected_objects);
-  tree_unselect_all(v->tree);
-  tree_select_objects(v->tree, selected_objects);
-
-  eina_list_free(selected_objects);
 }
 
 static void

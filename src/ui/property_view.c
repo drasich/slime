@@ -57,9 +57,7 @@ _entry_activated_cb(void *data, Evas_Object *obj, void *event)
   const char* s = elm_object_text_get(obj);
 
   if (strcmp(mp->value_saved, s)) {
-    //TODO register operation
     Property* p = evas_object_data_get(obj, "property");
-    //control_register_property_change(mp->control, mp->data, p);
     control_change_property(mp->control, mp->data, p, mp->value_saved, s);
   }
 }
@@ -90,26 +88,23 @@ _entry_aborted_cb(void *data, Evas_Object *obj, void *event)
 static void
 _entry_focused_cb(void *data, Evas_Object *obj, void *event)
 {
-  printf("focused\n");
   MyProp* mp = data;
   const char* s = elm_object_text_get(obj);
   const char* str = eina_stringshare_add(s);
   //TODO don't forget to eina_stringshare_del
+  printf("TODO stringshare del\n");
   mp->value_saved = str;
 }
 
 static void
 _entry_unfocused_cb(void *data, Evas_Object *obj, void *event)
 {
-  printf("unfocused\n");
   MyProp* mp = data;
   const char* s = elm_object_text_get(obj);
   if (strcmp(mp->value_saved, s)) {
-    //TODO register operation
     Property* p = evas_object_data_get(obj, "property");
     control_change_property(mp->control, mp->data, p, mp->value_saved, s);
   }
-
 }
 
 
@@ -439,7 +434,7 @@ static void
 _context_property_msg_receive(Context* c, void* propertyview, const char* msg)
 {
   printf("context msg received : %s\n", msg);
-
+  property_update(propertyview, c->objects);
 }
 
 
