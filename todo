@@ -1,11 +1,12 @@
-be able to change mesh in the properties
 be able to add/remove properties (make some kind of component = group properties)
 be able to script an object and then go play/pause
 
 each object can be attributed a library or script
-the iibrary is inherited from an interface.
+the library is inherited from an interface.
 
 
 //pour plus tard
 handle properties when multiple objects selected
 => make a structure in context with position and rotation
+be able to create an empty and change mesh in the properties
+

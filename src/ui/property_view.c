@@ -12,8 +12,6 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
   MyProp* mp = data;
   void* o = mp->data;
 
-  //Context *c = mp->pw->context;
-  //Object *o = context_get_object(c);
   if (o == NULL) return;
 
   Property* p = evas_object_data_get(obj, "property");

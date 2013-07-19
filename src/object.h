@@ -59,4 +59,16 @@ void object_compute_matrix(Object* o, Matrix4 out);
 void object_compute_matrix_with_angles(Object* o, Matrix4 mat);
 void object_compute_matrix_with_quat(Object* o, Matrix4 mat);
 void object_compute_matrix_with_pos_quat(Object* o, Matrix4 mat, Vec3 v, Quat q);
+
+
+//typedef void (*context_cb)(Context* c, void* listener, const char* msg);
+
+
+typedef struct _ObjectFunctions ObjectFunctions;
+
+struct _ObjectFunctions {
+  void (*init)(void); 
+  void (*update)(double dt); 
+};
+
 #endif
