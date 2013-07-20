@@ -461,9 +461,9 @@ _file_chosen(void *data, Evas_Object *obj __UNUSED__, void *event_info)
 
 
 static void
-_new_empty(void            *data,
-             Evas_Object *obj,
-             void            *event_info)
+_new_empty(void *data,
+      Evas_Object *obj,
+      void *event_info)
 {
   Object* yep = create_object();
   yep->name = eina_stringshare_add("empty");
@@ -482,6 +482,24 @@ _new_empty(void            *data,
   context_add_object(v->context, yep);
 
 }
+
+static void
+_play(void *data,
+      Evas_Object *obj,
+      void *event_info)
+{
+  printf("play\n");
+}
+
+static void
+_pause(void *data,
+      Evas_Object *obj,
+      void *event_info)
+{
+  printf("pause\n");
+}
+
+
 
 static void
 _add_buttons(View* v, Evas_Object* win)
@@ -531,6 +549,34 @@ _add_buttons(View* v, Evas_Object* win)
   //view->addObjectToHide(bt);
   //view->addObjectToHide(fs_bt);
 
+
+  bt = elm_button_add(win);
+  elm_object_focus_allow_set(bt, 0);
+
+  elm_object_text_set(bt, "play");
+  evas_object_show(bt);
+
+  evas_object_color_set(bt, r,g,b,a);
+  evas_object_resize(bt, 50, 25);
+  evas_object_move(bt, 155, 15);
+  evas_object_data_set(bt, "view", v);
+  evas_object_smart_callback_add(bt, "clicked", _play, v);
+
+  ///////////////////////////
+
+  bt = elm_button_add(win);
+  elm_object_focus_allow_set(bt, 0);
+
+  elm_object_text_set(bt, "pause");
+  evas_object_show(bt);
+
+  evas_object_color_set(bt, r,g,b,a);
+  evas_object_resize(bt, 50, 25);
+  evas_object_move(bt, 205, 15);
+  evas_object_data_set(bt, "view", v);
+  evas_object_smart_callback_add(bt, "clicked", _pause, v);
+
+  ////////////////////////////////
 
 }
 
