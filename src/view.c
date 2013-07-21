@@ -9,6 +9,7 @@
 #include "ui/property_view.h"
 #include "ui/tree.h"
 #include "intersect.h"
+#include "glview.h"
 #define __UNUSED__
 
 static void
@@ -252,7 +253,8 @@ _mouse_wheel(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *ev
   camera_pan(v->camera, axis);
 }
 
-Object* _create_repere(float u)
+static Object* 
+_create_repere(float u)
 {
   Object* o = create_object();
   o->line = create_line();
@@ -263,165 +265,13 @@ Object* _create_repere(float u)
   return o;
 }
 
-Object* _create_grid()
+static Object* 
+_create_grid()
 {
   Object* grid = create_object();
   grid->line = create_line();
   line_add_grid(grid->line, 100, 10);
   return grid;
-}
-
-
-// Callbacks
-static void
-_init_gl(Evas_Object *obj)
-{
-  View* v = evas_object_data_get(obj, "view");
-  
-  /*
-  v->repere = _create_repere(1);
-  line_set_size_fixed(v->repere->line, true);
-  v->camera_repere = _create_repere(40);
-  v->camera_repere->Position = vec3(10,10, -10);
-  line_set_use_perspective(v->camera_repere->line, false);
-  v->grid = _create_grid();
-  v->camera = create_camera();
-  v->camera->object.name = "camera";
-  Vec3 p = {20,5,20};
-  //v->camera->origin = p;
-  //v->camera->object.Position = p;
-  camera_pan(v->camera, p);
-  Vec3 at = {0,0,0};
-  camera_lookat(v->camera, at);
-  */
-
-  v->render = create_render();
-
-  gl->glEnable(GL_DEPTH_TEST);
-  gl->glEnable(GL_STENCIL_TEST);
-  gl->glDepthFunc(GL_LEQUAL);
-  gl->glClearDepthf(1.0f);
-  gl->glClearStencil(0);
-}
-
-static void
-_del_gl(Evas_Object *obj)
-{
-  printf("glview delete gl\n");
-  Scene* s = evas_object_data_get(obj, "scene");
-  scene_destroy(s);
-}
-
-static void
-_resize_gl(Evas_Object *obj)
-{
-   int w, h;
-   elm_glview_size_get(obj, &w, &h);
-   //printf("resize gl %d, %d \n", w, h);
-
-   // GL Viewport stuff. you can avoid doing this if viewport is all the
-   // same as last frame if you want
-   gl->glViewport(0, 0, w, h);
-
-   Scene* s = evas_object_data_get(obj, "scene");
-   View* v = evas_object_data_get(obj, "view");
-   camera_set_resolution(v->camera, w, h);
-   quad_resize(v->render->quad_outline->mesh, w, h);
-   quad_resize(v->render->quad_color->mesh, w, h);
-
-   //TODO
-   fbo_resize(v->render->fbo_all, w, h);
-   fbo_resize(v->render->fbo_selected, w, h);
-}
-
-static void
-_draw_gl(Evas_Object *obj)
-{
-   int w, h;
-
-   elm_glview_size_get(obj, &w, &h);
-
-   gl->glViewport(0, 0, w, h);
-   //gl->glClearColor(1.0,0.8,0.3,1);
-   gl->glClearColor(0.2,0.2,0.2,1);
-   gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-   // Draw a Triangle
-   gl->glEnable(GL_BLEND);
-   gl->glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-   //TODO remove the function update here
-   Scene* s = evas_object_data_get(obj, "scene");
-   scene_update(s);
-
-   View* v = evas_object_data_get(obj, "view");
-   view_update(v,0);
-   view_draw(v);
-
-   gl->glFinish();
-}
-
-static Eina_Bool
-_anim(void *data)
-{
-   elm_glview_changed_set(data);
-   return EINA_TRUE;
-}
-
-static void
-_on_done(void *data, Evas_Object *obj __UNUSED__, void *event_info __UNUSED__)
-{
-   evas_object_del((Evas_Object*)data);
-}
-
-
-static void
-_del(void *data __UNUSED__, Evas *evas __UNUSED__, Evas_Object *obj, void *event_info __UNUSED__)
-{
-  printf("del ani\n");
-   Ecore_Animator *ani = evas_object_data_get(obj, "ani");
-   ecore_animator_del(ani);
-}
-
-static Evas_Object*
-_create_glview(View* view, Evas_Object* win)
-{
-  Evas_Object *bx, *glview;
-  Ecore_Animator *ani;
-
-  view->box = elm_box_add(win);
-  bx = view->box;
-  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  //elm_win_resize_object_add(win, bx);
-  evas_object_show(bx);
-
-  glview = elm_glview_add(win);
-  gl = elm_glview_gl_api_get(glview);
-  evas_object_size_hint_align_set(glview, EVAS_HINT_FILL, EVAS_HINT_FILL);
-  evas_object_size_hint_weight_set(glview, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  elm_glview_mode_set(glview, ELM_GLVIEW_ALPHA | ELM_GLVIEW_DEPTH);
-  elm_glview_resize_policy_set(glview, ELM_GLVIEW_RESIZE_POLICY_RECREATE);
-  elm_glview_render_policy_set(glview, ELM_GLVIEW_RENDER_POLICY_ON_DEMAND);
-  elm_glview_init_func_set(glview, _init_gl);
-  elm_glview_del_func_set(glview, _del_gl);
-  elm_glview_resize_func_set(glview, _resize_gl);
-  elm_glview_render_func_set(glview, _draw_gl);
-  elm_box_pack_end(bx, glview);
-  evas_object_show(glview);
-
-  elm_object_focus_set(glview, EINA_TRUE);
-
-  ani = ecore_animator_add(_anim, glview);
-  evas_object_data_set(glview, "ani", ani);
-  evas_object_event_callback_add(glview, EVAS_CALLBACK_DEL, _del, glview);
-  evas_object_event_callback_add(glview, EVAS_CALLBACK_KEY_DOWN, _key_down, NULL);
-  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_MOVE, _mouse_move, NULL);
-  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_DOWN, _mouse_down, NULL);
-  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_UP, _mouse_up, NULL);
-  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_WHEEL, _mouse_wheel, NULL);
-  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_IN, _mouse_in, NULL);
-
-  return glview;
 }
 
 static void
@@ -498,8 +348,6 @@ _pause(void *data,
 {
   printf("pause\n");
 }
-
-
 
 static void
 _add_buttons(View* v, Evas_Object* win)
@@ -608,6 +456,22 @@ _create_view_objects(View* v)
   v->select_rect = r;
 }
 
+static void
+_set_callbacks(Evas_Object* glview)
+{
+  Ecore_Animator *ani;
+  ani = ecore_animator_add(_anim, glview);
+  evas_object_data_set(glview, "ani", ani);
+
+  evas_object_event_callback_add(glview, EVAS_CALLBACK_DEL, _del, glview);
+  evas_object_event_callback_add(glview, EVAS_CALLBACK_KEY_DOWN, _key_down, NULL);
+  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_MOVE, _mouse_move, NULL);
+  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_DOWN, _mouse_down, NULL);
+  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_UP, _mouse_up, NULL);
+  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_WHEEL, _mouse_wheel, NULL);
+  evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_IN, _mouse_in, NULL);
+}
+
 View*
 create_view(Evas_Object *win)
 {
@@ -615,7 +479,15 @@ create_view(Evas_Object *win)
 
   view->context = calloc(1,sizeof *view->context);
   view->control = create_control(view);
-  view->glview = _create_glview(view, win);
+
+  view->box = elm_box_add(win);
+  evas_object_size_hint_weight_set(view->box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  //elm_win_resize_object_add(win, view->box);
+  evas_object_show(view->box);
+
+  view->glview = _create_glview(win);
+  elm_box_pack_end(view->box, view->glview);
+  _set_callbacks(view->glview);
 
   _add_buttons(view, win);
 

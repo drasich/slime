@@ -17,7 +17,6 @@ struct _Render
   Eina_List* objects;
 };
 
-
 typedef struct _View View;
 
 struct _View
