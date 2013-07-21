@@ -282,3 +282,8 @@ object_play_animation(Object* o, char* action_name)
 {
 }
 
+void
+object_add_component(Object* o, Component* c)
+{
+  o->components = eina_list_append(o->components, c);
+}

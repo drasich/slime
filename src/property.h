@@ -32,7 +32,7 @@ struct _Property
       (char *)(& (___ett)),                \
       sizeof ___ett.member};                \
     eina_inarray_push(array, &p); \
-    printf("yeo : %s,  %d\n", # member, p.size);\
+    printf("add_prop : %s,  %d\n", # member, p.size);\
   } while(0)
 
 

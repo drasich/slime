@@ -8,6 +8,7 @@
 #include "animation.h"
 #include "line.h"
 #include "component/transform.h"
+#include "component.h"
 
 typedef struct _Object Object;
 
@@ -16,11 +17,6 @@ struct _Object {
   Vec3 Position;
   Quat Orientation;
   Vec3 angles;
-  //components array
-  //Mesh component
-  //Box component
-  Mesh* mesh;
-  Armature* armature;
   const char* name;
   struct _Scene* scene; //TODO make a list of this?
   Animation* animation;
@@ -28,6 +24,13 @@ struct _Object {
   Matrix4 matrix; //computed from position and orientation
   Eina_Value data_position;
   Eina_Value data_rotation;
+
+  //components array
+  //Mesh component
+  //Box component
+  Mesh* mesh;
+  Armature* armature;
+  Eina_List* components;
 };
 
 void object_init(Object* o);
@@ -60,15 +63,6 @@ void object_compute_matrix_with_angles(Object* o, Matrix4 mat);
 void object_compute_matrix_with_quat(Object* o, Matrix4 mat);
 void object_compute_matrix_with_pos_quat(Object* o, Matrix4 mat, Vec3 v, Quat q);
 
-
-//typedef void (*context_cb)(Context* c, void* listener, const char* msg);
-
-
-typedef struct _ObjectFunctions ObjectFunctions;
-
-struct _ObjectFunctions {
-  void (*init)(void); 
-  void (*update)(double dt); 
-};
+void object_add_component(Object* o, Component* c);
 
 #endif
