@@ -29,7 +29,7 @@ _resize_gl(Evas_Object *obj)
 {
    int w, h;
    elm_glview_size_get(obj, &w, &h);
-   //printf("resize gl %d, %d \n", w, h);
+   printf("resize gl %d, %d \n", w, h);
 
    // GL Viewport stuff. you can avoid doing this if viewport is all the
    // same as last frame if you want

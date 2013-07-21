@@ -339,6 +339,7 @@ _play(void *data,
       void *event_info)
 {
   printf("play\n");
+  create_gameview_window();
 }
 
 static void

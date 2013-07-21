@@ -22,3 +22,16 @@ create_gameview(Evas_Object *win)
   return view;
 }
 
+
+Evas_Object* create_gameview_window()
+{
+  Evas_Object *win;
+  win = elm_win_util_standard_add("slime", "gameview");
+  elm_win_autodel_set(win, EINA_TRUE);
+  //evas_object_smart_callback_add(win, "delete,request", win_del, NULL);
+  GameView* gv = create_gameview(win);
+  
+  evas_object_resize(win, 800, 400);
+  evas_object_show(win);
+  return win;
+}

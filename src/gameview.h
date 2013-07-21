@@ -17,6 +17,7 @@ struct _GameView
 };
 
 GameView* create_gameview(Evas_Object *win);
+Evas_Object* create_gameview_window();
 //void gameview_destroy(View* v);
 //void gameview_update(View* v, double dt);
 
