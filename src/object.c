@@ -138,15 +138,15 @@ object_update(Object* o)
       played = true;
     }
   }
-}
 
-/*
-void
-object_add_component(Component* c)
-{
-  //TODO
+  Eina_List* l;
+  Component* c;
+
+  EINA_LIST_FOREACH(o->components, l, c) {
+    c->funcs.update(c, 0.01f);
+  }
+  
 }
-*/
 
 void object_add_component_mesh(Object* o, Mesh* m)
 {
@@ -286,4 +286,5 @@ void
 object_add_component(Object* o, Component* c)
 {
   o->components = eina_list_append(o->components, c);
+  c->object = o;
 }

@@ -40,10 +40,7 @@ void object_draw_lines(Object* o, Matrix4 world, Matrix4 projection);
 void object_draw_lines_camera(Object* o, Matrix4 world, struct _Camera* c);
 
 void object_update(Object* o);
-//void object_add_component(Component* c);
 
-void object_add_component_mesh(Object* o, Mesh* m);
-void object_add_component_armature(Object* o, Armature* a);
 
 Object* create_object();
 Object* create_object_file(const char* file);
@@ -64,5 +61,8 @@ void object_compute_matrix_with_quat(Object* o, Matrix4 mat);
 void object_compute_matrix_with_pos_quat(Object* o, Matrix4 mat, Vec3 v, Quat q);
 
 void object_add_component(Object* o, Component* c);
+//TODO to remove
+void object_add_component_mesh(Object* o, Mesh* m);
+void object_add_component_armature(Object* o, Armature* a);
 
 #endif
