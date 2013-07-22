@@ -59,8 +59,8 @@ create_window()
   elm_panes_content_left_size_set(panes, 0.75f);
 
 
-  //evas_object_resize(win, 800/3, 400/3);
-  evas_object_resize(win, 1200, 400);
+  evas_object_resize(win, 800/3, 400/3);
+  //evas_object_resize(win, 1200, 400);
   evas_object_show(win);
 }
 
@@ -120,12 +120,13 @@ elm_main(int argc, char **argv)
   create_window();
 
   build_scene();
-  elm_config_preferred_engine_set(NULL);
   test_test();
   //test_display();
 
   elm_run();
   elm_shutdown();
+
+  elm_config_preferred_engine_set(NULL);
 
   return 0;
 }
