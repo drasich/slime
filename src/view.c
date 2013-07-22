@@ -12,6 +12,79 @@
 #include "glview.h"
 #define __UNUSED__
 
+// Callbacks
+static void
+_view_init_gl(Evas_Object *obj)
+{
+  //gl = elm_glview_gl_api_get(obj);
+  View* v = evas_object_data_get(obj, "view");
+  v->render = create_render();
+
+  gl->glEnable(GL_DEPTH_TEST);
+  gl->glEnable(GL_STENCIL_TEST);
+  gl->glDepthFunc(GL_LEQUAL);
+  gl->glClearDepthf(1.0f);
+  gl->glClearStencil(0);
+}
+
+static void
+_view_del_gl(Evas_Object *obj)
+{
+  Scene* s = evas_object_data_get(obj, "scene");
+  if (s)
+  scene_destroy(s);
+}
+
+static void
+_view_resize_gl(Evas_Object *obj)
+{
+  int w, h;
+  elm_glview_size_get(obj, &w, &h);
+
+  // GL Viewport stuff. you can avoid doing this if viewport is all the
+  // same as last frame if you want
+  gl->glViewport(0, 0, w, h);
+
+  View* v = evas_object_data_get(obj, "view");
+  camera_set_resolution(v->camera, w, h);
+  quad_resize(v->render->quad_outline->mesh, w, h);
+  quad_resize(v->render->quad_color->mesh, w, h);
+
+  //TODO
+  fbo_resize(v->render->fbo_all, w, h);
+  fbo_resize(v->render->fbo_selected, w, h);
+}
+
+static void
+_view_draw_gl(Evas_Object *obj)
+{
+  int w, h;
+
+  elm_glview_size_get(obj, &w, &h);
+
+  gl->glViewport(0, 0, w, h);
+  //gl->glClearColor(1.0,0.8,0.3,1);
+  gl->glClearColor(0.2,0.2,0.2,1);
+  gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  // Draw a Triangle
+  gl->glEnable(GL_BLEND);
+  gl->glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+  //TODO remove the function update here
+  Scene* s = evas_object_data_get(obj, "scene");
+  if (s)
+  scene_update(s);
+
+  View* v = evas_object_data_get(obj, "view");
+  view_update(v,0);
+  view_draw(v);
+
+   gl->glFinish();
+}
+
+
+
 static void
 _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, void *event_info)
 {
@@ -338,8 +411,9 @@ _play(void *data,
       Evas_Object *obj,
       void *event_info)
 {
+  View* v = data;
   printf("play\n");
-  create_gameview_window();
+  create_gameview_window(v);
 }
 
 static void
@@ -463,6 +537,11 @@ _set_callbacks(Evas_Object* glview)
   Ecore_Animator *ani;
   ani = ecore_animator_add(_anim, glview);
   evas_object_data_set(glview, "ani", ani);
+
+  elm_glview_init_func_set(glview, _view_init_gl);
+  elm_glview_del_func_set(glview, _view_del_gl);
+  elm_glview_resize_func_set(glview, _view_resize_gl);
+  elm_glview_render_func_set(glview, _view_draw_gl);
 
   evas_object_event_callback_add(glview, EVAS_CALLBACK_DEL, _del, glview);
   evas_object_event_callback_add(glview, EVAS_CALLBACK_KEY_DOWN, _key_down, NULL);
