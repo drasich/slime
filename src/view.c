@@ -72,9 +72,11 @@ _view_draw_gl(Evas_Object *obj)
   gl->glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   //TODO remove the function update here
+  /*
   Scene* s = evas_object_data_get(obj, "scene");
   if (s)
   scene_update(s);
+  */
 
   View* v = evas_object_data_get(obj, "view");
   view_update(v,0);

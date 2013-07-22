@@ -45,6 +45,7 @@ _draw_gl(Evas_Object *obj)
   gl->glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   GameView* gv = evas_object_data_get(obj, "gameview");
+  scene_update(gv->scene);
   gameview_draw(gv);
 
   gl->glFinish();
