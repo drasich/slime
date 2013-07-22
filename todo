@@ -1,3 +1,4 @@
+try to have a gl for each glview
 fix the gl callbacks init, update, draw.... for gameview;
 write new ones or review architecture
 open the gameview and update the components there
