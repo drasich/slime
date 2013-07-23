@@ -285,13 +285,18 @@ property_update(PropertyView* pw, Eina_List* objects)
 
   int nb = eina_list_count(objects);
   if (nb == 1) {
-    property_set(pw, pw->oneobj);
-    pw->oneobj->data = last;
+    MyProp* mp = eina_hash_find(pw->component_widgets_backup,"transform");
+    property_set(pw, mp);
+    mp->data = last;
     _property_update_data(pw->current, last);
+
+    //TODO add the components widget
+
   }
   else if (nb > 1) {
     property_set(pw, NULL);
-    //pw->manyobj->data = &pw->context->mos;
+    //MyProp* mp = eina_hash_find(pw->component_widgets_backup,"multiple");
+    //mp->data = &pw->context->mos;
     //_property_update_data(pw->current, &pw->context->mos);
   }
 }
@@ -299,7 +304,7 @@ property_update(PropertyView* pw, Eina_List* objects)
 void
 property_update2(PropertyView* pw, Object* o)
 {
-  if ( pw->oneobj->data == o) {
+  if ( pw->current->data == o) {
     _property_update_data(pw->current, o);
   }
 }
@@ -336,6 +341,30 @@ void
 property_set(PropertyView* pw, MyProp* mp)
 {
   if (pw->current) {
+    //elm_object_content_unset(pw->scroller);
+    evas_object_hide(pw->current->box);
+    elm_box_unpack_all(pw->box);
+  }
+
+  if (mp) {
+    //elm_object_content_set(pw->scroller, mp->box);
+    //evas_object_show(mp->box);
+    elm_box_pack_end(pw->box, mp->box);
+    evas_object_show(mp->box);
+  }
+
+  pw->current = mp;
+}
+
+void property_clear_components(PropertyView* pw)
+{
+
+}
+
+void
+property_add_component(PropertyView* pw, MyProp* mp)
+{
+  if (pw->current) {
     elm_object_content_unset(pw->scroller);
     evas_object_hide(pw->current->box);
   }
@@ -347,6 +376,7 @@ property_set(PropertyView* pw, MyProp* mp)
 
   pw->current = mp;
 }
+
 
 static Eina_Inarray* 
 _object_init_array_properties()
@@ -390,6 +420,7 @@ create_my_prop(Eina_Inarray *a, Evas_Object* win, Control* control)
 
   mp->box = elm_box_add(win);
   evas_object_size_hint_weight_set(mp->box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_fill_set(mp->box, EVAS_HINT_FILL, EVAS_HINT_FILL);
   elm_box_align_set(mp->box, 0.0, 0.0);
   //evas_object_show(mp->box);
 
@@ -455,6 +486,14 @@ create_property(Evas_Object* win, Context* context, Control* control)
 
   //elm_scroller_policy_set(scroller, ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_ON);
 
+  bx = elm_box_add(win);
+  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_fill_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  //elm_box_align_set(bx, 0.0, 0.0);
+  p->box = bx;
+  elm_object_content_set(p->scroller, p->box);
+  evas_object_show(bx);
+
   frame = elm_frame_add(win);
   elm_object_text_set(frame, "Properties");
   evas_object_size_hint_weight_set(frame, EVAS_HINT_EXPAND, 0.0);
@@ -465,13 +504,25 @@ create_property(Evas_Object* win, Context* context, Control* control)
 
   elm_object_content_set(frame, scroller);
 
+  p->component_widgets_backup = eina_hash_string_superfast_new(_property_entry_free_cb);
+
   //TODO remove these arrays, and the myprop from propertyview
   p->arr = _object_init_array_properties();
   p->array_multiple_objects = _multiple_objects_init_array_properties();
-  p->oneobj = create_my_prop(p->arr, win, control);
-  p->manyobj = create_my_prop(p->array_multiple_objects, win, control);
-  p->manyobj->callback = _changed_multiple_object;
-  property_set(p, p->oneobj);
+  MyProp* transform = create_my_prop(p->arr, win, control);
+
+  eina_hash_add(
+        p->component_widgets_backup,
+        "transform",
+        transform);
+  
+  MyProp* manyobj = create_my_prop(p->array_multiple_objects, win, control);
+  manyobj->callback = _changed_multiple_object;
+
+  eina_hash_add(
+        p->component_widgets_backup,
+        "multiple",
+        transform);
 
   return p;
 }

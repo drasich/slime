@@ -14,16 +14,14 @@ struct _PropertyView
 
   Context *context;
   Control *control;
-  //Eina_Hash *properties;
   Evas_Object* win;
   Eina_Inarray *arr;
   Eina_Inarray *array_multiple_objects;
   MyProp* current;
   Evas_Object* scroller;
 
-  MyProp* oneobj;
-  MyProp* manyobj;
-  Eina_Hash *component_widgets;
+  Eina_Hash *component_widgets_backup;
+  Eina_List *component_widgets;
 };
 
 typedef void (*property_changed)(Control* control, void* data, Property* p);
