@@ -14,7 +14,7 @@ struct _PropertyView
 
   Context *context;
   Control *control;
-  Eina_Hash *properties;
+  //Eina_Hash *properties;
   Evas_Object* win;
   Eina_Inarray *arr;
   Eina_Inarray *array_multiple_objects;
@@ -23,6 +23,7 @@ struct _PropertyView
 
   MyProp* oneobj;
   MyProp* manyobj;
+  Eina_Hash *component_widgets;
 };
 
 typedef void (*property_changed)(Control* control, void* data, Property* p);

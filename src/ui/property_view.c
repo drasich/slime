@@ -198,10 +198,11 @@ _property_add_spinner(MyProp* mp, Property* p)
 }
 
 
-
 static Evas_Object*
-property_add_fileselect(PropertyView *p, Evas_Object* win, Evas_Object* bx, char* name)
+property_add_fileselect(PropertyView *pw, Evas_Object* win, Evas_Object* bx, char* name)
 {
+//TODO
+/*
   Evas_Object *en, *bx2, *label;
 
   en = elm_spinner_add(win);
@@ -221,13 +222,13 @@ property_add_fileselect(PropertyView *p, Evas_Object* win, Evas_Object* bx, char
   evas_object_name_set(en, name);
 
   eina_hash_add(
-        p->properties,
+        pw->properties,
         name,
         en);
   evas_object_smart_callback_add(en, "changed", _entry_changed_cb, p->context);
 
   return en;
-
+  */
 }
 
 void
@@ -328,9 +329,6 @@ _property_entry_foreach_cb(
 void
 property_clean(PropertyView* pw)
 {
-  eina_hash_free(pw->properties);
-  pw->properties = NULL;
-  pw->properties = eina_hash_string_superfast_new(_property_entry_free_cb);
   elm_box_clear(pw->box);
 }
 
@@ -466,9 +464,6 @@ create_property(Evas_Object* win, Context* context, Control* control)
   p->root = frame;
 
   elm_object_content_set(frame, scroller);
-
-  p->properties = NULL;
-  p->properties = eina_hash_string_superfast_new(_property_entry_free_cb);
 
   //TODO remove these arrays, and the myprop from propertyview
   p->arr = _object_init_array_properties();
