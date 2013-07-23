@@ -286,6 +286,7 @@ property_update(PropertyView* pw, Eina_List* objects)
   int nb = eina_list_count(objects);
   if (nb == 1) {
     MyProp* mp = eina_hash_find(pw->component_widgets_backup,"transform");
+    //TODO clean and add
     property_set(pw, mp);
     mp->data = last;
     _property_update_data(pw->current, last);
