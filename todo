@@ -1,6 +1,9 @@
-try to have a gl for each glview
+add the components in the properties
+be able to change the rotation speed of the player component
+make the player component a module/library
+
+
 fix the gl callbacks init, update, draw.... for gameview;
-write new ones or review architecture
 open the gameview and update the components there
 
 be able to add/remove properties (make some kind of component = group properties)

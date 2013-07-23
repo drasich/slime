@@ -268,6 +268,31 @@ _property_update_data(MyProp* mp, void* data)
   }
 }
 
+void property_clear_components(PropertyView* pw)
+{
+  elm_box_unpack_all(pw->box);
+
+  Eina_List* l;
+  MyProp* mp;
+
+  EINA_LIST_FOREACH(pw->component_widgets, l, mp) {
+    evas_object_hide(mp->box);
+  }
+
+  pw->component_widgets = eina_list_free(pw->component_widgets);
+}
+
+void
+property_add_component(PropertyView* pw, MyProp* mp)
+{
+  elm_box_pack_end(pw->box, mp->box);
+  evas_object_show(mp->box);
+  pw->component_widgets = eina_list_append(pw->component_widgets, mp);
+}
+
+
+
+
 void
 property_update(PropertyView* pw, Eina_List* objects)
 {
@@ -287,9 +312,13 @@ property_update(PropertyView* pw, Eina_List* objects)
   if (nb == 1) {
     MyProp* mp = eina_hash_find(pw->component_widgets_backup,"transform");
     //TODO clean and add
-    property_set(pw, mp);
+    property_clear_components(pw);
+    //property_set(pw, mp);
+    property_add_component(pw, mp);
     mp->data = last;
-    _property_update_data(pw->current, last);
+    pw->current = mp;
+    //_property_update_data(pw->current, last);
+    _property_update_data(mp, last);
 
     //TODO add the components widget
 
@@ -302,6 +331,8 @@ property_update(PropertyView* pw, Eina_List* objects)
   }
 }
 
+//TODO change this function to something like update_component_transform 
+//and remove current
 void
 property_update2(PropertyView* pw, Object* o)
 {
@@ -356,28 +387,6 @@ property_set(PropertyView* pw, MyProp* mp)
 
   pw->current = mp;
 }
-
-void property_clear_components(PropertyView* pw)
-{
-
-}
-
-void
-property_add_component(PropertyView* pw, MyProp* mp)
-{
-  if (pw->current) {
-    elm_object_content_unset(pw->scroller);
-    evas_object_hide(pw->current->box);
-  }
-
-  if (mp) {
-    elm_object_content_set(pw->scroller, mp->box);
-    evas_object_show(mp->box);
-  }
-
-  pw->current = mp;
-}
-
 
 static Eina_Inarray* 
 _object_init_array_properties()
