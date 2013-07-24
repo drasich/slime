@@ -44,6 +44,7 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
     mp->callback(ct, o, p);
   }
 
+  if (!strcmp(mp->name, "transform"))
   control_property_update(ct, o);
 }
 
@@ -290,6 +291,54 @@ property_add_component(PropertyView* pw, MyProp* mp)
   pw->component_widgets = eina_list_append(pw->component_widgets, mp);
 }
 
+static void
+_property_entry_free_cb(void *data)
+{
+   //free(data);
+}
+
+
+MyProp*
+create_my_prop(const char* name, Eina_Inarray *a, Evas_Object* win, Control* control)
+{
+  MyProp* mp = calloc(1, sizeof *mp);
+  mp->arr = a;
+  mp->win = win;
+  mp->control = control;
+  mp->properties = eina_hash_string_superfast_new(_property_entry_free_cb);
+  mp->name = name;
+
+  mp->box = elm_box_add(win);
+  evas_object_size_hint_weight_set(mp->box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_fill_set(mp->box, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  elm_box_align_set(mp->box, 0.0, 0.0);
+  //evas_object_show(mp->box);
+
+  Property *p;
+  EINA_INARRAY_FOREACH(a, p) {
+   //printf("name: %s , type: %d, offset: %d\n", p->name, p->type, p->offset);
+   //printf("   value is : ");
+   switch(p->type) {
+     case EET_T_DOUBLE:
+        {
+         //double d;
+         //memcpy(&d, (void*)&yep + p->offset, sizeof d);
+         //printf("%f\n",d);
+         _property_add_spinner(mp, p);
+        }
+         break;
+     case EET_T_STRING:
+         _property_add_entry(mp, p);
+         break;
+     default:
+         fprintf (stderr, "type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
+         break;
+   }
+  }
+  return mp;
+}
+
+
 
 
 
@@ -321,6 +370,21 @@ property_update(PropertyView* pw, Eina_List* objects)
     _property_update_data(mp, last);
 
     //TODO add the components widget
+    Component* c;
+    EINA_LIST_FOREACH(last->components, l, c) {
+      mp = eina_hash_find(pw->component_widgets_backup, c->name);
+      if (!mp) {
+        mp = create_my_prop(c->name, c->properties, pw->win, pw->control);
+        eina_hash_add(
+              pw->component_widgets_backup,
+              c->name,
+              mp);
+      }
+      property_add_component(pw, mp);
+      mp->data = c->data;
+
+    }
+
 
   }
   else if (nb > 1) {
@@ -341,12 +405,6 @@ property_update2(PropertyView* pw, Object* o)
   }
 }
 
-
-static void
-_property_entry_free_cb(void *data)
-{
-   //free(data);
-}
 
 static Eina_Bool
 _property_entry_foreach_cb(
@@ -419,45 +477,6 @@ _multiple_objects_init_array_properties()
   return iarr;
 }
 
-MyProp*
-create_my_prop(Eina_Inarray *a, Evas_Object* win, Control* control)
-{
-  MyProp* mp = calloc(1, sizeof *mp);
-  mp->arr = a;
-  mp->win = win;
-  mp->control = control;
-  mp->properties = eina_hash_string_superfast_new(_property_entry_free_cb);
-
-  mp->box = elm_box_add(win);
-  evas_object_size_hint_weight_set(mp->box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  evas_object_size_hint_fill_set(mp->box, EVAS_HINT_FILL, EVAS_HINT_FILL);
-  elm_box_align_set(mp->box, 0.0, 0.0);
-  //evas_object_show(mp->box);
-
-  Property *p;
-  EINA_INARRAY_FOREACH(a, p) {
-   //printf("name: %s , type: %d, offset: %d\n", p->name, p->type, p->offset);
-   //printf("   value is : ");
-   switch(p->type) {
-     case EET_T_DOUBLE:
-        {
-         //double d;
-         //memcpy(&d, (void*)&yep + p->offset, sizeof d);
-         //printf("%f\n",d);
-         _property_add_spinner(mp, p);
-        }
-         break;
-     case EET_T_STRING:
-         _property_add_entry(mp, p);
-         break;
-     default:
-         fprintf (stderr, "type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
-         break;
-   }
-  }
-  return mp;
-}
-
 static void
 _changed_multiple_object(Control* c, void* data, Property* p)
 {
@@ -519,19 +538,19 @@ create_property(Evas_Object* win, Context* context, Control* control)
   //TODO remove these arrays, and the myprop from propertyview
   p->arr = _object_init_array_properties();
   p->array_multiple_objects = _multiple_objects_init_array_properties();
-  MyProp* transform = create_my_prop(p->arr, win, control);
+  MyProp* transform = create_my_prop("transform", p->arr, win, control);
 
   eina_hash_add(
         p->component_widgets_backup,
-        "transform",
+        transform->name,
         transform);
   
-  MyProp* manyobj = create_my_prop(p->array_multiple_objects, win, control);
+  MyProp* manyobj = create_my_prop("multiple", p->array_multiple_objects, win, control);
   manyobj->callback = _changed_multiple_object;
 
   eina_hash_add(
         p->component_widgets_backup,
-        "multiple",
+        manyobj->name,
         transform);
 
   return p;

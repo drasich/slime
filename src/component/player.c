@@ -35,6 +35,6 @@ create_player()
   Eina_Inarray* iarr = _player_properties();
   p->rotation_speed = 20;
 
-  Component* c = create_component(player_funcs, p, iarr);
+  Component* c = create_component("player", player_funcs, p, iarr);
   return c;
 }

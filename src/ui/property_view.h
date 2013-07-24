@@ -38,6 +38,7 @@ struct _MyProp
 
   void* data;
   const char* value_saved;
+  const char* name;
 };
 
 Evas_Object* property_add_entry(

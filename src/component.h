@@ -15,8 +15,9 @@ struct _Component {
   ComponentFuncs funcs;
   Eina_Inarray* properties;
   struct _Object* object;
+  const char* name;
 };
 
-Component* create_component(ComponentFuncs f, void* data, Eina_Inarray* properties); 
+Component* create_component(const char* name, ComponentFuncs f, void* data, Eina_Inarray* properties); 
 
 #endif
