@@ -1,6 +1,5 @@
-add the components in the properties
-be able to change the rotation speed of the player component
 make the player component a module/library
+or make the game a library?
 
 
 fix the gl callbacks init, update, draw.... for gameview;
