@@ -71,6 +71,16 @@ def build(bld):
       defines = ['EDITOR']
       )
 
+  lib_cpp_files = bld.path.ant_glob('lib/*.c')
+  bld.shlib(
+      source= lib_cpp_files,
+      target='gameshared',
+      #use='myobjects',
+      use='elementary',
+      includes = 'lib src')
+
+  #bld.objects(source='c.c', target='myobjects')
+
   bld.add_post_fun(post)
   #bld.add_pre_fun(pre)
 

@@ -11,6 +11,7 @@ struct _Enemy
   const char* name;
   double speed;
   Object* object;
+  bool movepos;
 };
 
 void enemy_init(Component* c);

@@ -1,4 +1,4 @@
-#include "component/enemy.h"
+#include "enemy.h"
 #include "object.h"
 #include "property.h"
 #include <Eet.h>
@@ -12,7 +12,11 @@ void
 enemy_update(Component* c, double dt)
 {
   Enemy* e = c->data;
-  //c->object->angles.X += p->rotation_speed*dt;
+  c->object->Position.X += e->speed*dt;
+  if (e->movepos && c->object->Position.X > 5)
+  c->object->Position.X -= e->speed*dt;
+  else if (!e->movepos && c->object->Position.X <- 5)
+  c->object->Position.X += e->speed*dt;
 }
 
 static Eina_Inarray* 
