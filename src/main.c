@@ -1,10 +1,12 @@
 #include <Elementary.h>
 #include "view.h"
+#include "gameview.h"
 #include "ui/tree.h"
 #include "scene.h"
 #include "control.h"
 #define __UNUSED__
 
+//TODO put these in application
 static View* view;
 
 static void

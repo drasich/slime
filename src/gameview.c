@@ -1,5 +1,6 @@
 #include "gameview.h"
 #include "glview.h"
+#define __UNUSED__
 
 // Callbacks
 static void
@@ -15,6 +16,7 @@ _init_gl(Evas_Object *obj)
 static void
 _del_gl(Evas_Object *obj)
 {
+  printf("gameview del gl\n");
 }
 
 static void
@@ -26,7 +28,6 @@ _resize_gl(Evas_Object *obj)
    // GL Viewport stuff. you can avoid doing this if viewport is all the
    // same as last frame if you want
    gl->glViewport(0, 0, w, h);
-   printf("resize gameview %d, %d \n", w, h);
 }
 
 static void
@@ -51,6 +52,13 @@ _draw_gl(Evas_Object *obj)
   gl->glFinish();
 }
 
+static void
+_gameview_del(void *data __UNUSED__, Evas *evas __UNUSED__, Evas_Object *obj, void *event_info __UNUSED__)
+{
+  Ecore_Animator *ani = evas_object_data_get(obj, "ani");
+  ecore_animator_del(ani);
+  //GameView* gv = evas_object_data_get(obj, "gameview");
+}
 
 
 static void
@@ -65,8 +73,8 @@ _set_callbacks(Evas_Object* glview)
   elm_glview_resize_func_set(glview, _resize_gl);
   elm_glview_render_func_set(glview, _draw_gl);
 
+  evas_object_event_callback_add(glview, EVAS_CALLBACK_DEL, _gameview_del, glview);
   /*
-  evas_object_event_callback_add(glview, EVAS_CALLBACK_DEL, _del, glview);
   evas_object_event_callback_add(glview, EVAS_CALLBACK_KEY_DOWN, _key_down, NULL);
   evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_MOVE, _mouse_move, NULL);
   evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_DOWN, _mouse_down, NULL);
@@ -87,29 +95,40 @@ create_gameview(Evas_Object *win)
   elm_win_resize_object_add(win, view->box);
   evas_object_show(view->box);
 
-  printf("create gameview\n");
   view->glview = _create_glview(win);
   elm_box_pack_end(view->box, view->glview);
+  evas_object_data_set(view->glview, "gameview", view);
   _set_callbacks(view->glview);
+  /*
 
   //_add_buttons(view, win);
 
-  evas_object_data_set(view->glview, "gameview", view);
+  */
 
   return view;
 }
 
+static void
+win_del(void *data, Evas_Object *obj, void *event_info)
+{
+  GameView* gv = data;
+  *gv->window = NULL;
+  free(gv);
+}
 
-Evas_Object* create_gameview_window(View* v)
+
+
+Evas_Object* create_gameview_window(View* v, Evas_Object** window)
 {
   Evas_Object *win;
   win = elm_win_util_standard_add("slime", "gameview");
   elm_win_autodel_set(win, EINA_TRUE);
-  //evas_object_smart_callback_add(win, "delete,request", win_del, NULL);
   GameView* gv = create_gameview(win);
+  evas_object_smart_callback_add(win, "delete,request", win_del, gv);
   //Context* cx = v->context;
   gv->scene = v->context->scene;
   gv->camera = v->camera;
+  gv->window = window;
   
   evas_object_resize(win, 800/3, 400/3);
   evas_object_show(win);

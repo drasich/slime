@@ -10,6 +10,7 @@
 #include "ui/tree.h"
 #include "intersect.h"
 #include "glview.h"
+#include "gameview.h"
 #define __UNUSED__
 
 // Callbacks
@@ -408,14 +409,22 @@ _new_empty(void *data,
 
 }
 
+
+Evas_Object* gameview_;
+
 static void
 _play(void *data,
       Evas_Object *obj,
       void *event_info)
 {
   View* v = data;
-  printf("play\n");
-  create_gameview_window(v);
+  if (!gameview_)
+  gameview_ = create_gameview_window(v, &gameview_);
+  else {
+    evas_object_show(gameview_);
+    elm_win_raise(gameview_);
+  }
+  //elm_win_borderless_set(gameview_, EINA_TRUE);
 }
 
 static void

@@ -14,8 +14,8 @@ void
 _del(void *data __UNUSED__, Evas *evas __UNUSED__, Evas_Object *obj, void *event_info __UNUSED__)
 {
   printf("del ani\n");
-   Ecore_Animator *ani = evas_object_data_get(obj, "ani");
-   ecore_animator_del(ani);
+  Ecore_Animator *ani = evas_object_data_get(obj, "ani");
+  ecore_animator_del(ani);
 }
 
 Evas_Object*
