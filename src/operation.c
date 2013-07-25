@@ -1,5 +1,6 @@
 #include "operation.h"
 #include "view.h"
+#include "ui/tree.h" //TODO remove this include
 
 void 
 operation_move_object_do(Control* c, void* data)
@@ -93,7 +94,7 @@ operation_remove_object_undo(Control *c, void* data)
 /////////////////////////////////
 
 static void
-_change_data(Object* o, Property* p, void *data)
+_change_data(Object* o, Property* p, const void *data)
 {
   switch(p->type) {
     case EET_T_DOUBLE:

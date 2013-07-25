@@ -94,6 +94,7 @@ void mesh_init_texture(Mesh* m);
 
 Mesh* create_mesh(char* path);
 Mesh* create_mesh_file(FILE* f);
+void mesh_destroy(Mesh* m);
 
 VertexGroup* mesh_find_vertexgroup(Mesh* mesh, char* name);
 

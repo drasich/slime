@@ -143,7 +143,7 @@ void test_display()
   ADD_PROP(iarr, Transform, position.Z, EET_T_DOUBLE);
 
   Transform yep = { vec3(1.98,2,3), vec3(4,5,6), 7};
-  printf("size of double %d \n", sizeof(double));
+  printf("size of double %lu \n", sizeof(double));
 
   Property *p;
   EINA_INARRAY_FOREACH(iarr, p) {

@@ -51,6 +51,8 @@ void property_update(PropertyView* p, Eina_List* objects);
 PropertyView* create_property(Evas_Object* win, Context* context, Control* control);
 void property_set(PropertyView* pw, MyProp* mp);
 void _property_update_data(MyProp* mp, void* data);
+//TODO rename this function
+void property_update2(PropertyView* pw, Object* o);
 
 
 

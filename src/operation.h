@@ -23,7 +23,6 @@ struct _Op_Add_Object
 
 void operation_add_object_do(Control *c, void* data);
 void operation_add_object_undo(Control *c, void* data);
-void control_add_object(Control* c, Scene* s, Object* o);
 ////////////////////////////////////////////
 
 typedef struct _Op_Remove_Object Op_Remove_Object;
@@ -44,12 +43,11 @@ struct _Op_Change_Property
 {
   Object* o;
   Property* p;
-  void* value_old;
-  void* value_new;
+  const void* value_old;
+  const void* value_new;
 };
 
 void operation_change_property_do(Control *c, void* data);
 void operation_change_property_undo(Control *c, void* data);
-void control_change_property(Control* c, Object* o, Property* p, void* data_old, void* data_new);
 
 #endif

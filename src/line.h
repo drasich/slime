@@ -54,6 +54,8 @@ void line_prepare_draw(Line* l, Matrix4 mat, struct _Camera* c);
 void line_draw(Line* line);
 
 Line* create_line();
+void line_destroy(Line* l);
+
 void line_add(Line* line, Vec3 p1, Vec3 p2);
 void line_add_color(Line* line, Vec3 p1, Vec3 p2, Vec4 color);
 void line_add_box(Line* line, AABox box, Vec4 color);

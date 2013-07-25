@@ -3,6 +3,7 @@
 #include "object.h"
 #include "view.h"
 #include "operation.h"
+#include "ui/tree.h"
 
 Control* 
 create_control(View* v)
@@ -111,7 +112,7 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
 
   View* v = c->view;
   if (c->state == IDLE) {
-    if (e->buttons & 1 == 1){
+    if ( (e->buttons & 1) == 1){
       float x = e->cur.canvas.x - e->prev.canvas.x;
       float y = e->cur.canvas.y - e->prev.canvas.y;
 
@@ -207,7 +208,7 @@ _op_remove_object(Scene* s, Eina_List* objects)
 }
 
 static Operation* 
-_op_change_property(Object* o, Property* p, void* data_old, void* data_new)
+_op_change_property(Object* o, Property* p, const void* data_old, const void* data_new)
 {
   Operation* op = calloc(1, sizeof *op);
 
@@ -374,7 +375,7 @@ control_remove_object(Control* c, Scene* s, Eina_List* objects)
 }
 
 void
-control_change_property(Control* c, Object* o, Property* p, void* data_old, void* data_new)
+control_change_property(Control* c, Object* o, Property* p, const void* data_old, const void* data_new)
 {
   Operation* op = _op_change_property(o, p, data_old, data_new);
   control_add_operation(c, op);

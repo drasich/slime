@@ -50,4 +50,7 @@ void control_undo(Control* c);
 void control_redo(Control* c);
 void control_clean_redo(Control* c);
 
+void control_add_object(Control* c, Scene* s, Object* o);
+void control_change_property(Control* c, Object* o, Property* p, const void* data_old, const void* data_new);
+
 #endif

@@ -258,7 +258,7 @@ static Elm_Object_Item*
 _tree_get_item(Tree* t, Object* o)
 { 
   Elm_Object_Item* item = elm_genlist_first_item_get(t->gl);
-  if (!item) return;
+  if (!item) return NULL;
 
   Object* eo = (Object*) elm_object_item_data_get(item);
 

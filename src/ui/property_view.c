@@ -203,8 +203,8 @@ static Evas_Object*
 property_add_fileselect(PropertyView *pw, Evas_Object* win, Evas_Object* bx, char* name)
 {
 //TODO
-/*
   Evas_Object *en, *bx2, *label;
+/*
 
   en = elm_spinner_add(win);
   evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
@@ -228,8 +228,8 @@ property_add_fileselect(PropertyView *pw, Evas_Object* win, Evas_Object* bx, cha
         en);
   evas_object_smart_callback_add(en, "changed", _entry_changed_cb, p->context);
 
-  return en;
   */
+  return en;
 }
 
 void

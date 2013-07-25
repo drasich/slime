@@ -101,7 +101,7 @@ _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, 
 
 static float startx = 0, starty = 0;
 
-static frustum_from_rect(
+static void frustum_from_rect(
       Frustum* f, 
       Camera* c, 
       float left,
