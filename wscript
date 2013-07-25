@@ -50,6 +50,7 @@ def pre(bld):
 
 
 def build(bld):
+
   #bld.recurse('indefini')
   #bld.recurse('tool/property')
 
@@ -65,6 +66,7 @@ def build(bld):
       target='slime', 
       #use='elementary indefini protobuf',
       use='elementary png',
+      linkflags = ['-ldl', '-rdynamic'],
       #includes = ['include'],
       #includes = 'include indefini/include proto',
       includes = 'src include proto',
@@ -77,7 +79,10 @@ def build(bld):
       target='gameshared',
       #use='myobjects',
       use='elementary',
-      includes = 'lib src')
+      includes = 'lib src',
+      cflags= ['-fpic']
+      )
+
 
   #bld.objects(source='c.c', target='myobjects')
 

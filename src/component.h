@@ -10,6 +10,8 @@ struct _ComponentFuncs {
   void (*update)(Component* c, double dt); 
 };
 
+typedef Component* (*create_component_function)(); 
+
 struct _Component {
   void* data;
   ComponentFuncs funcs;

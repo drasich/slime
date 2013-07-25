@@ -1,6 +1,10 @@
 #include "gameview.h"
 #include "glview.h"
+#include <dlfcn.h>
+#include "component.h"
 #define __UNUSED__
+
+void* libhandle;
 
 // Callbacks
 static void
@@ -99,6 +103,25 @@ create_gameview(Evas_Object *win)
   elm_box_pack_end(view->box, view->glview);
   evas_object_data_set(view->glview, "gameview", view);
   _set_callbacks(view->glview);
+
+  libhandle = dlopen("./build/libgameshared.so", RTLD_NOW);
+  if (!libhandle) {
+    printf("Error loading DSO: %s\n", dlerror());
+  }
+  else 
+    printf("libsuccess\n");
+
+  create_component_function  initfunc = dlsym(libhandle, "create_enemy");
+  if (!initfunc) {
+    printf("Error loading init function: %s\n", dlerror());
+    dlclose(libhandle);
+  }
+  else 
+    printf("symbol success\n");
+
+  Component* c = initfunc();
+  free(c);
+
   /*
 
   //_add_buttons(view, win);
@@ -114,6 +137,7 @@ win_del(void *data, Evas_Object *obj, void *event_info)
   GameView* gv = data;
   *gv->window = NULL;
   free(gv);
+  dlclose(libhandle);
 }
 
 
