@@ -409,8 +409,10 @@ _new_empty(void *data,
 
 }
 
+#include "component.h" //TODO
 
 Evas_Object* gameview_;
+ComponentManager* cm_ = NULL;
 
 static void
 _play(void *data,
@@ -418,8 +420,12 @@ _play(void *data,
       void *event_info)
 {
   View* v = data;
+
+  if (!cm_)
+  cm_ = create_component_manager(obj, v->control); //TODO
+
   if (!gameview_)
-  gameview_ = create_gameview_window(v, &gameview_);
+  gameview_ = create_gameview_window(v, &gameview_, cm_ );
   else {
     evas_object_show(gameview_);
     elm_win_raise(gameview_);

@@ -9,8 +9,8 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
   //printf ("todo : at %s, line %d\n",__FILE__, __LINE__);
   //return;
   //PropertyView* pw = data;
-  ComponentProperties* mp = data;
-  void* o = mp->data;
+  ComponentProperties* cp = data;
+  void* o = cp->data;
 
   if (o == NULL) return;
 
@@ -38,13 +38,13 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
       break;
    }
 
-  Control* ct = mp->control;
+  Control* ct = cp->control;
 
-  if (mp->callback) {
-    mp->callback(ct, o, p);
+  if (cp->callback) {
+    cp->callback(ct, o, p);
   }
 
-  if (!strcmp(mp->name, "transform"))
+  if (!strcmp(cp->name, "transform"))
   control_property_update(ct, o);
 }
 
@@ -52,12 +52,12 @@ static void
 _entry_activated_cb(void *data, Evas_Object *obj, void *event)
 {
   printf("activated\n");
-  ComponentProperties* mp = data;
+  ComponentProperties* cp = data;
   const char* s = elm_object_text_get(obj);
 
-  if (strcmp(mp->value_saved, s)) {
+  if (strcmp(cp->value_saved, s)) {
     Property* p = evas_object_data_get(obj, "property");
-    control_change_property(mp->control, mp->data, p, mp->value_saved, s);
+    control_change_property(cp->control, cp->data, p, cp->value_saved, s);
   }
 }
 
@@ -66,19 +66,19 @@ _entry_aborted_cb(void *data, Evas_Object *obj, void *event)
 {
   printf("aborted\n");
 
-  ComponentProperties* mp = data;
-  void* o = mp->data;
+  ComponentProperties* cp = data;
+  void* o = cp->data;
   const char* s = elm_object_text_get(obj);
 
-  if (strcmp(mp->value_saved, s)) {
+  if (strcmp(cp->value_saved, s)) {
     eina_stringshare_del(s);
 
     Property* p = evas_object_data_get(obj, "property");
     const char** str = (void*)o + p->offset;
-    *str = eina_stringshare_add(mp->value_saved);
+    *str = eina_stringshare_add(cp->value_saved);
     elm_object_text_set(obj, *str);
 
-    Control* ct = mp->control;
+    Control* ct = cp->control;
     control_property_update(ct, o);
   }
 
@@ -87,38 +87,38 @@ _entry_aborted_cb(void *data, Evas_Object *obj, void *event)
 static void
 _entry_focused_cb(void *data, Evas_Object *obj, void *event)
 {
-  ComponentProperties* mp = data;
+  ComponentProperties* cp = data;
   const char* s = elm_object_text_get(obj);
   const char* str = eina_stringshare_add(s);
   //TODO don't forget to eina_stringshare_del
   printf("TODO stringshare del\n");
-  mp->value_saved = str;
+  cp->value_saved = str;
 }
 
 static void
 _entry_unfocused_cb(void *data, Evas_Object *obj, void *event)
 {
-  ComponentProperties* mp = data;
+  ComponentProperties* cp = data;
   const char* s = elm_object_text_get(obj);
-  if (strcmp(mp->value_saved, s)) {
+  if (strcmp(cp->value_saved, s)) {
     Property* p = evas_object_data_get(obj, "property");
-    control_change_property(mp->control, mp->data, p, mp->value_saved, s);
+    control_change_property(cp->control, cp->data, p, cp->value_saved, s);
   }
 }
 
 
 
 static Evas_Object* 
-_property_add_entry(ComponentProperties* mp, Property* p)
+_property_add_entry(ComponentProperties* cp, Property* p)
 {
   Evas_Object *en, *bx2, *label;
 
-  bx2 = elm_box_add(mp->win);
+  bx2 = elm_box_add(cp->win);
   elm_box_horizontal_set(bx2, EINA_TRUE);
   evas_object_size_hint_weight_set(bx2, EVAS_HINT_EXPAND, 0.0);
   evas_object_size_hint_align_set(bx2, EVAS_HINT_FILL, EVAS_HINT_FILL);
 
-  label = elm_label_add(mp->win);
+  label = elm_label_add(cp->win);
   char s[256];
   sprintf(s, "<b> %s </b> : ", p->name);
 
@@ -126,7 +126,7 @@ _property_add_entry(ComponentProperties* mp, Property* p)
   evas_object_show(label);
   elm_box_pack_end(bx2, label);
 
-  en = elm_entry_add(mp->win);
+  en = elm_entry_add(cp->win);
   elm_entry_scrollable_set(en, EINA_TRUE);
   evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
   evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
@@ -141,20 +141,20 @@ _property_add_entry(ComponentProperties* mp, Property* p)
   evas_object_name_set(en, p->name);
 
   eina_hash_add(
-        mp->properties,
+        cp->properties,
         p->name,
         en);
 
-  evas_object_smart_callback_add(en, "changed,user", _entry_changed_cb, mp);
-  evas_object_smart_callback_add(en, "activated", _entry_activated_cb, mp);
-  evas_object_smart_callback_add(en, "aborted", _entry_aborted_cb, mp);
-  evas_object_smart_callback_add(en, "focused", _entry_focused_cb, mp);
-  evas_object_smart_callback_add(en, "unfocused", _entry_unfocused_cb, mp);
+  evas_object_smart_callback_add(en, "changed,user", _entry_changed_cb, cp);
+  evas_object_smart_callback_add(en, "activated", _entry_activated_cb, cp);
+  evas_object_smart_callback_add(en, "aborted", _entry_aborted_cb, cp);
+  evas_object_smart_callback_add(en, "focused", _entry_focused_cb, cp);
+  evas_object_smart_callback_add(en, "unfocused", _entry_unfocused_cb, cp);
   evas_object_data_set(en, "property", p);
 
   elm_entry_context_menu_disabled_set(en, EINA_TRUE);
   
-  elm_box_pack_end(mp->box, bx2);
+  elm_box_pack_end(cp->box, bx2);
   evas_object_show(bx2);
 
   return en;
@@ -163,16 +163,16 @@ _property_add_entry(ComponentProperties* mp, Property* p)
 
 
 static Evas_Object* 
-_property_add_spinner(ComponentProperties* mp, Property* p)
+_property_add_spinner(ComponentProperties* cp, Property* p)
 {
   Evas_Object *en, *label;
 
-  en = elm_spinner_add(mp->win);
+  en = elm_spinner_add(cp->win);
   evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
   evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
   //elm_spinner_value_set(en, atof(value));
   evas_object_show(en);
-  elm_box_pack_end(mp->box, en);
+  elm_box_pack_end(cp->box, en);
 
   evas_object_name_set(en, p->name);
   
@@ -187,11 +187,11 @@ _property_add_spinner(ComponentProperties* mp, Property* p)
   evas_object_name_set(en, p->name);
 
   eina_hash_add(
-        mp->properties,
+        cp->properties,
         p->name,
         en);
 
-  evas_object_smart_callback_add(en, "changed", _entry_changed_cb, mp);
+  evas_object_smart_callback_add(en, "changed", _entry_changed_cb, cp);
 
   evas_object_data_set(en, "property", p);
 
@@ -233,12 +233,12 @@ property_add_fileselect(PropertyView *pw, Evas_Object* win, Evas_Object* bx, cha
 }
 
 void
-_property_update_data(ComponentProperties* mp, void* data)
+_property_update_data(ComponentProperties* cp, void* data)
 {
   Property *p;
 
-  EINA_INARRAY_FOREACH(mp->arr, p) {
-    Evas_Object* obj = eina_hash_find(mp->properties, p->name);
+  EINA_INARRAY_FOREACH(cp->arr, p) {
+    Evas_Object* obj = eina_hash_find(cp->properties, p->name);
     //printf("name: %s , type: %d, offset: %d\n", p->name, p->type, p->offset);
     //printf("   value is : ");
     switch(p->type) {
@@ -250,7 +250,7 @@ _property_update_data(ComponentProperties* mp, void* data)
           double old = elm_spinner_value_get(obj);
           if (old != d) {
           printf("value is different\n");
-          elm_spinner_value_set(eina_hash_find(mp->properties, p->name), d );
+          elm_spinner_value_set(eina_hash_find(cp->properties, p->name), d );
           }
          }
         break;
@@ -274,21 +274,21 @@ void property_clear_components(PropertyView* pw)
   elm_box_unpack_all(pw->box);
 
   Eina_List* l;
-  ComponentProperties* mp;
+  ComponentProperties* cp;
 
-  EINA_LIST_FOREACH(pw->component_widgets, l, mp) {
-    evas_object_hide(mp->box);
+  EINA_LIST_FOREACH(pw->component_widgets, l, cp) {
+    evas_object_hide(cp->box);
   }
 
   pw->component_widgets = eina_list_free(pw->component_widgets);
 }
 
 void
-property_add_component(PropertyView* pw, ComponentProperties* mp)
+property_add_component(PropertyView* pw, ComponentProperties* cp)
 {
-  elm_box_pack_end(pw->box, mp->box);
-  evas_object_show(mp->box);
-  pw->component_widgets = eina_list_append(pw->component_widgets, mp);
+  elm_box_pack_end(pw->box, cp->box);
+  evas_object_show(cp->box);
+  pw->component_widgets = eina_list_append(pw->component_widgets, cp);
 }
 
 static void
@@ -301,18 +301,18 @@ _property_entry_free_cb(void *data)
 ComponentProperties*
 create_my_prop(const char* name, Eina_Inarray *a, Evas_Object* win, Control* control)
 {
-  ComponentProperties* mp = calloc(1, sizeof *mp);
-  mp->arr = a;
-  mp->win = win;
-  mp->control = control;
-  mp->properties = eina_hash_string_superfast_new(_property_entry_free_cb);
-  mp->name = name;
+  ComponentProperties* cp = calloc(1, sizeof *cp);
+  cp->arr = a;
+  cp->win = win;
+  cp->control = control;
+  cp->properties = eina_hash_string_superfast_new(_property_entry_free_cb);
+  cp->name = name;
 
-  mp->box = elm_box_add(win);
-  evas_object_size_hint_weight_set(mp->box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  evas_object_size_hint_fill_set(mp->box, EVAS_HINT_FILL, EVAS_HINT_FILL);
-  elm_box_align_set(mp->box, 0.0, 0.0);
-  //evas_object_show(mp->box);
+  cp->box = elm_box_add(win);
+  evas_object_size_hint_weight_set(cp->box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_fill_set(cp->box, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  elm_box_align_set(cp->box, 0.0, 0.0);
+  //evas_object_show(cp->box);
 
   Property *p;
   EINA_INARRAY_FOREACH(a, p) {
@@ -324,18 +324,18 @@ create_my_prop(const char* name, Eina_Inarray *a, Evas_Object* win, Control* con
          //double d;
          //memcpy(&d, (void*)&yep + p->offset, sizeof d);
          //printf("%f\n",d);
-         _property_add_spinner(mp, p);
+         _property_add_spinner(cp, p);
         }
          break;
      case EET_T_STRING:
-         _property_add_entry(mp, p);
+         _property_add_entry(cp, p);
          break;
      default:
          fprintf (stderr, "type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
          break;
    }
   }
-  return mp;
+  return cp;
 }
 
 
@@ -359,29 +359,29 @@ property_update(PropertyView* pw, Eina_List* objects)
 
   int nb = eina_list_count(objects);
   if (nb == 1) {
-    ComponentProperties* mp = eina_hash_find(pw->component_widgets_backup,"transform");
+    ComponentProperties* cp = eina_hash_find(pw->component_widgets_backup,"transform");
     //TODO clean and add
     property_clear_components(pw);
-    //property_set(pw, mp);
-    property_add_component(pw, mp);
-    mp->data = last;
-    pw->current = mp;
+    //property_set(pw, cp);
+    property_add_component(pw, cp);
+    cp->data = last;
+    pw->current = cp;
     //_property_update_data(pw->current, last);
-    _property_update_data(mp, last);
+    _property_update_data(cp, last);
 
     //TODO add the components widget
     Component* c;
     EINA_LIST_FOREACH(last->components, l, c) {
-      mp = eina_hash_find(pw->component_widgets_backup, c->name);
-      if (!mp) {
-        mp = create_my_prop(c->name, c->properties, pw->win, pw->control);
+      cp = eina_hash_find(pw->component_widgets_backup, c->name);
+      if (!cp) {
+        cp = create_my_prop(c->name, c->properties, pw->win, pw->control);
         eina_hash_add(
               pw->component_widgets_backup,
               c->name,
-              mp);
+              cp);
       }
-      property_add_component(pw, mp);
-      mp->data = c->data;
+      property_add_component(pw, cp);
+      cp->data = c->data;
 
     }
 
@@ -389,8 +389,8 @@ property_update(PropertyView* pw, Eina_List* objects)
   }
   else if (nb > 1) {
     property_set(pw, NULL);
-    //ComponentProperties* mp = eina_hash_find(pw->component_widgets_backup,"multiple");
-    //mp->data = &pw->context->mos;
+    //ComponentProperties* cp = eina_hash_find(pw->component_widgets_backup,"multiple");
+    //cp->data = &pw->context->mos;
     //_property_update_data(pw->current, &pw->context->mos);
   }
 }
@@ -428,7 +428,7 @@ property_clean(PropertyView* pw)
 }
 
 void
-property_set(PropertyView* pw, ComponentProperties* mp)
+property_set(PropertyView* pw, ComponentProperties* cp)
 {
   if (pw->current) {
     //elm_object_content_unset(pw->scroller);
@@ -436,14 +436,14 @@ property_set(PropertyView* pw, ComponentProperties* mp)
     elm_box_unpack_all(pw->box);
   }
 
-  if (mp) {
-    //elm_object_content_set(pw->scroller, mp->box);
-    //evas_object_show(mp->box);
-    elm_box_pack_end(pw->box, mp->box);
-    evas_object_show(mp->box);
+  if (cp) {
+    //elm_object_content_set(pw->scroller, cp->box);
+    //evas_object_show(cp->box);
+    elm_box_pack_end(pw->box, cp->box);
+    evas_object_show(cp->box);
   }
 
-  pw->current = mp;
+  pw->current = cp;
 }
 
 static Eina_Inarray* 

@@ -4,6 +4,7 @@
 #include "camera.h"
 #include "fbo.h"
 #include "view.h"
+#include "component.h"
 
 //TODO make a renderer interface
 
@@ -17,10 +18,11 @@ struct _GameView
   //Render* render;
   struct _Scene* scene;
   Evas_Object** window;
+  ComponentManager* component_manager;
 };
 
 GameView* create_gameview(Evas_Object *win);
-Evas_Object* create_gameview_window(View* v, Evas_Object** window);
+Evas_Object* create_gameview_window(View* v, Evas_Object** window, ComponentManager* cm);
 //void gameview_destroy(View* v);
 //void gameview_update(View* v, double dt);
 

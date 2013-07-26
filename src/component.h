@@ -1,6 +1,7 @@
 #ifndef __component__
 #define __component__
 #include <Eina.h>
+#include <Elementary.h>
 
 typedef struct _ComponentFuncs ComponentFuncs;
 typedef struct _Component Component;
@@ -27,9 +28,16 @@ Component* create_component(const char* name, ComponentFuncs f, void* data, Eina
 struct _ComponentManager {
   Eina_List *components;
   Eina_Hash *component_widgets;
+  Evas_Object* win;
+  struct _Control* control;
+  void* libhandle;
 };
 
+
+ComponentManager*  create_component_manager(Evas_Object* win, struct _Control* c);
 void component_manager_add(ComponentManager* cm, Component* m);
 
+void component_manager_load(ComponentManager* cm);
+void component_manager_unload(ComponentManager* cm);
 
 #endif
