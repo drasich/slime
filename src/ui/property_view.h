@@ -5,7 +5,7 @@
 #include "control.h"
 
 typedef struct _PropertyView PropertyView;
-typedef struct _MyProp MyProp;
+typedef struct _ComponentProperties ComponentProperties;
 
 struct _PropertyView
 {
@@ -17,7 +17,7 @@ struct _PropertyView
   Evas_Object* win;
   Eina_Inarray *arr;
   Eina_Inarray *array_multiple_objects;
-  MyProp* current;
+  ComponentProperties* current;
   Evas_Object* scroller;
 
   Eina_Hash *component_widgets_backup;
@@ -25,7 +25,7 @@ struct _PropertyView
 };
 
 typedef void (*property_changed)(Control* control, void* data, Property* p);
-struct _MyProp
+struct _ComponentProperties
 {
   Evas_Object* win;
   Evas_Object* box;
@@ -41,6 +41,8 @@ struct _MyProp
   const char* name;
 };
 
+ComponentProperties* create_my_prop(const char* name, Eina_Inarray *a, Evas_Object* win, Control* control);
+
 Evas_Object* property_add_entry(
       Evas_Object* win, 
       Evas_Object* bx, 
@@ -49,8 +51,8 @@ Evas_Object* property_add_entry(
 
 void property_update(PropertyView* p, Eina_List* objects);
 PropertyView* create_property(Evas_Object* win, Context* context, Control* control);
-void property_set(PropertyView* pw, MyProp* mp);
-void _property_update_data(MyProp* mp, void* data);
+void property_set(PropertyView* pw, ComponentProperties* mp);
+void _property_update_data(ComponentProperties* mp, void* data);
 //TODO rename this function
 void property_update2(PropertyView* pw, Object* o);
 

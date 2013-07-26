@@ -9,7 +9,7 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
   //printf ("todo : at %s, line %d\n",__FILE__, __LINE__);
   //return;
   //PropertyView* pw = data;
-  MyProp* mp = data;
+  ComponentProperties* mp = data;
   void* o = mp->data;
 
   if (o == NULL) return;
@@ -52,7 +52,7 @@ static void
 _entry_activated_cb(void *data, Evas_Object *obj, void *event)
 {
   printf("activated\n");
-  MyProp* mp = data;
+  ComponentProperties* mp = data;
   const char* s = elm_object_text_get(obj);
 
   if (strcmp(mp->value_saved, s)) {
@@ -66,7 +66,7 @@ _entry_aborted_cb(void *data, Evas_Object *obj, void *event)
 {
   printf("aborted\n");
 
-  MyProp* mp = data;
+  ComponentProperties* mp = data;
   void* o = mp->data;
   const char* s = elm_object_text_get(obj);
 
@@ -87,7 +87,7 @@ _entry_aborted_cb(void *data, Evas_Object *obj, void *event)
 static void
 _entry_focused_cb(void *data, Evas_Object *obj, void *event)
 {
-  MyProp* mp = data;
+  ComponentProperties* mp = data;
   const char* s = elm_object_text_get(obj);
   const char* str = eina_stringshare_add(s);
   //TODO don't forget to eina_stringshare_del
@@ -98,7 +98,7 @@ _entry_focused_cb(void *data, Evas_Object *obj, void *event)
 static void
 _entry_unfocused_cb(void *data, Evas_Object *obj, void *event)
 {
-  MyProp* mp = data;
+  ComponentProperties* mp = data;
   const char* s = elm_object_text_get(obj);
   if (strcmp(mp->value_saved, s)) {
     Property* p = evas_object_data_get(obj, "property");
@@ -109,7 +109,7 @@ _entry_unfocused_cb(void *data, Evas_Object *obj, void *event)
 
 
 static Evas_Object* 
-_property_add_entry(MyProp* mp, Property* p)
+_property_add_entry(ComponentProperties* mp, Property* p)
 {
   Evas_Object *en, *bx2, *label;
 
@@ -163,7 +163,7 @@ _property_add_entry(MyProp* mp, Property* p)
 
 
 static Evas_Object* 
-_property_add_spinner(MyProp* mp, Property* p)
+_property_add_spinner(ComponentProperties* mp, Property* p)
 {
   Evas_Object *en, *label;
 
@@ -233,7 +233,7 @@ property_add_fileselect(PropertyView *pw, Evas_Object* win, Evas_Object* bx, cha
 }
 
 void
-_property_update_data(MyProp* mp, void* data)
+_property_update_data(ComponentProperties* mp, void* data)
 {
   Property *p;
 
@@ -274,7 +274,7 @@ void property_clear_components(PropertyView* pw)
   elm_box_unpack_all(pw->box);
 
   Eina_List* l;
-  MyProp* mp;
+  ComponentProperties* mp;
 
   EINA_LIST_FOREACH(pw->component_widgets, l, mp) {
     evas_object_hide(mp->box);
@@ -284,7 +284,7 @@ void property_clear_components(PropertyView* pw)
 }
 
 void
-property_add_component(PropertyView* pw, MyProp* mp)
+property_add_component(PropertyView* pw, ComponentProperties* mp)
 {
   elm_box_pack_end(pw->box, mp->box);
   evas_object_show(mp->box);
@@ -298,10 +298,10 @@ _property_entry_free_cb(void *data)
 }
 
 
-MyProp*
+ComponentProperties*
 create_my_prop(const char* name, Eina_Inarray *a, Evas_Object* win, Control* control)
 {
-  MyProp* mp = calloc(1, sizeof *mp);
+  ComponentProperties* mp = calloc(1, sizeof *mp);
   mp->arr = a;
   mp->win = win;
   mp->control = control;
@@ -359,7 +359,7 @@ property_update(PropertyView* pw, Eina_List* objects)
 
   int nb = eina_list_count(objects);
   if (nb == 1) {
-    MyProp* mp = eina_hash_find(pw->component_widgets_backup,"transform");
+    ComponentProperties* mp = eina_hash_find(pw->component_widgets_backup,"transform");
     //TODO clean and add
     property_clear_components(pw);
     //property_set(pw, mp);
@@ -389,7 +389,7 @@ property_update(PropertyView* pw, Eina_List* objects)
   }
   else if (nb > 1) {
     property_set(pw, NULL);
-    //MyProp* mp = eina_hash_find(pw->component_widgets_backup,"multiple");
+    //ComponentProperties* mp = eina_hash_find(pw->component_widgets_backup,"multiple");
     //mp->data = &pw->context->mos;
     //_property_update_data(pw->current, &pw->context->mos);
   }
@@ -428,7 +428,7 @@ property_clean(PropertyView* pw)
 }
 
 void
-property_set(PropertyView* pw, MyProp* mp)
+property_set(PropertyView* pw, ComponentProperties* mp)
 {
   if (pw->current) {
     //elm_object_content_unset(pw->scroller);
@@ -535,17 +535,17 @@ create_property(Evas_Object* win, Context* context, Control* control)
 
   p->component_widgets_backup = eina_hash_string_superfast_new(_property_entry_free_cb);
 
-  //TODO remove these arrays, and the myprop from propertyview
+  //TODO remove these arrays, and the ComponentProperties from propertyview
   p->arr = _object_init_array_properties();
   p->array_multiple_objects = _multiple_objects_init_array_properties();
-  MyProp* transform = create_my_prop("transform", p->arr, win, control);
+  ComponentProperties* transform = create_my_prop("transform", p->arr, win, control);
 
   eina_hash_add(
         p->component_widgets_backup,
         transform->name,
         transform);
   
-  MyProp* manyobj = create_my_prop("multiple", p->array_multiple_objects, win, control);
+  ComponentProperties* manyobj = create_my_prop("multiple", p->array_multiple_objects, win, control);
   manyobj->callback = _changed_multiple_object;
 
   eina_hash_add(

@@ -4,6 +4,7 @@
 
 typedef struct _ComponentFuncs ComponentFuncs;
 typedef struct _Component Component;
+typedef struct _ComponentManager ComponentManager;
 
 struct _ComponentFuncs {
   void (*init)(Component* c); 
@@ -21,5 +22,14 @@ struct _Component {
 };
 
 Component* create_component(const char* name, ComponentFuncs f, void* data, Eina_Inarray* properties); 
+
+
+struct _ComponentManager {
+  Eina_List *components;
+  Eina_Hash *component_widgets;
+};
+
+void component_manager_add(ComponentManager* cm, Component* m);
+
 
 #endif

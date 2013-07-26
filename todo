@@ -1,5 +1,7 @@
 make the player component a module/library
 or make the game a library?
+make a component manager and add component to the manager;
+be able to add/remove component
 
 
 fix the gl callbacks init, update, draw.... for gameview;
