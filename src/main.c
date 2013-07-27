@@ -61,12 +61,11 @@ create_window()
   elm_panes_content_left_size_set(panes, 0.75f);
 
 
-  evas_object_resize(win, 800/3, 400/3);
-  //evas_object_resize(win, 1200, 400);
+  //evas_object_resize(win, 800/3, 400/3);
+  evas_object_resize(win, 1200, 400);
   evas_object_show(win);
 }
 
-#include "component/player.h"
 static void
 populate_scene(Control* c, Scene* s)
 {
@@ -82,7 +81,6 @@ populate_scene(Control* c, Scene* s)
   object_set_position(o, t);
   //scene_add_object(s,o);
   control_add_object(c, s, o);
-  object_add_component(o, create_player());
 
   //animation_play(o, "walkquat", LOOP);
 

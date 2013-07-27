@@ -25,7 +25,6 @@ struct _Component {
 
 Component* create_component(const char* name, ComponentFuncs f, void* data, Eina_Inarray* properties); 
 
-
 struct _ComponentManager {
   Eina_List *components;
   Eina_Hash *component_widgets;
@@ -33,7 +32,6 @@ struct _ComponentManager {
   struct _Control* control;
   void* libhandle;
 };
-
 
 ComponentManager*  create_component_manager(Evas_Object* win, struct _Control* c);
 void component_manager_add(ComponentManager* cm, Component* m);

@@ -435,6 +435,79 @@ _pause(void *data,
   printf("pause\n");
 }
 
+/*
+static void
+_show(void *data, Evas *e, Evas_Object *obj, void *event_info)
+{
+  Evas_Event_Mouse_Down *ev = event_info;
+  elm_menu_move(data, ev->canvas.x, ev->canvas.y);
+  evas_object_show(data);
+}
+*/
+
+static void
+_addcomp(void *data,
+      Evas_Object *obj,
+      void *event_info)
+{
+  View* v = evas_object_data_get(obj, "view");
+  Component* c = data;
+  object_add_component(v->context->object, c); //TODO
+        //find the object currently selected
+}
+
+static Evas_Object*
+_create_component_menu(Evas_Object* win, Eina_List* components)
+{
+  Evas_Object* menu;
+  Elm_Object_Item *menu_it,*menu_it1;
+
+  menu = elm_menu_add(win);
+
+  Eina_List* l;
+  Component* c;
+  EINA_LIST_FOREACH(components, l, c) {
+    printf("component name : %s\n", c->name);
+    elm_menu_item_add(menu, NULL, NULL, c->name, _addcomp, c);
+  }
+
+  /*
+  elm_menu_item_add(menu, NULL, NULL, "component name 1", NULL, NULL);
+  menu_it = elm_menu_item_add(menu, NULL, NULL, "second item", NULL, NULL);
+  //elm_menu_item_separator_add(menu, menu_it);
+  elm_menu_item_add(menu, NULL, NULL, "third item", NULL, NULL);
+  elm_menu_item_add(menu, NULL, NULL, "fourth item", NULL, NULL);
+  elm_menu_item_add(menu, NULL, NULL, "sub menu", NULL, NULL);
+
+  menu_it = elm_menu_item_add(menu, NULL, NULL, "third item", NULL, NULL);
+  //elm_object_item_disabled_set(menu_it, EINA_TRUE);
+
+  //evas_object_event_callback_add(rect, EVAS_CALLBACK_MOUSE_DOWN, _show, menu);
+  */
+  return menu;
+}
+
+
+static void
+_addcomponent(void *data,
+      Evas_Object *obj,
+      void *event_info)
+{
+  View* v = data;
+
+  printf("add component\n");
+  Evas_Object* win = evas_object_top_get (evas_object_evas_get(obj));
+  //Evas_Object* menu = v->menu;
+  Evas_Object* menu = _create_component_menu(win, v->control->component_manager->components);
+  evas_object_data_set(menu, "view", v);
+  evas_object_show(menu);
+
+  Evas_Coord x,y,w,h;
+  evas_object_geometry_get(obj, &x, &y, &w, &h);
+  elm_menu_move(menu, x, y);
+}
+
+
 static void
 _add_buttons(View* v, Evas_Object* win)
 {
@@ -511,6 +584,17 @@ _add_buttons(View* v, Evas_Object* win)
   evas_object_smart_callback_add(bt, "clicked", _pause, v);
 
   ////////////////////////////////
+  bt = elm_button_add(win);
+  elm_object_focus_allow_set(bt, 0);
+
+  elm_object_text_set(bt, "add component");
+  evas_object_show(bt);
+
+  evas_object_color_set(bt, r,g,b,a);
+  evas_object_resize(bt, 100, 25);
+  evas_object_move(bt, 275, 15);
+  evas_object_data_set(bt, "view", v);
+  evas_object_smart_callback_add(bt, "clicked", _addcomponent, v);
 
 }
 
@@ -588,8 +672,8 @@ create_view(Evas_Object *win)
   view->tree = create_widget_tree(win, view);
   evas_object_data_set(view->glview, "view", view);
 
-
   _create_view_objects(view);
+  //view->menu = _create_component_menu(win);
 
   return view;
 }

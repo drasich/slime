@@ -27,6 +27,30 @@ component_manager_add(ComponentManager* cm, Component* c)
         cp);
 }
 
+static void
+_create_widgets(ComponentManager* cm)
+{
+  Eina_List* l;
+  Component* c;
+
+  EINA_LIST_FOREACH(cm->components, l, c) {
+    ComponentProperties* cp = create_my_prop(c->name, c->properties, cm->win, cm->control);
+
+    eina_hash_add(
+          cm->component_widgets,
+          c->name,
+          cp);
+  }
+}
+
+static void
+_componentproperties_free_cb(void *data)
+{
+  ComponentProperties* cp = data;
+  free(cp);
+  //TODO
+}
+
 ComponentManager* 
 create_component_manager(Evas_Object* win, Control* c)
 {
@@ -34,6 +58,8 @@ create_component_manager(Evas_Object* win, Control* c)
   cm->control = c;
   cm->win = win;
   printf("create compo manager\n");
+
+  cm->component_widgets = eina_hash_string_superfast_new(_componentproperties_free_cb);
 
   return cm;
 }
@@ -61,7 +87,8 @@ component_manager_load(ComponentManager* cm)
   else 
     printf("symbol success\n");
 
-  Eina_List* l = initfunc();
+  cm->components = initfunc();
+  _create_widgets(cm);
   
 }
 
@@ -70,5 +97,6 @@ component_manager_unload(ComponentManager* cm)
 {
   dlclose(cm->libhandle);
   cm->libhandle = NULL;
+  eina_hash_free(cm->component_widgets);
 }
 

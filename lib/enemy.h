@@ -18,6 +18,5 @@ void enemy_init(Component* c);
 void enemy_update(Component* c, double dt);
 
 Component* create_enemy();
-Eina_List* create_components();
 
 #endif

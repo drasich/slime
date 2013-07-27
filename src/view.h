@@ -34,6 +34,7 @@ struct _View
   Object* camera_repere;
 
   Evas_Object* select_rect;
+  Evas_Object* menu;
 };
 
 View* create_view(Evas_Object *win);
