@@ -70,5 +70,5 @@ component_manager_unload(ComponentManager* cm)
 {
   dlclose(cm->libhandle);
   cm->libhandle = NULL;
-  
 }
+

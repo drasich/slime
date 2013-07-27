@@ -19,10 +19,11 @@ struct _GameView
   struct _Scene* scene;
   Evas_Object** window;
   ComponentManager* component_manager;
+  Control* control;
 };
 
 GameView* create_gameview(Evas_Object *win);
-Evas_Object* create_gameview_window(View* v, Evas_Object** window, ComponentManager* cm);
+Evas_Object* create_gameview_window(View* v, Evas_Object** window, Control* c);
 //void gameview_destroy(View* v);
 //void gameview_update(View* v, double dt);
 

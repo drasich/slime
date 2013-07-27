@@ -4,8 +4,6 @@
 #include "component.h"
 #define __UNUSED__
 
-void* libhandle;
-
 // Callbacks
 static void
 _init_gl(Evas_Object *obj)
@@ -104,33 +102,8 @@ create_gameview(Evas_Object *win)
   evas_object_data_set(view->glview, "gameview", view);
   _set_callbacks(view->glview);
 
-
-
   /*
-  libhandle = dlopen("./build/libgameshared.so", RTLD_NOW);
-  if (!libhandle) {
-    printf("Error loading DSO: %s\n", dlerror());
-  }
-  else 
-    printf("libsuccess\n");
-
-  create_component_function  initfunc = dlsym(libhandle, "create_enemy");
-  if (!initfunc) {
-    printf("Error loading init function: %s\n", dlerror());
-    dlclose(libhandle);
-  }
-  else 
-    printf("symbol success\n");
-
-  Component* c = initfunc();
-  free(c);
-  */
-
-
-  /*
-
   //_add_buttons(view, win);
-
   */
 
   return view;
@@ -142,13 +115,12 @@ win_del(void *data, Evas_Object *obj, void *event_info)
   GameView* gv = data;
   *gv->window = NULL;
   free(gv);
-  //dlclose(libhandle);
-  component_manager_unload(gv->component_manager);
+  component_manager_unload(gv->control->component_manager);
 }
 
 
 
-Evas_Object* create_gameview_window(View* v, Evas_Object** window, ComponentManager* cm)
+Evas_Object* create_gameview_window(View* v, Evas_Object** window, Control* c)
 {
   Evas_Object *win;
   win = elm_win_util_standard_add("slime", "gameview");
@@ -159,9 +131,9 @@ Evas_Object* create_gameview_window(View* v, Evas_Object** window, ComponentMana
   gv->scene = v->context->scene;
   gv->camera = v->camera;
   gv->window = window;
-  gv->component_manager = cm;
+  gv->control = c;
 
-  component_manager_load(gv->component_manager); //TODO move this
+  component_manager_load(c->component_manager); //TODO move this
   
   evas_object_resize(win, 800/3, 400/3);
   evas_object_show(win);

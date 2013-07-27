@@ -409,10 +409,7 @@ _new_empty(void *data,
 
 }
 
-#include "component.h" //TODO
-
 Evas_Object* gameview_;
-ComponentManager* cm_ = NULL;
 
 static void
 _play(void *data,
@@ -421,11 +418,8 @@ _play(void *data,
 {
   View* v = data;
 
-  if (!cm_)
-  cm_ = create_component_manager(obj, v->control); //TODO
-
   if (!gameview_)
-  gameview_ = create_gameview_window(v, &gameview_, cm_ );
+  gameview_ = create_gameview_window(v, &gameview_, v->control );
   else {
     evas_object_show(gameview_);
     elm_win_raise(gameview_);
@@ -576,6 +570,8 @@ create_view(Evas_Object *win)
 
   view->context = calloc(1,sizeof *view->context);
   view->control = create_control(view);
+  view->control->component_manager = create_component_manager(win, view->control); //TODO
+  component_manager_load(view->control->component_manager);
 
   view->box = elm_box_add(win);
   evas_object_size_hint_weight_set(view->box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);

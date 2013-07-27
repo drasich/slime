@@ -5,6 +5,7 @@
 #include "scene.h"
 //#include "object.h"
 #include "property.h"
+#include "component.h"
 
 typedef struct _Control Control;
 
@@ -23,6 +24,7 @@ struct _Control{
   Eina_List* undo;
   Eina_List* redo;
   Shader* shader_simple;//TODO remove from here
+  ComponentManager* component_manager;
 };
 
 
