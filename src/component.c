@@ -51,7 +51,8 @@ component_manager_load(ComponentManager* cm)
   else 
   printf("libsuccess\n");
 
-  create_component_function  initfunc = dlsym(cm->libhandle, "create_enemy");
+  //create_component_function  initfunc = dlsym(cm->libhandle, "create_enemy");
+  create_components_function  initfunc = dlsym(cm->libhandle, "create_components");
 
   if (!initfunc) {
     printf("Error loading init function: %s\n", dlerror());
@@ -60,8 +61,7 @@ component_manager_load(ComponentManager* cm)
   else 
     printf("symbol success\n");
 
-  Component* c = initfunc();
-  free(c);
+  Eina_List* l = initfunc();
   
 }
 

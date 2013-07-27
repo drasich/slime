@@ -13,6 +13,7 @@ struct _ComponentFuncs {
 };
 
 typedef Component* (*create_component_function)(); 
+typedef Eina_List* (*create_components_function)(); 
 
 struct _Component {
   void* data;

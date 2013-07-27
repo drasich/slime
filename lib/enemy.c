@@ -42,3 +42,13 @@ create_enemy()
   Component* c = create_component("enemy", enemy_funcs, e, iarr);
   return c;
 }
+
+Eina_List*
+create_components()
+{
+  Eina_List* l;
+  Component* c = create_enemy();
+  l = eina_list_append(l,c);
+  return l;
+}
+
