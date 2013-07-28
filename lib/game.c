@@ -5,9 +5,10 @@
 Eina_List*
 create_components()
 {
-  Eina_List* l;
-  l = eina_list_append(l,create_enemy());
-  l = eina_list_append(l,create_player());
+  Eina_List* l = NULL;
+  l = eina_list_append(l, &player_desc);
+  //l = eina_list_append(l,create_enemy());
+  //l = eina_list_append(l,create_player());
 
   return l;
 }

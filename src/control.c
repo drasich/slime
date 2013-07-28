@@ -225,6 +225,23 @@ _op_change_property(Object* o, Property* p, const void* data_old, const void* da
   return op;
 }
 
+static Operation* 
+_op_object_add_component(Object* o, Component* c)
+{
+  Operation* op = calloc(1, sizeof *op);
+
+  op->do_cb = operation_object_add_component_do;
+  op->undo_cb = operation_object_add_component_undo;
+
+  Op_Object_Add_Component* od = calloc(1, sizeof *od);
+  od->o = o;
+  od->c = c;
+
+  op->data = od;
+  return op;
+}
+
+
 
 bool
 control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
@@ -389,5 +406,14 @@ control_property_update(Control* c, Object* o)
 {
   property_update2(c->view->property, o);
   tree_update_object(c->view->tree, o);
+}
+
+
+void
+control_object_add_component(Control* c, Object* o, Component* comp)
+{
+  Operation* op = _op_object_add_component(o,comp);
+  control_add_operation(c, op);
+  op->do_cb(c, op->data);
 }
 

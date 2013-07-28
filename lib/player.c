@@ -15,8 +15,8 @@ player_update(Component* c, double dt)
   c->object->angles.X += p->rotation_speed*dt;
 }
 
-static Eina_Inarray* 
-_player_properties()
+Eina_Inarray* 
+_player_properties(ComponentDesc* desc)
 {
   Eina_Inarray * iarr = create_property_set();
 
@@ -26,15 +26,22 @@ _player_properties()
   return iarr;
 }
 
-ComponentFuncs player_funcs = { player_init, player_update };
-
-Component*
+static void *
 create_player()
 {
   Player* p = calloc(1, sizeof *p);
-  Eina_Inarray* iarr = _player_properties();
+  //Eina_Inarray* iarr = _player_properties();
   p->rotation_speed = 20;
 
-  Component* c = create_component("player", player_funcs, p, iarr);
-  return c;
+  //Component* c = create_component("player", player_funcs, p, iarr);
+  return p;
 }
+
+ComponentDesc player_desc = { 
+  "player",
+  create_player,
+  _player_properties,
+  player_init, 
+  player_update,
+};
+

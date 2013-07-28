@@ -3,6 +3,7 @@
 #include "property.h"
 #include <Eet.h>
 
+/*
 void
 enemy_init(Component* c)
 {
@@ -43,3 +44,4 @@ create_enemy()
   return c;
 }
 
+*/

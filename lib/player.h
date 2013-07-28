@@ -16,6 +16,7 @@ struct _Player
 void player_init(Component* c);
 void player_update(Component* c, double dt);
 
-Component* create_player();
+//Component* create_player();
+ComponentDesc player_desc;
 
 #endif

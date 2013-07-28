@@ -50,4 +50,15 @@ struct _Op_Change_Property
 void operation_change_property_do(Control *c, void* data);
 void operation_change_property_undo(Control *c, void* data);
 
+////////////////////////////////////////////
+typedef struct _Op_Object_Add_Component Op_Object_Add_Component;
+struct _Op_Object_Add_Component
+{
+  Object* o;
+  Component* c;
+};
+
+void operation_object_add_component_do(Control *c, void* data);
+void operation_object_add_component_undo(Control *c, void* data);
+
 #endif

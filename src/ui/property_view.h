@@ -3,9 +3,9 @@
 #include "object.h"
 #include "context.h"
 #include "control.h"
+#include "component_view.h"
 
 typedef struct _PropertyView PropertyView;
-typedef struct _ComponentProperties ComponentProperties;
 
 struct _PropertyView
 {
@@ -24,35 +24,10 @@ struct _PropertyView
   Eina_List *component_widgets;
 };
 
-typedef void (*property_changed)(Control* control, void* data, Property* p);
-struct _ComponentProperties
-{
-  Evas_Object* win;
-  Evas_Object* box;
-  Eina_Inarray *arr;
-  Eina_Hash *properties;
-  //PropertyView *pw;
-  // add callbacks here if we want to call something when data has changed.
-  property_changed callback;
-  Control* control;
-
-  void* data;
-  const char* value_saved;
-  const char* name;
-};
-
-ComponentProperties* create_my_prop(const char* name, Eina_Inarray *a, Evas_Object* win, Control* control);
-
-Evas_Object* property_add_entry(
-      Evas_Object* win, 
-      Evas_Object* bx, 
-      char* name, 
-      char* value);
 
 void property_update(PropertyView* p, Eina_List* objects);
 PropertyView* create_property(Evas_Object* win, Context* context, Control* control);
 void property_set(PropertyView* pw, ComponentProperties* mp);
-void _property_update_data(ComponentProperties* mp, void* data);
 //TODO rename this function
 void property_update2(PropertyView* pw, Object* o);
 

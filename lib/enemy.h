@@ -4,6 +4,7 @@
 #include "component.h"
 #include "object.h"
 
+/*
 typedef struct _Enemy Enemy;
 
 struct _Enemy
@@ -18,5 +19,6 @@ void enemy_init(Component* c);
 void enemy_update(Component* c, double dt);
 
 Component* create_enemy();
+*/
 
 #endif

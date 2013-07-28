@@ -4,16 +4,18 @@
 #include <dlfcn.h>
 
 Component*
-create_component(const char* name, ComponentFuncs f, void* data, Eina_Inarray* properties)
+create_component(ComponentDesc *cd)
 {
+  printf("TODO creating component : calling properties function, to be changed\n");
   Component* c = calloc(1, sizeof *c);
-  c->funcs = f;
-  c->data = data;
-  c->properties = properties;
-  c->name = name;
+  c->funcs = cd;
+  c->data = cd->create();
+  c->properties = cd->properties();
+  c->name = cd->name;
   return c;
 }
 
+/*
 void
 component_manager_add(ComponentManager* cm, Component* c)
 {
@@ -26,22 +28,7 @@ component_manager_add(ComponentManager* cm, Component* c)
         c->name,
         cp);
 }
-
-static void
-_create_widgets(ComponentManager* cm)
-{
-  Eina_List* l;
-  Component* c;
-
-  EINA_LIST_FOREACH(cm->components, l, c) {
-    ComponentProperties* cp = create_my_prop(c->name, c->properties, cm->win, cm->control);
-
-    eina_hash_add(
-          cm->component_widgets,
-          c->name,
-          cp);
-  }
-}
+*/
 
 static void
 _componentproperties_free_cb(void *data)
@@ -49,6 +36,28 @@ _componentproperties_free_cb(void *data)
   ComponentProperties* cp = data;
   free(cp);
   //TODO
+}
+
+
+static void
+_create_widgets(ComponentManager* cm)
+{
+  cm->component_widgets = eina_hash_string_superfast_new(_componentproperties_free_cb);
+
+  Eina_List* l;
+  ComponentDesc* c;
+
+  printf("TODO creating widgets : calling properties function, to be changed\n");
+
+  EINA_LIST_FOREACH(cm->components, l, c) {
+    //ComponentProperties* cp = create_my_prop(c->name, c->properties, cm->win, cm->control);
+    ComponentProperties* cp = create_my_prop(c->name, c->properties(), cm->win, cm->control);
+
+    eina_hash_add(
+          cm->component_widgets,
+          c->name,
+          cp);
+  }
 }
 
 ComponentManager* 
@@ -59,7 +68,6 @@ create_component_manager(Evas_Object* win, Control* c)
   cm->win = win;
   printf("create compo manager\n");
 
-  cm->component_widgets = eina_hash_string_superfast_new(_componentproperties_free_cb);
 
   return cm;
 }
@@ -88,7 +96,9 @@ component_manager_load(ComponentManager* cm)
     printf("symbol success\n");
 
   cm->components = initfunc();
+  printf("init func done\n");
   _create_widgets(cm);
+  printf("create components end\n");
   
 }
 
@@ -97,6 +107,11 @@ component_manager_unload(ComponentManager* cm)
 {
   dlclose(cm->libhandle);
   cm->libhandle = NULL;
+
   eina_hash_free(cm->component_widgets);
+  cm->component_widgets = NULL;
+
+  eina_list_free(cm->components);
+  cm->components = NULL;
 }
 

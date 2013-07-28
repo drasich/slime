@@ -451,8 +451,15 @@ _addcomp(void *data,
       void *event_info)
 {
   View* v = evas_object_data_get(obj, "view");
-  Component* c = data;
-  object_add_component(v->context->object, c); //TODO
+  ComponentDesc* cd = data;
+
+  Object* o = context_get_object(v->context);
+  if (o) {
+    //object_add_component(v->context->object, c); //TODO
+    //
+    Component* c = create_component(cd);
+    control_object_add_component(v->control, o, c);
+  }
         //find the object currently selected
 }
 
@@ -465,7 +472,7 @@ _create_component_menu(Evas_Object* win, Eina_List* components)
   menu = elm_menu_add(win);
 
   Eina_List* l;
-  Component* c;
+  ComponentDesc* c;
   EINA_LIST_FOREACH(components, l, c) {
     printf("component name : %s\n", c->name);
     elm_menu_item_add(menu, NULL, NULL, c->name, _addcomp, c);

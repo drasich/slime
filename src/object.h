@@ -61,6 +61,7 @@ void object_compute_matrix_with_quat(Object* o, Matrix4 mat);
 void object_compute_matrix_with_pos_quat(Object* o, Matrix4 mat, Vec3 v, Quat q);
 
 void object_add_component(Object* o, Component* c);
+void object_remove_component(Object* o, Component* c);
 //TODO to remove
 void object_add_component_mesh(Object* o, Mesh* m);
 void object_add_component_armature(Object* o, Armature* a);

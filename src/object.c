@@ -143,7 +143,7 @@ object_update(Object* o)
   Component* c;
 
   EINA_LIST_FOREACH(o->components, l, c) {
-    c->funcs.update(c, 0.01f);
+    c->funcs->update(c, 0.01f);
   }
   
 }
@@ -288,3 +288,10 @@ object_add_component(Object* o, Component* c)
   o->components = eina_list_append(o->components, c);
   c->object = o;
 }
+
+void
+object_remove_component(Object* o, Component* c)
+{
+  o->components = eina_list_remove(o->components, c);
+}
+
