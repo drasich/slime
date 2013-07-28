@@ -20,8 +20,8 @@ void property_clear_components(PropertyView* pw)
 void
 property_add_component(PropertyView* pw, ComponentProperties* cp)
 {
-  elm_box_pack_end(pw->box, cp->box);
-  evas_object_show(cp->box);
+  elm_box_pack_end(pw->box, cp->root);
+  evas_object_show(cp->root);
   pw->component_widgets = eina_list_append(pw->component_widgets, cp);
 }
 
@@ -50,7 +50,7 @@ property_update(PropertyView* pw, Eina_List* objects)
     cp->data = last;
     pw->current = cp;
     //_property_update_data(pw->current, last);
-    _property_update_data(cp, last);
+    component_property_update_data(cp, last);
 
     //TODO add the components widget
     Component* c;
@@ -84,7 +84,7 @@ void
 property_update2(PropertyView* pw, Object* o)
 {
   if ( pw->current->data == o) {
-    _property_update_data(pw->current, o);
+    component_property_update_data(pw->current, o);
   }
 }
 
@@ -215,6 +215,7 @@ create_property(Evas_Object* win, Context* context, Control* control)
   elm_object_content_set(p->scroller, p->box);
   evas_object_show(bx);
 
+  /*
   frame = elm_frame_add(win);
   elm_object_text_set(frame, "Properties");
   evas_object_size_hint_weight_set(frame, EVAS_HINT_EXPAND, 0.0);
@@ -224,6 +225,8 @@ create_property(Evas_Object* win, Context* context, Control* control)
   p->root = frame;
 
   elm_object_content_set(frame, scroller);
+  */
+  p->root = scroller;
 
   p->component_widgets_backup = eina_hash_string_superfast_new(_property_entry_free_cb);
 

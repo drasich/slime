@@ -155,6 +155,7 @@ create_widget_tree(Evas_Object* win, struct _View* v)
 
   Evas_Object *gli, *bx, *rd1, *rd2, *frame;
 
+  /*
   frame = elm_frame_add(win);
   t->root = frame;
   elm_object_text_set(frame, "Tree");
@@ -162,14 +163,16 @@ create_widget_tree(Evas_Object* win, struct _View* v)
   evas_object_size_hint_fill_set(frame, EVAS_HINT_FILL, 0.0);
 
   evas_object_show(frame);
+  */
 
   bx = elm_box_add(win);
   t->box = bx;
   evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   //elm_win_resize_object_add(win, bx);
   evas_object_show(bx);
+  t->root = bx;
 
-  elm_object_content_set(frame, bx);
+  //elm_object_content_set(frame, bx);
 
   gli = elm_genlist_add(win);
   t->gl = gli;

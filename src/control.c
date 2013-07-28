@@ -417,3 +417,9 @@ control_object_add_component(Control* c, Object* o, Component* comp)
   op->do_cb(c, op->data);
 }
 
+void
+control_property_update_components(Control* c, Object* o)
+{
+  printf("TODO update the components\n");
+
+}

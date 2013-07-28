@@ -21,10 +21,11 @@ struct _ComponentProperties
   void* data;
   const char* value_saved;
   const char* name;
+  Evas_Object* root;
 };
 
 ComponentProperties* create_my_prop(const char* name, Eina_Inarray *a, Evas_Object* win, Control* control);
 
-void _property_update_data(ComponentProperties* mp, void* data);
+void component_property_update_data(ComponentProperties* mp, void* data);
 
 #endif

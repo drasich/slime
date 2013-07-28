@@ -233,7 +233,7 @@ property_add_fileselect(PropertyView *pw, Evas_Object* win, Evas_Object* bx, cha
   */
 
 void
-_property_update_data(ComponentProperties* cp, void* data)
+component_property_update_data(ComponentProperties* cp, void* data)
 {
   Property *p;
 
@@ -286,11 +286,32 @@ create_my_prop(const char* name, Eina_Inarray *a, Evas_Object* win, Control* con
   cp->properties = eina_hash_string_superfast_new(_property_entry_free_cb);
   cp->name = name;
 
+  Evas_Object* frame = elm_frame_add(win);
+  char s[256];
+  sprintf(s, "Component %s", name);
+  elm_object_text_set(frame, s);
+  evas_object_size_hint_weight_set(frame, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_fill_set(frame, EVAS_HINT_FILL, 0.0);
+
+  //evas_object_show(frame);
+
   cp->box = elm_box_add(win);
   evas_object_size_hint_weight_set(cp->box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   evas_object_size_hint_fill_set(cp->box, EVAS_HINT_FILL, EVAS_HINT_FILL);
   elm_box_align_set(cp->box, 0.0, 0.0);
   //evas_object_show(cp->box);
+  elm_object_content_set(frame, cp->box);
+  cp->root = frame;
+  
+  /*
+  Evas_Object* label = elm_label_add(cp->win);
+  char s[256];
+  sprintf(s, "Component <b>%s</b>", name);
+
+  elm_object_text_set(label, s);
+  evas_object_show(label);
+  elm_box_pack_end(cp->box, label);
+  */
 
   Property *p;
   EINA_INARRAY_FOREACH(a, p) {
