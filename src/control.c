@@ -424,3 +424,4 @@ control_property_update_components(Control* c, Object* o)
   property_update_components(c->view->property, o);
 
 }
+

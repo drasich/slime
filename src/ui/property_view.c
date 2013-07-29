@@ -15,6 +15,7 @@ void property_clear_components(PropertyView* pw)
   }
 
   pw->component_widgets = eina_list_free(pw->component_widgets);
+  //TODO clean the components here
 }
 
 void
@@ -242,14 +243,11 @@ property_update_components(PropertyView* pw, Object* o)
   Eina_List* l;
   Component* c;
   EINA_LIST_FOREACH(o->components, l, c) {
-    cp = eina_hash_find(pw->component_widgets_backup, c->name);
-    if (!cp) {
-      cp = create_my_prop(c->name, c->properties, pw->win, pw->control);
-      eina_hash_add(
-            pw->component_widgets_backup,
-            c->name,
-            cp);
-    }
+    cp = create_my_prop(c->name, c->properties, pw->win, pw->control);
+    eina_hash_add(
+          pw->component_widgets_backup,
+          c->name,
+          cp);
     property_add_component(pw, cp);
     cp->data = c->data;
   }

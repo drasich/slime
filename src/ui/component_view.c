@@ -275,6 +275,18 @@ _property_entry_free_cb(void *data)
    //free(data);
 }
 
+static void
+_remove_component(
+      void *data,
+      Evas_Object *obj,
+      void *event_info)
+{
+  //TODO remove components and components view
+  // how to do when there is the same components many time...
+  printf("TODO remove component\n");
+}
+
+
 
 ComponentProperties*
 create_my_prop(const char* name, Eina_Inarray *a, Evas_Object* win, Control* control)
@@ -302,6 +314,13 @@ create_my_prop(const char* name, Eina_Inarray *a, Evas_Object* win, Control* con
   //evas_object_show(cp->box);
   elm_object_content_set(frame, cp->box);
   cp->root = frame;
+
+  Evas_Object* bt = elm_button_add(win);
+  elm_object_text_set(bt, "remove");
+  evas_object_show(bt);
+  elm_box_pack_end(cp->box, bt);
+  evas_object_smart_callback_add(bt, "clicked", _remove_component, cp);
+
   
   /*
   Evas_Object* label = elm_label_add(cp->win);
@@ -334,6 +353,14 @@ create_my_prop(const char* name, Eina_Inarray *a, Evas_Object* win, Control* con
          break;
    }
   }
+  return cp;
+}
+
+ComponentProperties*
+create_component_properties(Component* c, Evas_Object* win, Control* control)
+{
+  ComponentProperties* cp = create_my_prop(c->name, c->properties, win, control);
+  cp->component = c;
   return cp;
 }
 
