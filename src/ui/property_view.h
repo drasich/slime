@@ -30,6 +30,7 @@ PropertyView* create_property(Evas_Object* win, Context* context, Control* contr
 void property_set(PropertyView* pw, ComponentProperties* mp);
 //TODO rename this function
 void property_update2(PropertyView* pw, Object* o);
+void property_update_components(PropertyView* pw, Object* o);
 
 
 

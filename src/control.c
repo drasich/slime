@@ -421,5 +421,6 @@ void
 control_property_update_components(Control* c, Object* o)
 {
   printf("TODO update the components\n");
+  property_update_components(c->view->property, o);
 
 }

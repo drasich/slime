@@ -42,33 +42,7 @@ property_update(PropertyView* pw, Eina_List* objects)
 
   int nb = eina_list_count(objects);
   if (nb == 1) {
-    ComponentProperties* cp = eina_hash_find(pw->component_widgets_backup,"transform");
-    //TODO clean and add
-    property_clear_components(pw);
-    //property_set(pw, cp);
-    property_add_component(pw, cp);
-    cp->data = last;
-    pw->current = cp;
-    //_property_update_data(pw->current, last);
-    component_property_update_data(cp, last);
-
-    //TODO add the components widget
-    Component* c;
-    EINA_LIST_FOREACH(last->components, l, c) {
-      cp = eina_hash_find(pw->component_widgets_backup, c->name);
-      if (!cp) {
-        cp = create_my_prop(c->name, c->properties, pw->win, pw->control);
-        eina_hash_add(
-              pw->component_widgets_backup,
-              c->name,
-              cp);
-      }
-      property_add_component(pw, cp);
-      cp->data = c->data;
-
-    }
-
-
+    property_update_components(pw, last);
   }
   else if (nb > 1) {
     property_set(pw, NULL);
@@ -250,4 +224,36 @@ create_property(Evas_Object* win, Context* context, Control* control)
 
   return p;
 }
+
+
+void
+property_update_components(PropertyView* pw, Object* o)
+{
+  property_clear_components(pw);
+
+  ComponentProperties* cp = eina_hash_find(pw->component_widgets_backup,"transform");
+  property_add_component(pw, cp);
+  cp->data = o;
+  pw->current = cp;
+  component_property_update_data(cp, o);
+  
+
+  //TODO add the components widget
+  Eina_List* l;
+  Component* c;
+  EINA_LIST_FOREACH(o->components, l, c) {
+    cp = eina_hash_find(pw->component_widgets_backup, c->name);
+    if (!cp) {
+      cp = create_my_prop(c->name, c->properties, pw->win, pw->control);
+      eina_hash_add(
+            pw->component_widgets_backup,
+            c->name,
+            cp);
+    }
+    property_add_component(pw, cp);
+    cp->data = c->data;
+  }
+
+}
+
 
