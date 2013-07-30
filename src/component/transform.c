@@ -165,6 +165,34 @@ void test_display()
   Transform* t = test_create();
 
   double test =  t->position.X;
-
-  
 }
+
+static void *
+_create_transform()
+{
+  Transform* t = calloc(1, sizeof *t);
+  return t;
+}
+
+static Eina_Inarray* 
+_transform_properties()
+{
+  Eina_Inarray * iarr = create_property_set();
+
+  ADD_PROP(iarr, Transform, position.X, EET_T_DOUBLE);
+  ADD_PROP(iarr, Transform, position.Y, EET_T_DOUBLE);
+  ADD_PROP(iarr, Transform, position.Z, EET_T_DOUBLE);
+  ADD_PROP(iarr, Transform, angles.X, EET_T_DOUBLE);
+  ADD_PROP(iarr, Transform, angles.Y, EET_T_DOUBLE);
+  ADD_PROP(iarr, Transform, angles.Z, EET_T_DOUBLE);
+
+  return iarr;
+}
+
+
+ComponentDesc transform_desc = {
+  "transform",
+  _create_transform,
+  _transform_properties
+};
+

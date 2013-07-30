@@ -4,10 +4,8 @@ if each component is a library we can remove the component and add it
 again while the game is loading...
 
 make a component manager and add component to the manager;
-be able to add/remove component : display the name and also a remove button
-to remove a component : put the component in paramater of  create_my_prop
-and save it
-et puis pas la peine de sauver les widgets en fait...
+pas la peine de sauver les widgets en fait... mais il faut release
+correctement
 
 
 fix the gl callbacks init, update, draw.... for gameview;

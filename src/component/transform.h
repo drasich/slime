@@ -3,6 +3,7 @@
 #include "vec.h"
 #include "quat.h"
 #include "matrix.h"
+#include "component.h"
 
 typedef struct _Transform Transform;
 
@@ -16,5 +17,8 @@ struct _Transform
 };
 
 void test_test();
+
+ComponentDesc transform_desc;
+
 
 #endif
