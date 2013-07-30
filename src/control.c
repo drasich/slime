@@ -241,6 +241,23 @@ _op_object_add_component(Object* o, Component* c)
   return op;
 }
 
+static Operation* 
+_op_object_remove_component(Object* o, Component* c)
+{
+  Operation* op = calloc(1, sizeof *op);
+
+  op->do_cb = operation_object_add_component_undo;
+  op->undo_cb = operation_object_add_component_do;
+
+  Op_Object_Add_Component* od = calloc(1, sizeof *od);
+  od->o = o;
+  od->c = c;
+
+  op->data = od;
+  return op;
+}
+
+
 
 
 bool
@@ -416,6 +433,15 @@ control_object_add_component(Control* c, Object* o, Component* comp)
   control_add_operation(c, op);
   op->do_cb(c, op->data);
 }
+
+void
+control_object_remove_component(Control* c, Object* o, Component* comp)
+{
+  Operation* op = _op_object_remove_component(o,comp);
+  control_add_operation(c, op);
+  op->do_cb(c, op->data);
+}
+
 
 void
 control_property_update_components(Control* c, Object* o)

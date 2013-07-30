@@ -144,7 +144,6 @@ operation_object_add_component_do(Control* c, void* data)
 {
   Op_Object_Add_Component* od = (Op_Object_Add_Component*) data;
   object_add_component(od->o, od->c);
-  //todo update property if it's selected
   control_property_update_components(c, od->o);
 }
 
@@ -153,7 +152,6 @@ operation_object_add_component_undo(Control*c, void* data)
 {
   Op_Object_Add_Component* od = (Op_Object_Add_Component*) data;
   object_remove_component(od->o, od->c);
-  //todo update property if it's selected
   //TODO delete the component in the cleaning of operations or when we quit the application
   control_property_update_components(c, od->o);
 }

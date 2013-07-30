@@ -284,6 +284,9 @@ _remove_component(
   //TODO remove components and components view
   // how to do when there is the same components many time...
   printf("TODO remove component\n");
+  ComponentProperties* cp = data;
+  if (cp->pw->context->object)
+  control_object_remove_component(cp->control, cp->pw->context->object, cp->component);
 }
 
 
@@ -357,10 +360,11 @@ create_my_prop(const char* name, Eina_Inarray *a, Evas_Object* win, Control* con
 }
 
 ComponentProperties*
-create_component_properties(Component* c, Evas_Object* win, Control* control)
+create_component_properties(Component* c, PropertyView* pw)
 {
-  ComponentProperties* cp = create_my_prop(c->name, c->properties, win, control);
+  ComponentProperties* cp = create_my_prop(c->name, c->properties, pw->win, pw->control);
   cp->component = c;
+  cp->pw = pw;
   return cp;
 }
 

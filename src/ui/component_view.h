@@ -13,7 +13,7 @@ struct _ComponentProperties
   Evas_Object* box;
   Eina_Inarray *arr;
   Eina_Hash *properties;
-  //PropertyView *pw;
+  struct _PropertyView *pw;
   // add callbacks here if we want to call something when data has changed.
   property_changed callback;
   Control* control;
@@ -26,7 +26,7 @@ struct _ComponentProperties
 };
 
 ComponentProperties* create_my_prop(const char* name, Eina_Inarray *a, Evas_Object* win, Control* control);
-ComponentProperties* create_component_properties(Component* c, Evas_Object* win, Control* control);
+ComponentProperties* create_component_properties(Component* c, struct _PropertyView* pw);
 
 void component_property_update_data(ComponentProperties* mp, void* data);
 
