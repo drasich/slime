@@ -209,14 +209,14 @@ create_property(Evas_Object* win, Context* context, Control* control)
   //TODO remove these arrays, and the ComponentProperties from propertyview
   p->arr = _object_init_array_properties();
   p->array_multiple_objects = _multiple_objects_init_array_properties();
-  ComponentProperties* transform = create_my_prop("transform", p->arr, win, control);
+  ComponentProperties* transform = create_my_prop("transform", p->arr, win, control, false);
 
   eina_hash_add(
         p->component_widgets_backup,
         transform->name,
         transform);
   
-  ComponentProperties* manyobj = create_my_prop("multiple", p->array_multiple_objects, win, control);
+  ComponentProperties* manyobj = create_my_prop("multiple", p->array_multiple_objects, win, control, false);
   manyobj->callback = _changed_multiple_object;
 
   eina_hash_add(
@@ -239,8 +239,6 @@ property_update_components(PropertyView* pw, Object* o)
   pw->current = cp;
   component_property_update_data(cp, o);
   
-
-  //TODO add the components widget
   Eina_List* l;
   Component* c;
   EINA_LIST_FOREACH(o->components, l, c) {

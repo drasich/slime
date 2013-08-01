@@ -31,7 +31,7 @@ Component* create_component(ComponentDesc *f);
 
 struct _ComponentManager {
   Eina_List *components;
-  Eina_Hash *component_widgets;
+  //Eina_Hash *component_widgets;
   Evas_Object* win;
   struct _Control* control;
   void* libhandle;

@@ -25,7 +25,7 @@ struct _ComponentProperties
   Component* component;
 };
 
-ComponentProperties* create_my_prop(const char* name, Eina_Inarray *a, Evas_Object* win, Control* control);
+ComponentProperties* create_my_prop(const char* name, Eina_Inarray *a, Evas_Object* win, Control* control, bool can_remove);
 ComponentProperties* create_component_properties(Component* c, struct _PropertyView* pw);
 
 void component_property_update_data(ComponentProperties* mp, void* data);

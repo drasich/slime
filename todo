@@ -1,9 +1,4 @@
-make the player component a module/library
-or make the game a library?
-if each component is a library we can remove the component and add it
-again while the game is loading...
-
-make a component manager and add component to the manager;
+remove component or not
 pas la peine de sauver les widgets en fait... mais il faut release
 correctement
 
@@ -23,3 +18,6 @@ handle properties when multiple objects selected
 => make a structure in context with position and rotation
 be able to create an empty and change mesh in the properties
 
+now there is only one library but:
+if each component is a library we can remove the component and add it
+again while the game is loading...
