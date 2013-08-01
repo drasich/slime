@@ -7,13 +7,13 @@ typedef struct _ComponentDesc ComponentDesc;
 typedef struct _Component Component;
 typedef struct _ComponentManager ComponentManager;
 
-//rename ComponentDefinition?
 struct _ComponentDesc {
   const char* name;
   void* (*create)(); 
   Eina_Inarray* (*properties)();
   void (*init)(Component* c); 
   void (*update)(Component* c, double dt); 
+  void (*on_property_changed)(Component* c); 
 };
 
 typedef Component* (*create_component_function)(); 

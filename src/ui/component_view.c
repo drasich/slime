@@ -268,6 +268,10 @@ component_property_update_data(ComponentProperties* cp, void* data)
         break;
     }
   }
+
+  if (cp->component->funcs->on_property_changed)
+  cp->component->funcs->on_property_changed(cp->component);
+
 }
 
 static void

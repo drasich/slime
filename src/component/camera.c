@@ -28,10 +28,20 @@ _camera_properties()
   return iarr;
 }
 
+static void
+_camera_on_property_changed(Component* c)
+{
+
+
+}
+
 ComponentDesc camera_desc = {
   "camera",
   _create_camera,
-  _camera_properties
+  _camera_properties,
+  NULL,
+  NULL,
+  _camera_on_property_changed
 };
 
 
