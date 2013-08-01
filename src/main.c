@@ -66,6 +66,7 @@ create_window()
   evas_object_show(win);
 }
 
+#include "component/camera.h"
 static void
 populate_scene(Control* c, Scene* s)
 {
@@ -92,6 +93,13 @@ populate_scene(Control* c, Scene* s)
   Vec3 t2 = {-10,0,0};
   object_set_position(yep, t2);
   control_add_object(c,s,yep);
+
+  Object* cam = create_object();
+  cam->name = eina_stringshare_add("cameratest");
+  Component* compcam = create_component(&camera_desc);
+  object_add_component(cam, compcam);
+  control_add_object(c,s,cam);
+  scene_camera_set(s,cam);
 
   //GLint bits;
   //gl->glGetIntegerv(GL_DEPTH_BITS, &bits);

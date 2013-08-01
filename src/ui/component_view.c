@@ -258,6 +258,7 @@ component_property_update_data(ComponentProperties* cp, void* data)
          {
           const char** str = (void*)data + p->offset;
           const char* s = elm_object_text_get(obj);
+          if (!*str) break;
           if (strcmp(*str,s)) 
             elm_object_text_set(obj, *str );
          }

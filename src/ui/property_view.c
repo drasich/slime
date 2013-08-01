@@ -249,6 +249,7 @@ property_update_components(PropertyView* pw, Object* o)
           cp);
     property_add_component(pw, cp);
     cp->data = c->data;
+    component_property_update_data(cp, cp->data);
   }
 
 }

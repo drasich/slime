@@ -2,6 +2,7 @@
 #include "glview.h"
 #include <dlfcn.h>
 #include "component.h"
+#include "component/camera.h"
 #define __UNUSED__
 
 // Callbacks
@@ -25,11 +26,19 @@ static void
 _resize_gl(Evas_Object *obj)
 {
   int w, h;
-   elm_glview_size_get(obj, &w, &h);
+  elm_glview_size_get(obj, &w, &h);
 
-   // GL Viewport stuff. you can avoid doing this if viewport is all the
-   // same as last frame if you want
-   gl->glViewport(0, 0, w, h);
+  // GL Viewport stuff. you can avoid doing this if viewport is all the
+  // same as last frame if you want
+  gl->glViewport(0, 0, w, h);
+
+  GameView* gv = evas_object_data_get(obj, "gameview");
+
+  Scene* s = gv->scene;
+  Object* c = s->camera;
+  Component* camcomp = object_component_get(c, "camera");
+  CCamera* cam = camcomp->data;
+  ccamera_set_resolution(cam, w, h);
 }
 
 static void
@@ -143,15 +152,17 @@ Evas_Object* create_gameview_window(View* v, Evas_Object** window, Control* c)
 void 
 gameview_draw(GameView* v)
 {
-  Camera* c = v->camera;
   //Render* r = v->render;
   Scene* s = v->scene;
+  Object* c = s->camera;
+  Component* camcomp = object_component_get(c, "camera");
+  CCamera* cam = camcomp->data;
 
   Matrix4 cam_mat_inv, mo;
 
   mat4_inverse(((Object*)c)->matrix, cam_mat_inv);
-  Matrix4* projection = &c->projection;
-  Matrix4* ortho = &c->orthographic;
+  Matrix4* projection = &cam->projection;
+  Matrix4* ortho = &cam->orthographic;
 
   //Render just selected to fbo
   Eina_List *l;

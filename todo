@@ -1,6 +1,15 @@
-remove component or not
-pas la peine de sauver les widgets en fait... mais il faut release
-correctement
+ajouter une camera object:
+- camera component
+- scene properties to set the camera
+
+make vec3, vec4 a possible type to edit easily
+comment faire pour editer facilement un enum...
+
+
+decider si transform devient un component a part en dehors d'object
+et aussi "object properties" "name, ..."
+
+release les components widgets correctement
 
 
 fix the gl callbacks init, update, draw.... for gameview;
@@ -8,10 +17,6 @@ open the gameview and update the components there
 
 be able to add/remove properties (make some kind of component = group properties)
 be able to script an object and then go play/pause
-
-each object can be attributed a library or script
-the library is inherited from an interface.
-
 
 //pour plus tard
 handle properties when multiple objects selected
@@ -21,3 +26,4 @@ be able to create an empty and change mesh in the properties
 now there is only one library but:
 if each component is a library we can remove the component and add it
 again while the game is loading...
+

@@ -66,4 +66,6 @@ void object_remove_component(Object* o, Component* c);
 void object_add_component_mesh(Object* o, Mesh* m);
 void object_add_component_armature(Object* o, Armature* a);
 
+Component* object_component_get(const Object* o, const char* name);
+
 #endif

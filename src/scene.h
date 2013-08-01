@@ -12,6 +12,7 @@ struct _Scene {
   Eina_List* objects;
   Eina_List* ortho;
   struct _View* view;
+  Object* camera;
 };
 
 Scene* create_scene();
@@ -22,5 +23,7 @@ void scene_draw(Scene* s, Camera* c);
 void scene_update(Scene* s);
 
 void scene_destroy(Scene* s);
+
+void scene_camera_set(Scene* s, Object* camera);
 
 #endif

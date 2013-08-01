@@ -69,3 +69,8 @@ scene_update(Scene* s)
     object_update(o);
 }
 
+void
+scene_camera_set(Scene* s, Object* camera)
+{
+  s->camera = camera;
+}

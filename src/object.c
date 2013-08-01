@@ -143,6 +143,7 @@ object_update(Object* o)
   Component* c;
 
   EINA_LIST_FOREACH(o->components, l, c) {
+    if (c->funcs->update)
     c->funcs->update(c, 0.01f);
   }
   
@@ -162,6 +163,7 @@ void object_add_component_armature(Object* o, Armature* a)
 Object* create_object()
 {
   Object* o = calloc(1, sizeof(Object));
+  o->name = eina_stringshare_add("empty");
   object_init(o);
   eina_value_setup(&o->data_position, EINA_VALUE_TYPE_DOUBLE);
   eina_value_set(&o->data_position, 777);
@@ -293,5 +295,20 @@ void
 object_remove_component(Object* o, Component* c)
 {
   o->components = eina_list_remove(o->components, c);
+}
+
+Component*
+object_component_get(const Object* o, const char* name)
+{
+  Eina_List* l;
+  Component* c;
+
+  EINA_LIST_FOREACH(o->components, l, c) {
+    if (!strcmp(c->name, name))
+    return c;
+  }
+
+  return NULL;
+
 }
 

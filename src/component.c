@@ -2,6 +2,7 @@
 #include "ui/property_view.h"
 #include "control.h"
 #include <dlfcn.h>
+#include "component/camera.h"
 
 Component*
 create_component(ComponentDesc *cd)
@@ -61,6 +62,7 @@ _create_widgets(ComponentManager* cm)
 }
 */
 
+
 ComponentManager* 
 create_component_manager(Evas_Object* win, Control* c)
 {
@@ -68,6 +70,7 @@ create_component_manager(Evas_Object* win, Control* c)
   cm->control = c;
   //cm->win = win;
   printf("create compo manager\n");
+  cm->components = eina_list_append(cm->components, &camera_desc);
 
 
   return cm;
@@ -96,7 +99,8 @@ component_manager_load(ComponentManager* cm)
   else 
     printf("symbol success\n");
 
-  cm->components = initfunc();
+  Eina_List* user_components = initfunc();
+  cm->components = eina_list_merge(cm->components, user_components);
   printf("init func done\n");
   //_create_widgets(cm);
   printf("create components end\n");
