@@ -47,7 +47,8 @@ property_update(PropertyView* pw, Eina_List* objects)
     property_update_components(pw, last);
   }
   else if (nb > 1) {
-    property_set(pw, NULL);
+    property_clear_components(pw);
+    //property_set(pw, NULL);
     //ComponentProperties* cp = eina_hash_find(pw->component_widgets_backup,"multiple");
     //cp->data = &pw->context->mos;
     //_property_update_data(pw->current, &pw->context->mos);
@@ -186,7 +187,7 @@ create_property(Evas_Object* win, Context* context, Control* control)
   bx = elm_box_add(win);
   evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   evas_object_size_hint_fill_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
-  //elm_box_align_set(bx, 0.0, 0.0);
+  elm_box_align_set(bx, 0.0, 0.0);
   p->box = bx;
   elm_object_content_set(p->scroller, p->box);
   evas_object_show(bx);
