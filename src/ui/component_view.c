@@ -44,6 +44,9 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
     cp->callback(ct, o, p);
   }
 
+  if (cp->component && cp->component->funcs->on_property_changed)
+  cp->component->funcs->on_property_changed(cp->component);
+
   if (!strcmp(cp->name, "transform"))
   control_property_update(ct, o);
 }
@@ -236,6 +239,7 @@ void
 component_property_update_data(ComponentProperties* cp, void* data)
 {
   Property *p;
+  printf("prop update data changed\n");
 
   EINA_INARRAY_FOREACH(cp->arr, p) {
     Evas_Object* obj = eina_hash_find(cp->properties, p->name);
@@ -268,10 +272,6 @@ component_property_update_data(ComponentProperties* cp, void* data)
         break;
     }
   }
-
-  if (cp->component->funcs->on_property_changed)
-  cp->component->funcs->on_property_changed(cp->component);
-
 }
 
 static void

@@ -2,6 +2,8 @@ ajouter une camera object:
 - camera component
 - scene properties to set the camera
 
+remve component properties callback (now it is in the component)
+
 make vec3, vec4 a possible type to edit easily
 comment faire pour editer facilement un enum...
 

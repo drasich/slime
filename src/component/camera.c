@@ -21,7 +21,7 @@ _camera_properties()
 {
   Eina_Inarray * iarr = create_property_set();
 
-  ADD_PROP(iarr, CCamera, fovy, EET_T_DOUBLE);
+  ADD_PROP(iarr, CCamera, fovy_base, EET_T_DOUBLE);
   ADD_PROP(iarr, CCamera, near, EET_T_DOUBLE);
   ADD_PROP(iarr, CCamera, far, EET_T_DOUBLE);
 
@@ -31,8 +31,7 @@ _camera_properties()
 static void
 _camera_on_property_changed(Component* c)
 {
-
-
+  ccamera_update_projection(c->data);
 }
 
 ComponentDesc camera_desc = {
