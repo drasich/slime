@@ -4,7 +4,7 @@
 #include "quat.h"
 #include "matrix.h"
 #include "component.h"
-#include "line.h"
+#include "component/line.h"
 
 typedef struct _CCamera CCamera;
 typedef enum {PERSPECTIVE, ORTHOGRAPHIC} Projection;
@@ -30,7 +30,7 @@ struct _CCamera
   Vec3 center;
 
   Vec4 clear_color;
-  Line* line;
+  CLine* line;
 };
 
 ComponentDesc camera_desc;

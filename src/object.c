@@ -36,6 +36,14 @@ object_draw(Object* o, Matrix4 world, Matrix4 projection)
     //mesh_draw_no_indices(o->mesh);
   }
 
+  Eina_List* l;
+  Component* c;
+
+  EINA_LIST_FOREACH(o->components, l, c) {
+    //if (c->funcs->draw_edit)
+    //c->funcs->draw_edit(c, world,  );
+  }
+
 }
 
 void
