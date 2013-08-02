@@ -13,7 +13,9 @@ struct _ComponentDesc {
   Eina_Inarray* (*properties)();
   void (*init)(Component* c); 
   void (*update)(Component* c, double dt); 
+  void (*draw)(Component* c); 
   void (*on_property_changed)(Component* c); 
+  void (*draw_edit)(Component* c); 
 };
 
 typedef Component* (*create_component_function)(); 

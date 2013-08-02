@@ -13,6 +13,10 @@ _create_camera()
   c->height_base = 400;
   c->near = 1.0f;
   c->far = 1000.0f;
+
+  c->line = create_line();
+  AABox aabox = { vec3(-1,-1,-1), vec3(1,1,1)};
+  line_add_box(c->line,aabox, vec4(1,1,1,1));
   return c;
 }
 
@@ -34,13 +38,33 @@ _camera_on_property_changed(Component* c)
   ccamera_update_projection(c->data);
 }
 
+static void
+_camera_draw_edit(Component* c)
+{
+  /*
+  //draw line
+  CCamera* cam = c->data;
+  Object* o = c->object;
+  Matrix4 cam_mat_inv, mo;
+
+  object_compute_matrix(o, mo);
+  mat4_multiply(cam_mat_inv, mo, mo);
+  object_draw_lines_camera(o, mo, cam);
+
+  line_draw(cam->line);
+  */
+
+}
+
 ComponentDesc camera_desc = {
   "camera",
   _create_camera,
   _camera_properties,
   NULL,
   NULL,
-  _camera_on_property_changed
+  NULL,
+  _camera_on_property_changed,
+  _camera_draw_edit
 };
 
 

@@ -1,13 +1,20 @@
+- make a line component
+- make a hide property for component, to avoid display in properties
+
 ajouter une camera object:
 - camera component
 - scene properties to set the camera
+- remove the old camera
+
 
 remve component properties callback?
 but maybe needed when we edit multiple objects
 
 make vec3, vec4 a possible type to edit easily
 comment faire pour editer facilement un enum...
+et aussi pointeur sur un object ou autre chose
 
+init mode et real mode
 
 decider si transform devient un component a part en dehors d'object
 et aussi "object properties" "name, ..."
