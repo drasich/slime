@@ -4,32 +4,17 @@
 #include "matrix.h"
 #include "intersect.h" //TODO remove
 #include "geometry.h"
+#include "component/camera.h"
 
 typedef struct _Camera Camera;
 struct _Camera
 {
-  struct _Object object;
-  Matrix4 projection;
-  Matrix4 orthographic;
-  //other things like fov etc..
-  float fovy;
-  float fovy_base;
-  float near;
-  float far;
-  float aspect;
-  //int width;
-  //int height;
-  float width;
-  float height;
-  int height_base;
-  double yaw, pitch, roll;
-
-  Vec3 origin;
-  Vec3 local_offset;
-  Vec3 center;
+  Object* object;
+  CCamera* camera_component;
 };
 
 Camera* create_camera();
+Camera* create_camera_from_object(Object* o);
 
 void camera_pan(Camera* cam, Vec3 v); // same as trans
 void camera_rotate(Camera* cam, Quat q); // same as -pos, rot, + pos

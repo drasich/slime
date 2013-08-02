@@ -47,7 +47,7 @@ _view_resize_gl(Evas_Object *obj)
   gl->glViewport(0, 0, w, h);
 
   View* v = evas_object_data_get(obj, "view");
-  camera_set_resolution(v->camera, w, h);
+  ccamera_set_resolution(v->camera->camera_component, w, h);
   quad_resize(v->render->quad_outline->mesh, w, h);
   quad_resize(v->render->quad_color->mesh, w, h);
 
@@ -101,6 +101,7 @@ _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, 
 
 static float startx = 0, starty = 0;
 
+/*
 static void frustum_from_rect(
       Frustum* f, 
       Camera* c, 
@@ -117,16 +118,6 @@ static void frustum_from_rect(
 
   float width_ratio = cam_width/c->width;
   float height_ratio = cam_height/c->height;
-
-  /*
-  double rl = -cam_width/2 + left*width_ratio;
-  double rt = cam_height/2 - top*height_ratio;
-  double rw = width* width_ratio;
-  double rh = height* height_ratio;
-
-  double cx = rl + rw/2.0f;
-  double cy = rt - rh/2.0f;
-  */
 
   double cx = -c->width + left + width/2.0f;
   cx *= width_ratio;
@@ -153,6 +144,7 @@ static void frustum_from_rect(
         c->aspect);
 
 }
+*/
 
 static void
 _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
@@ -283,7 +275,7 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
       ir = intersection_ray_object(r, ob);
     
     if (ir.hit) {
-      double diff = vec3_length2(vec3_sub(ir.position, v->camera->object.Position));
+      double diff = vec3_length2(vec3_sub(ir.position, v->camera->object->Position));
       if ( (found && diff < d) || !found) {
         found = true;
         d = diff;
@@ -371,8 +363,8 @@ _file_chosen(void *data, Evas_Object *obj __UNUSED__, void *event_info)
 
     yep->mesh->shader = v->control->shader_simple;
 
-    Vec3 cp = v->camera->object.Position;
-    Vec3 direction = quat_rotate_vec3(v->camera->object.Orientation, vec3(0,0,-1));
+    Vec3 cp = v->camera->object->Position;
+    Vec3 direction = quat_rotate_vec3(v->camera->object->Orientation, vec3(0,0,-1));
     cp = vec3_add(
           cp,
           vec3_mul(direction, 30));
@@ -395,8 +387,8 @@ _new_empty(void *data,
   yep->name = eina_stringshare_add("empty");
   View* v = (View*) data;
 
-  Vec3 cp = v->camera->object.Position;
-  Vec3 direction = quat_rotate_vec3(v->camera->object.Orientation, vec3(0,0,-1));
+  Vec3 cp = v->camera->object->Position;
+  Vec3 direction = quat_rotate_vec3(v->camera->object->Orientation, vec3(0,0,-1));
   cp = vec3_add(
         cp,
         vec3_mul(direction, 30));
@@ -615,7 +607,6 @@ _create_view_objects(View* v)
   line_set_use_perspective(v->camera_repere->line, false);
   v->grid = _create_grid();
   v->camera = create_camera();
-  v->camera->object.name = eina_stringshare_add("camera");
   Vec3 p = {20,5,20};
   //v->camera->origin = p;
   //v->camera->object.Position = p;
@@ -699,7 +690,8 @@ view_destroy(View* v)
 void
 view_update(View* v, double dt)
 {
-  object_update((Object*)v->camera);
+  //TODO check this
+  object_update(v->camera->object);
 
   Context* cx = v->context;
   Render* r = v->render;
@@ -773,15 +765,17 @@ void
 view_draw(View* v)
 {
   Camera* c = v->camera;
+  Object* co = c->object;
+  CCamera* cc = c->camera_component;
   Context* cx = v->context;
   Render* r = v->render;
   Scene* s = cx->scene;
 
   Matrix4 cam_mat_inv, mo;
 
-  mat4_inverse(((Object*)c)->matrix, cam_mat_inv);
-  Matrix4* projection = &c->projection;
-  Matrix4* ortho = &c->orthographic;
+  mat4_inverse(co->matrix, cam_mat_inv);
+  Matrix4* projection = &cc->projection;
+  Matrix4* ortho = &cc->orthographic;
 
   //Render just selected to fbo
   Eina_List *l;
@@ -835,6 +829,7 @@ view_draw(View* v)
   fbo_use_end();
 
   //draw grid
+  //TODO grid
   gl->glClear(GL_DEPTH_BUFFER_BIT);
   object_compute_matrix(v->grid, mo);
   v->grid->line->id_texture = r->fbo_all->texture_depth_stencil_id;
@@ -919,8 +914,8 @@ view_draw(View* v)
   Matrix4 id;
   mat4_set_identity(id);
   mat4_inverse(id, cam_mat_inv);
-  v->camera_repere->Position = vec3(-v->camera->width/2.0 +m, -v->camera->height/2.0 + m, -10);
-  v->camera_repere->Orientation = quat_inverse(v->camera->object.Orientation);
+  v->camera_repere->Position = vec3(-cc->width/2.0 +m, -cc->height/2.0 + m, -10);
+  v->camera_repere->Orientation = quat_inverse(co->Orientation);
   object_compute_matrix_with_quat(v->camera_repere, mo);
   v->camera_repere->line->id_texture = r->fbo_all->texture_depth_stencil_id;
   mat4_multiply(cam_mat_inv, mo, mo);

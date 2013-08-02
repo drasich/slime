@@ -62,11 +62,11 @@ _control_center_camera(Control* c)
   if (o != NULL && c->state == IDLE) {
     //TODO get the distance from the size of the object on the screen
     Vec3 v = vec3(0,0,30);
-    v = quat_rotate_vec3(cam->object.Orientation, v);
+    v = quat_rotate_vec3(cam->object->Orientation, v);
     v = vec3_add(v, o->Position);
 
     //TODO write a camera_set_position function
-    cam->object.Position = v;
+    cam->object->Position = v;
     camera_recalculate_origin(cam);
 
   }
@@ -77,8 +77,8 @@ _control_center_camera(Control* c)
 static void 
 _rotate_camera(View* v, float x, float y)
 {
-  Camera* cam = v->camera;
-  Object* c = (Object*) cam;
+  CCamera* cam = v->camera->camera_component;
+  Object* c = v->camera->object;
 
   cam->yaw += 0.005f*x;
   cam->pitch += 0.005f*y;
@@ -96,11 +96,11 @@ _rotate_camera(View* v, float x, float y)
   if (o != NULL) {
     if (!vec3_equal(o->Position, cam->center)) {
       cam->center = o->Position;
-      camera_recalculate_origin(cam);
+      camera_recalculate_origin(v->camera);
     }
   }
 
-  camera_rotate_around(cam, result, cam->center);
+  camera_rotate_around(v->camera, result, cam->center);
 }
 
 
@@ -126,7 +126,7 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
     }
   } else if (c->state == MOVE) {
     Eina_List* objects = context_get_objects(v->context);
-    Plane p = { c->start, quat_rotate_vec3(v->camera->object.Orientation, vec3(0,0,-1)) };
+    Plane p = { c->start, quat_rotate_vec3(v->camera->object->Orientation, vec3(0,0,-1)) };
 
     Ray rstart = ray_from_screen(v->camera, c->mouse_start.X, c->mouse_start.Y, 1);
 
