@@ -36,6 +36,7 @@ void object_destroy(Object* o);
 //TODO object_draw is currently only used with
 void object_draw(Object* o, Matrix4 world, Matrix4 projection);
 void object_draw2(Object* o, Matrix4 world, struct _CCamera* c);
+void object_draw_edit(Object* o, Matrix4 world, struct _CCamera* c);
 
 void object_update(Object* o);
 

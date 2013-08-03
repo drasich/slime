@@ -62,6 +62,7 @@ _camera_display(CCamera* c)
         vec3(-hw,hh,-near),
         color);
 
+  return;
 
   float hwf = hw* far/near;
   float hhf = hh* far/near;

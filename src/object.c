@@ -60,11 +60,43 @@ object_draw2(Object* o, Matrix4 world, struct _CCamera* cam)
   Component* c;
 
   EINA_LIST_FOREACH(o->components, l, c) {
+    if (c->funcs->draw)
+    c->funcs->draw(c, world, cam);
+  }
+
+}
+
+void
+object_draw_edit(Object* o, Matrix4 world, struct _CCamera* cam)
+{
+  Matrix4* projection = &cam->projection;
+
+  if (o->mesh != NULL) {
+    if (!strcmp("quad", o->mesh->name ) ){
+      //TODO change this if
+      mesh_set_matrices(o->mesh, world, *projection);
+      quad_draw(o->mesh);
+    }
+    else
+     {
+      mesh_set_matrices(o->mesh, world, *projection);
+      mesh_draw(o->mesh);
+     }
+    //mesh_draw_no_indices(o->mesh);
+  }
+
+  Eina_List* l;
+  Component* c;
+
+  EINA_LIST_FOREACH(o->components, l, c) {
+    if (c->funcs->draw)
+    c->funcs->draw(c, world, cam);
     if (c->funcs->draw_edit)
     c->funcs->draw_edit(c, world, cam);
   }
 
 }
+
 
 void
 object_compute_matrix(Object* o, Matrix4 mat)

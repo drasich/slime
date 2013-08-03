@@ -16,7 +16,7 @@ struct _ComponentDesc {
   Eina_Inarray* (*properties)();
   void (*init)(Component* c); 
   void (*update)(Component* c, double dt); 
-  void (*draw)(Component* c); 
+  void (*draw)(Component* c, Matrix4 world, struct _CCamera* cam); 
   void (*on_property_changed)(Component* c); 
   void (*draw_edit)(Component* c, Matrix4 world, struct _CCamera* cam); 
 };

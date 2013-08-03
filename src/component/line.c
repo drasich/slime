@@ -30,7 +30,7 @@ _line_properties()
 }
 
 static void
-_line_draw_edit(Component* c, Matrix4 world, struct _CCamera* cam)
+_line_draw(Component* c, Matrix4 world, struct _CCamera* cam)
 {
   Line* l = c->data;
   line_prepare_draw(l, world, cam);
@@ -44,9 +44,9 @@ ComponentDesc line_desc = {
   _line_properties,
   NULL,
   NULL,
+  _line_draw,
   NULL,
   NULL,
-  _line_draw_edit
 };
 
 void 

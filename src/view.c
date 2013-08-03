@@ -812,7 +812,7 @@ view_draw(View* v)
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
     //object_draw(o, mo, *projection);
-    object_draw2(o, mo, cc);
+    object_draw_edit(o, mo, cc);
   }
   fbo_use_end();
 
@@ -831,7 +831,7 @@ view_draw(View* v)
     mat4_multiply(cam_mat_inv, mo, mo);
     //mat4_multiply(cam_mat_inv, o->matrix, mo);
     //object_draw(o, mo, *projection);
-    object_draw2(o, mo, cc);
+    object_draw_edit(o, mo, cc);
   }
   //gl->glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 
@@ -860,7 +860,7 @@ view_draw(View* v)
   object_compute_matrix(v->grid, mo);
   //TODO v->grid->line->id_texture = r->fbo_all->texture_depth_stencil_id;
   mat4_multiply(cam_mat_inv, mo, mo);
-  object_draw2(v->grid, mo, cc);
+  object_draw_edit(v->grid, mo, cc);
 
 
   //Render objects
@@ -876,7 +876,7 @@ view_draw(View* v)
     mat4_multiply(cam_mat_inv, mo, mo);
     //mat4_multiply(cam_mat_inv, o->matrix, mo);
     //object_draw(o, mo, *projection);
-    object_draw2(o, mo, cc);
+    object_draw_edit(o, mo, cc);
   }
 
   //TODO avoid compute matrix 2 times
@@ -890,7 +890,7 @@ view_draw(View* v)
     //mat4_multiply(cam_mat_inv, o->matrix, mo);
     //TODO Fix how to use depth texture for lines
     //TODO o->line->id_texture = r->fbo_all->texture_depth_stencil_id;
-    object_draw2(o, mo, cc);
+    object_draw_edit(o, mo, cc);
     repere_position = vec3_add(repere_position, o->Position);
   }
 
@@ -909,7 +909,7 @@ view_draw(View* v)
     object_compute_matrix(v->repere, mo);
     //TODO v->repere->line->id_texture = r->fbo_all->texture_depth_stencil_id;
     mat4_multiply(cam_mat_inv, mo, mo);
-    object_draw2(v->repere, mo, cc);
+    object_draw_edit(v->repere, mo, cc);
   }
 
   //Render outline with quad
@@ -931,7 +931,7 @@ view_draw(View* v)
   object_compute_matrix_with_quat(v->camera_repere, mo);
   //TODO v->camera_repere->line->id_texture = r->fbo_all->texture_depth_stencil_id;
   mat4_multiply(cam_mat_inv, mo, mo);
-  object_draw2(v->camera_repere, mo, cc);
+  object_draw_edit(v->camera_repere, mo, cc);
  
 }
 
