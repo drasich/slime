@@ -4,7 +4,7 @@
 
 
 Line* 
-ccreate_line()
+create_line()
 {
   Line* l = calloc(1, sizeof *l);
   //TODO name, shader
@@ -18,7 +18,7 @@ ccreate_line()
 static void*
 _create_line()
 {
-  return ccreate_line();
+  return create_line();
 }
 
 static Eina_Inarray* 
@@ -49,6 +49,16 @@ ComponentDesc line_desc = {
   _line_draw_edit
 };
 
+void 
+line_clear(Line* l)
+{
+  eina_inarray_free(l->vertices);
+  eina_inarray_free(l->colors);
+
+  l->vertices = eina_inarray_new(sizeof(GLfloat), 3);
+  l->colors = eina_inarray_new(sizeof(GLfloat), 4);
+  l->need_resend = true;
+}
 
 void
 line_add(Line* l, Vec3 p1, Vec3 p2)

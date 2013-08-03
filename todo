@@ -1,5 +1,6 @@
-- make a line component
+make the camera display better
 - make a hide property for component, to avoid display in properties
+
 
 ajouter une camera object:
 - camera component

@@ -54,7 +54,7 @@ void line_prepare_draw(Line* l, Matrix4 mat, struct _CCamera* c);
 
 void line_draw(Line* line);
 
-Line* ccreate_line();
+Line* create_line();
 void line_destroy(Line* l);
 
 void line_add(Line* line, Vec3 p1, Vec3 p2);

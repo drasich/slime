@@ -38,7 +38,7 @@ _resize_gl(Evas_Object *obj)
   Object* c = s->camera;
   Component* camcomp = object_component_get(c, "camera");
   CCamera* cam = camcomp->data;
-  ccamera_set_resolution(cam, w, h);
+  //ccamera_set_resolution(cam, w, h);
 }
 
 static void
@@ -137,14 +137,19 @@ Evas_Object* create_gameview_window(View* v, Evas_Object** window, Control* c)
   GameView* gv = create_gameview(win);
   evas_object_smart_callback_add(win, "delete,request", win_del, gv);
   //Context* cx = v->context;
-  gv->scene = v->context->scene;
+  Scene* s = v->context->scene;
+  gv->scene = s;
   gv->camera = v->camera;
   gv->window = window;
   gv->control = c;
 
   component_manager_load(c->component_manager); //TODO move this
   
-  evas_object_resize(win, 800/3, 400/3);
+  //evas_object_resize(win, 800/3, 400/3);
+  Object* o = s->camera;
+  Component* camcomp = object_component_get(o, "camera");
+  CCamera* cam = camcomp->data;
+  evas_object_resize(win, cam->width , cam->height);
   evas_object_show(win);
   return win;
 }
