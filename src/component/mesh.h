@@ -4,6 +4,7 @@
 #include "matrix.h"
 #include "geometry.h"
 #include <stdbool.h>
+#include "component.h"
 
 typedef struct _Weight Weight;
 struct _Weight
@@ -79,6 +80,8 @@ struct _Mesh
 
   bool is_init;
 };
+
+ComponentDesc mesh_desc;
 
 void mesh_read_file(Mesh* mesh, FILE* f);
 void mesh_read(Mesh* mesh, char* path);

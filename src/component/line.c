@@ -49,6 +49,7 @@ ComponentDesc line_desc = {
   NULL,
 };
 
+
 void 
 line_clear(Line* l)
 {

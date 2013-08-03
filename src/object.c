@@ -13,7 +13,6 @@ object_init(Object* o)
 void
 object_destroy(Object* o)
 {
-  if (o->mesh != NULL) mesh_destroy(o->mesh);
   //TODO clean armature
   //TODO clean components
 }
@@ -22,6 +21,7 @@ object_destroy(Object* o)
 void
 object_draw(Object* o, Matrix4 world, Matrix4 projection)
 {
+  /*
   if (o->mesh != NULL) {
     if (!strcmp("quad", o->mesh->name ) ){
       //TODO change this if
@@ -35,6 +35,7 @@ object_draw(Object* o, Matrix4 world, Matrix4 projection)
      }
     //mesh_draw_no_indices(o->mesh);
   }
+  */
 }
 
 void
@@ -42,6 +43,7 @@ object_draw2(Object* o, Matrix4 world, struct _CCamera* cam)
 {
   Matrix4* projection = &cam->projection;
 
+  /*
   if (o->mesh != NULL) {
     if (!strcmp("quad", o->mesh->name ) ){
       //TODO change this if
@@ -55,6 +57,7 @@ object_draw2(Object* o, Matrix4 world, struct _CCamera* cam)
      }
     //mesh_draw_no_indices(o->mesh);
   }
+  */
 
   Eina_List* l;
   Component* c;
@@ -71,6 +74,7 @@ object_draw_edit(Object* o, Matrix4 world, struct _CCamera* cam)
 {
   Matrix4* projection = &cam->projection;
 
+  /*
   if (o->mesh != NULL) {
     if (!strcmp("quad", o->mesh->name ) ){
       //TODO change this if
@@ -84,6 +88,7 @@ object_draw_edit(Object* o, Matrix4 world, struct _CCamera* cam)
      }
     //mesh_draw_no_indices(o->mesh);
   }
+  */
 
   Eina_List* l;
   Component* c;
@@ -190,11 +195,6 @@ object_update(Object* o)
   
 }
 
-void object_add_component_mesh(Object* o, Mesh* m)
-{
-  o->mesh = m;
-}
-
 void object_add_component_armature(Object* o, Armature* a)
 {
   o->armature = a;
@@ -227,8 +227,15 @@ Object* create_object_file(const char* path)
     printf("object of type '%s'\n",type);
 
     if (!strcmp(type, "mesh")){
-      Mesh* mesh = create_mesh_file(f);
-      object_add_component_mesh(o, mesh);
+      //TODO add this to component
+      Component* comp = create_component(&mesh_desc);
+      object_add_component(o, comp);
+      Mesh* mesh = comp->data;
+      mesh_read_file(mesh,f);
+      //Mesh* mesh = create_mesh_file(f);
+      o->mesh = mesh;
+
+
       //TODO box component
       /*
       o->line = create_line();

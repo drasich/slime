@@ -3,6 +3,8 @@
 #include "texture.h"
 #include "gl.h"
 #include "read.h"
+#include "property.h"
+#include "component/camera.h"
 
 void mesh_read_file(Mesh* mesh, FILE* f)
 {
@@ -426,4 +428,44 @@ mesh_destroy(Mesh* m)
 
   //TODO arrays
 }
+
+
+
+static void*
+_create_mesh()
+{
+  Mesh* m = calloc(1,sizeof *m);
+  return m;
+}
+
+static Eina_Inarray* 
+_mesh_properties()
+{
+  Eina_Inarray * iarr = create_property_set();
+
+  return iarr;
+}
+
+static void 
+_mesh_draw(Component* c, Matrix4 world, struct _CCamera* cam)
+{
+  Mesh* m = c->data;
+  Matrix4* projection = &cam->projection;
+
+  mesh_set_matrices(m, world, *projection);
+  mesh_draw(m);
+}
+
+
+ComponentDesc mesh_desc = {
+  "mesh",
+  _create_mesh,
+  _mesh_properties,
+  NULL,
+  NULL,
+  _mesh_draw,
+  NULL,
+  NULL,
+};
+
 
