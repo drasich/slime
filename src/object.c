@@ -14,8 +14,8 @@ void
 object_destroy(Object* o)
 {
   if (o->mesh != NULL) mesh_destroy(o->mesh);
-  if (o->line != NULL) line_destroy(o->line);
   //TODO clean armature
+  //TODO clean components
 }
 
 
@@ -35,35 +35,36 @@ object_draw(Object* o, Matrix4 world, Matrix4 projection)
      }
     //mesh_draw_no_indices(o->mesh);
   }
+}
+
+void
+object_draw2(Object* o, Matrix4 world, struct _CCamera* cam)
+{
+  Matrix4* projection = &cam->projection;
+
+  if (o->mesh != NULL) {
+    if (!strcmp("quad", o->mesh->name ) ){
+      //TODO change this if
+      mesh_set_matrices(o->mesh, world, *projection);
+      quad_draw(o->mesh);
+    }
+    else
+     {
+      mesh_set_matrices(o->mesh, world, *projection);
+      mesh_draw(o->mesh);
+     }
+    //mesh_draw_no_indices(o->mesh);
+  }
 
   Eina_List* l;
   Component* c;
 
   EINA_LIST_FOREACH(o->components, l, c) {
-    //if (c->funcs->draw_edit)
-    //c->funcs->draw_edit(c, world,  );
+    if (c->funcs->draw_edit)
+    c->funcs->draw_edit(c, world, cam);
   }
 
 }
-
-void
-object_draw_lines(Object* o, Matrix4 world, Matrix4 projection)
-{
-  if (o->line != NULL) {
-    line_set_matrices(o->line, world, projection);
-    line_draw(o->line);
-  }
-}
-
-void
-object_draw_lines_camera(Object* o, Matrix4 world, struct _Camera* c)
-{
-  if (o->line != NULL) {
-    line_prepare_draw(o->line, world, c);
-    line_draw(o->line);
-  }
-}
-
 
 void
 object_compute_matrix(Object* o, Matrix4 mat)
@@ -196,9 +197,12 @@ Object* create_object_file(const char* path)
     if (!strcmp(type, "mesh")){
       Mesh* mesh = create_mesh_file(f);
       object_add_component_mesh(o, mesh);
+      //TODO box component
+      /*
       o->line = create_line();
       line_set_use_depth(o->line, true);
       line_add_box(o->line, mesh->box, vec4(0,1,0,0.2));
+      */
     }
     else if (!strcmp(type, "armature")){
       Armature* armature = create_armature_file(f);

@@ -1,5 +1,6 @@
 #include "component/line.h"
 #include "component/camera.h"
+#include "property.h"
 
 
 CLine* 
@@ -13,6 +14,41 @@ ccreate_line()
   l->use_depth = false;
   return l;
 }
+
+static void*
+_create_line()
+{
+  return ccreate_line();
+}
+
+static Eina_Inarray* 
+_line_properties()
+{
+  Eina_Inarray * iarr = create_property_set();
+
+  return iarr;
+}
+
+static void
+_line_draw_edit(Component* c, Matrix4 world, struct _CCamera* cam)
+{
+  CLine* l = c->data;
+  cline_prepare_draw(l, world, cam);
+  cline_draw(l);
+}
+
+
+ComponentDesc line_desc = {
+  "line",
+  _create_line,
+  _line_properties,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  _line_draw_edit
+};
+
 
 void
 cline_add(CLine* l, Vec3 p1, Vec3 p2)
@@ -406,3 +442,4 @@ cline_set_size_fixed(CLine* l, bool b)
 {
   l->use_size_fixed = b;
 }
+

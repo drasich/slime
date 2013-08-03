@@ -4,6 +4,7 @@
 #include "matrix.h"
 #include "geometry.h"
 #include <stdbool.h>
+#include "component.h"
 
 struct _CCamera;
 
@@ -65,5 +66,6 @@ void cline_set_use_depth(CLine* l, bool b);
 void cline_set_use_perspective(CLine* l, bool b);
 void cline_set_size_fixed(CLine* l, bool b);
 
+ComponentDesc line_desc;
 
 #endif

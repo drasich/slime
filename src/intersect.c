@@ -491,10 +491,12 @@ planes_is_box_in_allow_false_positives(Plane* p, int nb_planes, OBox b)
 
 
 bool
-planes_is_in_object(Plane* p, int nb_planes, Object* o)
+planes_is_in_object(const Plane* planes, int nb_planes, const Object* o)
 {
   Mesh* m = o->mesh;
   if (!m) return false;
+  Plane p[nb_planes];
+  memcpy (p, planes, nb_planes*sizeof *p);
 
   Repere r = {o->Position, o->Orientation};
   Quat iq = quat_conj(r.rotation);

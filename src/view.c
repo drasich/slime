@@ -192,13 +192,21 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   Object *o;
   EINA_LIST_FOREACH(r->objects, l, o) {
     //first test the box and then test the object/mesh
-    OBox b;
-    aabox_to_obox(o->mesh->box, b, o->Position, o->Orientation);
-    if (planes_is_box_in_allow_false_positives(planes, 6, b)) {
-      if (planes_is_in_object(planes, 6, o)) {
-        context_add_object(v->context, o);
+    if (o->mesh) {
+      OBox b;
+      aabox_to_obox(o->mesh->box, b, o->Position, o->Orientation);
+      if (planes_is_box_in_allow_false_positives(planes, 6, b)) {
+        if (planes_is_in_object(planes, 6, o)) {
+          context_add_object(v->context, o);
+        }
       }
     }
+    else if (planes_is_in(planes, 6, o->Position)) {
+      printf("I include %s \n", o->name);
+      printf("pos is %f, %f, %f \n", o->Position.X, o->Position.Y, o->Position.Z);
+      context_add_object(v->context, o);
+    }
+
   }
 
   /*
@@ -325,11 +333,13 @@ static Object*
 _create_repere(float u)
 {
   Object* o = create_object();
-  o->line = create_line();
-  line_add_color(o->line, vec3(0,0,0), vec3(u,0,0), vec4(1,0,0,1));
-  line_add_color(o->line, vec3(0,0,0), vec3(0,u,0), vec4(0,1,0,1));
-  line_add_color(o->line, vec3(0,0,0), vec3(0,0,u), vec4(0,0,1,1));
-  line_set_use_depth(o->line, false);
+  Component* comp = create_component(&line_desc);
+  object_add_component(o,comp);
+  CLine* l = comp->data;
+  cline_add_color(l, vec3(0,0,0), vec3(u,0,0), vec4(1,0,0,1));
+  cline_add_color(l, vec3(0,0,0), vec3(0,u,0), vec4(0,1,0,1));
+  cline_add_color(l, vec3(0,0,0), vec3(0,0,u), vec4(0,0,1,1));
+  cline_set_use_depth(l, false);
   return o;
 }
 
@@ -337,8 +347,11 @@ static Object*
 _create_grid()
 {
   Object* grid = create_object();
-  grid->line = create_line();
-  line_add_grid(grid->line, 100, 10);
+  Component* comp = create_component(&line_desc);
+  object_add_component(grid,comp);
+  CLine* l = comp->data;
+
+  cline_add_grid(l, 100, 10);
   return grid;
 }
 
@@ -601,10 +614,16 @@ static void
 _create_view_objects(View* v)
 {
   v->repere = _create_repere(1);
-  line_set_size_fixed(v->repere->line, true);
+  Component* c = object_component_get(v->repere, "line");
+  CLine* l = c->data;
+  if (l) cline_set_size_fixed(l, true);
+
   v->camera_repere = _create_repere(40);
   v->camera_repere->Position = vec3(10,10, -10);
-  line_set_use_perspective(v->camera_repere->line, false);
+  c = object_component_get(v->camera_repere, "line");
+  l = c->data;
+  if (l) cline_set_use_perspective(l, false);
+
   v->grid = _create_grid();
   v->camera = create_camera();
   Vec3 p = {20,5,20};
@@ -705,7 +724,12 @@ view_update(View* v, double dt)
   r->objects = eina_list_free(r->objects);
 
   EINA_LIST_FOREACH(s->objects, l, o) {
-    if (!o->mesh) continue;
+    if (!o->mesh) {
+      //TODO
+      r->objects = eina_list_append(r->objects, o);
+      continue;
+    }
+
     OBox b;
     aabox_to_obox(o->mesh->box, b, o->Position, o->Orientation);
     /*
@@ -787,7 +811,8 @@ view_draw(View* v)
   EINA_LIST_FOREACH(cxol, l, o) {
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
-    object_draw(o, mo, *projection);
+    //object_draw(o, mo, *projection);
+    object_draw2(o, mo, cc);
   }
   fbo_use_end();
 
@@ -805,7 +830,8 @@ view_draw(View* v)
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
     //mat4_multiply(cam_mat_inv, o->matrix, mo);
-    object_draw(o, mo, *projection);
+    //object_draw(o, mo, *projection);
+    object_draw2(o, mo, cc);
   }
   //gl->glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 
@@ -832,16 +858,16 @@ view_draw(View* v)
   //TODO grid
   gl->glClear(GL_DEPTH_BUFFER_BIT);
   object_compute_matrix(v->grid, mo);
-  v->grid->line->id_texture = r->fbo_all->texture_depth_stencil_id;
+  //TODO v->grid->line->id_texture = r->fbo_all->texture_depth_stencil_id;
   mat4_multiply(cam_mat_inv, mo, mo);
-  object_draw_lines_camera(v->grid, mo, c);
+  object_draw2(v->grid, mo, cc);
 
 
   //Render objects
   EINA_LIST_FOREACH(r->objects, l, o) {
 
-    Frustum f;
-    camera_get_frustum(v->camera, &f);
+    //Frustum f;
+    //camera_get_frustum(v->camera, &f);
     
     //bool b = frustum_is_in(&f, o->Position);
     //if (!b) continue;
@@ -849,24 +875,11 @@ view_draw(View* v)
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
     //mat4_multiply(cam_mat_inv, o->matrix, mo);
-    object_draw(o, mo, *projection);
+    //object_draw(o, mo, *projection);
+    object_draw2(o, mo, cc);
   }
 
   //TODO avoid compute matrix 2 times
-  //Render lines
-  /*
-  gl->glClear(GL_DEPTH_BUFFER_BIT);
-  EINA_LIST_FOREACH(r->objects, l, o) {
-    object_compute_matrix(o, mo);
-    mat4_multiply(cam_mat_inv, mo, mo);
-    //mat4_multiply(cam_mat_inv, o->matrix, mo);
-    //TODO Fix how to use depth texture for lines
-    if (o->line != NULL) { o->line->id_texture = r->fbo_all->texture_depth_stencil_id;
-    }
-    //object_draw_lines(o, mo, *projection);
-    object_draw_lines_camera(o, mo, c);
-  }
-  */
 
   //Render lines only selected
   gl->glClear(GL_DEPTH_BUFFER_BIT);
@@ -876,10 +889,8 @@ view_draw(View* v)
     mat4_multiply(cam_mat_inv, mo, mo);
     //mat4_multiply(cam_mat_inv, o->matrix, mo);
     //TODO Fix how to use depth texture for lines
-    if (o->line != NULL) { o->line->id_texture = r->fbo_all->texture_depth_stencil_id;
-    }
-    //object_draw_lines(o, mo, *projection);
-    object_draw_lines_camera(o, mo, c);
+    //TODO o->line->id_texture = r->fbo_all->texture_depth_stencil_id;
+    object_draw2(o, mo, cc);
     repere_position = vec3_add(repere_position, o->Position);
   }
 
@@ -896,9 +907,9 @@ view_draw(View* v)
     v->repere->Position = repere_position;
     v->repere->angles = last_obj->angles;
     object_compute_matrix(v->repere, mo);
-    v->repere->line->id_texture = r->fbo_all->texture_depth_stencil_id;
+    //TODO v->repere->line->id_texture = r->fbo_all->texture_depth_stencil_id;
     mat4_multiply(cam_mat_inv, mo, mo);
-    object_draw_lines_camera(v->repere, mo, c);
+    object_draw2(v->repere, mo, cc);
   }
 
   //Render outline with quad
@@ -906,6 +917,7 @@ view_draw(View* v)
     object_compute_matrix(r->quad_outline, mo);
     if (r->quad_outline->mesh != NULL) 
     r->quad_outline->mesh->id_texture = r->fbo_selected->texture_depth_stencil_id;
+    //object_draw(r->quad_outline, mo, *ortho);
     object_draw(r->quad_outline, mo, *ortho);
   }
 
@@ -917,9 +929,9 @@ view_draw(View* v)
   v->camera_repere->Position = vec3(-cc->width/2.0 +m, -cc->height/2.0 + m, -10);
   v->camera_repere->Orientation = quat_inverse(co->Orientation);
   object_compute_matrix_with_quat(v->camera_repere, mo);
-  v->camera_repere->line->id_texture = r->fbo_all->texture_depth_stencil_id;
+  //TODO v->camera_repere->line->id_texture = r->fbo_all->texture_depth_stencil_id;
   mat4_multiply(cam_mat_inv, mo, mo);
-  object_draw_lines_camera(v->camera_repere, mo, c);
+  object_draw2(v->camera_repere, mo, cc);
  
 }
 

@@ -14,9 +14,11 @@ _create_camera()
   c->near = 1.0f;
   c->far = 1000.0f;
 
+  /*
   c->line = ccreate_line();
   AABox aabox = { vec3(-1,-1,-1), vec3(1,1,1)};
   cline_add_box(c->line,aabox, vec4(1,1,1,1));
+  */
   return c;
 }
 
@@ -39,7 +41,7 @@ _camera_on_property_changed(Component* c)
 }
 
 static void
-_camera_draw_edit(Component* c)
+_camera_draw_edit(Component* c, Matrix4 world, struct _CCamera* cam)
 {
   /*
   //draw line

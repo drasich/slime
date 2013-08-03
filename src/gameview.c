@@ -180,7 +180,8 @@ gameview_draw(GameView* v)
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
     //mat4_multiply(cam_mat_inv, o->matrix, mo);
-    object_draw(o, mo, *projection);
+    //object_draw(o, mo, *projection);
+    object_draw2(o, mo, cam);
   }
   //gl->glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
  

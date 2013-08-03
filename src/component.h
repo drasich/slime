@@ -2,10 +2,13 @@
 #define __component__
 #include <Eina.h>
 #include <Elementary.h>
+#include "matrix.h"
 
 typedef struct _ComponentDesc ComponentDesc;
 typedef struct _Component Component;
 typedef struct _ComponentManager ComponentManager;
+
+struct _CCamera;
 
 struct _ComponentDesc {
   const char* name;
@@ -15,7 +18,7 @@ struct _ComponentDesc {
   void (*update)(Component* c, double dt); 
   void (*draw)(Component* c); 
   void (*on_property_changed)(Component* c); 
-  void (*draw_edit)(Component* c); 
+  void (*draw_edit)(Component* c, Matrix4 world, struct _CCamera* cam); 
 };
 
 typedef Component* (*create_component_function)(); 

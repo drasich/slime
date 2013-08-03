@@ -6,7 +6,6 @@
 #include "mesh.h"
 #include "armature.h"
 #include "animation.h"
-#include "line.h"
 #include "component/transform.h"
 #include "component.h"
 
@@ -20,7 +19,6 @@ struct _Object {
   const char* name;
   struct _Scene* scene; //TODO make a list of this?
   Animation* animation;
-  Line* line;
   Matrix4 matrix; //computed from position and orientation
   Eina_Value data_position;
   Eina_Value data_rotation;
@@ -35,9 +33,9 @@ struct _Object {
 
 void object_init(Object* o);
 void object_destroy(Object* o);
+//TODO object_draw is currently only used with
 void object_draw(Object* o, Matrix4 world, Matrix4 projection);
-void object_draw_lines(Object* o, Matrix4 world, Matrix4 projection);
-void object_draw_lines_camera(Object* o, Matrix4 world, struct _Camera* c);
+void object_draw2(Object* o, Matrix4 world, struct _CCamera* c);
 
 void object_update(Object* o);
 
