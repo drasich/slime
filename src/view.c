@@ -335,11 +335,11 @@ _create_repere(float u)
   Object* o = create_object();
   Component* comp = create_component(&line_desc);
   object_add_component(o,comp);
-  CLine* l = comp->data;
-  cline_add_color(l, vec3(0,0,0), vec3(u,0,0), vec4(1,0,0,1));
-  cline_add_color(l, vec3(0,0,0), vec3(0,u,0), vec4(0,1,0,1));
-  cline_add_color(l, vec3(0,0,0), vec3(0,0,u), vec4(0,0,1,1));
-  cline_set_use_depth(l, false);
+  Line* l = comp->data;
+  line_add_color(l, vec3(0,0,0), vec3(u,0,0), vec4(1,0,0,1));
+  line_add_color(l, vec3(0,0,0), vec3(0,u,0), vec4(0,1,0,1));
+  line_add_color(l, vec3(0,0,0), vec3(0,0,u), vec4(0,0,1,1));
+  line_set_use_depth(l, false);
   return o;
 }
 
@@ -349,9 +349,9 @@ _create_grid()
   Object* grid = create_object();
   Component* comp = create_component(&line_desc);
   object_add_component(grid,comp);
-  CLine* l = comp->data;
+  Line* l = comp->data;
 
-  cline_add_grid(l, 100, 10);
+  line_add_grid(l, 100, 10);
   return grid;
 }
 
@@ -615,14 +615,14 @@ _create_view_objects(View* v)
 {
   v->repere = _create_repere(1);
   Component* c = object_component_get(v->repere, "line");
-  CLine* l = c->data;
-  if (l) cline_set_size_fixed(l, true);
+  Line* l = c->data;
+  if (l) line_set_size_fixed(l, true);
 
   v->camera_repere = _create_repere(40);
   v->camera_repere->Position = vec3(10,10, -10);
   c = object_component_get(v->camera_repere, "line");
   l = c->data;
-  if (l) cline_set_use_perspective(l, false);
+  if (l) line_set_use_perspective(l, false);
 
   v->grid = _create_grid();
   v->camera = create_camera();

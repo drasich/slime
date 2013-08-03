@@ -3,10 +3,10 @@
 #include "property.h"
 
 
-CLine* 
+Line* 
 ccreate_line()
 {
-  CLine* l = calloc(1, sizeof *l);
+  Line* l = calloc(1, sizeof *l);
   //TODO name, shader
   l->vertices = eina_inarray_new(sizeof(GLfloat), 3);
   l->colors = eina_inarray_new(sizeof(GLfloat), 4);
@@ -32,9 +32,9 @@ _line_properties()
 static void
 _line_draw_edit(Component* c, Matrix4 world, struct _CCamera* cam)
 {
-  CLine* l = c->data;
-  cline_prepare_draw(l, world, cam);
-  cline_draw(l);
+  Line* l = c->data;
+  line_prepare_draw(l, world, cam);
+  line_draw(l);
 }
 
 
@@ -51,7 +51,7 @@ ComponentDesc line_desc = {
 
 
 void
-cline_add(CLine* l, Vec3 p1, Vec3 p2)
+line_add(Line* l, Vec3 p1, Vec3 p2)
 {
   GLfloat f;
   f = p1.X;
@@ -78,7 +78,7 @@ cline_add(CLine* l, Vec3 p1, Vec3 p2)
 }
 
 void
-cline_add_color(CLine* l, Vec3 p1, Vec3 p2, Vec4 color)
+line_add_color(Line* l, Vec3 p1, Vec3 p2, Vec4 color)
 {
   GLfloat f;
   f = p1.X;
@@ -111,7 +111,7 @@ cline_add_color(CLine* l, Vec3 p1, Vec3 p2, Vec4 color)
 }
 
 void
-cline_add_box(CLine* l, AABox box, Vec4 color)
+line_add_box(Line* l, AABox box, Vec4 color)
 {
   printf("begin addbox : %d \n", l->vertices->len);
 
@@ -123,62 +123,62 @@ cline_add_box(CLine* l, AABox box, Vec4 color)
   
   p1 = vec3(min.X, min.Y, max.Z);
   p2 = vec3(max.X, min.Y, max.Z);
-  cline_add_color(l, p1, p2, color);
+  line_add_color(l, p1, p2, color);
 
   p1 = vec3(min.X, max.Y, max.Z);
   p2 = vec3(max.X, max.Y, max.Z);
-  cline_add_color(l, p1, p2, color);
+  line_add_color(l, p1, p2, color);
 
   p1 = vec3(min.X, min.Y, max.Z);
   p2 = vec3(min.X, max.Y, max.Z);
-  cline_add_color(l, p1, p2, color);
+  line_add_color(l, p1, p2, color);
 
   p1 = vec3(max.X, min.Y, max.Z);
   p2 = vec3(max.X, max.Y, max.Z);
-  cline_add_color(l, p1, p2, color);
+  line_add_color(l, p1, p2, color);
 
   ////////////////
 
   p1 = vec3(min.X, min.Y, min.Z);
   p2 = vec3(max.X, min.Y, min.Z);
-  cline_add_color(l, p1, p2, color);
+  line_add_color(l, p1, p2, color);
 
   p1 = vec3(min.X, max.Y, min.Z);
   p2 = vec3(max.X, max.Y, min.Z);
-  cline_add_color(l, p1, p2, color);
+  line_add_color(l, p1, p2, color);
 
   p1 = vec3(min.X, min.Y, min.Z);
   p2 = vec3(min.X, max.Y, min.Z);
-  cline_add_color(l, p1, p2, color);
+  line_add_color(l, p1, p2, color);
 
   p1 = vec3(max.X, min.Y, min.Z);
   p2 = vec3(max.X, max.Y, min.Z);
-  cline_add_color(l, p1, p2, color);
+  line_add_color(l, p1, p2, color);
 
   /////////////////////////
 
   p1 = vec3(min.X, min.Y, min.Z);
   p2 = vec3(min.X, min.Y, max.Z);
-  cline_add_color(l, p1, p2, color);
+  line_add_color(l, p1, p2, color);
 
   p1 = vec3(min.X, max.Y, min.Z);
   p2 = vec3(min.X, max.Y, max.Z);
-  cline_add_color(l, p1, p2, color);
+  line_add_color(l, p1, p2, color);
 
   p1 = vec3(max.X, min.Y, min.Z);
   p2 = vec3(max.X, min.Y, max.Z);
-  cline_add_color(l, p1, p2, color);
+  line_add_color(l, p1, p2, color);
 
   p1 = vec3(max.X, max.Y, min.Z);
   p2 = vec3(max.X, max.Y, max.Z);
-  cline_add_color(l, p1, p2, color);
+  line_add_color(l, p1, p2, color);
 
   printf("finish addbox : %d \n", l->vertices->len);
 
 }
 
 void
-cline_init(CLine* l)
+line_init(Line* l)
 {
   //TODO factorize these functions
   gl->glGenBuffers(1, &l->buffer_vertices);
@@ -215,7 +215,7 @@ cline_init(CLine* l)
 }
 
 void
-cline_resend(CLine* l)
+line_resend(Line* l)
 {
   printf("line resend vertices len : %d \n", l->vertices->len);
   int i = 0;
@@ -256,7 +256,7 @@ cline_resend(CLine* l)
 }
 
 void
-cline_set_matrices(CLine* l, Matrix4 mat, Matrix4 projection)
+line_set_matrices(Line* l, Matrix4 mat, Matrix4 projection)
 {
   shader_use(l->shader);
 
@@ -271,16 +271,16 @@ cline_set_matrices(CLine* l, Matrix4 mat, Matrix4 projection)
 }
 
 void
-cline_set_use_depth(CLine* l, bool b)
+line_set_use_depth(Line* l, bool b)
 {
   l->use_depth = b;
 }
 
 void
-cline_prepare_draw(CLine* l, Matrix4 mat, struct _CCamera* c)
+line_prepare_draw(Line* l, Matrix4 mat, struct _CCamera* c)
 {
   if (!l->is_init) {
-    cline_init(l);
+    line_init(l);
   }
 
   shader_use(l->shader);
@@ -303,12 +303,12 @@ cline_prepare_draw(CLine* l, Matrix4 mat, struct _CCamera* c)
 }
 
 void 
-cline_draw(CLine* l)
+line_draw(Line* l)
 {
   if (!l->is_init) {
-    cline_init(l);
+    line_init(l);
   } else if (l->need_resend) {
-    cline_resend(l);
+    line_resend(l);
   }
 
   //int width = 1200;
@@ -387,7 +387,7 @@ cline_draw(CLine* l)
 }
 
 void
-cline_destroy(CLine* l)
+line_destroy(Line* l)
 {
   if (l->is_init) {
     shader_destroy(l->shader);
@@ -404,7 +404,7 @@ cline_destroy(CLine* l)
 }
 
 void 
-cline_add_grid(CLine* l, int num, int space)
+line_add_grid(Line* l, int num, int space)
 {
   Vec4 color = vec4(1,1,1,0.1);
   Vec4 xc = vec4(0,1,0,0.4);
@@ -415,30 +415,30 @@ cline_add_grid(CLine* l, int num, int space)
     Vec3 p1 = vec3(i*space, 0, -space*num);
     Vec3 p2 = vec3(i*space, 0, space*num);
     if (i == 0)
-    cline_add_color(l, p1, p2, xc);
+    line_add_color(l, p1, p2, xc);
     else
-    cline_add_color(l, p1, p2, color);
+    line_add_color(l, p1, p2, color);
   }
 
   for ( i = -num; i <= num; ++i) {
     Vec3 p1 = vec3(-space*num, 0, i*space);
     Vec3 p2 = vec3(space*num, 0, i*space);
     if (i == 0)
-    cline_add_color(l, p1, p2, zc);
+    line_add_color(l, p1, p2, zc);
     else
-    cline_add_color(l, p1, p2,color);
+    line_add_color(l, p1, p2,color);
   }
 
 }
 
 void
-cline_set_use_perspective(CLine* l, bool b)
+line_set_use_perspective(Line* l, bool b)
 {
   l->use_perspective = b;
 }
 
 void
-cline_set_size_fixed(CLine* l, bool b)
+line_set_size_fixed(Line* l, bool b)
 {
   l->use_size_fixed = b;
 }

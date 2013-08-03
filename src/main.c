@@ -102,9 +102,9 @@ populate_scene(Control* c, Scene* s)
   object_add_component(cam, compcam);
 
   Component* compline = create_component(&line_desc);
-  CLine* line = compline->data;
+  Line* line = compline->data;
   AABox aabox = { vec3(-1,-1,-1), vec3(1,1,1)};
-  cline_add_box(line,aabox, vec4(1,1,1,1));
+  line_add_box(line,aabox, vec4(1,1,1,1));
   object_add_component(cam, compline);
 
   control_add_object(c,s,cam);

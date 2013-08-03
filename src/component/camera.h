@@ -30,7 +30,7 @@ struct _CCamera
   Vec3 center;
 
   Vec4 clear_color;
-  CLine* line;
+  Line* line;
 };
 
 ComponentDesc camera_desc;
