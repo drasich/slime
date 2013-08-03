@@ -14,11 +14,9 @@ _create_camera()
   c->near = 1.0f;
   c->far = 1000.0f;
 
-  /*
   c->line = ccreate_line();
   AABox aabox = { vec3(-1,-1,-1), vec3(1,1,1)};
-  cline_add_box(c->line,aabox, vec4(1,1,1,1));
-  */
+  line_add_box(c->line,aabox, vec4(1,1,1,1));
   return c;
 }
 

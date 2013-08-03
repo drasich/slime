@@ -58,7 +58,7 @@ property_update(PropertyView* pw, Eina_List* objects)
 //TODO change this function to something like update_component_transform 
 //and remove current
 void
-property_update2(PropertyView* pw, Object* o)
+property_update_components_data(PropertyView* pw, Object* o)
 {
   if ( pw->current->data == o) {
     component_property_update_data(pw->current, o);
@@ -240,8 +240,10 @@ property_update_components(PropertyView* pw, Object* o)
   pw->current = cp;
   component_property_update_data(cp, o);
   
-  Eina_List* l;
+
   Component* c;
+  Eina_List* l;
+
   EINA_LIST_FOREACH(o->components, l, c) {
     cp = create_component_properties(c, pw);
     eina_hash_add(
@@ -256,3 +258,13 @@ property_update_components(PropertyView* pw, Object* o)
 }
 
 
+void 
+property_update_data(PropertyView* pw, Eina_List* objects)
+{
+  int nb = eina_list_count(objects);
+  if (nb == 1) {
+    Object* o = eina_list_nth(objects,0);
+    property_update_components_data(pw, o);
+  }
+
+}

@@ -239,7 +239,6 @@ void
 component_property_update_data(ComponentProperties* cp, void* data)
 {
   Property *p;
-  printf("prop update data changed\n");
 
   EINA_INARRAY_FOREACH(cp->arr, p) {
     Evas_Object* obj = eina_hash_find(cp->properties, p->name);
@@ -253,8 +252,7 @@ component_property_update_data(ComponentProperties* cp, void* data)
           //printf("%f\n",d);
           double old = elm_spinner_value_get(obj);
           if (old != d) {
-          printf("value is different\n");
-          elm_spinner_value_set(eina_hash_find(cp->properties, p->name), d );
+            elm_spinner_value_set(eina_hash_find(cp->properties, p->name), d );
           }
          }
         break;

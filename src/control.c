@@ -151,7 +151,7 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
       }
       if (i>0) center = vec3_mul(center, 1.0f/ (float) i);
       v->context->mos.center =  center;
-      property_update(v->property, objects);
+      property_update_data(v->property, objects);
     }
   }
 
@@ -421,7 +421,7 @@ control_change_property(Control* c, Object* o, Property* p, const void* data_old
 void
 control_property_update(Control* c, Object* o)
 {
-  property_update2(c->view->property, o);
+  property_update_components_data(c->view->property, o);
   tree_update_object(c->view->tree, o);
 }
 
