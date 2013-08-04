@@ -34,7 +34,7 @@ typedef struct _MeshFunc MeshFunc;
 
 struct _Mesh
 {
-  char* name;
+  const char* name;
 
   GLuint buffer_vertices;
   GLuint buffer_indices;
