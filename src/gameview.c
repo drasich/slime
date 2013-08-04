@@ -36,8 +36,7 @@ _resize_gl(Evas_Object *obj)
 
   Scene* s = gv->scene;
   Object* c = s->camera;
-  Component* camcomp = object_component_get(c, "camera");
-  CCamera* cam = camcomp->data;
+  CCamera* cam = object_component_get(c, "camera");
   //ccamera_set_resolution(cam, w, h);
 }
 
@@ -147,8 +146,7 @@ Evas_Object* create_gameview_window(View* v, Evas_Object** window, Control* c)
   
   //evas_object_resize(win, 800/3, 400/3);
   Object* o = s->camera;
-  Component* camcomp = object_component_get(o, "camera");
-  CCamera* cam = camcomp->data;
+  CCamera* cam = object_component_get(o, "camera");
   evas_object_resize(win, cam->width , cam->height);
   evas_object_show(win);
   return win;
@@ -160,8 +158,7 @@ gameview_draw(GameView* v)
   //Render* r = v->render;
   Scene* s = v->scene;
   Object* c = s->camera;
-  Component* camcomp = object_component_get(c, "camera");
-  CCamera* cam = camcomp->data;
+  CCamera* cam = object_component_get(c, "camera");
 
   Matrix4 cam_mat_inv, mo;
 
@@ -185,8 +182,7 @@ gameview_draw(GameView* v)
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
     //mat4_multiply(cam_mat_inv, o->matrix, mo);
-    //object_draw(o, mo, *projection);
-    object_draw2(o, mo, cam);
+    object_draw(o, mo, cam);
   }
   //gl->glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
  

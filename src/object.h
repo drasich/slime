@@ -33,13 +33,11 @@ struct _Object {
 
 void object_init(Object* o);
 void object_destroy(Object* o);
-//TODO object_draw is currently only used with
-void object_draw(Object* o, Matrix4 world, Matrix4 projection);
-void object_draw2(Object* o, Matrix4 world, struct _CCamera* c);
+void object_draw(Object* o, Matrix4 world, struct _CCamera* c);
 void object_draw_edit(Object* o, Matrix4 world, struct _CCamera* c);
+void object_draw_edit_component(Object* o, Matrix4 world, struct _CCamera* cam, const char* name);
 
 void object_update(Object* o);
-
 
 Object* create_object();
 Object* create_object_file(const char* file);
@@ -64,6 +62,6 @@ void object_remove_component(Object* o, Component* c);
 //TODO to remove
 void object_add_component_armature(Object* o, Armature* a);
 
-Component* object_component_get(const Object* o, const char* name);
+void* object_component_get(const Object* o, const char* name);
 
 #endif

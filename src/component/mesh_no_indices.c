@@ -310,10 +310,11 @@ mesh_show_wireframe(Mesh* m, bool b)
   gl->glUniform1i(m->uniform_wireframe, b?1:0);
 }
 
-Mesh* 
-create_mesh_quad(int w, int h)
+void
+create_mesh_quad(Mesh* m, int w, int h)
 {
-  Mesh* m = calloc(1,sizeof(Mesh));
+  m->func = &mesh_quad;
+  //Mesh* m = calloc(1,sizeof(Mesh));
   m->name = "quad";
 
   uint8_t nb_vert = 6;
@@ -393,7 +394,7 @@ create_mesh_quad(int w, int h)
     m->uvs[11] = 0;
   }
 
-  return m;
+  //return m;
 }
    
 void
@@ -554,3 +555,10 @@ quad_draw(Mesh* m)
   //if (m->has_uv)
   //gl->glDisableVertexAttribArray(m->attribute_texcoord);
 }
+
+MeshFunc mesh_quad = {
+  quad_init,
+  NULL,
+  quad_draw
+};
+

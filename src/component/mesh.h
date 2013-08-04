@@ -30,6 +30,7 @@ struct _VertexInfo
 };
 
 typedef struct _Mesh Mesh;
+typedef struct _MeshFunc MeshFunc;
 
 struct _Mesh
 {
@@ -79,9 +80,21 @@ struct _Mesh
   GLint uniform_resolution;
 
   bool is_init;
+  MeshFunc* func;
+
 };
 
+struct _MeshFunc {
+  void (*init)(Mesh* n); 
+  void (*update)(Mesh* c, double dt); 
+  void (*draw)(Mesh* c); 
+};
+
+
 ComponentDesc mesh_desc;
+MeshFunc mesh_quad;
+MeshFunc mesh_generic;
+
 
 void mesh_read_file(Mesh* mesh, FILE* f);
 void mesh_read(Mesh* mesh, char* path);
@@ -113,7 +126,8 @@ void mesh_init_uniforms(Mesh* s);
 
 void mesh_init_uniforms(Mesh* s);
 
-Mesh* create_mesh_quad(int w, int h);
+//Mesh* create_mesh_quad(int w, int h);
+void create_mesh_quad(Mesh* m, int w, int h);
 void quad_resize(Mesh* m, int w, int h);
 void quad_init(Mesh* m);
 void quad_draw(Mesh* m);

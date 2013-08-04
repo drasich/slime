@@ -17,48 +17,9 @@ object_destroy(Object* o)
   //TODO clean components
 }
 
-
 void
-object_draw(Object* o, Matrix4 world, Matrix4 projection)
+object_draw(Object* o, Matrix4 world, struct _CCamera* cam)
 {
-  /*
-  if (o->mesh != NULL) {
-    if (!strcmp("quad", o->mesh->name ) ){
-      //TODO change this if
-      mesh_set_matrices(o->mesh, world, projection);
-      quad_draw(o->mesh);
-    }
-    else
-     {
-      mesh_set_matrices(o->mesh, world, projection);
-      mesh_draw(o->mesh);
-     }
-    //mesh_draw_no_indices(o->mesh);
-  }
-  */
-}
-
-void
-object_draw2(Object* o, Matrix4 world, struct _CCamera* cam)
-{
-  Matrix4* projection = &cam->projection;
-
-  /*
-  if (o->mesh != NULL) {
-    if (!strcmp("quad", o->mesh->name ) ){
-      //TODO change this if
-      mesh_set_matrices(o->mesh, world, *projection);
-      quad_draw(o->mesh);
-    }
-    else
-     {
-      mesh_set_matrices(o->mesh, world, *projection);
-      mesh_draw(o->mesh);
-     }
-    //mesh_draw_no_indices(o->mesh);
-  }
-  */
-
   Eina_List* l;
   Component* c;
 
@@ -66,29 +27,12 @@ object_draw2(Object* o, Matrix4 world, struct _CCamera* cam)
     if (c->funcs->draw)
     c->funcs->draw(c, world, cam);
   }
-
 }
 
 void
 object_draw_edit(Object* o, Matrix4 world, struct _CCamera* cam)
 {
   Matrix4* projection = &cam->projection;
-
-  /*
-  if (o->mesh != NULL) {
-    if (!strcmp("quad", o->mesh->name ) ){
-      //TODO change this if
-      mesh_set_matrices(o->mesh, world, *projection);
-      quad_draw(o->mesh);
-    }
-    else
-     {
-      mesh_set_matrices(o->mesh, world, *projection);
-      mesh_draw(o->mesh);
-     }
-    //mesh_draw_no_indices(o->mesh);
-  }
-  */
 
   Eina_List* l;
   Component* c;
@@ -101,6 +45,26 @@ object_draw_edit(Object* o, Matrix4 world, struct _CCamera* cam)
   }
 
 }
+
+void
+object_draw_edit_component(Object* o, Matrix4 world, struct _CCamera* cam, const char* name)
+{
+  Matrix4* projection = &cam->projection;
+
+  Eina_List* l;
+  Component* c;
+
+  EINA_LIST_FOREACH(o->components, l, c) {
+    if (strcmp(c->name, name)) continue;
+
+    if (c->funcs->draw)
+    c->funcs->draw(c, world, cam);
+    if (c->funcs->draw_edit)
+    c->funcs->draw_edit(c, world, cam);
+  }
+
+}
+
 
 
 void
@@ -348,7 +312,7 @@ object_remove_component(Object* o, Component* c)
   o->components = eina_list_remove(o->components, c);
 }
 
-Component*
+void*
 object_component_get(const Object* o, const char* name)
 {
   Eina_List* l;
@@ -356,7 +320,7 @@ object_component_get(const Object* o, const char* name)
 
   EINA_LIST_FOREACH(o->components, l, c) {
     if (!strcmp(c->name, name))
-    return c;
+    return c->data;
   }
 
   return NULL;

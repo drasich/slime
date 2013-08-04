@@ -8,6 +8,7 @@
 
 void mesh_read_file(Mesh* mesh, FILE* f)
 {
+  mesh->func = &mesh_generic;
   printf("mesh_read-file\n");
   mesh->name = read_name(f);
 
@@ -452,8 +453,13 @@ _mesh_draw(Component* c, Matrix4 world, struct _CCamera* cam)
   Mesh* m = c->data;
   Matrix4* projection = &cam->projection;
 
+  //TODO change this
+  if (!strcmp("quad", m->name)){
+    projection = &cam->orthographic;
+  }
+
   mesh_set_matrices(m, world, *projection);
-  mesh_draw(m);
+  m->func->draw(m);
 }
 
 
@@ -469,3 +475,8 @@ ComponentDesc mesh_desc = {
 };
 
 
+MeshFunc mesh_generic = {
+  mesh_init,
+  NULL,
+  mesh_draw
+};

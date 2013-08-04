@@ -1,5 +1,7 @@
+decide how to draw with camera ortho and per
 mesh component
-solve the quad stuff
+solve the quad stuff : 
+- make a mesh method : drawelements or drawarrays, etc
 create, choose file, etc...
 
 make the camera display better

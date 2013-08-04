@@ -614,14 +614,12 @@ static void
 _create_view_objects(View* v)
 {
   v->repere = _create_repere(1);
-  Component* c = object_component_get(v->repere, "line");
-  Line* l = c->data;
+  Line* l = object_component_get(v->repere, "line");
   if (l) line_set_size_fixed(l, true);
 
   v->camera_repere = _create_repere(40);
   v->camera_repere->Position = vec3(10,10, -10);
-  c = object_component_get(v->camera_repere, "line");
-  l = c->data;
+  l = object_component_get(v->camera_repere, "line");
   if (l) line_set_use_perspective(l, false);
 
   v->grid = _create_grid();
@@ -759,7 +757,11 @@ create_render()
   r->fbo_all = create_fbo();
 
   r->quad_outline = create_object();
-  r->quad_outline->mesh = create_mesh_quad(100,100);
+  Component* comp = create_component(&mesh_desc);
+  object_add_component(r->quad_outline, comp);
+  Mesh* mesh = comp->data;
+  create_mesh_quad(mesh,100,100);
+  r->quad_outline->mesh = mesh;
   Vec3 t3 = {0,0,-100};
   object_set_position(r->quad_outline, t3);
   r->quad_outline->name = eina_stringshare_add("quad");
@@ -771,7 +773,12 @@ create_render()
   shader_init_uniform(r->quad_outline->mesh->shader, "resolution", &r->quad_outline->mesh->uniform_resolution);
 
   r->quad_color = create_object();
-  r->quad_color->mesh = create_mesh_quad(100,100);
+  comp = create_component(&mesh_desc);
+  object_add_component(r->quad_color, comp);
+  mesh = comp->data;
+  create_mesh_quad(mesh,100,100);
+  //r->quad_color->mesh = create_mesh_quad(100,100);
+  r->quad_color->mesh = mesh;
   object_set_position(r->quad_color, t3);
   r->quad_color->name = eina_stringshare_add("quad");
 
@@ -811,8 +818,7 @@ view_draw(View* v)
   EINA_LIST_FOREACH(cxol, l, o) {
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
-    //object_draw(o, mo, *projection);
-    object_draw_edit(o, mo, cc);
+    object_draw_edit_component(o, mo, cc, "mesh");
   }
   fbo_use_end();
 
@@ -829,9 +835,7 @@ view_draw(View* v)
   EINA_LIST_FOREACH(r->objects, l, o) {
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
-    //mat4_multiply(cam_mat_inv, o->matrix, mo);
-    //object_draw(o, mo, *projection);
-    object_draw_edit(o, mo, cc);
+    object_draw_edit_component(o, mo, cc, "mesh");
   }
   //gl->glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 
@@ -859,6 +863,11 @@ view_draw(View* v)
   gl->glClear(GL_DEPTH_BUFFER_BIT);
   object_compute_matrix(v->grid, mo);
   //TODO v->grid->line->id_texture = r->fbo_all->texture_depth_stencil_id;
+  //TODO find a better/faster way to to things like this
+  //TODO and also we find the first component but there might be more of the same component
+  //TODO same below
+  Line* line = object_component_get(v->grid, "line");
+  if (line) line->id_texture = r->fbo_all->texture_depth_stencil_id;
   mat4_multiply(cam_mat_inv, mo, mo);
   object_draw_edit(v->grid, mo, cc);
 
@@ -876,7 +885,7 @@ view_draw(View* v)
     mat4_multiply(cam_mat_inv, mo, mo);
     //mat4_multiply(cam_mat_inv, o->matrix, mo);
     //object_draw(o, mo, *projection);
-    object_draw_edit(o, mo, cc);
+    object_draw_edit_component(o, mo, cc, "mesh");
   }
 
   //TODO avoid compute matrix 2 times
@@ -890,7 +899,11 @@ view_draw(View* v)
     //mat4_multiply(cam_mat_inv, o->matrix, mo);
     //TODO Fix how to use depth texture for lines
     //TODO o->line->id_texture = r->fbo_all->texture_depth_stencil_id;
-    object_draw_edit(o, mo, cc);
+    line = object_component_get(o, "line");
+    if (line) {
+      line->id_texture = r->fbo_all->texture_depth_stencil_id;
+      object_draw_edit_component(o, mo, cc, "line");
+    }
     repere_position = vec3_add(repere_position, o->Position);
   }
 
@@ -908,19 +921,25 @@ view_draw(View* v)
     v->repere->angles = last_obj->angles;
     object_compute_matrix(v->repere, mo);
     //TODO v->repere->line->id_texture = r->fbo_all->texture_depth_stencil_id;
+    line = object_component_get(v->repere, "line");
+    if (line) line->id_texture = r->fbo_all->texture_depth_stencil_id;
     mat4_multiply(cam_mat_inv, mo, mo);
     object_draw_edit(v->repere, mo, cc);
   }
 
   //Render outline with quad
+  //TODO check if I can check the depth in this quad and the depth before to not draw some pixels
+  //and do the same thing as in line.frag shader
   if (last_obj) {
     object_compute_matrix(r->quad_outline, mo);
-    if (r->quad_outline->mesh != NULL) 
-    r->quad_outline->mesh->id_texture = r->fbo_selected->texture_depth_stencil_id;
-    //object_draw(r->quad_outline, mo, *ortho);
-    object_draw(r->quad_outline, mo, *ortho);
+    //if (r->quad_outline->mesh != NULL) 
+    //TODO r->quad_outline->mesh->id_texture = r->fbo_selected->texture_depth_stencil_id;
+    Mesh* mesh = object_component_get(r->quad_outline, "mesh");
+    mesh->id_texture = r->fbo_selected->texture_depth_stencil_id;
+    object_draw_edit(r->quad_outline, mo, cc);
   }
 
+  //Render camera repere
   gl->glClear(GL_DEPTH_BUFFER_BIT);
   float m = 40;
   Matrix4 id;
@@ -930,6 +949,9 @@ view_draw(View* v)
   v->camera_repere->Orientation = quat_inverse(co->Orientation);
   object_compute_matrix_with_quat(v->camera_repere, mo);
   //TODO v->camera_repere->line->id_texture = r->fbo_all->texture_depth_stencil_id;
+  line = object_component_get(v->camera_repere, "line");
+  if (line) line->id_texture = r->fbo_all->texture_depth_stencil_id;
+
   mat4_multiply(cam_mat_inv, mo, mo);
   object_draw_edit(v->camera_repere, mo, cc);
  
