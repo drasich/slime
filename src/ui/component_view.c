@@ -202,38 +202,72 @@ _property_add_spinner(ComponentProperties* cp, Property* p)
 }
 
 
-/*
 static Evas_Object*
-property_add_fileselect(PropertyView *pw, Evas_Object* win, Evas_Object* bx, char* name)
+_property_add_fileselect(ComponentProperties* cp, Property* p)
 {
-//TODO
-  Evas_Object *en, *bx2, *label;
+  //TODO
+   Evas_Object *en, *bx2, *label;
 
-  en = elm_spinner_add(win);
+  bx2 = elm_box_add(cp->win);
+  elm_box_horizontal_set(bx2, EINA_TRUE);
+  evas_object_size_hint_weight_set(bx2, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bx2, EVAS_HINT_FILL, EVAS_HINT_FILL);
+
+  label = elm_label_add(cp->win);
+  char s[256];
+  sprintf(s, "<b> %s </b> : ", p->name);
+
+  elm_object_text_set(label, s);
+  evas_object_show(label);
+  elm_box_pack_end(bx2, label);
+
+  en = elm_entry_add(cp->win);
+  elm_entry_scrollable_set(en, EINA_TRUE);
   evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
   evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
-  //elm_spinner_value_set(en, atof(value));
+  elm_object_text_set(en, "none");
+  elm_entry_scrollbar_policy_set(en, 
+        ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_OFF);
+  elm_entry_single_line_set(en, EINA_TRUE);
+  elm_entry_editable_set(en, EINA_FALSE);
+  //elm_entry_select_all(en);
   evas_object_show(en);
-  elm_box_pack_end(bx, en);
+  elm_box_pack_end(bx2, en);
 
-  evas_object_name_set(en, name);
-  
-  elm_spinner_min_max_set(en, -DBL_MAX, DBL_MAX);
-  char s[50];
-  sprintf(s, "%s : %s", name, "%f");
-  elm_spinner_label_format_set(en, s);
-
-  evas_object_name_set(en, name);
+  evas_object_name_set(en, p->name);
 
   eina_hash_add(
-        pw->properties,
-        name,
+        cp->properties,
+        p->name,
         en);
-  evas_object_smart_callback_add(en, "changed", _entry_changed_cb, p->context);
+
+  /*
+  evas_object_smart_callback_add(en, "changed,user", _entry_changed_cb, cp);
+  evas_object_smart_callback_add(en, "activated", _entry_activated_cb, cp);
+  evas_object_smart_callback_add(en, "aborted", _entry_aborted_cb, cp);
+  evas_object_smart_callback_add(en, "focused", _entry_focused_cb, cp);
+  evas_object_smart_callback_add(en, "unfocused", _entry_unfocused_cb, cp);
+  */
+  evas_object_data_set(en, "property", p);
+
+  elm_entry_context_menu_disabled_set(en, EINA_TRUE);
+
+  Evas_Object* fs_bt = elm_fileselector_button_add(cp->win);
+  elm_object_focus_allow_set(fs_bt, 0);
+  elm_fileselector_button_path_set(fs_bt, "/home/chris/code/slime/model");
+  elm_object_text_set(fs_bt, "Change");
+  //elm_object_part_content_set(fs_bt, "icon", ic);
+  elm_fileselector_button_expandable_set(fs_bt, EINA_TRUE);
+  //elm_fileselector_mode_set(fs_bt, ELM_FILESELECTOR_LIST);
+  elm_fileselector_button_inwin_mode_set(fs_bt, EINA_TRUE);
+  evas_object_show(fs_bt);
+  elm_box_pack_end(bx2, fs_bt);
+  
+  elm_box_pack_end(cp->box, bx2);
+  evas_object_show(bx2);
 
   return en;
 }
-  */
 
 void
 component_property_update_data(ComponentProperties* cp, void* data)
@@ -355,6 +389,9 @@ create_my_prop(const char* name, Eina_Inarray *a, Evas_Object* win, Control* con
          break;
      case EET_T_STRING:
          _property_add_entry(cp, p);
+         break;
+     case PROPERTY_FILENAME:
+         _property_add_fileselect(cp, p);
          break;
      default:
          fprintf (stderr, "type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);

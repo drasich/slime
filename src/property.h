@@ -1,6 +1,7 @@
 #ifndef __property__
 #define __property__
 #include <Eina.h>
+#include <Eet.h>
 
 typedef struct _Property Property;
 
@@ -38,5 +39,10 @@ struct _Property
 
 Eina_Inarray* create_property_set();
 
+enum {
+  PROPERTY_FILENAME = EET_I_LIMIT,
+  TEST1,
+  TEST2
+};
 
 #endif

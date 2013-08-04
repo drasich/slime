@@ -839,7 +839,7 @@ view_draw(View* v)
   }
   //gl->glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 
-  //TODO : test, can be removed
+  //was a test, can be removed
   /*
   int w = c->width;
   int h = c->height;
@@ -859,18 +859,16 @@ view_draw(View* v)
   fbo_use_end();
 
   //draw grid
-  //TODO grid
   gl->glClear(GL_DEPTH_BUFFER_BIT);
   object_compute_matrix(v->grid, mo);
-  //TODO v->grid->line->id_texture = r->fbo_all->texture_depth_stencil_id;
-  //TODO find a better/faster way to to things like this
-  //TODO and also we find the first component but there might be more of the same component
-  //TODO same below
+  //TODO 1)find a better/faster way to get a component and set the texture
+  //TODO 2)and also we find the first component but there might be more of the same component
+  //TODO 3)same below with other objects
+  //TODO 4)also object_draw_edit_component is so so
   Line* line = object_component_get(v->grid, "line");
   if (line) line->id_texture = r->fbo_all->texture_depth_stencil_id;
   mat4_multiply(cam_mat_inv, mo, mo);
   object_draw_edit(v->grid, mo, cc);
-
 
   //Render objects
   EINA_LIST_FOREACH(r->objects, l, o) {
@@ -896,9 +894,6 @@ view_draw(View* v)
   EINA_LIST_FOREACH(cxol, l, o) {
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
-    //mat4_multiply(cam_mat_inv, o->matrix, mo);
-    //TODO Fix how to use depth texture for lines
-    //TODO o->line->id_texture = r->fbo_all->texture_depth_stencil_id;
     line = object_component_get(o, "line");
     if (line) {
       line->id_texture = r->fbo_all->texture_depth_stencil_id;
@@ -920,7 +915,6 @@ view_draw(View* v)
     v->repere->Position = repere_position;
     v->repere->angles = last_obj->angles;
     object_compute_matrix(v->repere, mo);
-    //TODO v->repere->line->id_texture = r->fbo_all->texture_depth_stencil_id;
     line = object_component_get(v->repere, "line");
     if (line) line->id_texture = r->fbo_all->texture_depth_stencil_id;
     mat4_multiply(cam_mat_inv, mo, mo);
@@ -928,12 +922,10 @@ view_draw(View* v)
   }
 
   //Render outline with quad
-  //TODO check if I can check the depth in this quad and the depth before to not draw some pixels
-  //and do the same thing as in line.frag shader
+  //TODO check if I can check the depth in this quad (saved from bedore) and the depth before to not draw some pixels
+  //and do the same thing as in line.frag shader.
   if (last_obj) {
     object_compute_matrix(r->quad_outline, mo);
-    //if (r->quad_outline->mesh != NULL) 
-    //TODO r->quad_outline->mesh->id_texture = r->fbo_selected->texture_depth_stencil_id;
     Mesh* mesh = object_component_get(r->quad_outline, "mesh");
     mesh->id_texture = r->fbo_selected->texture_depth_stencil_id;
     object_draw_edit(r->quad_outline, mo, cc);
@@ -948,7 +940,6 @@ view_draw(View* v)
   v->camera_repere->Position = vec3(-cc->width/2.0 +m, -cc->height/2.0 + m, -10);
   v->camera_repere->Orientation = quat_inverse(co->Orientation);
   object_compute_matrix_with_quat(v->camera_repere, mo);
-  //TODO v->camera_repere->line->id_texture = r->fbo_all->texture_depth_stencil_id;
   line = object_component_get(v->camera_repere, "line");
   if (line) line->id_texture = r->fbo_all->texture_depth_stencil_id;
 

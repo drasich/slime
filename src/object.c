@@ -196,6 +196,7 @@ Object* create_object_file(const char* path)
       object_add_component(o, comp);
       Mesh* mesh = comp->data;
       mesh_read_file(mesh,f);
+      mesh->name = path;
       //Mesh* mesh = create_mesh_file(f);
       o->mesh = mesh;
 

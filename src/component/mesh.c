@@ -444,6 +444,9 @@ _mesh_properties()
 {
   Eina_Inarray * iarr = create_property_set();
 
+  //ADD_PROP(iarr, Mesh, name, EET_T_STRING);
+  ADD_PROP(iarr, Mesh, name, PROPERTY_FILENAME);
+
   return iarr;
 }
 
