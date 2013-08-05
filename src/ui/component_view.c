@@ -181,6 +181,9 @@ _property_add_spinner(ComponentProperties* cp, Property* p)
   
   elm_spinner_step_set(en, 0.1);
   elm_spinner_min_max_set(en, -DBL_MAX, DBL_MAX);
+  elm_object_style_set (en, "vertical");
+
+
 
   char s[50];
   sprintf(s, "%s : %s", p->name, "%f");

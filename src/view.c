@@ -644,6 +644,7 @@ _create_view_objects(View* v)
 static void
 _set_callbacks(Evas_Object* glview)
 {
+  //TODO remove this animator
   Ecore_Animator *ani;
   ani = ecore_animator_add(_anim, glview);
   evas_object_data_set(glview, "ani", ani);
