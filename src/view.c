@@ -294,11 +294,6 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
 
   if (clicked != NULL) {
     _view_select_object(v, clicked);
-
-    //TODO compute the z if we don't want the outline to display with depth
-    //s->quad_outline->Position.Z = -970.0f;
-    //printf("test :  %f\n", test);
-    //printf("selected position z :  %f\n", selected->Position.Z);
   }
 
 }
@@ -925,8 +920,6 @@ view_draw(View* v)
   }
 
   //Render outline with quad
-  //TODO check if I can check the depth in this quad (saved from bedore) and the depth before to not draw some pixels
-  //and do the same thing as in line.frag shader.
   if (last_obj) {
     object_compute_matrix(r->quad_outline, mo);
     Mesh* mesh = object_component_get(r->quad_outline, "mesh");
