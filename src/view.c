@@ -772,6 +772,8 @@ create_render()
   shader_init_attribute(r->quad_outline->mesh->shader, "vertex", &r->quad_outline->mesh->attribute_vertex);
   shader_init_uniform(r->quad_outline->mesh->shader, "matrix", &r->quad_outline->mesh->uniform_matrix);
   shader_init_uniform(r->quad_outline->mesh->shader, "resolution", &r->quad_outline->mesh->uniform_resolution);
+  shader_init_uniform(r->quad_outline->mesh->shader, "texture", &r->quad_outline->mesh->uniform_texture);
+  shader_init_uniform(r->quad_outline->mesh->shader, "texture_all", &r->quad_outline->mesh->uniform_texture_all);
 
   r->quad_color = create_object();
   comp = create_component(&mesh_desc);
@@ -929,6 +931,7 @@ view_draw(View* v)
     object_compute_matrix(r->quad_outline, mo);
     Mesh* mesh = object_component_get(r->quad_outline, "mesh");
     mesh->id_texture = r->fbo_selected->texture_depth_stencil_id;
+    mesh->id_texture_all = r->fbo_all->texture_depth_stencil_id;
     object_draw_edit(r->quad_outline, mo, cc);
   }
 

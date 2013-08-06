@@ -40,6 +40,8 @@ struct _Mesh
   GLuint buffer_indices;
   GLuint buffer_normals;
   GLuint id_texture;
+  //TODO remove
+  GLuint id_texture_all;
   GLuint buffer_texcoords;
   GLuint buffer_barycentric;
 
@@ -78,6 +80,9 @@ struct _Mesh
   GLint uniform_wireframe;
   GLint uniform_texture;
   GLint uniform_resolution;
+
+  //TODO remove and make material
+  GLint uniform_texture_all;
 
   bool is_init;
   MeshFunc* func;

@@ -490,9 +490,15 @@ quad_draw(Mesh* m)
 
   shader_use(m->shader);
 
+  //TODO material
+  gl->glUniform1i(m->uniform_texture, 0);
+  gl->glUniform1i(m->uniform_texture_all, 2);
+
   gl->glActiveTexture(GL_TEXTURE0);
   gl->glBindTexture(GL_TEXTURE_2D, m->id_texture);
-  gl->glUniform1i(m->uniform_texture, 0);
+
+  gl->glActiveTexture(GL_TEXTURE0 + 2);
+  gl->glBindTexture(GL_TEXTURE_2D, m->id_texture_all);
 
   //texcoord
   /*
