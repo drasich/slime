@@ -1,48 +1,44 @@
-remove the animator for view
+RENDER
+- decide how to draw with camera ortho and per
+- mesh component
+  - solve the quad stuff : 
+   make a mesh method : drawelements or drawarrays, etc
+  - create, choose file, etc...
+- material
 
-decide how to draw with camera ortho and per
-mesh component
-solve the quad stuff : 
-- make a mesh method : drawelements or drawarrays, etc
-create, choose file, etc...
+VIEW
+- make the camera display better
+- remove the animator for view?
 
-make the camera display better
-- make a hide property for component, to avoid display in properties
-
-
-ajouter une camera object:
-- camera component
-- scene properties to set the camera
-- remove the old camera
-
-
-remve component properties callback?
-but maybe needed when we edit multiple objects
-
-make vec3, vec4 a possible type to edit easily
-comment faire pour editer facilement un enum...
-et aussi pointeur sur un object ou autre chose
-
-init mode et real mode
-
-decider si transform devient un component a part en dehors d'object
+ARCHITECTURE
+- init mode et real mode
+- decider si transform devient un component a part en dehors d'object
 et aussi "object properties" "name, ..."
+- make one component, one library? instead of one big library for all?
+- add lua-jit
 
-release les components widgets correctement
 
 
-fix the gl callbacks init, update, draw.... for gameview;
-open the gameview and update the components there
+PROPERTIES
+- make vec3, vec4 a possible type to edit easily
+- material
+- comment faire pour editer facilement un enum...
+- pointeur sur un object ou autre type
+- make a hide property for component, to avoid display in properties
+- scene properties: set the camera (among other things)
+- remove component properties callback?
+  but maybe needed when we edit multiple objects
+- handle properties when multiple objects selected?
+  => make a structure in context with position and rotation
+  be able to create an empty and change mesh in the properties
 
-be able to add/remove properties (make some kind of component = group properties)
-be able to script an object and then go play/pause
 
-//pour plus tard
-handle properties when multiple objects selected
-=> make a structure in context with position and rotation
-be able to create an empty and change mesh in the properties
+CODE
+- release les components widgets correctement
+- check everything for cleaning
 
-now there is only one library but:
-if each component is a library we can remove the component and add it
-again while the game is loading...
+
+GAMEVIEW
+- check the gl callbacks init, update, draw.... for gameview;
+
 
