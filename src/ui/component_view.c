@@ -145,7 +145,8 @@ _property_add_entry(ComponentProperties* cp, Property* p)
 
   eina_hash_add(
         cp->properties,
-        p->name,
+        //p->name,
+        &p,
         en);
 
   evas_object_smart_callback_add(en, "changed,user", _entry_changed_cb, cp);
@@ -194,7 +195,8 @@ _property_add_spinner(ComponentProperties* cp, Property* p)
 
   eina_hash_add(
         cp->properties,
-        p->name,
+        //p->name,
+        &p,
         en);
 
   evas_object_smart_callback_add(en, "changed", _entry_changed_cb, cp);
@@ -241,7 +243,8 @@ _property_add_fileselect(ComponentProperties* cp, Property* p)
 
   eina_hash_add(
         cp->properties,
-        p->name,
+        //p->name,
+        &p,
         en);
 
   /*
@@ -272,24 +275,23 @@ _property_add_fileselect(ComponentProperties* cp, Property* p)
   return en;
 }
 
-void
-component_property_update_data(ComponentProperties* cp, void* data)
+static void
+_component_property_update_data_recur(ComponentProperties* cp, void* data, Eina_Inarray* a)
 {
   Property *p;
-
-  EINA_INARRAY_FOREACH(cp->arr, p) {
-    Evas_Object* obj = eina_hash_find(cp->properties, p->name);
+  EINA_INARRAY_FOREACH(a, p) {
+    Evas_Object* obj = eina_hash_find(cp->properties, &p);
     //printf("name: %s , type: %d, offset: %d\n", p->name, p->type, p->offset);
-    //printf("   value is : ");
     switch(p->type) {
       case EET_T_DOUBLE:
          {
           double d;
           memcpy(&d, (void*)data + p->offset, sizeof d);
+          //printf("my value is : %f\n");
           //printf("%f\n",d);
           double old = elm_spinner_value_get(obj);
           if (old != d) {
-            elm_spinner_value_set(eina_hash_find(cp->properties, p->name), d );
+            elm_spinner_value_set(obj, d );
           }
          }
         break;
@@ -302,11 +304,21 @@ component_property_update_data(ComponentProperties* cp, void* data)
             elm_object_text_set(obj, *str );
          }
         break;
+     case PROPERTY_STRUCT:
+         _component_property_update_data_recur(cp, data, p->array);
+         break;
       default:
-        fprintf (stderr, "type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
+        fprintf (stderr, "type not yet implemented: %d at %s, line %d\n",p->type, __FILE__, __LINE__);
         break;
     }
   }
+
+}
+
+void
+component_property_update_data(ComponentProperties* cp, void* data)
+{
+  _component_property_update_data_recur(cp, data, cp->arr);
 }
 
 static void
@@ -330,6 +342,35 @@ _remove_component(
 }
 
 
+static void
+_add_properties(ComponentProperties* cp, Eina_Inarray* a)
+{
+  Property *p;
+  EINA_INARRAY_FOREACH(a, p) {
+   //printf("name: %s , type: %d, offset: %d\n", p->name, p->type, p->offset);
+   //printf("   value is : ");
+   switch(p->type) {
+     case EET_T_DOUBLE:
+        {
+         _property_add_spinner(cp, p);
+        }
+         break;
+     case EET_T_STRING:
+         _property_add_entry(cp, p);
+         break;
+     case PROPERTY_FILENAME:
+         _property_add_fileselect(cp, p);
+         break;
+     case PROPERTY_STRUCT:
+         _add_properties(cp, p->array);
+         break;
+     default:
+         fprintf (stderr, "type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
+         break;
+   }
+  }
+
+}
 
 ComponentProperties*
 create_my_prop(const char* name, Eina_Inarray *a, Evas_Object* win, Control* control, bool can_remove)
@@ -338,7 +379,8 @@ create_my_prop(const char* name, Eina_Inarray *a, Evas_Object* win, Control* con
   cp->arr = a;
   cp->win = win;
   cp->control = control;
-  cp->properties = eina_hash_string_superfast_new(_property_entry_free_cb);
+  //cp->properties = eina_hash_string_superfast_new(_property_entry_free_cb);
+  cp->properties = eina_hash_pointer_new(_property_entry_free_cb);
   cp->name = name;
 
   Evas_Object* frame = elm_frame_add(win);
@@ -377,30 +419,8 @@ create_my_prop(const char* name, Eina_Inarray *a, Evas_Object* win, Control* con
   elm_box_pack_end(cp->box, label);
   */
 
-  Property *p;
-  EINA_INARRAY_FOREACH(a, p) {
-   //printf("name: %s , type: %d, offset: %d\n", p->name, p->type, p->offset);
-   //printf("   value is : ");
-   switch(p->type) {
-     case EET_T_DOUBLE:
-        {
-         //double d;
-         //memcpy(&d, (void*)&yep + p->offset, sizeof d);
-         //printf("%f\n",d);
-         _property_add_spinner(cp, p);
-        }
-         break;
-     case EET_T_STRING:
-         _property_add_entry(cp, p);
-         break;
-     case PROPERTY_FILENAME:
-         _property_add_fileselect(cp, p);
-         break;
-     default:
-         fprintf (stderr, "type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
-         break;
-   }
-  }
+  _add_properties(cp, a);
+
   return cp;
 }
 

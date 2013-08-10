@@ -108,18 +108,34 @@ property_set(PropertyView* pw, ComponentProperties* cp)
   pw->current = cp;
 }
 
+static Eina_Inarray*
+_vec3_array()
+{
+  Eina_Inarray *iarr = create_property_set();
+
+  ADD_PROP_NAME(iarr, Vec3, X, EET_T_DOUBLE, x);
+  ADD_PROP_NAME(iarr, Vec3, Y, EET_T_DOUBLE, y);
+  ADD_PROP_NAME(iarr, Vec3, Z, EET_T_DOUBLE, z);
+
+  return iarr;
+}
+
 static Eina_Inarray* 
 _object_init_array_properties()
 {
   Eina_Inarray * iarr = create_property_set();
+  Eina_Inarray *vec3 = _vec3_array();
+  //TODO clean the arrays
 
   ADD_PROP(iarr, Object, name, EET_T_STRING);
-  ADD_PROP(iarr, Object, Position.X, EET_T_DOUBLE);
-  ADD_PROP(iarr, Object, Position.Y, EET_T_DOUBLE);
-  ADD_PROP(iarr, Object, Position.Z, EET_T_DOUBLE);
-  ADD_PROP(iarr, Object, angles.X, EET_T_DOUBLE);
-  ADD_PROP(iarr, Object, angles.Y, EET_T_DOUBLE);
-  ADD_PROP(iarr, Object, angles.Z, EET_T_DOUBLE);
+
+  ADD_PROP_ARRAY(iarr, Object, Position, vec3);
+  //ADD_PROP_NAME(iarr, Object, Position.X, EET_T_DOUBLE, x);
+  //ADD_PROP_NAME(iarr, Object, Position.Y, EET_T_DOUBLE, y);
+  //ADD_PROP_NAME(iarr, Object, Position.Z, EET_T_DOUBLE, z);
+
+  Eina_Inarray *an = _vec3_array();
+  ADD_PROP_ARRAY(iarr, Object, angles, an);
 
   return iarr;
 }
@@ -268,3 +284,4 @@ property_update_data(PropertyView* pw, Eina_List* objects)
   }
 
 }
+

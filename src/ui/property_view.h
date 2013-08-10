@@ -24,7 +24,6 @@ struct _PropertyView
   Eina_List *component_widgets;
 };
 
-
 void property_update(PropertyView* p, Eina_List* objects);
 void property_update_data(PropertyView* p, Eina_List* objects);
 PropertyView* create_property(Evas_Object* win, Context* context, Control* control);
