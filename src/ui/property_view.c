@@ -108,23 +108,27 @@ property_set(PropertyView* pw, ComponentProperties* cp)
   pw->current = cp;
 }
 
-static Eina_Inarray*
+static PropertySet*
 _vec3_array()
 {
-  Eina_Inarray *iarr = create_property_set();
+  PropertySet* ps = create_property_set();
+  ps->hint = HORIZONTAL;
+  Eina_Inarray *iarr = ps->array;
 
   ADD_PROP_NAME(iarr, Vec3, X, EET_T_DOUBLE, x);
   ADD_PROP_NAME(iarr, Vec3, Y, EET_T_DOUBLE, y);
   ADD_PROP_NAME(iarr, Vec3, Z, EET_T_DOUBLE, z);
 
-  return iarr;
+  return ps;
 }
 
-static Eina_Inarray* 
+static PropertySet* 
 _object_init_array_properties()
 {
-  Eina_Inarray * iarr = create_property_set();
-  Eina_Inarray *vec3 = _vec3_array();
+  PropertySet* ps = create_property_set();
+  Eina_Inarray *iarr = ps->array;
+
+  PropertySet *vec3 = _vec3_array();
   //TODO clean the arrays
 
   ADD_PROP(iarr, Object, name, EET_T_STRING);
@@ -134,16 +138,17 @@ _object_init_array_properties()
   //ADD_PROP_NAME(iarr, Object, Position.Y, EET_T_DOUBLE, y);
   //ADD_PROP_NAME(iarr, Object, Position.Z, EET_T_DOUBLE, z);
 
-  Eina_Inarray *an = _vec3_array();
+  PropertySet *an = _vec3_array();
   ADD_PROP_ARRAY(iarr, Object, angles, an);
 
-  return iarr;
+  return ps;
 }
 
-static Eina_Inarray* 
+static PropertySet* 
 _multiple_objects_init_array_properties()
 {
-  Eina_Inarray * iarr = create_property_set();
+  PropertySet* ps = create_property_set();
+  Eina_Inarray *iarr = ps->array;
 
   ADD_PROP(iarr, Multiple_Objects_Selection, center.X, EET_T_DOUBLE);
   ADD_PROP(iarr, Multiple_Objects_Selection, center.Y, EET_T_DOUBLE);
@@ -152,7 +157,7 @@ _multiple_objects_init_array_properties()
   ADD_PROP(iarr, Multiple_Objects_Selection, rotation.Y, EET_T_DOUBLE);
   ADD_PROP(iarr, Multiple_Objects_Selection, rotation.Z, EET_T_DOUBLE);
 
-  return iarr;
+  return ps;
 }
 
 static void

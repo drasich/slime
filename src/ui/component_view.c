@@ -167,7 +167,7 @@ _property_add_entry(ComponentProperties* cp, Property* p)
 
 
 static Evas_Object* 
-_property_add_spinner(ComponentProperties* cp, Property* p)
+_property_add_spinner(ComponentProperties* cp, Property* p, Evas_Object* box)
 {
   Evas_Object *en, *label;
 
@@ -176,7 +176,8 @@ _property_add_spinner(ComponentProperties* cp, Property* p)
   evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
   //elm_spinner_value_set(en, atof(value));
   evas_object_show(en);
-  elm_box_pack_end(cp->box, en);
+  //elm_box_pack_end(cp->box, en);
+  elm_box_pack_end(box, en);
 
   evas_object_name_set(en, p->name);
   
@@ -276,10 +277,10 @@ _property_add_fileselect(ComponentProperties* cp, Property* p)
 }
 
 static void
-_component_property_update_data_recur(ComponentProperties* cp, void* data, Eina_Inarray* a)
+_component_property_update_data_recur(ComponentProperties* cp, void* data, PropertySet* ps)
 {
   Property *p;
-  EINA_INARRAY_FOREACH(a, p) {
+  EINA_INARRAY_FOREACH(ps->array, p) {
     Evas_Object* obj = eina_hash_find(cp->properties, &p);
     //printf("name: %s , type: %d, offset: %d\n", p->name, p->type, p->offset);
     switch(p->type) {
@@ -343,16 +344,16 @@ _remove_component(
 
 
 static void
-_add_properties(ComponentProperties* cp, Eina_Inarray* a)
+_add_properties(ComponentProperties* cp, PropertySet* ps, Evas_Object* box)
 {
   Property *p;
-  EINA_INARRAY_FOREACH(a, p) {
+  EINA_INARRAY_FOREACH(ps->array, p) {
    //printf("name: %s , type: %d, offset: %d\n", p->name, p->type, p->offset);
    //printf("   value is : ");
    switch(p->type) {
      case EET_T_DOUBLE:
         {
-         _property_add_spinner(cp, p);
+         _property_add_spinner(cp, p, box);
         }
          break;
      case EET_T_STRING:
@@ -362,7 +363,19 @@ _add_properties(ComponentProperties* cp, Eina_Inarray* a)
          _property_add_fileselect(cp, p);
          break;
      case PROPERTY_STRUCT:
-         _add_properties(cp, p->array);
+         if (p->array->hint == HORIZONTAL) {
+           Evas_Object* hbox = elm_box_add(cp->win);
+           elm_box_horizontal_set(hbox, EINA_TRUE);
+           evas_object_size_hint_weight_set(hbox, EVAS_HINT_EXPAND, 0.0);
+           evas_object_size_hint_align_set(hbox, EVAS_HINT_FILL, EVAS_HINT_FILL);
+           elm_box_pack_end(box, hbox);
+           evas_object_show(hbox);
+           //TODO clean box
+
+           _add_properties(cp, p->array, hbox);
+         }
+         else
+         _add_properties(cp, p->array, cp->box);
          break;
      default:
          fprintf (stderr, "type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
@@ -373,10 +386,10 @@ _add_properties(ComponentProperties* cp, Eina_Inarray* a)
 }
 
 ComponentProperties*
-create_my_prop(const char* name, Eina_Inarray *a, Evas_Object* win, Control* control, bool can_remove)
+create_my_prop(const char* name, PropertySet* ps, Evas_Object* win, Control* control, bool can_remove)
 {
   ComponentProperties* cp = calloc(1, sizeof *cp);
-  cp->arr = a;
+  cp->arr = ps;
   cp->win = win;
   cp->control = control;
   //cp->properties = eina_hash_string_superfast_new(_property_entry_free_cb);
@@ -419,7 +432,7 @@ create_my_prop(const char* name, Eina_Inarray *a, Evas_Object* win, Control* con
   elm_box_pack_end(cp->box, label);
   */
 
-  _add_properties(cp, a);
+  _add_properties(cp, ps, cp->box);
 
   return cp;
 }

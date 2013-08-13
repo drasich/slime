@@ -4,6 +4,7 @@
 #include <Eet.h>
 
 typedef struct _Property Property;
+typedef struct _PropertySet PropertySet;
 
 struct _Property
 {
@@ -11,7 +12,19 @@ struct _Property
   int type;
   int offset;
   size_t size;
+  PropertySet* array;
+};
+
+typedef enum _Hint Hint;
+enum _Hint{
+  VERTICAL,
+  HORIZONTAL
+};
+
+struct _PropertySet
+{
   Eina_Inarray* array;
+  Hint hint;
 };
 
 
@@ -26,7 +39,7 @@ struct _Property
   } while(0)
 */
 
-void add_offset(Eina_Inarray* a, int offset);
+void add_offset(PropertySet* ps, int offset);
 
 #define ADD_PROP(array, struct_type, member, member_type) \
   do {                                                                      \
@@ -64,7 +77,7 @@ void add_offset(Eina_Inarray* a, int offset);
   } while(0)
 
 
-Eina_Inarray* create_property_set();
+PropertySet* create_property_set();
 
 enum {
   PROPERTY_FILENAME = EET_I_LIMIT,

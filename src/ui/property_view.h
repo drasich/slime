@@ -15,8 +15,8 @@ struct _PropertyView
   Context *context;
   Control *control;
   Evas_Object* win;
-  Eina_Inarray *arr;
-  Eina_Inarray *array_multiple_objects;
+  PropertySet *arr;
+  PropertySet *array_multiple_objects;
   ComponentProperties* current;
   Evas_Object* scroller;
 

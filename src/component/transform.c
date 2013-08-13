@@ -135,7 +135,8 @@ void test_test()
 
 void test_display()
 {
-  Eina_Inarray * iarr = create_property_set();
+  PropertySet* ps = create_property_set();
+  Eina_Inarray * iarr = ps->array;
 
   ADD_PROP(iarr, Transform, test, EET_T_DOUBLE);
   ADD_PROP(iarr, Transform, position.X, EET_T_DOUBLE);
@@ -174,10 +175,11 @@ _create_transform()
   return t;
 }
 
-static Eina_Inarray* 
+static PropertySet* 
 _transform_properties()
 {
-  Eina_Inarray * iarr = create_property_set();
+  PropertySet* ps = create_property_set();
+  Eina_Inarray * iarr = ps->array;
 
   ADD_PROP(iarr, Transform, position.X, EET_T_DOUBLE);
   ADD_PROP(iarr, Transform, position.Y, EET_T_DOUBLE);
@@ -186,7 +188,7 @@ _transform_properties()
   ADD_PROP(iarr, Transform, angles.Y, EET_T_DOUBLE);
   ADD_PROP(iarr, Transform, angles.Z, EET_T_DOUBLE);
 
-  return iarr;
+  return ps;
 }
 
 

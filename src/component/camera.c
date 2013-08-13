@@ -140,10 +140,11 @@ _create_camera()
   return c;
 }
 
-static Eina_Inarray* 
+static PropertySet* 
 _camera_properties()
 {
-  Eina_Inarray * iarr = create_property_set();
+  PropertySet* ps = create_property_set();
+  Eina_Inarray * iarr = ps->array;
 
   ADD_PROP(iarr, CCamera, width, EET_T_DOUBLE);
   ADD_PROP(iarr, CCamera, height, EET_T_DOUBLE);
@@ -151,7 +152,7 @@ _camera_properties()
   ADD_PROP(iarr, CCamera, near, EET_T_DOUBLE);
   ADD_PROP(iarr, CCamera, far, EET_T_DOUBLE);
 
-  return iarr;
+  return ps;
 }
 
 static void

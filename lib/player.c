@@ -15,15 +15,16 @@ player_update(Component* c, double dt)
   c->object->angles.X += p->rotation_speed*dt;
 }
 
-Eina_Inarray* 
+PropertySet* 
 _player_properties(ComponentDesc* desc)
 {
-  Eina_Inarray * iarr = create_property_set();
+  PropertySet *ps = create_property_set();
+  Eina_Inarray * iarr = ps->array;
 
   ADD_PROP(iarr, Player, name, EET_T_STRING);
   ADD_PROP(iarr, Player, rotation_speed, EET_T_DOUBLE);
 
-  return iarr;
+  return ps;
 }
 
 static void *

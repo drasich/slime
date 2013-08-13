@@ -3,6 +3,7 @@
 #include <Eina.h>
 #include <Elementary.h>
 #include "matrix.h"
+#include "property.h"
 
 typedef struct _ComponentDesc ComponentDesc;
 typedef struct _Component Component;
@@ -13,7 +14,7 @@ struct _CCamera;
 struct _ComponentDesc {
   const char* name;
   void* (*create)(); 
-  Eina_Inarray* (*properties)();
+  PropertySet* (*properties)();
   void (*init)(Component* c); 
   void (*update)(Component* c, double dt); 
   void (*draw)(Component* c, Matrix4 world, struct _CCamera* cam); 
@@ -27,7 +28,7 @@ typedef Eina_List* (*create_components_function)();
 struct _Component {
   void* data;
   ComponentDesc *funcs;
-  Eina_Inarray* properties;
+  PropertySet* properties;
   struct _Object* object;
   const char* name;
 };

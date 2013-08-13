@@ -21,12 +21,13 @@ _create_line()
   return create_line();
 }
 
-static Eina_Inarray* 
+static PropertySet* 
 _line_properties()
 {
-  Eina_Inarray * iarr = create_property_set();
+  PropertySet* ps = create_property_set();
+  Eina_Inarray * iarr = ps->array;
 
-  return iarr;
+  return ps;
 }
 
 static void

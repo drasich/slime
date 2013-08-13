@@ -1,15 +1,18 @@
 #include <Eina.h>
 #include "property.h"
 
-Eina_Inarray* create_property_set()
+PropertySet* create_property_set()
 {
-  return eina_inarray_new(sizeof(Property), 0);
+  PropertySet *ps = calloc(1, sizeof *ps);
+
+  ps->array = eina_inarray_new(sizeof(Property), 0);
+  return ps;
 }
 
-void add_offset(Eina_Inarray* a, int offset)
+void add_offset(PropertySet* ps, int offset)
 {
   Property *p;
-  EINA_INARRAY_FOREACH(a, p) {
+  EINA_INARRAY_FOREACH(ps->array, p) {
     p->offset += offset;
     if (p->array) add_offset(p->array, offset);
   }

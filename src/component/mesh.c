@@ -440,15 +440,16 @@ _create_mesh()
   return m;
 }
 
-static Eina_Inarray* 
+static PropertySet* 
 _mesh_properties()
 {
-  Eina_Inarray * iarr = create_property_set();
+  PropertySet* ps = create_property_set();
+  Eina_Inarray * iarr = ps->array;
 
   //ADD_PROP(iarr, Mesh, name, EET_T_STRING);
   ADD_PROP(iarr, Mesh, name, PROPERTY_FILENAME);
 
-  return iarr;
+  return ps;
 }
 
 static void 
