@@ -18,9 +18,8 @@ et aussi "object properties" "name, ..."
 - add lua-jit
 
 
-
 PROPERTIES
-- make vec3, vec4 a possible type to edit easily
+- make vec4 a possible type to edit easily
 - material
 - comment faire pour editer facilement un enum...
 - pointeur sur un object ou autre type
