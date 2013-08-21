@@ -371,6 +371,14 @@ _add_properties(ComponentProperties* cp, PropertySet* ps, Evas_Object* box)
            elm_box_pack_end(box, hbox);
            evas_object_show(hbox);
            //TODO clean box
+           //
+           Evas_Object* label = elm_label_add(cp->win);
+           char s[256];
+           sprintf(s, "<b> %s </b> : ", p->name);
+
+           elm_object_text_set(label, s);
+           evas_object_show(label);
+           elm_box_pack_end(hbox, label);
 
            _add_properties(cp, p->array, hbox);
          }
