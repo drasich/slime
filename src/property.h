@@ -82,6 +82,7 @@ PropertySet* create_property_set();
 enum {
   PROPERTY_FILENAME = EET_I_LIMIT,
   PROPERTY_STRUCT,
+  PROPERTY_POINTER,
   TEST1,
   TEST2
 };

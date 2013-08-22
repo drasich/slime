@@ -385,6 +385,9 @@ _add_properties(ComponentProperties* cp, PropertySet* ps, Evas_Object* box)
          else
          _add_properties(cp, p->array, cp->box);
          break;
+     case PROPERTY_POINTER:
+         _property_add_entry(cp, p);
+         break;
      default:
          fprintf (stderr, "type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
          break;

@@ -62,7 +62,7 @@ create_window()
 
 
   //evas_object_resize(win, 800/3, 400/3);
-  evas_object_resize(win, 800, 100);
+  evas_object_resize(win, 800, 200);
   //evas_object_resize(win, 1200, 400);
   evas_object_show(win);
 }
@@ -91,7 +91,7 @@ populate_scene(Control* c, Scene* s)
   //animation_play(yep, "walkquat", LOOP);
   yep->mesh->shader = shader_simple;
 
-  yep->name = eina_stringshare_add("2222222");
+  yep->name = eina_stringshare_add("smallchar");
   Vec3 t2 = {-10,0,0};
   object_set_position(yep, t2);
   control_add_object(c,s,yep);

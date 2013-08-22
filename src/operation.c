@@ -112,8 +112,16 @@ _change_data(Object* o, Property* p, const void *data)
         //eina_stringshare_dump();
        }
       break;
+    case PROPERTY_POINTER:
+       {
+        //const char** str = (void*)o + p->offset;
+        //const char* s = data;
+        //*str = s;
+        //printf("new pointer : %s\n", s);
+       }
+      break;
     default:
-      fprintf (stderr, "type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
+      fprintf (stderr, "_change_data: type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
       break;
    }
 }

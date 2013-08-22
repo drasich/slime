@@ -2,6 +2,7 @@
 #define __component_player__
 #include "stdbool.h"
 #include "component.h"
+#include "object.h"
 
 typedef struct _Player Player;
 
@@ -11,6 +12,7 @@ struct _Player
   int translation_state;
   double rotation_speed;
   bool rotate;
+  Object* target;
 };
 
 void player_init(Component* c);

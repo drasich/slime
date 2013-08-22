@@ -1,3 +1,13 @@
+BUG
+- there is problem with ComponentProperties data field
+  and tree_update_object... check property_update_components
+  because component properties data is the component, not the object
+  control_property_update, le tree_update_object parce que Object dans
+  control_property_update n'est pas vraiment un object qd il est appele
+  dans l'operation
+    alors peut etre je dois changer object* a void* data dans _Op_Change_Property 
+    et faire un control_component_property_update?
+
 RENDER
 - decide how to draw with camera ortho and per
 - mesh component
@@ -23,6 +33,13 @@ PROPERTIES
 - material
 - comment faire pour editer facilement un enum...
 - pointeur sur un object ou autre type
+  - use pointer in the applicatio but...
+  - ...make an id system for saving object
+  - display the name of the object
+  - comment set l'object sur la propriete?
+    - il faut pouvoir drag a partir du tree, ou bien peut etre de la view.
+    - selectionner dans une liste?
+    - ecrire le nom de l'object (le plus simple)
 - make a hide property for component, to avoid display in properties
 - scene properties: set the camera (among other things)
 - remove component properties callback?
