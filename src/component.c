@@ -10,7 +10,7 @@ create_component(ComponentDesc *cd)
   printf("TODO creating component : calling properties function, to be changed\n");
   Component* c = calloc(1, sizeof *c);
   c->funcs = cd;
-  c->data = cd->create();
+  if (cd->create) c->data = cd->create();
   c->properties = cd->properties();
   c->name = cd->name;
   return c;

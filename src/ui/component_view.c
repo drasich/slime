@@ -10,7 +10,7 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
   //return;
   //PropertyView* pw = data;
   ComponentProperties* cp = data;
-  void* o = cp->data;
+  void* o = cp->component->data;
 
   if (o == NULL) return;
 
@@ -60,7 +60,7 @@ _entry_activated_cb(void *data, Evas_Object *obj, void *event)
 
   if (strcmp(cp->value_saved, s)) {
     Property* p = evas_object_data_get(obj, "property");
-    control_change_property(cp->control, cp->data, p, cp->value_saved, s);
+    control_change_property(cp->control, cp->component->data, p, cp->value_saved, s);
   }
 }
 
@@ -70,19 +70,20 @@ _entry_aborted_cb(void *data, Evas_Object *obj, void *event)
   printf("aborted\n");
 
   ComponentProperties* cp = data;
-  void* o = cp->data;
+  Component* c = cp->component;
+  void* cd = c->data;
   const char* s = elm_object_text_get(obj);
 
   if (strcmp(cp->value_saved, s)) {
     eina_stringshare_del(s);
 
     Property* p = evas_object_data_get(obj, "property");
-    const char** str = (void*)o + p->offset;
+    const char** str = (void*)cd + p->offset;
     *str = eina_stringshare_add(cp->value_saved);
     elm_object_text_set(obj, *str);
 
     Control* ct = cp->control;
-    control_property_update(ct, o);
+    control_property_update(ct, cd);
   }
 
 }
@@ -105,7 +106,7 @@ _entry_unfocused_cb(void *data, Evas_Object *obj, void *event)
   const char* s = elm_object_text_get(obj);
   if (strcmp(cp->value_saved, s)) {
     Property* p = evas_object_data_get(obj, "property");
-    control_change_property(cp->control, cp->data, p, cp->value_saved, s);
+    control_change_property(cp->control, cp->component->data, p, cp->value_saved, s);
   }
 }
 

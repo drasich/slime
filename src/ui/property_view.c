@@ -27,6 +27,7 @@ property_add_component(PropertyView* pw, ComponentProperties* cp)
   pw->component_widgets = eina_list_append(pw->component_widgets, cp);
 }
 
+
 void
 property_update(PropertyView* pw, Eina_List* objects)
 {
@@ -49,20 +50,22 @@ property_update(PropertyView* pw, Eina_List* objects)
   else if (nb > 1) {
     property_clear_components(pw);
     //property_set(pw, NULL);
-    //ComponentProperties* cp = eina_hash_find(pw->component_widgets_backup,"multiple");
-    //cp->data = &pw->context->mos;
     //_property_update_data(pw->current, &pw->context->mos);
   }
 }
 
 //TODO change this function to something like update_component_transform 
-//and remove current
 void
 property_update_components_data(PropertyView* pw, Object* o)
 {
-  if ( pw->current->data == o) {
-    component_property_update_data(pw->current, o);
+  //TODO
+  Eina_List* l;
+  ComponentProperties* cp;
+
+  EINA_LIST_FOREACH(pw->component_widgets, l, cp) {
+    component_property_update_data(cp, cp->component->data);
   }
+
 }
 
 
@@ -92,56 +95,12 @@ property_clean(PropertyView* pw)
 void
 property_set(PropertyView* pw, ComponentProperties* cp)
 {
-  if (pw->current) {
-    //elm_object_content_unset(pw->scroller);
-    evas_object_hide(pw->current->box);
-    elm_box_unpack_all(pw->box);
-  }
-
   if (cp) {
     //elm_object_content_set(pw->scroller, cp->box);
     //evas_object_show(cp->box);
     elm_box_pack_end(pw->box, cp->box);
     evas_object_show(cp->box);
   }
-
-  pw->current = cp;
-}
-
-static PropertySet*
-_vec3_array()
-{
-  PropertySet* ps = create_property_set();
-  ps->hint = HORIZONTAL;
-  Eina_Inarray *iarr = ps->array;
-
-  ADD_PROP_NAME(iarr, Vec3, X, EET_T_DOUBLE, x);
-  ADD_PROP_NAME(iarr, Vec3, Y, EET_T_DOUBLE, y);
-  ADD_PROP_NAME(iarr, Vec3, Z, EET_T_DOUBLE, z);
-
-  return ps;
-}
-
-static PropertySet* 
-_object_init_array_properties()
-{
-  PropertySet* ps = create_property_set();
-  Eina_Inarray *iarr = ps->array;
-
-  PropertySet *vec3 = _vec3_array();
-  //TODO clean the arrays
-
-  ADD_PROP(iarr, Object, name, EET_T_STRING);
-
-  ADD_PROP_ARRAY(iarr, Object, Position, vec3);
-  //ADD_PROP_NAME(iarr, Object, Position.X, EET_T_DOUBLE, x);
-  //ADD_PROP_NAME(iarr, Object, Position.Y, EET_T_DOUBLE, y);
-  //ADD_PROP_NAME(iarr, Object, Position.Z, EET_T_DOUBLE, z);
-
-  PropertySet *an = _vec3_array();
-  ADD_PROP_ARRAY(iarr, Object, angles, an);
-
-  return ps;
 }
 
 static PropertySet* 
@@ -226,25 +185,6 @@ create_property(Evas_Object* win, Context* context, Control* control)
   */
   p->root = scroller;
 
-  p->component_widgets_backup = eina_hash_string_superfast_new(_property_entry_free_cb);
-
-  //TODO remove these arrays, and the ComponentProperties from propertyview
-  p->arr = _object_init_array_properties();
-  p->array_multiple_objects = _multiple_objects_init_array_properties();
-  ComponentProperties* transform = create_my_prop("transform", p->arr, win, control, false);
-
-  eina_hash_add(
-        p->component_widgets_backup,
-        transform->name,
-        transform);
-  
-  ComponentProperties* manyobj = create_my_prop("multiple", p->array_multiple_objects, win, control, false);
-  manyobj->callback = _changed_multiple_object;
-
-  eina_hash_add(
-        p->component_widgets_backup,
-        manyobj->name,
-        transform);
 
   return p;
 }
@@ -255,37 +195,41 @@ property_update_components(PropertyView* pw, Object* o)
 {
   property_clear_components(pw);
 
-  ComponentProperties* cp = eina_hash_find(pw->component_widgets_backup,"transform");
-  property_add_component(pw, cp);
-  cp->data = o;
-  pw->current = cp;
-  component_property_update_data(cp, o);
-  
-
+  ComponentProperties* cp;
   Component* c;
   Eina_List* l;
 
   EINA_LIST_FOREACH(o->components, l, c) {
     cp = create_component_properties(c, pw);
-    eina_hash_add(
-          pw->component_widgets_backup,
-          c->name,
-          cp);
     property_add_component(pw, cp);
-    cp->data = c->data;
-    component_property_update_data(cp, cp->data);
+    cp->component = c;
+    component_property_update_data(cp, c->data);
   }
 
 }
 
 
 void 
-property_update_data(PropertyView* pw, Eina_List* objects)
+property_update_data_transform(PropertyView* pw, Eina_List* objects)
 {
   int nb = eina_list_count(objects);
   if (nb == 1) {
     Object* o = eina_list_nth(objects,0);
     property_update_components_data(pw, o);
+  }
+
+}
+
+void
+property_update_component(PropertyView* pw, const char* name)
+{
+  Eina_List* l;
+  ComponentProperties* cp;
+
+  EINA_LIST_FOREACH(pw->component_widgets, l, cp) {
+    if (!strcmp(cp->name, name)) {
+      component_property_update_data(cp, cp->component->data);
+    }
   }
 
 }

@@ -1,4 +1,5 @@
 BUG
+- Fix property component update
 - there is problem with ComponentProperties data field
   and tree_update_object... check property_update_components
   because component properties data is the component, not the object

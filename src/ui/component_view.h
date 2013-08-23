@@ -18,7 +18,8 @@ struct _ComponentProperties
   property_changed callback;
   Control* control;
 
-  void* data;
+  //void* data;
+  //void* data;
   const char* value_saved;
   const char* name;
   Evas_Object* root;

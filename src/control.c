@@ -151,7 +151,7 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
       }
       if (i>0) center = vec3_mul(center, 1.0f/ (float) i);
       v->context->mos.center =  center;
-      property_update_data(v->property, objects);
+      property_update_data_transform(v->property, objects);
     }
   }
 
@@ -335,7 +335,7 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
       }
 
       if (i == 1)
-      control_property_update(c,last);
+      control_property_update_transform(c);
 
     }
   }
@@ -423,6 +423,12 @@ control_property_update(Control* c, Object* o)
 {
   property_update_components_data(c->view->property, o);
   tree_update_object(c->view->tree, o);
+}
+
+void
+control_property_update_transform(Control* c)
+{
+  property_update_component(c->view->property, "object");
 }
 
 

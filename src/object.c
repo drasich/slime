@@ -172,6 +172,11 @@ Object* create_object()
   object_init(o);
   eina_value_setup(&o->data_position, EINA_VALUE_TYPE_DOUBLE);
   eina_value_set(&o->data_position, 777);
+
+  Component *oc =  create_component(&object_desc);
+  oc->data = o;
+  object_add_component(o, oc);
+  
   return o;
 }
 
@@ -327,4 +332,47 @@ object_component_get(const Object* o, const char* name)
   return NULL;
 
 }
+
+static PropertySet*
+_vec3_array()
+{
+  PropertySet* ps = create_property_set();
+  ps->hint = HORIZONTAL;
+  Eina_Inarray *iarr = ps->array;
+
+  ADD_PROP_NAME(iarr, Vec3, X, EET_T_DOUBLE, x);
+  ADD_PROP_NAME(iarr, Vec3, Y, EET_T_DOUBLE, y);
+  ADD_PROP_NAME(iarr, Vec3, Z, EET_T_DOUBLE, z);
+
+  return ps;
+}
+
+static PropertySet* 
+_object_properties()
+{
+  PropertySet* ps = create_property_set();
+  Eina_Inarray *iarr = ps->array;
+
+  PropertySet *vec3 = _vec3_array();
+  //TODO clean the arrays
+
+  ADD_PROP(iarr, Object, name, EET_T_STRING);
+
+  ADD_PROP_ARRAY(iarr, Object, Position, vec3);
+  //ADD_PROP_NAME(iarr, Object, Position.X, EET_T_DOUBLE, x);
+  //ADD_PROP_NAME(iarr, Object, Position.Y, EET_T_DOUBLE, y);
+  //ADD_PROP_NAME(iarr, Object, Position.Z, EET_T_DOUBLE, z);
+
+  PropertySet *an = _vec3_array();
+  ADD_PROP_ARRAY(iarr, Object, angles, an);
+
+  return ps;
+}
+
+
+ComponentDesc object_desc = {
+  "object",
+  NULL,
+  _object_properties
+};
 
