@@ -60,7 +60,7 @@ _entry_activated_cb(void *data, Evas_Object *obj, void *event)
 
   if (strcmp(cp->value_saved, s)) {
     Property* p = evas_object_data_get(obj, "property");
-    control_change_property(cp->control, cp->component->data, p, cp->value_saved, s);
+    control_change_property(cp->control, cp->component, p, cp->value_saved, s);
   }
 }
 
@@ -106,7 +106,7 @@ _entry_unfocused_cb(void *data, Evas_Object *obj, void *event)
   const char* s = elm_object_text_get(obj);
   if (strcmp(cp->value_saved, s)) {
     Property* p = evas_object_data_get(obj, "property");
-    control_change_property(cp->control, cp->component->data, p, cp->value_saved, s);
+    control_change_property(cp->control, cp->component, p, cp->value_saved, s);
   }
 }
 

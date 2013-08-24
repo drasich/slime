@@ -41,7 +41,8 @@ void control_remove_object(Control* c, Scene* s, Eina_List* objects);
 typedef struct _Op_Change_Property Op_Change_Property;
 struct _Op_Change_Property
 {
-  Object* o;
+  //Object* o;
+  Component* component;
   Property* p;
   const void* value_old;
   const void* value_new;

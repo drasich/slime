@@ -208,7 +208,7 @@ _op_remove_object(Scene* s, Eina_List* objects)
 }
 
 static Operation* 
-_op_change_property(Object* o, Property* p, const void* data_old, const void* data_new)
+_op_change_property(Component* component, Property* p, const void* data_old, const void* data_new)
 {
   Operation* op = calloc(1, sizeof *op);
 
@@ -216,7 +216,8 @@ _op_change_property(Object* o, Property* p, const void* data_old, const void* da
   op->undo_cb = operation_change_property_undo;
 
   Op_Change_Property* od = calloc(1, sizeof *od);
-  od->o = o;
+  //od->o = o;
+  od->component = component;
   od->p = p;
   od->value_old = data_old;
   od->value_new = data_new;
@@ -409,9 +410,9 @@ control_remove_object(Control* c, Scene* s, Eina_List* objects)
 }
 
 void
-control_change_property(Control* c, Object* o, Property* p, const void* data_old, const void* data_new)
+control_change_property(Control* c, Component* component, Property* p, const void* data_old, const void* data_new)
 {
-  Operation* op = _op_change_property(o, p, data_old, data_new);
+  Operation* op = _op_change_property(component, p, data_old, data_new);
   control_add_operation(c, op);
   op->do_cb(c, op->data);
   printf("change property with : %s, %s\n", data_old, data_new);
@@ -419,12 +420,13 @@ control_change_property(Control* c, Object* o, Property* p, const void* data_old
 
 
 void
-control_property_update(Control* c, Object* o)
+control_property_update(Control* c, Component* component)
 {
-  if (o == c->view->context->object) //TODO if display somewhere
-  property_update_components_data(c->view->property, o);
+  if (component->object == c->view->context->object) //TODO if display somewhere
+  property_update_components_data(c->view->property, component);
 
-  tree_update_object(c->view->tree, o);
+  if (!strcmp(component->name, "object"))
+  tree_update_object(c->view->tree, component->object);
 }
 
 void

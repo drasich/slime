@@ -56,7 +56,7 @@ property_update(PropertyView* pw, Eina_List* objects)
 
 //TODO change this function to something like update_component_transform 
 void
-property_update_components_data(PropertyView* pw, Object* o)
+property_update_components_data(PropertyView* pw, Component* component)
 {
   //TODO
   Eina_List* l;

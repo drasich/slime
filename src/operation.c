@@ -94,17 +94,17 @@ operation_remove_object_undo(Control *c, void* data)
 /////////////////////////////////
 
 static void
-_change_data(Object* o, Property* p, const void *data)
+_change_data(void* c, Property* p, const void *data)
 {
   switch(p->type) {
     case EET_T_DOUBLE:
        {
-        memcpy((void*)o + p->offset, data, sizeof(double));
+        memcpy((void*)c + p->offset, data, sizeof(double));
        }
       break;
     case EET_T_STRING:
        {
-        const char** str = (void*)o + p->offset;
+        const char** str = (void*)c + p->offset;
         //eina_stringshare_del(*str);
         const char* s = data;
         //*str = eina_stringshare_add(s);
@@ -114,7 +114,7 @@ _change_data(Object* o, Property* p, const void *data)
       break;
     case PROPERTY_POINTER:
        {
-        //const char** str = (void*)o + p->offset;
+        //const char** str = (void*)c + p->offset;
         //const char* s = data;
         //*str = s;
         //printf("new pointer : %s\n", s);
@@ -131,9 +131,10 @@ operation_change_property_do(Control *c, void* data)
 {
   Op_Change_Property* opd = data;
   Property* p = opd->p;
-  Object* o = opd->o;
-  _change_data(o, p, opd->value_new);
-  control_property_update(c, o);
+  //Object* o = opd->o;
+  Component* component = opd->component;
+  _change_data(component->data, p, opd->value_new);
+  control_property_update(c, component);
 }
 
 void
@@ -141,9 +142,10 @@ operation_change_property_undo(Control *c, void* data)
 {
   Op_Change_Property* opd = data;
   Property* p = opd->p;
-  Object* o = opd->o;
-  _change_data(o, p, opd->value_old);
-  control_property_update(c, o);
+  //Object* o = opd->o;
+  Component* component = opd->component;
+  _change_data(component->data, p, opd->value_old);
+  control_property_update(c, component);
 }
 
 ////////////////////////////////////////////////////////

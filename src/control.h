@@ -34,7 +34,7 @@ void control_mouse_move(Control* c, Evas_Event_Mouse_Move *e);
 bool control_mouse_down(Control* c, Evas_Event_Mouse_Down *e);
 void control_key_down(Control* c, Evas_Event_Key_Down *e);
 
-void control_property_update(Control* c, Object* o);
+void control_property_update(Control* c, Component* component);
 
 typedef void (*do_cb)(Control* c, void* data);
 typedef void (*undo_cb)(Control* c, void* data);
@@ -53,7 +53,7 @@ void control_redo(Control* c);
 void control_clean_redo(Control* c);
 
 void control_add_object(Control* c, Scene* s, Object* o);
-void control_change_property(Control* c, Object* o, Property* p, const void* data_old, const void* data_new);
+void control_change_property(Control* c, Component* component, Property* p, const void* data_old, const void* data_new);
 void control_object_add_component(Control* c, Object* o, Component* comp);
 void control_object_remove_component(Control* c, Object* o, Component* comp);
 

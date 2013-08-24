@@ -28,7 +28,7 @@ PropertyView* create_property(Evas_Object* win, Context* context, Control* contr
 void property_set(PropertyView* pw, ComponentProperties* mp);
 
 void property_update_components(PropertyView* pw, Object* o);
-void property_update_components_data(PropertyView* pw, Object* o);
+void property_update_components_data(PropertyView* pw, Component* component);
 void property_update_component(PropertyView* pw, const char* name);
 
 
