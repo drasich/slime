@@ -421,7 +421,9 @@ control_change_property(Control* c, Object* o, Property* p, const void* data_old
 void
 control_property_update(Control* c, Object* o)
 {
+  if (o == c->view->context->object) //TODO if display somewhere
   property_update_components_data(c->view->property, o);
+
   tree_update_object(c->view->tree, o);
 }
 

@@ -214,8 +214,7 @@ property_update_data_transform(PropertyView* pw, Eina_List* objects)
 {
   int nb = eina_list_count(objects);
   if (nb == 1) {
-    Object* o = eina_list_nth(objects,0);
-    property_update_components_data(pw, o);
+    property_update_component(pw, "object");
   }
 
 }
