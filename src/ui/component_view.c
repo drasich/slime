@@ -70,8 +70,8 @@ _entry_aborted_cb(void *data, Evas_Object *obj, void *event)
   printf("aborted\n");
 
   ComponentProperties* cp = data;
-  Component* c = cp->component;
-  void* cd = c->data;
+  Component* component = cp->component;
+  void* cd = component->data;
   const char* s = elm_object_text_get(obj);
 
   if (strcmp(cp->value_saved, s)) {
@@ -83,7 +83,7 @@ _entry_aborted_cb(void *data, Evas_Object *obj, void *event)
     elm_object_text_set(obj, *str);
 
     Control* ct = cp->control;
-    control_property_update(ct, cd);
+    control_property_update(ct, component);
   }
 
 }
@@ -109,8 +109,6 @@ _entry_unfocused_cb(void *data, Evas_Object *obj, void *event)
     control_change_property(cp->control, cp->component, p, cp->value_saved, s);
   }
 }
-
-
 
 static Evas_Object* 
 _property_add_entry(ComponentProperties* cp, Property* p)
