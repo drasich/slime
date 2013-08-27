@@ -15,6 +15,44 @@ create_workspace(Evas_Object* parent)
 
 }
 
+
+static Evas_Object *create_my_group(Evas *canvas, const char *text)
+{
+  Evas_Object *edje;
+
+  edje = edje_object_add(canvas);
+  if (!edje)
+   {
+    EINA_LOG_CRIT("could not create edje object!");
+    return NULL;
+   }
+
+  if (!edje_object_file_set(edje, "edc/test00.edj", "my_group"))
+   {
+    int err = edje_object_load_error_get(edje);
+    const char *errmsg = edje_load_error_str(err);
+    EINA_LOG_ERR("could not load 'my_group' from .edj file : %s",
+          errmsg);
+
+    evas_object_del(edje);
+    return NULL;
+   }
+
+  if (text)
+   {
+    if (!edje_object_part_text_set(edje, "text", text))
+     {
+      EINA_LOG_WARN("could not set the text. "
+            "Maybe part 'text' does not exist?");
+     }
+   }
+
+  evas_object_move(edje, 0, 0);
+  evas_object_resize(edje, 320, 240);
+  evas_object_show(edje);
+  return edje;
+}
+
 Evas_Object*
 create_panes(Evas_Object* win, Eina_Bool hor)
 {
@@ -65,6 +103,10 @@ create_window()
   evas_object_resize(win, 800, 200);
   //evas_object_resize(win, 1200, 400);
   evas_object_show(win);
+
+
+  //Evas* evas = evas_object_evas_get(win);
+  //Evas_Object* edje = create_my_group(evas, "danceoff");
 }
 
 #include "component/camera.h"
