@@ -57,7 +57,10 @@ void control_change_property(Control* c, Component* component, Property* p, cons
 void control_object_add_component(Control* c, Object* o, Component* comp);
 void control_object_remove_component(Control* c, Object* o, Component* comp);
 
-void control_property_update_components(Control* c, Object* o);
 void control_property_update_transform(Control* c);
+
+
+//events
+void control_on_object_components_changed(Control* c, Object* o);
 
 #endif

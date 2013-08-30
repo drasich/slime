@@ -151,7 +151,9 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
       }
       if (i>0) center = vec3_mul(center, 1.0f/ (float) i);
       v->context->mos.center =  center;
-      property_update_data_transform(v->property, objects);
+
+      if (i == 1)
+      control_property_update_transform(c);
     }
   }
 
@@ -452,9 +454,7 @@ control_object_remove_component(Control* c, Object* o, Component* comp)
   op->do_cb(c, op->data);
 }
 
-
-void
-control_property_update_components(Control* c, Object* o)
+void control_on_object_components_changed(Control* c, Object* o)
 {
   if (context_object_get(c->view->context) == o)
     property_object_display(c->view->property, o);

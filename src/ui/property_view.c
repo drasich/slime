@@ -189,7 +189,6 @@ create_property(Evas_Object* win, Context* context, Control* control)
   return p;
 }
 
-
 void
 property_object_display(PropertyView* pw, Object* o)
 {
@@ -204,17 +203,6 @@ property_object_display(PropertyView* pw, Object* o)
     property_add_component(pw, cp);
     cp->component = c;
     component_property_update_data(cp, c->data);
-  }
-
-}
-
-
-void 
-property_update_data_transform(PropertyView* pw, Eina_List* objects)
-{
-  int nb = eina_list_count(objects);
-  if (nb == 1) {
-    property_update_component(pw, "object");
   }
 
 }

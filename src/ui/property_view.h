@@ -23,14 +23,12 @@ struct _PropertyView
 };
 
 void property_update(PropertyView* p, Eina_List* objects);
-void property_update_data_transform(PropertyView* p, Eina_List* objects);
 PropertyView* create_property(Evas_Object* win, Context* context, Control* control);
 void property_set(PropertyView* pw, ComponentProperties* mp);
 
 void property_object_display(PropertyView* pw, Object* o);
 void property_update_components_data(PropertyView* pw, Component* component);
 void property_update_component(PropertyView* pw, const char* name);
-
 
 
 #endif
