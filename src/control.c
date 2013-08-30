@@ -43,11 +43,11 @@ _control_move(Control* c)
   evas_pointer_canvas_xy_get(evas_object_evas_get(v->glview), &x, &y);
   Vec2 mousepos = vec2(x,y);
   //printf("mouse pos : %f, %f \n", mousepos.X, mousepos.Y);
-  Object* o = context_get_object(v->context);
+  Object* o = context_object_get(v->context);
   if (o != NULL && c->state != MOVE) {
     c->state = MOVE;
     //c->start = o->Position;
-    c->start = _objects_center(c, context_get_objects(v->context));
+    c->start = _objects_center(c, context_objects_get(v->context));
     c->mouse_start = mousepos;
   }
 
@@ -57,7 +57,7 @@ static void
 _control_center_camera(Control* c)
 {
   View* v = c->view;
-  Object* o = context_get_object(v->context);
+  Object* o = context_object_get(v->context);
   Camera* cam = v->camera;
   if (o != NULL && c->state == IDLE) {
     //TODO get the distance from the size of the object on the screen
@@ -91,7 +91,7 @@ _rotate_camera(View* v, float x, float y)
   c->angles.X = cam->pitch/M_PI*180.0;
   c->angles.Y = cam->yaw/M_PI*180.0;
 
-  Object* o = context_get_object(v->context);
+  Object* o = context_object_get(v->context);
 
   if (o != NULL) {
     if (!vec3_equal(o->Position, cam->center)) {
@@ -125,7 +125,7 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
       }
     }
   } else if (c->state == MOVE) {
-    Eina_List* objects = context_get_objects(v->context);
+    Eina_List* objects = context_objects_get(v->context);
     Plane p = { c->start, quat_rotate_vec3(v->camera->object->Orientation, vec3(0,0,-1)) };
 
     Ray rstart = ray_from_screen(v->camera, c->mouse_start.X, c->mouse_start.Y, 1);
@@ -268,8 +268,8 @@ control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
     c->state = IDLE;
 
     //TODO
-    Object* o = context_get_object(c->view->context);
-    Eina_List* objects = context_get_objects(c->view->context);
+    Object* o = context_object_get(c->view->context);
+    Eina_List* objects = context_objects_get(c->view->context);
 
     Vec3 center = _objects_center(c, objects);
 
@@ -290,8 +290,8 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
 {
   View* v = c->view;
   Scene* s = v->context->scene;
-  Object* o = context_get_object(v->context);
-  Eina_List* objects = context_get_objects(v->context);
+  Object* o = context_object_get(v->context);
+  Eina_List* objects = context_objects_get(v->context);
 
   const Evas_Modifier * mods = e->modifiers;
 
@@ -456,8 +456,8 @@ control_object_remove_component(Control* c, Object* o, Component* comp)
 void
 control_property_update_components(Control* c, Object* o)
 {
-  printf("TODO update the components\n");
-  property_update_components(c->view->property, o);
+  if (context_object_get(c->view->context) == o)
+    property_object_display(c->view->property, o);
 
 }
 

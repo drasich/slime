@@ -16,7 +16,7 @@ _context_send_message(Context* c, const char* msg)
 }
 
 void
-context_set_object(Context* c, struct _Object* o)
+context_object_set(Context* c, struct _Object* o)
 {
   context_add_object(c, o);
 
@@ -53,14 +53,14 @@ context_remove_object(Context* c, struct _Object* o)
 }
 
 struct _Object* 
-context_get_object(Context* c)
+context_object_get(Context* c)
 {
   return c->object;
   //return eina_list_data_get(eina_list_last(c->objects));
 }
 
 Eina_List*
-context_get_objects(Context* c)
+context_objects_get(Context* c)
 {
   return c->objects;
 }

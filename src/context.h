@@ -25,14 +25,14 @@ struct _Context{
 
 struct _Object;
 
-void context_set_object(Context* c, struct _Object* o);
+void context_object_set(Context* c, struct _Object* o);
 
 void context_clean_objects(Context*c);
 void context_add_object(Context* c, struct _Object* o);
 void context_remove_object(Context* c, struct _Object* o);
 
-struct _Object* context_get_object(Context* c);
-Eina_List* context_get_objects(Context* c);
+struct _Object* context_object_get(Context* c);
+Eina_List* context_objects_get(Context* c);
 
 
 void context_add_callback(Context* c, context_cb cb, void* listener);

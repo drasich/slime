@@ -45,7 +45,7 @@ property_update(PropertyView* pw, Eina_List* objects)
 
   int nb = eina_list_count(objects);
   if (nb == 1) {
-    property_update_components(pw, last);
+    property_object_display(pw, last);
   }
   else if (nb > 1) {
     property_clear_components(pw);
@@ -191,7 +191,7 @@ create_property(Evas_Object* win, Context* context, Control* control)
 
 
 void
-property_update_components(PropertyView* pw, Object* o)
+property_object_display(PropertyView* pw, Object* o)
 {
   property_clear_components(pw);
 

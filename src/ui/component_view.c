@@ -10,9 +10,9 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
   //return;
   //PropertyView* pw = data;
   ComponentProperties* cp = data;
-  void* o = cp->component->data;
+  void* cd = cp->component->data;
 
-  if (o == NULL) return;
+  if (cd == NULL) return;
 
   Property* p = evas_object_data_get(obj, "property");
 
@@ -20,13 +20,13 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
     case EET_T_DOUBLE:
        {
         double v =  elm_spinner_value_get(obj);
-        //memcpy((void*)o + p->offset, &v, sizeof v);
-        memcpy((void*)o + p->offset, &v, p->size);
+        //memcpy((void*)cd + p->offset, &v, sizeof v);
+        memcpy((void*)cd + p->offset, &v, p->size);
        }
       break;
     case EET_T_STRING:
        {
-        const char** str = (void*)o + p->offset;
+        const char** str = (void*)cd + p->offset;
         eina_stringshare_del(*str);
         const char* s = elm_object_text_get(obj);
         *str = eina_stringshare_add(s);
@@ -41,14 +41,14 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
   Control* ct = cp->control;
 
   if (cp->callback) {
-    cp->callback(ct, o, p);
+    cp->callback(ct, cd, p);
   }
 
   if (cp->component && cp->component->funcs->on_property_changed)
   cp->component->funcs->on_property_changed(cp->component);
 
   if (!strcmp(cp->name, "transform"))
-  control_property_update(ct, o);
+  control_property_update(ct, cp->component);
 }
 
 static void

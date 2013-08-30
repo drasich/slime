@@ -1,5 +1,4 @@
 BUG
-- check call to control_property_update
 - Fix property component update - remove object from parameter?
 - there is problem with ComponentProperties data field
   and tree_update_object... check property_update_components

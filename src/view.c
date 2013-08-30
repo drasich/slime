@@ -453,7 +453,7 @@ _addcomp(void *data,
   View* v = evas_object_data_get(obj, "view");
   ComponentDesc* cd = data;
 
-  Object* o = context_get_object(v->context);
+  Object* o = context_object_get(v->context);
   if (o) {
     //object_add_component(v->context->object, c); //TODO
     //
@@ -809,7 +809,7 @@ view_draw(View* v)
   //Render just selected to fbo
   Eina_List *l;
   Object *o;
-  Eina_List* cxol = context_get_objects(cx);
+  Eina_List* cxol = context_objects_get(cx);
 
   fbo_use(r->fbo_selected);
   gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT) ;

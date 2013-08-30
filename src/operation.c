@@ -45,7 +45,7 @@ operation_add_object_undo(Control*c, void* data)
   scene_remove_object(od->s, od->o);
   tree_remove_object(c->view->tree,  od->o);
 
-  Object* o = context_get_object(c->view->context);
+  Object* o = context_object_get(c->view->context);
 
   if (od->o == o &&  od->s == c->view->context->scene){
     //c->view->context->object = NULL;
