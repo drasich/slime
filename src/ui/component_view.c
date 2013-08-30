@@ -47,7 +47,7 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
   if (cp->component && cp->component->funcs->on_property_changed)
   cp->component->funcs->on_property_changed(cp->component);
 
-  if (!strcmp(cp->name, "transform"))
+  if (!strcmp(cp->name, "object"))
   control_property_update(ct, cp->component);
 }
 
