@@ -74,3 +74,15 @@ scene_camera_set(Scene* s, Object* camera)
 {
   s->camera = camera;
 }
+
+Object*
+scene_object_get(Scene* s, const char* name)
+{
+  Eina_List *l;
+  Object *o;
+  EINA_LIST_FOREACH(s->objects, l, o) {
+    if (!strcmp(o->name, name))
+          return o;
+  }
+  return NULL;
+}

@@ -118,6 +118,10 @@ _change_data(void* c, Property* p, const void *data)
         //const char* s = data;
         //*str = s;
         //printf("new pointer : %s\n", s);
+
+
+        const void** ptr = (void*)c + p->offset;
+        *ptr = data;
        }
       break;
     default:

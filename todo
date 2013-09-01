@@ -1,4 +1,5 @@
 LATELY
+- load/unload components pb in object to get ref of name and func
 - in component_view.c, _entry_activated_cb:
   if the property is a pointer : check if there is an object
   with the entry string and then set the property with this pointer
@@ -7,6 +8,8 @@ CLEAN
 - fix functions name -> put the verb at the end
 
 BUG
+- in control.c, _op_change_property save the data if it's not a pointer
+
 - Fix property component update - remove object from parameter?
 - there is problem with ComponentProperties data field
   and tree_update_object... check property_update_components

@@ -49,5 +49,6 @@ ComponentManager*  create_component_manager(Evas_Object* win, struct _Control* c
 void component_manager_load(ComponentManager* cm);
 void component_manager_unload(ComponentManager* cm);
 
+void* component_property_data_get(Component* c, Property* p);
 
 #endif

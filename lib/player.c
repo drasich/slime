@@ -13,6 +13,10 @@ player_update(Component* c, double dt)
 {
   Player* p = c->data;
   c->object->angles.X += p->rotation_speed*dt;
+  if (p->target) {
+    Vec3 pt = vec3_add(p->target->Position, vec3(5,0,0));
+    c->object->Position = pt;
+  }
 }
 
 PropertySet* 
@@ -34,6 +38,7 @@ create_player()
   Player* p = calloc(1, sizeof *p);
   //Eina_Inarray* iarr = _player_properties();
   p->rotation_speed = 20;
+  p->name = "chrisplay";
 
   //Component* c = create_component("player", player_funcs, p, iarr);
   return p;

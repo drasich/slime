@@ -126,8 +126,6 @@ win_del(void *data, Evas_Object *obj, void *event_info)
   component_manager_unload(gv->control->component_manager);
 }
 
-
-
 Evas_Object* create_gameview_window(View* v, Evas_Object** window, Control* c)
 {
   Evas_Object *win;
@@ -142,6 +140,7 @@ Evas_Object* create_gameview_window(View* v, Evas_Object** window, Control* c)
   gv->window = window;
   gv->control = c;
 
+  //component_manager_unload(c->component_manager);
   component_manager_load(c->component_manager); //TODO move this
   
   //evas_object_resize(win, 800/3, 400/3);

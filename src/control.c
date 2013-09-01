@@ -212,6 +212,7 @@ _op_remove_object(Scene* s, Eina_List* objects)
 static Operation* 
 _op_change_property(Component* component, Property* p, const void* data_old, const void* data_new)
 {
+  //TODO handle the case when data is not a pointer and we have to save the data..
   Operation* op = calloc(1, sizeof *op);
 
   op->do_cb = operation_change_property_do;
@@ -417,6 +418,17 @@ control_change_property(Control* c, Component* component, Property* p, const voi
   Operation* op = _op_change_property(component, p, data_old, data_new);
   control_add_operation(c, op);
   op->do_cb(c, op->data);
+  if (p->type == PROPERTY_POINTER)
+   {
+    const Object* old = data_old;
+    const Object* new = data_new;
+    printf("change property object from to : %p, %p\n", old, new);
+    if (!old)
+    printf("change property object from to, names, only new : %s\n", new->name);
+    else
+    printf("change property object from to, names : %s, %s\n", old->name, new->name);
+   }
+  else
   printf("change property with : %s, %s\n", data_old, data_new);
 }
 

@@ -2,6 +2,7 @@
 #include <Eina.h>
 #include "ui/property_view.h"
 #include "property.h"
+#include "view.h"
 
 static void
 _entry_changed_cb(void *data, Evas_Object *obj, void *event)
@@ -21,7 +22,8 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
        {
         double v =  elm_spinner_value_get(obj);
         //memcpy((void*)cd + p->offset, &v, sizeof v);
-        memcpy((void*)cd + p->offset, &v, p->size);
+        //memcpy((void*)cd + p->offset, &v, p->size);
+        memcpy(cd + p->offset, &v, p->size);
        }
       break;
     case EET_T_STRING:
@@ -60,8 +62,37 @@ _entry_activated_cb(void *data, Evas_Object *obj, void *event)
 
   if (strcmp(cp->value_saved, s)) {
     Property* p = evas_object_data_get(obj, "property");
+
+    if (p->type == EET_T_STRING)
     control_change_property(cp->control, cp->component, p, cp->value_saved, s);
+    else if (p->type == PROPERTY_POINTER) {
+      //TODO c'est un peu naze de get la scene comme ca
+      Scene* scene = cp->control->view->context->scene;
+      Object* o = scene_object_get(scene, s);
+      if (o) printf("object ok \n");
+      else
+      printf("object NULL \n");
+      Object* old = scene_object_get(scene, cp->value_saved);
+      if (old)
+      printf("old name :%s \n", old->name);
+      else
+      printf("old is null\n");
+
+      Object* pointer = component_property_data_get(cp->component, p);
+      if ( old == pointer)
+      printf("old == pointer %p, %p \n", old, pointer);
+      else 
+      printf("old != pointer %p, %p \n", old, pointer);
+      if (pointer)
+      printf("pointer name :%s \n", (pointer)->name);
+      printf("o name :%s \n", o->name);
+      control_change_property(cp->control, cp->component, p, pointer, o);
+
+    }
+
+    cp->value_saved = s;
   }
+
 }
 
 static void
@@ -105,6 +136,7 @@ _entry_unfocused_cb(void *data, Evas_Object *obj, void *event)
   ComponentProperties* cp = data;
   const char* s = elm_object_text_get(obj);
   if (strcmp(cp->value_saved, s)) {
+    cp->value_saved = s;
     Property* p = evas_object_data_get(obj, "property");
     control_change_property(cp->control, cp->component, p, cp->value_saved, s);
   }
@@ -306,6 +338,19 @@ _component_property_update_data_recur(ComponentProperties* cp, void* data, Prope
         break;
      case PROPERTY_STRUCT:
          _component_property_update_data_recur(cp, data, p->array);
+         break;
+     case PROPERTY_POINTER:
+          {
+          const void** ptr = (void*)data + p->offset;
+          const char* s = elm_object_text_get(obj);
+          const Object* o = *ptr;
+
+          if (!o) break;
+          if (strcmp(o->name,s)) 
+            elm_object_text_set(obj, o->name );
+
+          }
+
          break;
       default:
         fprintf (stderr, "type not yet implemented: %d at %s, line %d\n",p->type, __FILE__, __LINE__);

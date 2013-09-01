@@ -26,4 +26,6 @@ void scene_destroy(Scene* s);
 
 void scene_camera_set(Scene* s, Object* camera);
 
+Object* scene_object_get(Scene* s, const char* name);
+
 #endif

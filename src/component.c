@@ -110,6 +110,7 @@ component_manager_load(ComponentManager* cm)
 void
 component_manager_unload(ComponentManager* cm)
 {
+  printf("unload\n");
   dlclose(cm->libhandle);
   cm->libhandle = NULL;
 
@@ -118,5 +119,13 @@ component_manager_unload(ComponentManager* cm)
 
   eina_list_free(cm->components);
   cm->components = NULL;
+}
+
+
+void* 
+component_property_data_get(Component* c, Property* p)
+{
+  void** data  = (void*)(c->data + p->offset);
+  return *data;
 }
 
