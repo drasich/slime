@@ -354,6 +354,7 @@ _component_property_update_data_recur(ComponentProperties* cp, void* data, Prope
          break;
       default:
         fprintf (stderr, "type not yet implemented: %d at %s, line %d\n",p->type, __FILE__, __LINE__);
+        printf("prop name %s \n", p->name);
         break;
     }
   }

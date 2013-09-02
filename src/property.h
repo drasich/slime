@@ -25,6 +25,7 @@ struct _PropertySet
 {
   Eina_Inarray* array;
   Hint hint;
+  Eet_Data_Descriptor *descriptor;
 };
 
 
@@ -86,5 +87,26 @@ enum {
   TEST1,
   TEST2
 };
+
+#define PROPERTY_SET_TYPE(ps, type) \
+  Eet_Data_Descriptor_Class eddc; \
+  EET_EINA_FILE_DATA_DESCRIPTOR_CLASS_SET(&eddc, type); \
+  ps->descriptor = eet_data_descriptor_file_new(&eddc);
+
+
+#define PS_ADD_PROP_NAME(ps, struct_type, member, member_type, name) \
+  do {                                                                      \
+    struct_type ___ett;                                                  \
+    Property p = { # name, member_type, \
+      (char *)(& (___ett.member)) -        \
+      (char *)(& (___ett)),                \
+      sizeof ___ett.member};                \
+    eina_inarray_push(ps->array, &p); \
+    printf("type %s, add_prop name : %s,  %zu\n", # struct_type, # member, p.size);\
+    \
+  EET_DATA_DESCRIPTOR_ADD_BASIC(ps->descriptor, struct_type, # member, member, member_type);\
+  } while(0)
+
+
 
 #endif

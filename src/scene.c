@@ -86,3 +86,87 @@ scene_object_get(Scene* s, const char* name)
   }
   return NULL;
 }
+
+
+
+static Eet_Data_Descriptor *_scene_descriptor;
+
+static void
+_scene_descriptor_init(void)
+{
+  Eet_Data_Descriptor_Class eddc;
+
+  EET_EINA_STREAM_DATA_DESCRIPTOR_CLASS_SET(&eddc, Scene);
+  _scene_descriptor = eet_data_descriptor_stream_new(&eddc);
+
+  EET_DATA_DESCRIPTOR_ADD_LIST
+   (_scene_descriptor, Scene, "objects", objects,
+    object_descriptor);
+
+}
+
+
+static const char SCENE_FILE_ENTRY[] = "scene";
+
+Eina_Bool
+scene_write(const Scene* s)
+{
+  object_descriptor_init();
+  _scene_descriptor_init();
+
+  const char* filename = "scene.eet";
+
+  Eina_Bool ret;
+  Eet_File *ef = eet_open(filename, EET_FILE_MODE_WRITE);
+  if (!ef) {
+    fprintf(stderr, "error reading file %s \n", filename);
+    return EINA_FALSE;
+  }
+
+  ret = eet_data_write(ef, _scene_descriptor, SCENE_FILE_ENTRY, s, EINA_TRUE);
+  eet_close(ef);
+  if (ret) {
+    printf("return value for save looks ok \n");
+  }
+  else
+    printf("return value for save NOT OK \n");
+
+  return ret;
+
+
+}
+
+
+
+Scene*
+scene_read()
+{
+  Scene* s;
+  const char* filename = "scene.eet";
+
+  Eet_File *ef = eet_open(filename, EET_FILE_MODE_READ);
+  if (!ef) {
+    fprintf(stderr, "error reading file %s \n", filename);
+    return NULL;
+  }
+
+  s = eet_data_read(ef, _scene_descriptor, SCENE_FILE_ENTRY);
+  eet_close(ef);
+ 
+  return s;
+  
+}
+
+void
+scene_print(Scene* s)
+{
+  printf("scene print\n");
+
+  Eina_List *l;
+  Object *o;
+  EINA_LIST_FOREACH(s->objects, l, o)
+   printf("  object name : %s \n", o->name);
+
+  printf("scene print end\n");
+}
+

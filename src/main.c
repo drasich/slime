@@ -99,8 +99,8 @@ create_window()
 
 
   //evas_object_resize(win, 800/3, 400/3);
-  //evas_object_resize(win, 800, 200);
-  evas_object_resize(win, 1200, 400);
+  evas_object_resize(win, 800, 200);
+  //evas_object_resize(win, 1200, 400);
   evas_object_show(win);
 
 
@@ -167,6 +167,9 @@ build_scene()
   s->view = view;
   view->context->scene = s;
   populate_scene(view->control, s);
+  Eina_Bool b = scene_write(s);
+  Scene* ss = scene_read();
+  scene_print(ss);
 
 }
 

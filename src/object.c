@@ -337,10 +337,13 @@ static PropertySet*
 _vec3_array()
 {
   PropertySet* ps = create_property_set();
+  PROPERTY_SET_TYPE(ps, Vec3);
+
   ps->hint = HORIZONTAL;
   Eina_Inarray *iarr = ps->array;
 
-  ADD_PROP_NAME(iarr, Vec3, X, EET_T_DOUBLE, x);
+  //ADD_PROP_NAME(iarr, Vec3, X, EET_T_DOUBLE, x);
+  PS_ADD_PROP_NAME(ps, Vec3, X, EET_T_DOUBLE, x);
   ADD_PROP_NAME(iarr, Vec3, Y, EET_T_DOUBLE, y);
   ADD_PROP_NAME(iarr, Vec3, Z, EET_T_DOUBLE, z);
 
@@ -351,6 +354,8 @@ static PropertySet*
 _object_properties()
 {
   PropertySet* ps = create_property_set();
+  PROPERTY_SET_TYPE(ps, Object);
+
   Eina_Inarray *iarr = ps->array;
 
   PropertySet *vec3 = _vec3_array();
@@ -359,12 +364,10 @@ _object_properties()
   ADD_PROP(iarr, Object, name, EET_T_STRING);
 
   ADD_PROP_ARRAY(iarr, Object, Position, vec3);
-  //ADD_PROP_NAME(iarr, Object, Position.X, EET_T_DOUBLE, x);
-  //ADD_PROP_NAME(iarr, Object, Position.Y, EET_T_DOUBLE, y);
-  //ADD_PROP_NAME(iarr, Object, Position.Z, EET_T_DOUBLE, z);
 
   PropertySet *an = _vec3_array();
   ADD_PROP_ARRAY(iarr, Object, angles, an);
+
 
   return ps;
 }
@@ -375,4 +378,25 @@ ComponentDesc object_desc = {
   NULL,
   _object_properties
 };
+
+void object_descriptor_init()
+{
+  Eet_Data_Descriptor_Class eddc;
+
+  EET_EINA_FILE_DATA_DESCRIPTOR_CLASS_SET(&eddc, Object);
+  object_descriptor = eet_data_descriptor_file_new(&eddc);
+
+#define ADD_BASIC(member, eet_type) \
+  EET_DATA_DESCRIPTOR_ADD_BASIC     \
+  (object_descriptor, Object, # member, member, eet_type)
+  ADD_BASIC(name, EET_T_STRING);
+#undef ADD_BASIC
+
+}
+
+void
+object_descriptor_shutdown()
+{
+  eet_data_descriptor_free(object_descriptor);
+}
 

@@ -8,6 +8,7 @@ CLEAN
 - fix functions name -> put the verb at the end
 
 BUG
+- why there are messages when I move the object with a spinner
 - in control.c, _op_change_property save the data if it's not a pointer
 
 - Fix property component update - remove object from parameter?
