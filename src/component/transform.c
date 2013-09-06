@@ -136,18 +136,17 @@ void test_test()
 void test_display()
 {
   PropertySet* ps = create_property_set();
-  Eina_Inarray * iarr = ps->array;
 
-  ADD_PROP(iarr, Transform, test, EET_T_DOUBLE);
-  ADD_PROP(iarr, Transform, position.X, EET_T_DOUBLE);
-  ADD_PROP(iarr, Transform, position.Y, EET_T_DOUBLE);
-  ADD_PROP(iarr, Transform, position.Z, EET_T_DOUBLE);
+  ADD_PROP(ps, Transform, test, EET_T_DOUBLE);
+  ADD_PROP(ps, Transform, position.X, EET_T_DOUBLE);
+  ADD_PROP(ps, Transform, position.Y, EET_T_DOUBLE);
+  ADD_PROP(ps, Transform, position.Z, EET_T_DOUBLE);
 
   Transform yep = { vec3(1.98,2,3), vec3(4,5,6), 7};
   printf("size of double %zu \n", sizeof(double));
 
   Property *p;
-  EINA_INARRAY_FOREACH(iarr, p) {
+  EINA_INARRAY_FOREACH(ps->array, p) {
    printf("name: %s , type: %d, offset: %d\n", p->name, p->type, p->offset);
    printf("   value is : ");
    switch(p->type) {
@@ -179,14 +178,13 @@ static PropertySet*
 _transform_properties()
 {
   PropertySet* ps = create_property_set();
-  Eina_Inarray * iarr = ps->array;
 
-  ADD_PROP(iarr, Transform, position.X, EET_T_DOUBLE);
-  ADD_PROP(iarr, Transform, position.Y, EET_T_DOUBLE);
-  ADD_PROP(iarr, Transform, position.Z, EET_T_DOUBLE);
-  ADD_PROP(iarr, Transform, angles.X, EET_T_DOUBLE);
-  ADD_PROP(iarr, Transform, angles.Y, EET_T_DOUBLE);
-  ADD_PROP(iarr, Transform, angles.Z, EET_T_DOUBLE);
+  ADD_PROP(ps, Transform, position.X, EET_T_DOUBLE);
+  ADD_PROP(ps, Transform, position.Y, EET_T_DOUBLE);
+  ADD_PROP(ps, Transform, position.Z, EET_T_DOUBLE);
+  ADD_PROP(ps, Transform, angles.X, EET_T_DOUBLE);
+  ADD_PROP(ps, Transform, angles.Y, EET_T_DOUBLE);
+  ADD_PROP(ps, Transform, angles.Z, EET_T_DOUBLE);
 
   return ps;
 }

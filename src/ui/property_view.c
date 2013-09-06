@@ -107,14 +107,13 @@ static PropertySet*
 _multiple_objects_init_array_properties()
 {
   PropertySet* ps = create_property_set();
-  Eina_Inarray *iarr = ps->array;
 
-  ADD_PROP(iarr, Multiple_Objects_Selection, center.X, EET_T_DOUBLE);
-  ADD_PROP(iarr, Multiple_Objects_Selection, center.Y, EET_T_DOUBLE);
-  ADD_PROP(iarr, Multiple_Objects_Selection, center.Z, EET_T_DOUBLE);
-  ADD_PROP(iarr, Multiple_Objects_Selection, rotation.X, EET_T_DOUBLE);
-  ADD_PROP(iarr, Multiple_Objects_Selection, rotation.Y, EET_T_DOUBLE);
-  ADD_PROP(iarr, Multiple_Objects_Selection, rotation.Z, EET_T_DOUBLE);
+  ADD_PROP(ps, Multiple_Objects_Selection, center.X, EET_T_DOUBLE);
+  ADD_PROP(ps, Multiple_Objects_Selection, center.Y, EET_T_DOUBLE);
+  ADD_PROP(ps, Multiple_Objects_Selection, center.Z, EET_T_DOUBLE);
+  ADD_PROP(ps, Multiple_Objects_Selection, rotation.X, EET_T_DOUBLE);
+  ADD_PROP(ps, Multiple_Objects_Selection, rotation.Y, EET_T_DOUBLE);
+  ADD_PROP(ps, Multiple_Objects_Selection, rotation.Z, EET_T_DOUBLE);
 
   return ps;
 }

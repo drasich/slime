@@ -444,10 +444,9 @@ static PropertySet*
 _mesh_properties()
 {
   PropertySet* ps = create_property_set();
-  Eina_Inarray * iarr = ps->array;
 
-  //ADD_PROP(iarr, Mesh, name, EET_T_STRING);
-  ADD_PROP(iarr, Mesh, name, PROPERTY_FILENAME);
+  //ADD_PROP(ps, Mesh, name, EET_T_STRING);
+  ADD_PROP(ps, Mesh, name, PROPERTY_FILENAME);
 
   return ps;
 }

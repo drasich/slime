@@ -23,11 +23,10 @@ PropertySet*
 _player_properties(ComponentDesc* desc)
 {
   PropertySet *ps = create_property_set();
-  Eina_Inarray * iarr = ps->array;
 
-  ADD_PROP(iarr, Player, name, EET_T_STRING);
-  ADD_PROP(iarr, Player, rotation_speed, EET_T_DOUBLE);
-  ADD_PROP(iarr, Player, target, PROPERTY_POINTER );
+  ADD_PROP(ps, Player, name, EET_T_STRING);
+  ADD_PROP(ps, Player, rotation_speed, EET_T_DOUBLE);
+  ADD_PROP(ps, Player, target, PROPERTY_POINTER );
 
   return ps;
 }

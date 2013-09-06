@@ -136,6 +136,10 @@ scene_write(const Scene* s)
 
 }
 
+void output(void *data, const char *string)
+{
+  printf("%s", string);
+}
 
 
 Scene*
@@ -152,6 +156,9 @@ scene_read()
 
   s = eet_data_read(ef, _scene_descriptor, SCENE_FILE_ENTRY);
   eet_close(ef);
+  printf("data dump\n");
+  eet_data_dump(ef, SCENE_FILE_ENTRY, output, NULL);
+  printf("data dump end\n");
  
   return s;
   

@@ -18,3 +18,11 @@ void add_offset(PropertySet* ps, int offset)
   }
 
 }
+
+int property_type_check(int type)
+{
+  if (type == PROPERTY_FILENAME)
+  return EET_T_STRING;
+
+  return type;
+}

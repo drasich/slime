@@ -340,12 +340,10 @@ _vec3_array()
   PROPERTY_SET_TYPE(ps, Vec3);
 
   ps->hint = HORIZONTAL;
-  Eina_Inarray *iarr = ps->array;
 
-  //ADD_PROP_NAME(iarr, Vec3, X, EET_T_DOUBLE, x);
-  PS_ADD_PROP_NAME(ps, Vec3, X, EET_T_DOUBLE, x);
-  ADD_PROP_NAME(iarr, Vec3, Y, EET_T_DOUBLE, y);
-  ADD_PROP_NAME(iarr, Vec3, Z, EET_T_DOUBLE, z);
+  ADD_PROP_NAME(ps, Vec3, X, EET_T_DOUBLE, x);
+  ADD_PROP_NAME(ps, Vec3, Y, EET_T_DOUBLE, y);
+  ADD_PROP_NAME(ps, Vec3, Z, EET_T_DOUBLE, z);
 
   return ps;
 }
@@ -356,18 +354,15 @@ _object_properties()
   PropertySet* ps = create_property_set();
   PROPERTY_SET_TYPE(ps, Object);
 
-  Eina_Inarray *iarr = ps->array;
-
   PropertySet *vec3 = _vec3_array();
   //TODO clean the arrays
 
-  ADD_PROP(iarr, Object, name, EET_T_STRING);
+  ADD_PROP(ps, Object, name, EET_T_STRING);
 
-  ADD_PROP_ARRAY(iarr, Object, Position, vec3);
+  ADD_PROP_ARRAY(ps, Object, Position, vec3);
 
   PropertySet *an = _vec3_array();
-  ADD_PROP_ARRAY(iarr, Object, angles, an);
-
+  ADD_PROP_ARRAY(ps, Object, angles, an);
 
   return ps;
 }

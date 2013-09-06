@@ -144,13 +144,12 @@ static PropertySet*
 _camera_properties()
 {
   PropertySet* ps = create_property_set();
-  Eina_Inarray * iarr = ps->array;
 
-  ADD_PROP(iarr, CCamera, width, EET_T_DOUBLE);
-  ADD_PROP(iarr, CCamera, height, EET_T_DOUBLE);
-  ADD_PROP(iarr, CCamera, fovy_base, EET_T_DOUBLE);
-  ADD_PROP(iarr, CCamera, near, EET_T_DOUBLE);
-  ADD_PROP(iarr, CCamera, far, EET_T_DOUBLE);
+  ADD_PROP(ps, CCamera, width, EET_T_DOUBLE);
+  ADD_PROP(ps, CCamera, height, EET_T_DOUBLE);
+  ADD_PROP(ps, CCamera, fovy_base, EET_T_DOUBLE);
+  ADD_PROP(ps, CCamera, near, EET_T_DOUBLE);
+  ADD_PROP(ps, CCamera, far, EET_T_DOUBLE);
 
   return ps;
 }
