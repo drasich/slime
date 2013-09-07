@@ -173,6 +173,7 @@ Object* create_object()
   eina_value_setup(&o->data_position, EINA_VALUE_TYPE_DOUBLE);
   eina_value_set(&o->data_position, 777);
 
+  //TODO put in a transform component
   Component *oc =  create_component(&object_desc);
   oc->data = o;
   object_add_component(o, oc);
@@ -333,36 +334,28 @@ object_component_get(const Object* o, const char* name)
 
 }
 
-static PropertySet*
-_vec3_array()
-{
-  PropertySet* ps = create_property_set();
-  PROPERTY_SET_TYPE(ps, Vec3);
-
-  ps->hint = HORIZONTAL;
-
-  ADD_PROP_NAME(ps, Vec3, X, EET_T_DOUBLE, "x");
-  ADD_PROP_NAME(ps, Vec3, Y, EET_T_DOUBLE, "y");
-  ADD_PROP_NAME(ps, Vec3, Z, EET_T_DOUBLE, "z");
-
-  return ps;
-}
-
-static PropertySet* 
-_object_properties()
+PropertySet* 
+property_set_object()
 {
   PropertySet* ps = create_property_set();
   PROPERTY_SET_TYPE(ps, Object);
 
-  PropertySet *vec3 = _vec3_array();
-  //TODO clean the arrays
+  PropertySet *vec3 = property_set_vec3();
+  //TODO clean the property sets
 
   ADD_PROP(ps, Object, name, EET_T_STRING);
 
   ADD_PROP_STRUCT_NESTED(ps, Object, Position, vec3);
 
-  PropertySet *an = _vec3_array();
+  PropertySet *an = property_set_vec3();
   ADD_PROP_STRUCT_NESTED(ps, Object, angles, an);
+
+  // other components
+  Eet_Data_Descriptor *ob_descriptor = ps->descriptor;
+
+  EET_DATA_DESCRIPTOR_ADD_LIST
+   (ob_descriptor, Object, "components", components,
+    component_descriptor);
 
   return ps;
 }
@@ -371,27 +364,6 @@ _object_properties()
 ComponentDesc object_desc = {
   "object",
   NULL,
-  _object_properties
+  property_set_object
 };
-
-void object_descriptor_init()
-{
-  Eet_Data_Descriptor_Class eddc;
-
-  EET_EINA_FILE_DATA_DESCRIPTOR_CLASS_SET(&eddc, Object);
-  object_descriptor = eet_data_descriptor_file_new(&eddc);
-
-#define ADD_BASIC(member, eet_type) \
-  EET_DATA_DESCRIPTOR_ADD_BASIC     \
-  (object_descriptor, Object, # member, member, eet_type)
-  ADD_BASIC(name, EET_T_STRING);
-#undef ADD_BASIC
-
-}
-
-void
-object_descriptor_shutdown()
-{
-  eet_data_descriptor_free(object_descriptor);
-}
 

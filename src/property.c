@@ -1,5 +1,6 @@
 #include <Eina.h>
 #include "property.h"
+#include "vec.h"
 
 PropertySet* create_property_set()
 {
@@ -26,3 +27,18 @@ int property_type_check(int type)
 
   return type;
 }
+
+PropertySet*
+property_set_vec3()
+{
+  PropertySet* ps = create_property_set();
+  PROPERTY_SET_TYPE(ps, Vec3);
+  ps->hint = HORIZONTAL;
+
+  ADD_PROP_NAME(ps, Vec3, X, EET_T_DOUBLE, "x");
+  ADD_PROP_NAME(ps, Vec3, Y, EET_T_DOUBLE, "y");
+  ADD_PROP_NAME(ps, Vec3, Z, EET_T_DOUBLE, "z");
+
+  return ps;
+}
+

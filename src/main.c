@@ -167,8 +167,15 @@ build_scene()
   s->view = view;
   view->context->scene = s;
   populate_scene(view->control, s);
+
+  printf("scene ORIGINAL\n");
+  scene_print(s);
+  printf("scene write*****\n");
   Eina_Bool b = scene_write(s);
+  printf("scene write end, scene read____\n");
   Scene* ss = scene_read();
+  printf("scene write read, scene read____\n");
+  printf("scene COPY\n");
   scene_print(ss);
 
 }

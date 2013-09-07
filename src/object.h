@@ -65,7 +65,6 @@ void object_add_component_armature(Object* o, Armature* a);
 void* object_component_get(const Object* o, const char* name);
 
 ComponentDesc object_desc;
-Eet_Data_Descriptor *object_descriptor;
-void object_descriptor_init();
+PropertySet* property_set_object();
 
 #endif

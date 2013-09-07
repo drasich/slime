@@ -4,7 +4,7 @@
 #include "stdbool.h"
 
 typedef struct _Shader Shader;
-typedef char GLchar; // currently not in 1.7.3 and 1.7.4 but is in svn.
+//typedef char GLchar; // currently not in 1.7.3 and 1.7.4 but is in svn.
 
 struct _Shader
 {

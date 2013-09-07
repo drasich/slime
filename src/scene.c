@@ -99,9 +99,13 @@ _scene_descriptor_init(void)
   EET_EINA_STREAM_DATA_DESCRIPTOR_CLASS_SET(&eddc, Scene);
   _scene_descriptor = eet_data_descriptor_stream_new(&eddc);
 
+  PropertySet* object_ps = property_set_object();
+  //TODO delete object_ps;
+
   EET_DATA_DESCRIPTOR_ADD_LIST
    (_scene_descriptor, Scene, "objects", objects,
-    object_descriptor);
+    //object_descriptor);
+    object_ps->descriptor);
 
 }
 
@@ -111,7 +115,7 @@ static const char SCENE_FILE_ENTRY[] = "scene";
 Eina_Bool
 scene_write(const Scene* s)
 {
-  object_descriptor_init();
+  //object_descriptor_init();
   _scene_descriptor_init();
 
   const char* filename = "scene.eet";
@@ -156,9 +160,9 @@ scene_read()
 
   s = eet_data_read(ef, _scene_descriptor, SCENE_FILE_ENTRY);
   eet_close(ef);
-  printf("data dump\n");
+  printf("scene read data dump\n");
   eet_data_dump(ef, SCENE_FILE_ENTRY, output, NULL);
-  printf("data dump end\n");
+  printf("scene read data dump end\n");
  
   return s;
   
@@ -169,10 +173,16 @@ scene_print(Scene* s)
 {
   printf("scene print\n");
 
+  Eina_List *cl;
   Eina_List *l;
   Object *o;
-  EINA_LIST_FOREACH(s->objects, l, o)
+  Component* c;
+  EINA_LIST_FOREACH(s->objects, l, o) {
    printf("  object name : %s \n", o->name);
+   EINA_LIST_FOREACH(o->components, cl, c) {
+     printf("     component name : %s \n", c->name);
+   }
+  }
 
   printf("scene print end\n");
 }

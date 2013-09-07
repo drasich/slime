@@ -42,6 +42,9 @@ et aussi "object properties" "name, ..."
 
 
 PROPERTIES
+- make a hash of property_set, create_component(component manager, desc)
+  get propertyset or create if doesn't exit yet
+
 - make vec4 a possible type to edit easily
 - material
 - comment faire pour editer facilement un enum...

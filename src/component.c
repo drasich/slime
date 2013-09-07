@@ -71,7 +71,7 @@ create_component_manager(Evas_Object* win, Control* c)
   //cm->win = win;
   printf("create compo manager\n");
   cm->components = eina_list_append(cm->components, &camera_desc);
-
+  cm->components = eina_list_append(cm->components, &mesh_desc);
 
   return cm;
 }
@@ -127,5 +127,67 @@ component_property_data_get(Component* c, Property* p)
 {
   void** data  = (void*)(c->data + p->offset);
   return *data;
+}
+
+static const char *
+_component_type_get(
+      const void *data,
+      Eina_Bool  *unknow)
+{
+  const char **name = (const char**) data;
+  if (!strcmp(*name, "object")) {
+    *unknow = EINA_TRUE;
+    return NULL;
+  }
+
+  *unknow = EINA_FALSE;
+
+  return *name;
+}
+
+static Eina_Bool
+_component_type_set(
+      const char *type,
+      void       *data,
+      Eina_Bool   unknow)
+{
+  const char **name = data;
+  *name = type;
+
+  if (!strcmp(*name, "object"))
+  return EINA_FALSE;
+
+  return EINA_TRUE;
+}
+
+static Eet_Data_Descriptor *_variant_unified_descriptor;
+
+void
+component_descriptor_init(Eina_List* component_desc)
+{
+  Eet_Data_Descriptor_Class eddc;
+
+  EET_EINA_STREAM_DATA_DESCRIPTOR_CLASS_SET(&eddc, Component);
+  component_descriptor = eet_data_descriptor_stream_new(&eddc);
+
+  eddc.version = EET_DATA_DESCRIPTOR_CLASS_VERSION;
+  eddc.func.type_get = _component_type_get;
+  eddc.func.type_set = _component_type_set;
+  _variant_unified_descriptor = eet_data_descriptor_stream_new(&eddc);
+
+
+  Eina_List* l;
+  ComponentDesc* cd;
+  EINA_LIST_FOREACH(component_desc, l, cd) {
+    printf("DESCRIPTOR component name : %s\n", cd->name);
+    EET_DATA_DESCRIPTOR_ADD_MAPPING(
+          _variant_unified_descriptor, cd->name, cd->properties()->descriptor);
+    //TODO free cd->properties
+  }
+
+  EET_DATA_DESCRIPTOR_ADD_VARIANT(
+        component_descriptor, Component, "data", data, name,
+        _variant_unified_descriptor);
+
 }
 

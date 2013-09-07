@@ -54,11 +54,9 @@ property_update(PropertyView* pw, Eina_List* objects)
   }
 }
 
-//TODO change this function to something like update_component_transform 
 void
 property_update_components_data(PropertyView* pw, Component* component)
 {
-  //TODO
   Eina_List* l;
   ComponentProperties* cp;
 
@@ -66,7 +64,6 @@ property_update_components_data(PropertyView* pw, Component* component)
     if (component == cp->component)
     component_property_update_data(cp, cp->component->data);
   }
-
 }
 
 

@@ -667,6 +667,7 @@ create_view(Evas_Object *win)
   view->control = create_control(view);
   view->control->component_manager = create_component_manager(win, view->control); //TODO
   component_manager_load(view->control->component_manager);
+  component_descriptor_init(view->control->component_manager->components);
 
   view->box = elm_box_add(win);
   evas_object_size_hint_weight_set(view->box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
