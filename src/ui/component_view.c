@@ -155,6 +155,7 @@ _property_add_entry(ComponentProperties* cp, Property* p)
   label = elm_label_add(cp->win);
   char s[256];
   sprintf(s, "<b> %s </b> : ", p->name);
+  printf("ADD ENTRY : %s \n\n ",p->name);
 
   elm_object_text_set(label, s);
   evas_object_show(label);
@@ -165,8 +166,8 @@ _property_add_entry(ComponentProperties* cp, Property* p)
   evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
   evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
   elm_object_text_set(en, "none");
-  elm_entry_scrollbar_policy_set(en, 
-        ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_OFF);
+  //elm_entry_scrollbar_policy_set(en, 
+  //      ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_OFF);
   elm_entry_single_line_set(en, EINA_TRUE);
   //elm_entry_select_all(en);
   evas_object_show(en);
@@ -263,8 +264,8 @@ _property_add_fileselect(ComponentProperties* cp, Property* p)
   evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
   evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
   elm_object_text_set(en, "none");
-  elm_entry_scrollbar_policy_set(en, 
-        ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_OFF);
+  //elm_entry_scrollbar_policy_set(en, 
+   //     ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_OFF);
   elm_entry_single_line_set(en, EINA_TRUE);
   elm_entry_editable_set(en, EINA_FALSE);
   //elm_entry_select_all(en);

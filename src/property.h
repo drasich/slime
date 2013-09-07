@@ -103,12 +103,12 @@ enum {
 #define ADD_PROP_NAME(ps, struct_type, member, member_type, name) \
  do {                                                                      \
    struct_type ___ett;                                                  \
-   Property p = { # name, member_type, \
+   Property p = { name, member_type, \
      (char *)(& (___ett.member)) -        \
      (char *)(& (___ett)),                \
      sizeof ___ett.member};                \
    eina_inarray_push(ps->array, &p); \
-   printf("type %s, add_prop name : %s,  %zu\n", # struct_type, # member, p.size);\
+   printf("type %s, add_prop_name : %s,  %zu\n", # struct_type, # member, p.size);\
    \
    int mt = property_type_check(member_type);\
    PROPERTY_SET_TYPE(ps, struct_type); \

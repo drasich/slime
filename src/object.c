@@ -341,9 +341,9 @@ _vec3_array()
 
   ps->hint = HORIZONTAL;
 
-  ADD_PROP_NAME(ps, Vec3, X, EET_T_DOUBLE, x);
-  ADD_PROP_NAME(ps, Vec3, Y, EET_T_DOUBLE, y);
-  ADD_PROP_NAME(ps, Vec3, Z, EET_T_DOUBLE, z);
+  ADD_PROP_NAME(ps, Vec3, X, EET_T_DOUBLE, "x");
+  ADD_PROP_NAME(ps, Vec3, Y, EET_T_DOUBLE, "y");
+  ADD_PROP_NAME(ps, Vec3, Z, EET_T_DOUBLE, "z");
 
   return ps;
 }
