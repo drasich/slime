@@ -28,58 +28,7 @@ struct _PropertySet
   Eet_Data_Descriptor *descriptor;
 };
 
-
-/*
-#define ADD_PROP(array, struct_type, member, member_type) \
-  do {                                                                      \
-    struct_type ___ett;                                                  \
-    Property p = { # member, member_type, \
-      (char *)(& (___ett.member)) -        \
-      (char *)(& (___ett))};                \
-    eina_inarray_push(array, &p); \
-  } while(0)
-*/
-
 void add_offset(PropertySet* ps, int offset);
-
-
-/*
-#define ADD_PROP(ps, struct_type, member, member_type) \
-  do {                                                                      \
-    struct_type ___ett;                                                  \
-    Property p = { # member, member_type, \
-      (char *)(& (___ett.member)) -        \
-      (char *)(& (___ett)),                \
-      sizeof ___ett.member};                \
-    eina_inarray_push(ps->array, &p); \
-    printf("type %s, add_prop : %s,  %zu\n", # struct_type, # member, p.size);\
-  } while(0)
-
-#define ADD_PROP_NAME(ps, struct_type, member, member_type, name) \
-  do {                                                                      \
-    struct_type ___ett;                                                  \
-    Property p = { # name, member_type, \
-      (char *)(& (___ett.member)) -        \
-      (char *)(& (___ett)),                \
-      sizeof ___ett.member};                \
-    eina_inarray_push(ps->array, &p); \
-    printf("type %s, add_prop name : %s,  %zu\n", # struct_type, # member, p.size);\
-  } while(0)
-
-#define ADD_PROP_ARRAY(ps, struct_type, member, prop_array) \
-  do {                                                                      \
-    struct_type ___ett;                                                  \
-    Property p = { # member, PROPERTY_STRUCT, \
-      (char *)(& (___ett.member)) -        \
-      (char *)(& (___ett)),                \
-      sizeof ___ett.member, \
-      prop_array};                \
-    add_offset(prop_array, p.offset); \
-    eina_inarray_push(ps->array, &p); \
-    printf("type %s, add_prop array : %s,  %zu\n", # struct_type, # member, p.size);\
-  } while(0)
-  */
-
 
 PropertySet* create_property_set();
 int property_type_check(int type);
@@ -119,7 +68,7 @@ enum {
  ADD_PROP_NAME(ps, struct_type, member, member_type, # member)
 
 
-#define ADD_PROP_ARRAY(ps, struct_type, member, prop_array) \
+#define ADD_PROP_STRUCT_NESTED(ps, struct_type, member, prop_array) \
  do {                                                                      \
    struct_type ___ett;                                                  \
    Property p = { # member, PROPERTY_STRUCT, \

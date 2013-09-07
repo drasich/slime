@@ -63,6 +63,7 @@ property_update_components_data(PropertyView* pw, Component* component)
   ComponentProperties* cp;
 
   EINA_LIST_FOREACH(pw->component_widgets, l, cp) {
+    if (component == cp->component)
     component_property_update_data(cp, cp->component->data);
   }
 

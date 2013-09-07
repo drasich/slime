@@ -359,10 +359,10 @@ _object_properties()
 
   ADD_PROP(ps, Object, name, EET_T_STRING);
 
-  ADD_PROP_ARRAY(ps, Object, Position, vec3);
+  ADD_PROP_STRUCT_NESTED(ps, Object, Position, vec3);
 
   PropertySet *an = _vec3_array();
-  ADD_PROP_ARRAY(ps, Object, angles, an);
+  ADD_PROP_STRUCT_NESTED(ps, Object, angles, an);
 
   return ps;
 }
