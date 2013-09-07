@@ -181,6 +181,16 @@ scene_print(Scene* s)
    printf("  object name : %s \n", o->name);
    EINA_LIST_FOREACH(o->components, cl, c) {
      printf("     component name : %s \n", c->name);
+     if (!c->name) continue;
+     if (!strcmp(c->name, "mesh")) {
+       Mesh* m = c->data;
+       printf("        mesh name : %s \n", m->name);
+     }
+     else if (!strcmp(c->name, "camera")) {
+       CCamera* cc = c->data;
+       printf("       camera width : %f \n", cc->width);
+
+     }
    }
   }
 
