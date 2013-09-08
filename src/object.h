@@ -29,6 +29,7 @@ struct _Object {
   Mesh* mesh;
   Armature* armature;
   Eina_List* components;
+  Component* component;
 };
 
 void object_init(Object* o);

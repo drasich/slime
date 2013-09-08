@@ -155,7 +155,6 @@ _property_add_entry(ComponentProperties* cp, Property* p)
   label = elm_label_add(cp->win);
   char s[256];
   sprintf(s, "<b> %s </b> : ", p->name);
-  printf("ADD ENTRY : %s \n\n ",p->name);
 
   elm_object_text_set(label, s);
   evas_object_show(label);

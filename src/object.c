@@ -173,10 +173,14 @@ Object* create_object()
   eina_value_setup(&o->data_position, EINA_VALUE_TYPE_DOUBLE);
   eina_value_set(&o->data_position, 777);
 
-  //TODO put in a transform component
+  //TODO put in a transform component or don't add in the list...
+  /*
   Component *oc =  create_component(&object_desc);
   oc->data = o;
   object_add_component(o, oc);
+  */
+  o->component =  create_component(&object_desc);
+  o->component->data = o;
   
   return o;
 }

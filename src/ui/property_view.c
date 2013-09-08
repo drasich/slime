@@ -195,6 +195,11 @@ property_object_display(PropertyView* pw, Object* o)
   Component* c;
   Eina_List* l;
 
+  cp = create_component_properties(o->component, pw);
+  property_add_component(pw, cp);
+  cp->component = o->component;
+  component_property_update_data(cp, o->component->data);
+
   EINA_LIST_FOREACH(o->components, l, c) {
     cp = create_component_properties(c, pw);
     property_add_component(pw, cp);

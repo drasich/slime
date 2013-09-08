@@ -261,12 +261,20 @@ static Elm_Object_Item*
 _tree_get_item(Tree* t, Object* o)
 { 
   Elm_Object_Item* item = elm_genlist_first_item_get(t->gl);
-  if (!item) return NULL;
+  if (!item) {
+    return NULL;
+  }
 
   Object* eo = (Object*) elm_object_item_data_get(item);
 
   while (eo != o && item) {
     item = elm_genlist_item_next_get(item);
+    if (item) {
+      printf("there is item\n");
+    }
+    else {
+      printf("there is no item\n");
+    }
     eo = (Object*) elm_object_item_data_get(item);
   }
 
@@ -306,10 +314,12 @@ tree_select_objects(Tree* t, Eina_List* objects)
 {
   Eina_List* l;
   Object* o;
+
   EINA_LIST_FOREACH(objects, l, o) {
     Elm_Object_Item* item = _tree_get_item(t, o);
-    if (item)
-    elm_genlist_item_selected_set(item, EINA_TRUE);
+    if (item) {
+      elm_genlist_item_selected_set(item, EINA_TRUE);
+    }
   }
 }
 

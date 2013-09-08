@@ -190,8 +190,6 @@ elm_main(int argc, char **argv)
   create_window();
 
   build_scene();
-  test_test();
-  //test_display();
 
   elm_run();
   elm_shutdown();
