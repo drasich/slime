@@ -181,6 +181,7 @@ Object* create_object()
   */
   o->component =  create_component(&object_desc);
   o->component->data = o;
+  o->component->object = o;
   
   return o;
 }

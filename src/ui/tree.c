@@ -269,12 +269,6 @@ _tree_get_item(Tree* t, Object* o)
 
   while (eo != o && item) {
     item = elm_genlist_item_next_get(item);
-    if (item) {
-      printf("there is item\n");
-    }
-    else {
-      printf("there is no item\n");
-    }
     eo = (Object*) elm_object_item_data_get(item);
   }
 
