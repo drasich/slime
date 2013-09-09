@@ -135,7 +135,6 @@ operation_change_property_do(Control *c, void* data)
 {
   Op_Change_Property* opd = data;
   Property* p = opd->p;
-  //Object* o = opd->o;
   Component* component = opd->component;
   _change_data(component->data, p, opd->value_new);
   control_property_update(c, component);
@@ -146,7 +145,6 @@ operation_change_property_undo(Control *c, void* data)
 {
   Op_Change_Property* opd = data;
   Property* p = opd->p;
-  //Object* o = opd->o;
   Component* component = opd->component;
   _change_data(component->data, p, opd->value_old);
   control_property_update(c, component);

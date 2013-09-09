@@ -219,7 +219,6 @@ _op_change_property(Component* component, Property* p, const void* data_old, con
   op->undo_cb = operation_change_property_undo;
 
   Op_Change_Property* od = calloc(1, sizeof *od);
-  //od->o = o;
   od->component = component;
   od->p = p;
   od->value_old = data_old;

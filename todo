@@ -7,19 +7,12 @@ LATELY
 CLEAN
 - fix functions name -> put the verb at the end
 
-BUG
-- why there are messages when I move the object with a spinner
-- in control.c, _op_change_property save the data if it's not a pointer
-
+ISSUES
+- in control.c, _op_change_property save the data if it's not a pointer to existing data (like an int)
 - Fix property component update - remove object from parameter?
-- there is problem with ComponentProperties data field
-  and tree_update_object... check property_update_components
-  because component properties data is the component, not the object
-  control_property_update, le tree_update_object parce que Object dans
-  control_property_update n'est pas vraiment un object qd il est appele
-  dans l'operation
-    alors peut etre je dois changer object* a void* data dans _Op_Change_Property 
-    et faire un control_component_property_update?
+
+BUG
+-
 
 RENDER
 - decide how to draw with camera ortho and per
