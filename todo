@@ -12,7 +12,8 @@ ISSUES
 - Fix property component update - remove object from parameter?
 
 BUG
--
+- open play window and close the main window with the cross -> crash
+  focus play and main and close with escape sometimes window manager freeze
 
 RENDER
 - decide how to draw with camera ortho and per
