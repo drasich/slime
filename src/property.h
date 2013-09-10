@@ -78,7 +78,7 @@ enum {
    add_offset(sub, p.offset); \
    eina_inarray_push(ps->array, &p); \
    PROPERTY_SET_TYPE(ps, struct_type); \
-   EET_DATA_DESCRIPTOR_ADD_SUB_NESTED(ps->descriptor, struct_type, # member, member, sub->descriptor);\
+   EET_DATA_DESCRIPTOR_ADD_SUB_NESTED(ps->descriptor, struct_type, # member, member, sub->descriptor); \
  } while(0)
 
 PropertySet* property_set_vec3();

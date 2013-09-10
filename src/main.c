@@ -88,7 +88,6 @@ create_window()
   Evas_Object* property = view->property->root;
   Evas_Object* tree = view->tree->root;
 
-
   elm_object_part_content_set(hpanes, "left", property);
   elm_object_part_content_set(hpanes, "right", tree);
 
@@ -139,6 +138,8 @@ populate_scene(Control* c, Scene* s)
 
   Object* cam = create_object();
   cam->name = eina_stringshare_add("cameratest");
+  Vec3 campos = {0,0,20};
+  cam->Position = campos;
   Component* compcam = create_component(&camera_desc);
   object_add_component(cam, compcam);
 
@@ -193,16 +194,30 @@ build_scene()
 
 }
 
+static void
+gameviewtest()
+{
+  Evas_Object *win;
+  win = elm_win_util_standard_add("slime", "slime");
+  evas_object_resize(win, 800, 200);
+  evas_object_show(win);
+  elm_win_autodel_set(win, EINA_TRUE);
+  evas_object_smart_callback_add(win, "delete,request", win_del, NULL);
+  create_gameview(win);
+
+}
+
 #include "component/transform.h"
 EAPI_MAIN int
 elm_main(int argc, char **argv)
 {
   elm_config_preferred_engine_set("opengl_x11");
-  elm_config_focus_highlight_animate_set(EINA_TRUE);
-  elm_config_focus_highlight_enabled_set(EINA_TRUE);
+  //elm_config_focus_highlight_animate_set(EINA_TRUE);
+  //elm_config_focus_highlight_enabled_set(EINA_TRUE);
   create_window();
 
   build_scene();
+  //gameviewtest();
 
   elm_run();
   elm_shutdown();

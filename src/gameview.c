@@ -9,6 +9,8 @@
 static void
 _init_gl(Evas_Object *obj)
 {
+  //Evas_GL_API *gla = elm_glview_gl_api_get(obj);
+
   gl->glEnable(GL_DEPTH_TEST);
   gl->glEnable(GL_STENCIL_TEST);
   gl->glDepthFunc(GL_LEQUAL);
@@ -19,7 +21,8 @@ _init_gl(Evas_Object *obj)
 static void
 _del_gl(Evas_Object *obj)
 {
-  printf("gameview del gl\n");
+  //printf("gameview del gl\n");
+  //TODO delete stuff
 }
 
 static void
@@ -68,6 +71,15 @@ _gameview_del(void *data __UNUSED__, Evas *evas __UNUSED__, Evas_Object *obj, vo
   Ecore_Animator *ani = evas_object_data_get(obj, "ani");
   ecore_animator_del(ani);
   //GameView* gv = evas_object_data_get(obj, "gameview");
+  printf("gameview_del\n");
+
+  GameView* gv = evas_object_data_get(obj, "gameview");
+  *gv->window = NULL;
+  printf("win del will free\n");
+  free(gv);
+  printf("win del will free is done\n");
+  component_manager_unload(gv->control->component_manager);
+  printf("win del has unload\n");
 }
 
 
@@ -109,6 +121,7 @@ create_gameview(Evas_Object *win)
   elm_box_pack_end(view->box, view->glview);
   evas_object_data_set(view->glview, "gameview", view);
   _set_callbacks(view->glview);
+  //evas_object_show(view->glview);
 
   /*
   //_add_buttons(view, win);
@@ -120,34 +133,41 @@ create_gameview(Evas_Object *win)
 static void
 win_del(void *data, Evas_Object *obj, void *event_info)
 {
+  /*
   GameView* gv = data;
   *gv->window = NULL;
+  printf("win del will free\n");
   free(gv);
+  printf("win del will free is done\n");
   component_manager_unload(gv->control->component_manager);
+  printf("win del has unload\n");
+  */
 }
 
 Evas_Object* create_gameview_window(View* v, Evas_Object** window, Control* c)
 {
+  Scene* s = v->context->scene;
+
   Evas_Object *win;
   win = elm_win_util_standard_add("slime", "gameview");
+  Object* o = s->camera;
+  CCamera* cam = object_component_get(o, "camera");
+  evas_object_resize(win, cam->width , cam->height);
+  //evas_object_resize(win, 800/3, 400/3);
+  evas_object_show(win);
+
   elm_win_autodel_set(win, EINA_TRUE);
   GameView* gv = create_gameview(win);
-  evas_object_smart_callback_add(win, "delete,request", win_del, gv);
+  //evas_object_smart_callback_add(win, "delete,request", win_del, gv);
   //Context* cx = v->context;
-  Scene* s = v->context->scene;
   gv->scene = s;
   gv->camera = v->camera;
   gv->window = window;
   gv->control = c;
 
   //component_manager_unload(c->component_manager);
-  component_manager_load(c->component_manager); //TODO move this
+  //component_manager_load(c->component_manager); //TODO move this
   
-  //evas_object_resize(win, 800/3, 400/3);
-  Object* o = s->camera;
-  CCamera* cam = object_component_get(o, "camera");
-  evas_object_resize(win, cam->width , cam->height);
-  evas_object_show(win);
   return win;
 }
 
