@@ -100,6 +100,7 @@ ComponentDesc mesh_desc;
 MeshFunc mesh_quad;
 MeshFunc mesh_generic;
 
+void mesh_file_set(Mesh* m, const char* filename);
 
 void mesh_read_file(Mesh* mesh, FILE* f);
 void mesh_read(Mesh* mesh, char* path);

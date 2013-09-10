@@ -316,6 +316,8 @@ object_add_component(Object* o, Component* c)
 {
   o->components = eina_list_append(o->components, c);
   c->object = o;
+  if (!strcmp(c->name, "mesh"))
+    o->mesh = c->data;
 }
 
 void

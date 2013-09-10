@@ -455,6 +455,9 @@ static void
 _mesh_draw(Component* c, Matrix4 world, struct _CCamera* cam)
 {
   Mesh* m = c->data;
+  if (!m->name)
+  return;
+
   Matrix4* projection = &cam->projection;
 
   //TODO change this
@@ -464,6 +467,29 @@ _mesh_draw(Component* c, Matrix4 world, struct _CCamera* cam)
 
   mesh_set_matrices(m, world, *projection);
   m->func->draw(m);
+}
+
+void
+mesh_file_set(Mesh* m, const char* filename)
+{
+  //return;
+  FILE *f;
+  f = fopen(filename, "rb");
+  if (!f) {
+    printf("cannot open file '%s'\n", filename);
+  }
+  fseek(f, 0, SEEK_SET);
+
+  const char* type = read_string(f); //type
+  printf("mesh file set, type %s\n", type);
+  //mesh->name = read_name(f);
+  //const char* name = read_name(f);
+  //printf("mesh file set name: %s\n", name);
+  mesh_read_file(m, f);
+  m->name = filename;
+  //mesh_read_file_no_indices(mesh, f);
+  fclose(f);
+
 }
 
 

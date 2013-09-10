@@ -142,16 +142,29 @@ populate_scene(Control* c, Scene* s)
   Component* compcam = create_component(&camera_desc);
   object_add_component(cam, compcam);
 
+  control_add_object(c,s,cam);
+  scene_camera_set(s,cam);
+
+  Object* empty = create_object();
+  empty->name = eina_stringshare_add("empty");
+  Component* meshcomp = create_component(&mesh_desc);
+  object_add_component(empty, meshcomp);
+  Mesh* m = meshcomp->data;
+  //mesh_file_set(m, "model/Cube.mesh");
+  mesh_file_set(m, "model/smallchar.mesh");
+  m->shader = shader_simple;
+  control_add_object(c,s,empty);
+
+
   /*
   Component* compline = create_component(&line_desc);
   Line* line = compline->data;
   AABox aabox = { vec3(-1,-1,-1), vec3(1,1,1)};
   line_add_box(line,aabox, vec4(1,1,1,1));
   object_add_component(cam, compline);
+  control_add_object(c,s,cam);
   */
 
-  control_add_object(c,s,cam);
-  scene_camera_set(s,cam);
 
   //GLint bits;
   //gl->glGetIntegerv(GL_DEPTH_BITS, &bits);

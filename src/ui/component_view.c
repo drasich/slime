@@ -238,10 +238,26 @@ _property_add_spinner(ComponentProperties* cp, Property* p, Evas_Object* box)
   return en;
 }
 
+static void
+_file_chosen(void *data, Evas_Object *obj, void *event_info)
+{
+  const char *file = event_info;
+  Component* c = data;
+  //printf("component name : %s\n", c->name);
+  Mesh* m = c->data;
+  if (file)
+   {
+    mesh_file_set(m, file);
+    //mesh_resend(m);
+   }
+}
+
 
 static Evas_Object*
 _property_add_fileselect(ComponentProperties* cp, Property* p)
 {
+  printf("file select %s \n", cp->name);
+  printf("file select %s \n", cp->component->name);
   //TODO
    Evas_Object *en, *bx2, *label;
 
@@ -298,6 +314,7 @@ _property_add_fileselect(ComponentProperties* cp, Property* p)
   elm_fileselector_button_expandable_set(fs_bt, EINA_TRUE);
   //elm_fileselector_mode_set(fs_bt, ELM_FILESELECTOR_LIST);
   elm_fileselector_button_inwin_mode_set(fs_bt, EINA_TRUE);
+  evas_object_smart_callback_add(fs_bt, "file,chosen", _file_chosen, cp->component);
   evas_object_show(fs_bt);
   elm_box_pack_end(bx2, fs_bt);
   
@@ -306,6 +323,7 @@ _property_add_fileselect(ComponentProperties* cp, Property* p)
 
   return en;
 }
+
 
 static void
 _component_property_update_data_recur(ComponentProperties* cp, void* data, PropertySet* ps)
@@ -327,6 +345,7 @@ _component_property_update_data_recur(ComponentProperties* cp, void* data, Prope
           }
          }
         break;
+      case PROPERTY_FILENAME:
       case EET_T_STRING:
          {
           const char** str = (void*)data + p->offset;
@@ -442,19 +461,20 @@ _add_properties(ComponentProperties* cp, PropertySet* ps, Evas_Object* box)
 }
 
 ComponentProperties*
-create_my_prop(const char* name, PropertySet* ps, Evas_Object* win, Control* control, bool can_remove)
+create_my_prop(Component* c, Evas_Object* win, Control* control, bool can_remove)
 {
   ComponentProperties* cp = calloc(1, sizeof *cp);
-  cp->arr = ps;
+  cp->component = c;
+  cp->arr = c->properties;
   cp->win = win;
   cp->control = control;
   //cp->properties = eina_hash_string_superfast_new(_property_entry_free_cb);
   cp->properties = eina_hash_pointer_new(_property_entry_free_cb);
-  cp->name = name;
+  cp->name = c->name;
 
   Evas_Object* frame = elm_frame_add(win);
   char s[256];
-  sprintf(s, "Component %s", name);
+  sprintf(s, "Component %s", c->name);
   elm_object_text_set(frame, s);
   evas_object_size_hint_weight_set(frame, EVAS_HINT_EXPAND, 0.0);
   evas_object_size_hint_fill_set(frame, EVAS_HINT_FILL, 0.0);
@@ -488,7 +508,7 @@ create_my_prop(const char* name, PropertySet* ps, Evas_Object* win, Control* con
   elm_box_pack_end(cp->box, label);
   */
 
-  _add_properties(cp, ps, cp->box);
+  _add_properties(cp, c->properties, cp->box);
 
   return cp;
 }
@@ -496,8 +516,8 @@ create_my_prop(const char* name, PropertySet* ps, Evas_Object* win, Control* con
 ComponentProperties*
 create_component_properties(Component* c, PropertyView* pw)
 {
-  ComponentProperties* cp = create_my_prop(c->name, c->properties, pw->win, pw->control, true);
-  cp->component = c;
+  ComponentProperties* cp = create_my_prop(c, pw->win, pw->control, true);
+  //cp->component = c;
   cp->pw = pw;
   return cp;
 }
