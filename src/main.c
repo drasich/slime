@@ -10,6 +10,7 @@
 //TODO put these in application
 static View* view;
 static ResourceManager* s_rm;
+static Shader* shader_simple;
 
 static void
 create_workspace(Evas_Object* parent)
@@ -109,48 +110,70 @@ create_window()
   //Evas_Object* edje = create_my_group(evas, "danceoff");
 }
 
+static Object*
+_object_mesh_create(const char* file)
+{
+  Object* o = create_object();
+  Component* meshcomp = create_component(&mesh_desc);
+  meshcomp->data = resource_mesh_get(s_rm, file);
+
+  object_add_component(o, meshcomp);
+  Mesh* m = meshcomp->data;
+  m->shader = shader_simple;
+
+  return o;
+}
+
 #include "component/camera.h"
 #include "component/line.h"
 static void
 populate_scene(Control* c, Scene* s)
 {
-  Shader* shader_simple = create_shader("shader/simple.vert", "shader/simple.frag");
+  shader_simple = create_shader("shader/simple.vert", "shader/simple.frag");
 
-  Object* o = object_mesh_create("model/Cube.mesh");
-  o->name = eina_stringshare_add("cube");
-  o->mesh->shader = shader_simple;
+   {
+    Object* o = _object_mesh_create("model/Cube.mesh");
+    o->name = eina_stringshare_add("cube");
 
-  Vec3 t = {0,0,0};
-  object_set_position(o, t);
-  control_add_object(c, s, o);
+    Vec3 t = {0,0,0};
+    object_set_position(o, t);
+    control_add_object(c, s, o);
+   }
 
-  Object* yep = object_mesh_create("model/smallchar.mesh");
-  //animation_play(yep, "walkquat", LOOP);
-  yep->mesh->shader = shader_simple;
-  yep->name = eina_stringshare_add("smallchar");
+   {
+    Object* yep = _object_mesh_create("model/smallchar.mesh");
+    yep->name = eina_stringshare_add("smallchar");
+    //animation_play(yep, "walkquat", LOOP);
 
-  Vec3 t2 = {-10,0,0};
-  object_set_position(yep, t2);
-  control_add_object(c,s,yep);
+    Vec3 t2 = {-10,0,0};
+    object_set_position(yep, t2);
+    control_add_object(c,s,yep);
+   }
 
-  Object* cam = create_object();
-  cam->name = eina_stringshare_add("cameratest");
-  Vec3 campos = {0,0,20};
-  cam->Position = campos;
-  Component* compcam = create_component(&camera_desc);
-  object_add_component(cam, compcam);
+   {
+    Object* cam = create_object();
+    cam->name = eina_stringshare_add("cameratest");
+    Vec3 campos = {0,0,20};
+    cam->Position = campos;
+    Component* compcam = create_component(&camera_desc);
+    object_add_component(cam, compcam);
 
-  control_add_object(c,s,cam);
-  scene_camera_set(s,cam);
+    control_add_object(c,s,cam);
+    scene_camera_set(s,cam);
+   }
 
-  Object* empty = create_object();
-  empty->name = eina_stringshare_add("empty");
-  Component* meshcomp = create_component(&mesh_desc);
-  meshcomp->data = resource_mesh_get(s_rm, "model/smallchar.mesh");
-  Mesh* m = meshcomp->data;
-  object_add_component(empty, meshcomp);
-  m->shader = shader_simple;
-  control_add_object(c,s,empty);
+   {
+    Object* empty = create_object();
+    empty->name = eina_stringshare_add("empty");
+
+    Component* meshcomp = create_component(&mesh_desc);
+    meshcomp->data = resource_mesh_get(s_rm, "model/smallchar.mesh");
+    object_add_component(empty, meshcomp);
+    Mesh* m = meshcomp->data;
+    m->shader = shader_simple;
+
+    control_add_object(c,s,empty);
+   }
 
 
   //GLint bits;

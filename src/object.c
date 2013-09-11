@@ -374,18 +374,3 @@ ComponentDesc object_desc = {
   property_set_object
 };
 
-Object*
-object_mesh_create(const char* file)
-{
-  Object* o = create_object();
-  o->name = eina_stringshare_add("empty");
-
-  Component* meshcomp = create_component(&mesh_desc);
-  object_add_component(o, meshcomp);
-  Mesh* m = meshcomp->data;
-
-  mesh_file_set(m, file);
-
-  return o;
-
-}

@@ -42,7 +42,6 @@ void object_update(Object* o);
 
 Object* create_object();
 Object* create_object_file(const char* file);
-Object* object_mesh_create(const char* file);
 
 void object_set_position(Object* o, Vec3 v);
 void object_set_orientation(Object* o, Quat q);

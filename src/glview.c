@@ -31,8 +31,8 @@ _create_glview(Evas_Object* win)
   elm_glview_mode_set(glview, ELM_GLVIEW_ALPHA | ELM_GLVIEW_DEPTH);
   elm_glview_resize_policy_set(glview, ELM_GLVIEW_RESIZE_POLICY_RECREATE);
   //elm_glview_resize_policy_set(glview, ELM_GLVIEW_RESIZE_POLICY_SCALE);
-  //elm_glview_render_policy_set(glview, ELM_GLVIEW_RENDER_POLICY_ON_DEMAND);
-  elm_glview_render_policy_set(glview, ELM_GLVIEW_RENDER_POLICY_ALWAYS);
+  elm_glview_render_policy_set(glview, ELM_GLVIEW_RENDER_POLICY_ON_DEMAND);
+  //elm_glview_render_policy_set(glview, ELM_GLVIEW_RENDER_POLICY_ALWAYS);
   evas_object_show(glview);
 
   elm_object_focus_set(glview, EINA_TRUE);
