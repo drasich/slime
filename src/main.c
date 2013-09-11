@@ -112,26 +112,21 @@ create_window()
 static void
 populate_scene(Control* c, Scene* s)
 {
-  //Object* o = create_object_file("model/smallchar.bin");
-  Object* o = create_object_file("model/cube.bin");
-  o->name = eina_stringshare_add("cube");
-  //Object* o = create_object_file("model/simpleplane.bin");
   Shader* shader_simple = create_shader("shader/simple.vert", "shader/simple.frag");
+
+  Object* o = object_mesh_create("model/Cube.mesh");
+  o->name = eina_stringshare_add("cube");
   o->mesh->shader = shader_simple;
 
   Vec3 t = {0,0,0};
-  //Vec3 t = {0,0,0};
   object_set_position(o, t);
-  //scene_add_object(s,o);
   control_add_object(c, s, o);
 
-  //animation_play(o, "walkquat", LOOP);
-
-  Object* yep = create_object_file("model/smallchar.bin");
+  Object* yep = object_mesh_create("model/smallchar.mesh");
   //animation_play(yep, "walkquat", LOOP);
   yep->mesh->shader = shader_simple;
-
   yep->name = eina_stringshare_add("smallchar");
+
   Vec3 t2 = {-10,0,0};
   object_set_position(yep, t2);
   control_add_object(c,s,yep);
@@ -151,20 +146,9 @@ populate_scene(Control* c, Scene* s)
   Component* meshcomp = create_component(&mesh_desc);
   object_add_component(empty, meshcomp);
   Mesh* m = meshcomp->data;
-  //mesh_file_set(m, "model/Cube.mesh");
   mesh_file_set(m, "model/smallchar.mesh");
   m->shader = shader_simple;
   control_add_object(c,s,empty);
-
-
-  /*
-  Component* compline = create_component(&line_desc);
-  Line* line = compline->data;
-  AABox aabox = { vec3(-1,-1,-1), vec3(1,1,1)};
-  line_add_box(line,aabox, vec4(1,1,1,1));
-  object_add_component(cam, compline);
-  control_add_object(c,s,cam);
-  */
 
 
   //GLint bits;
@@ -207,10 +191,12 @@ gameviewtest()
 
 }
 
-#include "component/transform.h"
+#include "resource.h"
 EAPI_MAIN int
 elm_main(int argc, char **argv)
 {
+  ResourceManager* rm = resource_manager_create();
+  resource_read_path(rm);
   elm_config_preferred_engine_set("opengl_x11");
   //elm_config_focus_highlight_animate_set(EINA_TRUE);
   //elm_config_focus_highlight_enabled_set(EINA_TRUE);

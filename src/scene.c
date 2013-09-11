@@ -73,6 +73,7 @@ void
 scene_camera_set(Scene* s, Object* camera)
 {
   s->camera = camera;
+  s->camera_name = camera->name;
 }
 
 Object*
@@ -98,6 +99,10 @@ _scene_descriptor_init(void)
 
   EET_EINA_STREAM_DATA_DESCRIPTOR_CLASS_SET(&eddc, Scene);
   _scene_descriptor = eet_data_descriptor_stream_new(&eddc);
+
+  EET_DATA_DESCRIPTOR_ADD_BASIC(
+        _scene_descriptor,
+        Scene, "camera", camera_name, EET_T_STRING);
 
   PropertySet* object_ps = property_set_object();
   //TODO delete object_ps;
@@ -166,6 +171,22 @@ scene_read()
  
   return s;
   
+}
+
+void
+scene_post_read(Scene* s)
+{
+  Eina_List *l;
+  Object *o;
+  EINA_LIST_FOREACH(s->objects, l, o) {
+    if (!strcmp(o->name, s->camera_name)) {
+      s->camera = o;
+    }
+    //TODO
+    //object_post_read(o);
+
+  }
+
 }
 
 void

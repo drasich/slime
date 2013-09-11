@@ -13,6 +13,7 @@ struct _Scene {
   Eina_List* ortho;
   struct _View* view;
   Object* camera;
+  const char* camera_name;
 };
 
 Scene* create_scene();
@@ -31,5 +32,7 @@ Object* scene_object_get(Scene* s, const char* name);
 Eina_Bool scene_write(const Scene* s);
 Scene* scene_read();
 void scene_print(Scene* s);
+
+void scene_post_read(Scene* s);
 
 #endif
