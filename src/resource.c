@@ -4,7 +4,13 @@
 Mesh*
 resource_mesh_get(ResourceManager* rm, const char* name)
 {
+  Mesh* m = eina_hash_find(rm->meshes, name);
+  if (m)
+  printf("found mesh %s\n", m->name);
+  else
+  printf("not found mesh \n");
 
+  return m;
 }
 
 static void
@@ -56,12 +62,14 @@ void resource_load(ResourceManager* rm)
   const char *path = "model";
   EINA_LIST_FOREACH(rm->meshes_to_load, l, name) {
     printf("load name is %s\n", (char*) name);
-    /*
-    int l = strlen(name) + strlen(path) + 1;
-    char* filepath = calloc(1, l);
-    eina_str_join (filepath, l, '/', path , name);
+    int l = strlen(name) + strlen(path) + 2;
+    char filepath[l];
+    eina_str_join(filepath, l, '/', path , name);
     printf("l is %d, filepath is %s \n", l, filepath);
-    */
+
+    Mesh* m = mesh_create();
+    mesh_file_set(m, filepath);
+    eina_hash_add(rm->meshes, filepath, m);
   }
 }
 

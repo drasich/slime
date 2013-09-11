@@ -4,10 +4,12 @@
 #include "ui/tree.h"
 #include "scene.h"
 #include "control.h"
+#include "resource.h"
 #define __UNUSED__
 
 //TODO put these in application
 static View* view;
+static ResourceManager* s_rm;
 
 static void
 create_workspace(Evas_Object* parent)
@@ -144,9 +146,9 @@ populate_scene(Control* c, Scene* s)
   Object* empty = create_object();
   empty->name = eina_stringshare_add("empty");
   Component* meshcomp = create_component(&mesh_desc);
-  object_add_component(empty, meshcomp);
+  meshcomp->data = resource_mesh_get(s_rm, "model/smallchar.mesh");
   Mesh* m = meshcomp->data;
-  mesh_file_set(m, "model/smallchar.mesh");
+  object_add_component(empty, meshcomp);
   m->shader = shader_simple;
   control_add_object(c,s,empty);
 
@@ -191,12 +193,11 @@ gameviewtest()
 
 }
 
-#include "resource.h"
 EAPI_MAIN int
 elm_main(int argc, char **argv)
 {
-  ResourceManager* rm = resource_manager_create();
-  resource_read_path(rm);
+  s_rm = resource_manager_create();
+  resource_read_path(s_rm);
   elm_config_preferred_engine_set("opengl_x11");
   //elm_config_focus_highlight_animate_set(EINA_TRUE);
   //elm_config_focus_highlight_enabled_set(EINA_TRUE);

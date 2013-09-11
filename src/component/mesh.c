@@ -139,7 +139,7 @@ void mesh_read_file(Mesh* mesh, FILE* f)
 }
 
 void
-mesh_read(Mesh* mesh, char* path)
+mesh_read(Mesh* mesh, const char* path)
 {
   printf("come here ~~~~~~~~~~~~~~~~4444444444444\n");
   FILE *f;
@@ -355,12 +355,19 @@ mesh_draw(Mesh* m)
 
 
 Mesh*
-create_mesh(char* path)
+create_mesh(const char* path)
 {
   printf("come here ~~~~~~~~~~~~~~~~\n");
   Mesh* m = calloc(1,sizeof(Mesh));
   mesh_read(m, path);
   mesh_init(m);
+  return m;
+}
+
+Mesh*
+mesh_create()
+{
+  Mesh* m = calloc(1,sizeof(Mesh));
   return m;
 }
 
