@@ -711,7 +711,8 @@ view_destroy(View* v)
   //TODO free camera
   //TODO free scene here?
   free(v->context);
-  free(v->control);
+  //TODO release control
+  //free(v->control);
   free(v);
 }
 
