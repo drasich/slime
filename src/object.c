@@ -316,8 +316,11 @@ object_add_component(Object* o, Component* c)
 {
   o->components = eina_list_append(o->components, c);
   c->object = o;
-  if (!strcmp(c->name, "mesh"))
-    o->mesh = c->data;
+  if (!strcmp(c->name, "mesh")) {
+    //TODO
+    //MeshComponent* cm = c->data;
+    //o->mesh = cm->mesh;
+  }
 }
 
 void

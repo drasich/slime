@@ -441,9 +441,9 @@ mesh_destroy(Mesh* m)
 
 
 static void*
-_create_mesh()
+_mesh_component_create()
 {
-  Mesh* m = calloc(1,sizeof *m);
+  MeshComponent* m = calloc(1,sizeof *m);
   return m;
 }
 
@@ -457,6 +457,17 @@ _mesh_properties()
 
   return ps;
 }
+
+static PropertySet* 
+_mesh_component_properties()
+{
+  PropertySet* ps = create_property_set();
+
+  ADD_PROP(ps, MeshComponent, name, PROPERTY_FILENAME);
+
+  return ps;
+}
+
 
 static void 
 _mesh_draw(Component* c, Matrix4 world, struct _CCamera* cam)
@@ -475,6 +486,29 @@ _mesh_draw(Component* c, Matrix4 world, struct _CCamera* cam)
   mesh_set_matrices(m, world, *projection);
   m->func->draw(m);
 }
+
+static void 
+_mesh_component_draw(Component* c, Matrix4 world, struct _CCamera* cam)
+{
+  MeshComponent* mc = c->data;
+  if (!mc->name)
+  return;
+
+  Mesh* m = mc->mesh;
+  if (!m)
+  return;
+
+  Matrix4* projection = &cam->projection;
+
+  //TODO change this
+  if (!strcmp("quad", m->name)){
+    projection = &cam->orthographic;
+  }
+
+  mesh_set_matrices(m, world, *projection);
+  m->func->draw(m);
+}
+
 
 void
 mesh_file_set(Mesh* m, const char* filename)
@@ -499,7 +533,7 @@ mesh_file_set(Mesh* m, const char* filename)
 
 }
 
-
+/*
 ComponentDesc mesh_desc = {
   "mesh",
   _create_mesh,
@@ -510,6 +544,19 @@ ComponentDesc mesh_desc = {
   NULL,
   NULL,
 };
+*/
+
+ComponentDesc mesh_desc = {
+  "mesh",
+  _mesh_component_create,
+  _mesh_component_properties,
+  NULL,
+  NULL,
+  _mesh_component_draw,
+  NULL,
+  NULL,
+};
+
 
 
 MeshFunc mesh_generic = {

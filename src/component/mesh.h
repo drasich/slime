@@ -95,6 +95,12 @@ struct _MeshFunc {
   void (*draw)(Mesh* c); 
 };
 
+typedef struct _MeshComponent MeshComponent;
+struct _MeshComponent
+{
+  const char* name;
+  Mesh* mesh;
+};
 
 ComponentDesc mesh_desc;
 MeshFunc mesh_quad;

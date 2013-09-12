@@ -115,11 +115,12 @@ _object_mesh_create(const char* file)
 {
   Object* o = create_object();
   Component* meshcomp = create_component(&mesh_desc);
-  meshcomp->data = resource_mesh_get(s_rm, file);
+  MeshComponent* mc = meshcomp->data;
+  mc->name = file;
+  mc->mesh = resource_mesh_get(s_rm, file);
 
   object_add_component(o, meshcomp);
-  Mesh* m = meshcomp->data;
-  m->shader = shader_simple;
+  mc->mesh->shader = shader_simple;
 
   return o;
 }
@@ -162,15 +163,17 @@ populate_scene(Control* c, Scene* s)
     scene_camera_set(s,cam);
    }
 
+  if (false)
    {
     Object* empty = create_object();
     empty->name = eina_stringshare_add("empty");
 
     Component* meshcomp = create_component(&mesh_desc);
-    meshcomp->data = resource_mesh_get(s_rm, "model/smallchar.mesh");
+    MeshComponent* mc = meshcomp->data;
+    mc->name = "model/smallchar.mesh";
+    mc->mesh = resource_mesh_get(s_rm, mc->name);
     object_add_component(empty, meshcomp);
-    Mesh* m = meshcomp->data;
-    m->shader = shader_simple;
+    mc->mesh->shader = shader_simple;
 
     control_add_object(c,s,empty);
    }
@@ -189,7 +192,7 @@ build_scene()
   evas_object_data_set(view->glview, "scene", s);
   s->view = view;
   view->context->scene = s;
-  populate_scene(view->control, s);
+  //populate_scene(view->control, s);
 
   printf("scene ORIGINAL\n");
   scene_print(s);
