@@ -100,6 +100,7 @@ struct _MeshComponent
 {
   const char* name;
   Mesh* mesh;
+  Shader* shader;
 };
 
 ComponentDesc mesh_desc;

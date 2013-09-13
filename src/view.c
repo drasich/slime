@@ -353,6 +353,8 @@ _create_grid()
 static void
 _file_chosen(void *data, Evas_Object *obj __UNUSED__, void *event_info)
 {
+  printf("todo %s %s\n",  __FILE__, __LINE__);
+  /*
   const char *file = event_info;
   View* v = data;
   if (file)
@@ -383,6 +385,7 @@ _file_chosen(void *data, Evas_Object *obj __UNUSED__, void *event_info)
     context_clean_objects(v->context);
     context_add_object(v->context, yep);
    }
+   */
 }
 
 
@@ -781,13 +784,14 @@ create_render()
   object_set_position(r->quad_outline, t3);
   r->quad_outline->name = eina_stringshare_add("quad");
 
-  r->quad_outline->mesh->shader = create_shader("shader/stencil.vert", "shader/stencil.frag");
-  shader_use(r->quad_outline->mesh->shader);
-  shader_init_attribute(r->quad_outline->mesh->shader, "vertex", &r->quad_outline->mesh->attribute_vertex);
-  shader_init_uniform(r->quad_outline->mesh->shader, "matrix", &r->quad_outline->mesh->uniform_matrix);
-  shader_init_uniform(r->quad_outline->mesh->shader, "resolution", &r->quad_outline->mesh->uniform_resolution);
-  shader_init_uniform(r->quad_outline->mesh->shader, "texture", &r->quad_outline->mesh->uniform_texture);
-  shader_init_uniform(r->quad_outline->mesh->shader, "texture_all", &r->quad_outline->mesh->uniform_texture_all);
+  mc->shader = create_shader("shader/stencil.vert", "shader/stencil.frag");
+  r->quad_outline->mesh->shader = mc->shader;
+  shader_use(mc->shader);
+  shader_init_attribute(mc->shader, "vertex", &r->quad_outline->mesh->attribute_vertex);
+  shader_init_uniform(mc->shader, "matrix", &r->quad_outline->mesh->uniform_matrix);
+  shader_init_uniform(mc->shader, "resolution", &r->quad_outline->mesh->uniform_resolution);
+  shader_init_uniform(mc->shader, "texture", &r->quad_outline->mesh->uniform_texture);
+  shader_init_uniform(mc->shader, "texture_all", &r->quad_outline->mesh->uniform_texture_all);
 
   r->quad_color = create_object();
   comp = create_component(&mesh_desc);

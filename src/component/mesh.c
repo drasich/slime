@@ -498,6 +498,9 @@ _mesh_component_draw(Component* c, Matrix4 world, struct _CCamera* cam)
   if (!m)
   return;
 
+  //Shader* s = mc->shader;
+  //if (!s)
+
   Matrix4* projection = &cam->projection;
 
   //TODO change this
