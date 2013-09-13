@@ -13,7 +13,10 @@ struct _ResourceManager {
 Mesh* resource_mesh_get(ResourceManager* rm, const char* name);
 void resource_read_path(ResourceManager* rm);
 void resource_load(ResourceManager* rm);
+void resource_simple_mesh_create(ResourceManager* rm);
 
 ResourceManager* resource_manager_create();
+
+ResourceManager* s_rm;
 
 #endif

@@ -73,3 +73,12 @@ void resource_load(ResourceManager* rm)
   }
 }
 
+void
+resource_simple_mesh_create(ResourceManager* rm)
+{
+  Mesh* m = mesh_create();
+  create_mesh_quad(m,100,100);
+  m->name = "quad";
+  eina_hash_add(rm->meshes, m->name, m);
+}
+

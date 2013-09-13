@@ -9,7 +9,6 @@
 
 //TODO put these in application
 static View* view;
-static ResourceManager* s_rm;
 static Shader* shader_simple;
 
 static void
@@ -192,7 +191,7 @@ build_scene()
   evas_object_data_set(view->glview, "scene", s);
   s->view = view;
   view->context->scene = s;
-  //populate_scene(view->control, s);
+  populate_scene(view->control, s);
 
   printf("scene ORIGINAL\n");
   scene_print(s);
@@ -224,6 +223,7 @@ elm_main(int argc, char **argv)
 {
   s_rm = resource_manager_create();
   resource_read_path(s_rm);
+  resource_simple_mesh_create(s_rm);
   elm_config_preferred_engine_set("opengl_x11");
   //elm_config_focus_highlight_animate_set(EINA_TRUE);
   //elm_config_focus_highlight_enabled_set(EINA_TRUE);

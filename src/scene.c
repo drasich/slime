@@ -204,8 +204,8 @@ scene_print(Scene* s)
      printf("     component name : %s \n", c->name);
      if (!c->name) continue;
      if (!strcmp(c->name, "mesh")) {
-       Mesh* m = c->data;
-       printf("        mesh name : %s \n", m->name);
+       MeshComponent* mc = c->data;
+       printf("        mesh name : %s \n", mc->name);
      }
      else if (!strcmp(c->name, "camera")) {
        CCamera* cc = c->data;

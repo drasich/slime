@@ -761,6 +761,8 @@ view_update(View* v, double dt)
 
 }
 
+#include "resource.h"
+
 Render*
 create_render()
 {
@@ -770,10 +772,11 @@ create_render()
 
   r->quad_outline = create_object();
   Component* comp = create_component(&mesh_desc);
+  MeshComponent* mc = comp->data;
+  mc->name = "quad";
+  mc->mesh = resource_mesh_get(s_rm, mc->name);
+  r->quad_outline->mesh = mc->mesh;
   object_add_component(r->quad_outline, comp);
-  Mesh* mesh = comp->data;
-  create_mesh_quad(mesh,100,100);
-  r->quad_outline->mesh = mesh;
   Vec3 t3 = {0,0,-100};
   object_set_position(r->quad_outline, t3);
   r->quad_outline->name = eina_stringshare_add("quad");
@@ -788,11 +791,12 @@ create_render()
 
   r->quad_color = create_object();
   comp = create_component(&mesh_desc);
+  mc = comp->data;
+  mc->name = "quad";
+  mc->mesh = resource_mesh_get(s_rm, mc->name);
   object_add_component(r->quad_color, comp);
-  mesh = comp->data;
-  create_mesh_quad(mesh,100,100);
   //r->quad_color->mesh = create_mesh_quad(100,100);
-  r->quad_color->mesh = mesh;
+  r->quad_color->mesh = mc->mesh;
   object_set_position(r->quad_color, t3);
   r->quad_color->name = eina_stringshare_add("quad");
 
@@ -938,7 +942,8 @@ view_draw(View* v)
   //Render outline with quad
   if (last_obj) {
     object_compute_matrix(r->quad_outline, mo);
-    Mesh* mesh = object_component_get(r->quad_outline, "mesh");
+    MeshComponent* mc = object_component_get(r->quad_outline, "mesh");
+    Mesh* mesh = mc->mesh;
     mesh->id_texture = r->fbo_selected->texture_depth_stencil_id;
     mesh->id_texture_all = r->fbo_all->texture_depth_stencil_id;
     object_draw_edit(r->quad_outline, mo, cc);

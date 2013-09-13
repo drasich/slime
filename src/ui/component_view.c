@@ -244,10 +244,10 @@ _file_chosen(void *data, Evas_Object *obj, void *event_info)
   const char *file = event_info;
   Component* c = data;
   //printf("component name : %s\n", c->name);
-  Mesh* m = c->data;
+  MeshComponent* m = c->data;
   if (file)
    {
-    mesh_file_set(m, file);
+    //mesh_file_set(m, file);
     //mesh_resend(m);
    }
 }
