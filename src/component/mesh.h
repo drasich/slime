@@ -59,8 +59,6 @@ struct _Mesh
 
   bool has_uv;
 
-  Shader* shader;
-
   Matrix4GL matrix;
   Matrix3GL matrix_normal;
 
@@ -136,7 +134,9 @@ void mesh_draw_no_indices(Mesh* m);
 void mesh_show_wireframe(Mesh* m, bool b);
 
 void mesh_init_attributes(Mesh* m);
+void mesh_shader_init_attributes(Mesh* m, Shader* s);
 void mesh_init_uniforms(Mesh* s);
+void mesh_shader_init_uniforms(Mesh* m, Shader* s);
 
 void mesh_init_uniforms(Mesh* s);
 

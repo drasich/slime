@@ -102,7 +102,6 @@ shader_init_attribute(Shader* s, char* att_name, GLuint* att)
   }
   else {
      *att = att_tmp;
-    printf("attribute is now %d \n", *att);
   }
 }
 

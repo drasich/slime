@@ -118,7 +118,6 @@ _object_mesh_create(const char* file)
   mc->shader = shader_simple;
   mc->name = file;
   mc->mesh = resource_mesh_get(s_rm, file);
-  mc->mesh->shader = shader_simple;
 
   object_add_component(o, meshcomp);
 
@@ -131,10 +130,14 @@ static void
 populate_scene(Control* c, Scene* s)
 {
   shader_simple = create_shader("shader/simple.vert", "shader/simple.frag");
+  shader_simple->has_vertex = true;
+  shader_simple->has_normal = true;
+  shader_simple->has_texcoord = true;
+  shader_simple->has_uniform_normal_matrix = true;
 
    {
     Object* o = _object_mesh_create("model/Cube.mesh");
-    o->name = eina_stringshare_add("cube");
+    o->name = eina_stringshare_add("cubemen");
 
     Vec3 t = {0,0,0};
     object_set_position(o, t);

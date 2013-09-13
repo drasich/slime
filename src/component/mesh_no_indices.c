@@ -240,7 +240,7 @@ mesh_resend_no_indices(Mesh* m)
 void
 mesh_draw_no_indices(Mesh* m)
 {
-  shader_use(m->shader);
+  //shader_use(m->shader);
 
   gl->glActiveTexture(GL_TEXTURE0);
   gl->glBindTexture(GL_TEXTURE_2D, m->id_texture);
@@ -306,7 +306,8 @@ mesh_draw_no_indices(Mesh* m)
 void
 mesh_show_wireframe(Mesh* m, bool b)
 {
-  shader_use(m->shader);
+  printf("todo %s, %s\n", __FILE__, __LINE__);
+  //shader_use(m->shader);
   gl->glUniform1i(m->uniform_wireframe, b?1:0);
 }
 
@@ -400,9 +401,8 @@ create_mesh_quad(Mesh* m, int w, int h)
 void
 quad_resize(Mesh* m, int w, int h)
 {
-
-  shader_use(m->shader);
-  gl->glUniform2f(m->uniform_resolution, w, h);
+  //shader_use(m->shader);
+  //gl->glUniform2f(m->uniform_resolution, w, h);
   float hw = w*0.5f, hh = h*0.5f;
 
   m->vertices[0] = -hw;
@@ -488,7 +488,7 @@ quad_draw(Mesh* m)
     quad_init(m);
   }
 
-  shader_use(m->shader);
+  //shader_use(m->shader);
 
   //TODO material
   gl->glUniform1i(m->uniform_texture, 0);

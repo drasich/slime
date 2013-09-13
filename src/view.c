@@ -48,8 +48,20 @@ _view_resize_gl(Evas_Object *obj)
 
   View* v = evas_object_data_get(obj, "view");
   ccamera_set_resolution(v->camera->camera_component, w, h);
-  quad_resize(v->render->quad_outline->mesh, w, h);
-  quad_resize(v->render->quad_color->mesh, w, h);
+
+
+  //quad_resize(v->render->quad_outline->mesh, w, h);
+  //quad_resize(v->render->quad_color->mesh, w, h);
+  
+  MeshComponent* mc = object_component_get(v->render->quad_outline, "mesh");
+  shader_use(mc->shader);
+  gl->glUniform2f(mc->mesh->uniform_resolution, w, h);
+  quad_resize(mc->mesh, w, h);
+
+  mc = object_component_get(v->render->quad_color, "mesh");
+  shader_use(mc->shader);
+  gl->glUniform2f(mc->mesh->uniform_resolution, w, h);
+  quad_resize(mc->mesh, w, h);
 
   //TODO
   fbo_resize(v->render->fbo_all, w, h);
@@ -785,7 +797,12 @@ create_render()
   r->quad_outline->name = eina_stringshare_add("quad");
 
   mc->shader = create_shader("shader/stencil.vert", "shader/stencil.frag");
-  r->quad_outline->mesh->shader = mc->shader;
+  mc->shader->has_vertex = true;
+  mc->shader->has_normal = false;
+  mc->shader->has_texcoord = false;
+  mc->shader->has_uniform_normal_matrix = false;
+
+  //r->quad_outline->mesh->shader = mc->shader;
   shader_use(mc->shader);
   shader_init_attribute(mc->shader, "vertex", &r->quad_outline->mesh->attribute_vertex);
   shader_init_uniform(mc->shader, "matrix", &r->quad_outline->mesh->uniform_matrix);
@@ -804,11 +821,16 @@ create_render()
   object_set_position(r->quad_color, t3);
   r->quad_color->name = eina_stringshare_add("quad");
 
-  r->quad_color->mesh->shader = create_shader("shader/stencil.vert", "shader/quad.frag");
-  shader_use(r->quad_color->mesh->shader);
-  shader_init_attribute(r->quad_color->mesh->shader, "vertex", &r->quad_color->mesh->attribute_vertex);
-  shader_init_uniform(r->quad_color->mesh->shader, "matrix", &r->quad_color->mesh->uniform_matrix);
-  shader_init_uniform(r->quad_color->mesh->shader, "resolution", &r->quad_color->mesh->uniform_resolution);
+  mc->shader = create_shader("shader/stencil.vert", "shader/quad.frag");
+  mc->shader->has_vertex = true;
+  mc->shader->has_normal = false;
+  mc->shader->has_texcoord = false;
+  mc->shader->has_uniform_normal_matrix = false;
+
+  shader_use(mc->shader);
+  shader_init_attribute(mc->shader, "vertex", &r->quad_color->mesh->attribute_vertex);
+  shader_init_uniform(mc->shader, "matrix", &r->quad_color->mesh->uniform_matrix);
+  shader_init_uniform(mc->shader, "resolution", &r->quad_color->mesh->uniform_resolution);
 
   return r;
 

@@ -14,6 +14,13 @@ struct _Shader
   char* vert_path;
   char* frag_path;
   bool is_init;
+
+  //TODO make it has_attribute("vertex");
+  bool has_vertex;
+  bool has_normal;
+  bool has_texcoord;
+
+  bool has_uniform_normal_matrix;
 };
 
 

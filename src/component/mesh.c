@@ -197,9 +197,11 @@ mesh_init(Mesh* m)
           GL_DYNAMIC_DRAW);
   }
 
-  shader_use(m->shader);
+  /*
+  //shader_use(m->shader);
   mesh_init_attributes(m);
   mesh_init_uniforms(m);
+  */
 
   m->is_init = true;
 }
@@ -274,7 +276,6 @@ mesh_set_matrix(Mesh* mesh, Matrix4 mat)
 void
 mesh_set_matrices(Mesh* mesh, Matrix4 mat, Matrix4 projection)
 {
-  shader_use(mesh->shader);
   Matrix3 normal_mat;
   mat4_to_mat3(mat, normal_mat);
   mat3_inverse(normal_mat, normal_mat);
@@ -296,7 +297,6 @@ mesh_draw(Mesh* m)
   if (!m->is_init) {
     mesh_init(m);
   }
-  shader_use(m->shader);
 
   gl->glUniform1i(m->uniform_texture, 0);
 
@@ -398,22 +398,25 @@ mesh_find_vertexgroup(Mesh* mesh, char* name)
 }
 
 void 
-mesh_init_attributes(Mesh* m)
+mesh_shader_init_attributes(Mesh* m, Shader* s)
 {
-  if (!m->shader) return;
-  shader_init_attribute(m->shader, "vertex", &m->attribute_vertex);
-  shader_init_attribute(m->shader, "normal", &m->attribute_normal);
-  shader_init_attribute(m->shader, "texcoord", &m->attribute_texcoord);
+  if (!s) return;
+  shader_init_attribute(s, "vertex", &m->attribute_vertex);
+  if (s->has_normal)
+  shader_init_attribute(s, "normal", &m->attribute_normal);
+  if (s->has_texcoord)
+  shader_init_attribute(s, "texcoord", &m->attribute_texcoord);
 }
-
 
 void 
-mesh_init_uniforms(Mesh* m)
+mesh_shader_init_uniforms(Mesh* m, Shader* s)
 {
-  if (!m->shader) return;
-  shader_init_uniform(m->shader, "matrix", &m->uniform_matrix);
-  shader_init_uniform(m->shader, "normal_matrix", &m->uniform_normal_matrix);
+  if (!s) return;
+  shader_init_uniform(s, "matrix", &m->uniform_matrix);
+  if (s->has_uniform_normal_matrix)
+  shader_init_uniform(s, "normal_matrix", &m->uniform_normal_matrix);
 }
+
 
 void
 mesh_destroy(Mesh* m)
@@ -487,6 +490,7 @@ _mesh_draw(Component* c, Matrix4 world, struct _CCamera* cam)
   m->func->draw(m);
 }
 
+#include "object.h"
 static void 
 _mesh_component_draw(Component* c, Matrix4 world, struct _CCamera* cam)
 {
@@ -498,8 +502,20 @@ _mesh_component_draw(Component* c, Matrix4 world, struct _CCamera* cam)
   if (!m)
   return;
 
-  //Shader* s = mc->shader;
-  //if (!s)
+
+  Shader* s = mc->shader;
+  if (!s)
+  return;
+
+  shader_use(s);
+
+  //printf("mesh init for %s\n", c->object->name);
+  if (!m->is_init) {
+    mesh_init(m);
+  }
+
+  mesh_shader_init_attributes(m,s);
+  mesh_shader_init_uniforms(m,s);
 
   Matrix4* projection = &cam->projection;
 
@@ -508,6 +524,7 @@ _mesh_component_draw(Component* c, Matrix4 world, struct _CCamera* cam)
     projection = &cam->orthographic;
   }
 
+  shader_use(mc->shader);
   mesh_set_matrices(m, world, *projection);
   m->func->draw(m);
 }
