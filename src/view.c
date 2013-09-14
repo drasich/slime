@@ -202,14 +202,16 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
 
   Render* r = v->render;
 
-  context_clean_objects(v->context);
+  Eina_List* newlist = NULL;
   Eina_List *l;
   Object *o;
   EINA_LIST_FOREACH(r->objects, l, o) {
     if (planes_is_in_object(planes, 6, o)) {
-      context_add_object(v->context, o);
+      newlist = eina_list_append(newlist, o);
     }
   }
+
+  context_objects_set(v->context, newlist);
 
 
   /*

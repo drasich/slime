@@ -141,6 +141,9 @@ _context_tree_msg_receive(Context* c, void* tree, const char* msg)
   tree_unselect_all(tree);
   else if (!strcmp(msg, "add_object"))
   tree_select_objects(tree, c->objects);
+  else if (!strcmp(msg, "objects_changed")) {
+    tree_select_objects(tree, c->objects);
+  }
 }
 
 Tree* 
@@ -309,12 +312,29 @@ tree_select_objects(Tree* t, Eina_List* objects)
   Eina_List* l;
   Object* o;
 
+  Eina_List* items = elm_genlist_realized_items_get(t->gl);
+  Elm_Object_Item* i;
+
+  EINA_LIST_FOREACH(items, l, i) {
+    Object* eo = (Object*) elm_object_item_data_get(i);
+    if (eina_list_data_find(objects, eo) == eo) {
+      elm_genlist_item_selected_set(i, EINA_TRUE);
+    }
+    else {
+      elm_genlist_item_selected_set(i, EINA_FALSE);
+    }
+  }
+
+  eina_list_free(items);
+
+  /*
   EINA_LIST_FOREACH(objects, l, o) {
     Elm_Object_Item* item = _tree_get_item(t, o);
     if (item) {
       elm_genlist_item_selected_set(item, EINA_TRUE);
     }
   }
+  */
 }
 
 

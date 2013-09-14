@@ -46,6 +46,16 @@ context_add_object(Context* c, struct _Object* o)
 }
 
 void
+context_objects_set(Context* c, Eina_List* objects)
+{
+  c->objects = eina_list_free(c->objects);
+  c->object = NULL;
+  c->objects = objects;
+  c->object = eina_list_data_get(eina_list_last(objects));
+  _context_send_message(c, "objects_changed");
+}
+
+void
 context_remove_object(Context* c, struct _Object* o)
 {
   c->objects = eina_list_remove(c->objects, o);
