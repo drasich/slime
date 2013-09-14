@@ -206,23 +206,11 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   Eina_List *l;
   Object *o;
   EINA_LIST_FOREACH(r->objects, l, o) {
-    //first test the box and then test the object/mesh
-    if (o->mesh) {
-      OBox b;
-      aabox_to_obox(o->mesh->box, b, o->Position, o->Orientation);
-      if (planes_is_box_in_allow_false_positives(planes, 6, b)) {
-        if (planes_is_in_object(planes, 6, o)) {
-          context_add_object(v->context, o);
-        }
-      }
-    }
-    else if (planes_is_in(planes, 6, o->Position)) {
-      printf("I include %s \n", o->name);
-      printf("pos is %f, %f, %f \n", o->Position.X, o->Position.Y, o->Position.Z);
+    if (planes_is_in_object(planes, 6, o)) {
       context_add_object(v->context, o);
     }
-
   }
+
 
   /*
   bool b = frustum_is_in(&f, o->Position);

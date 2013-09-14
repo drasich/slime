@@ -32,8 +32,8 @@ IntersectionRay intersection_ray_object(Ray ray, Object* o);
 bool frustum_is_in(Frustum* f, Vec3 p);
 bool frustum_is_in_rect(Frustum* f, Vec3 p, float left, float top, float width, float height);
 
-bool planes_is_in(Plane*, int nb_planes, Vec3 p);
-bool planes_is_box_in_allow_false_positives(Plane* p, int nb_planes, OBox b);
+bool planes_is_in(const Plane*, int nb_planes, Vec3 p);
+bool planes_is_box_in_allow_false_positives(const Plane* p, int nb_planes, OBox b);
 
 bool planes_is_in_object(const Plane* p, int nb_planes, const Object* o);
 bool planes_is_in_triangle(Plane* p, int nb_planes, Triangle t);

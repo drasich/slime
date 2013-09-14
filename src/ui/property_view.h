@@ -20,6 +20,7 @@ struct _PropertyView
   Evas_Object* scroller;
 
   Eina_List *component_widgets;
+  Object* object;
 };
 
 void property_update(PropertyView* p, Eina_List* objects);

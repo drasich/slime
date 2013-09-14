@@ -439,11 +439,11 @@ plane_is_in(Plane p, Vec3 v)
   return dot >= 0;
 }
 
-bool planes_is_in(Plane* p, int nb_planes, Vec3 v)
+bool planes_is_in(const Plane* p, int nb_planes, Vec3 v)
 {
   int i = 0;
   for (i = 0; i < nb_planes; ++i) {
-    printf("PLANE %d\n ", i);
+    //printf("PLANE %d\n ", i);
     if (!plane_is_in(p[i], v)) return false;
   }
 
@@ -467,7 +467,7 @@ frustum_is_box_in_false_positives(Frustum* f, OBox b)
 }
 
 bool
-planes_is_box_in_allow_false_positives(Plane* p, int nb_planes, OBox b)
+planes_is_box_in_allow_false_positives(const Plane* p, int nb_planes, OBox b)
 {
 	int i, out, in;
 
@@ -499,8 +499,19 @@ planes_is_box_in_allow_false_positives(Plane* p, int nb_planes, OBox b)
 bool
 planes_is_in_object(const Plane* planes, int nb_planes, const Object* o)
 {
-  Mesh* m = o->mesh;
-  if (!m) return false;
+  MeshComponent* mc = object_component_get(o, "mesh");
+  if (!mc)
+  return planes_is_in(planes, 6, o->Position);
+
+  Mesh* m = mc->mesh;
+  if (!m)
+  return planes_is_in(planes, 6, o->Position);
+
+  //first test the box and then test the object/mesh
+  OBox b;
+  aabox_to_obox(m->box, b, o->Position, o->Orientation);
+  if (!planes_is_box_in_allow_false_positives(planes, 6, b)) return false;
+
   Plane p[nb_planes];
   memcpy (p, planes, nb_planes*sizeof *p);
 

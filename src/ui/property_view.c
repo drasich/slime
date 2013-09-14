@@ -44,7 +44,8 @@ property_update(PropertyView* pw, Eina_List* objects)
   }
 
   int nb = eina_list_count(objects);
-  if (nb == 1) {
+  if (nb == 1 && last != pw->object) {
+    pw->object = last;
     property_object_display(pw, last);
   }
   else if (nb > 1) {
@@ -128,7 +129,6 @@ _changed_multiple_object(Control* c, void* data, Property* p)
 static void
 _context_property_msg_receive(Context* c, void* propertyview, const char* msg)
 {
-  printf("context msg received : %s\n", msg);
   property_update(propertyview, c->objects);
 }
 
