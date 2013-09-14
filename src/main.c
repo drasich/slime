@@ -137,7 +137,7 @@ populate_scene(Control* c, Scene* s)
 
    {
     Object* o = _object_mesh_create("model/Cube.mesh");
-    o->name = eina_stringshare_add("cubemen");
+    o->name = eina_stringshare_add("cubel");
 
     Vec3 t = {0,0,0};
     object_set_position(o, t);

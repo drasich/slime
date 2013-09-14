@@ -333,9 +333,15 @@ intersection_ray_object(Ray ray, Object* o)
 {
   IntersectionRay out = { .hit = false};
 
-  Mesh* m = o->mesh;
-  if (m == NULL) return out;
+  MeshComponent* mc = object_component_get(o,"mesh");
+  if (!mc) return out;
+  Mesh* m = mc->mesh;
+  if (!m) return out;
 
+  IntersectionRay ir_box = intersection_ray_box(ray, m->box, o->Position, o->Orientation);
+  if (!ir_box.hit) return out;
+
+  //TODO perf: we compute these 2 times
   Repere r = {o->Position, o->Orientation};
   Ray newray;
   newray.Start = world_to_local(r, ray.Start);

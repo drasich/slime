@@ -292,10 +292,7 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   Eina_List *list;
   Object *ob;
   EINA_LIST_FOREACH(s->objects, list, ob) {
-    if (!ob->mesh) continue;
-    IntersectionRay ir = intersection_ray_box(r, ob->mesh->box, ob->Position, ob->Orientation);
-    if (ir.hit)
-      ir = intersection_ray_object(r, ob);
+    IntersectionRay ir = intersection_ray_object(r, ob);
     
     if (ir.hit) {
       double diff = vec3_length2(vec3_sub(ir.position, v->camera->object->Position));
