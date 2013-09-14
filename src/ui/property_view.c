@@ -44,16 +44,18 @@ property_update(PropertyView* pw, Eina_List* objects)
   }
 
   int nb = eina_list_count(objects);
-  if (nb == 0) {
-    pw->object = NULL;
+  if (nb == 1) {
+    if (last != pw->object) {
+      pw->object = last;
+      property_object_display(pw, last);
+    }
   }
-  else if (nb == 1 && last != pw->object) {
-    pw->object = last;
-    property_object_display(pw, last);
-  }
-  else if (nb > 1) {
-    pw->object = NULL;
-    property_clear_components(pw);
+  else {
+    if (pw->object) {
+      pw->object = NULL;
+      property_clear_components(pw);
+    }
+    //if (nb > 1) {
     //property_set(pw, NULL);
     //_property_update_data(pw->current, &pw->context->mos);
   }
