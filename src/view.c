@@ -53,15 +53,18 @@ _view_resize_gl(Evas_Object *obj)
   //quad_resize(v->render->quad_outline->mesh, w, h);
   //quad_resize(v->render->quad_color->mesh, w, h);
   
+  printf("!!!!!!!!!!!!!!!!!view resize : %d, %d \n", w, h);
   MeshComponent* mc = object_component_get(v->render->quad_outline, "mesh");
   shader_use(mc->shader);
   gl->glUniform2f(mc->mesh->uniform_resolution, w, h);
   quad_resize(mc->mesh, w, h);
 
+  /*
   mc = object_component_get(v->render->quad_color, "mesh");
   shader_use(mc->shader);
   gl->glUniform2f(mc->mesh->uniform_resolution, w, h);
   quad_resize(mc->mesh, w, h);
+  */
 
   //TODO
   fbo_resize(v->render->fbo_all, w, h);
@@ -802,21 +805,20 @@ create_render()
   mc->shader->has_texcoord = false;
   mc->shader->has_uniform_normal_matrix = false;
 
-  //r->quad_outline->mesh->shader = mc->shader;
   shader_use(mc->shader);
-  shader_init_attribute(mc->shader, "vertex", &r->quad_outline->mesh->attribute_vertex);
-  shader_init_uniform(mc->shader, "matrix", &r->quad_outline->mesh->uniform_matrix);
-  shader_init_uniform(mc->shader, "resolution", &r->quad_outline->mesh->uniform_resolution);
-  shader_init_uniform(mc->shader, "texture", &r->quad_outline->mesh->uniform_texture);
-  shader_init_uniform(mc->shader, "texture_all", &r->quad_outline->mesh->uniform_texture_all);
+  shader_init_attribute(mc->shader, "vertex", &mc->mesh->attribute_vertex);
+  shader_init_uniform(mc->shader, "matrix", &mc->mesh->uniform_matrix);
+  shader_init_uniform(mc->shader, "resolution", &mc->mesh->uniform_resolution);
+  shader_init_uniform(mc->shader, "texture", &mc->mesh->uniform_texture);
+  shader_init_uniform(mc->shader, "texture_all", &mc->mesh->uniform_texture_all);
 
+  /*
   r->quad_color = create_object();
   comp = create_component(&mesh_desc);
   mc = comp->data;
   mc->name = "quad";
   mc->mesh = resource_mesh_get(s_rm, mc->name);
   object_add_component(r->quad_color, comp);
-  //r->quad_color->mesh = create_mesh_quad(100,100);
   r->quad_color->mesh = mc->mesh;
   object_set_position(r->quad_color, t3);
   r->quad_color->name = eina_stringshare_add("quad");
@@ -831,6 +833,7 @@ create_render()
   shader_init_attribute(mc->shader, "vertex", &r->quad_color->mesh->attribute_vertex);
   shader_init_uniform(mc->shader, "matrix", &r->quad_color->mesh->uniform_matrix);
   shader_init_uniform(mc->shader, "resolution", &r->quad_color->mesh->uniform_resolution);
+  */
 
   return r;
 
@@ -972,6 +975,11 @@ view_draw(View* v)
     Mesh* mesh = mc->mesh;
     mesh->id_texture = r->fbo_selected->texture_depth_stencil_id;
     mesh->id_texture_all = r->fbo_all->texture_depth_stencil_id;
+    shader_init_uniform(mc->shader, "matrix", &mc->mesh->uniform_matrix);
+    shader_init_uniform(mc->shader, "resolution", &mc->mesh->uniform_resolution);
+    shader_init_uniform(mc->shader, "texture", &mc->mesh->uniform_texture);
+    shader_init_uniform(mc->shader, "texture_all", &mc->mesh->uniform_texture_all);
+
     object_draw_edit(r->quad_outline, mo, cc);
   }
 

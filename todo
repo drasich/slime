@@ -1,5 +1,6 @@
 LATELY
-- make a resource manager, for mesh first
+- 2 choices : put attributes and uniforms in mesh component
+  OR call init attribute that calls getattribute to get the good attr
 - load/unload components pb in object to get ref of name and func
 - in component_view.c, _entry_activated_cb:
   if the property is a pointer : check if there is an object
