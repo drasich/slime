@@ -3,6 +3,7 @@
 #include "ui/property_view.h"
 #include "property.h"
 #include "view.h"
+#include "resource.h"
 
 static void
 _entry_changed_cb(void *data, Evas_Object *obj, void *event)
@@ -120,6 +121,52 @@ _entry_aborted_cb(void *data, Evas_Object *obj, void *event)
 }
 
 static void
+_change_resource(void *data,
+      Evas_Object *obj,
+      void *event_info)
+{
+  Property* p = evas_object_data_get(obj, "property");
+  Component* c = evas_object_data_get(obj, "component");
+  const char *name = data;
+  //printf("property name: %s, component name: %s, change mesh : %s \n ",p->name, c->name, name);
+  Evas_Object* entry = evas_object_data_get(obj, "entry");
+  elm_object_text_set(entry, name);
+
+  component_property_data_set(c, p, &name);
+
+  //TODO
+  if (!strcmp(c->name, "mesh")) {
+    MeshComponent* mc = c->data;
+    mc->mesh = resource_mesh_get(s_rm, name);
+  }
+}
+
+
+static Evas_Object*
+_create_meshes_menu(Evas_Object* win, Eina_Hash* meshes)
+{
+  Evas_Object* menu;
+  Elm_Object_Item *menu_it,*menu_it1;
+
+  menu = elm_menu_add(win);
+
+  Eina_Iterator* it;
+  void *data;
+
+  it = eina_hash_iterator_tuple_new(meshes);
+  while (eina_iterator_next(it, &data)) {
+    Eina_Hash_Tuple *t = data;
+    const char* name = t->key;
+    const Mesh* m = t->data;
+    //printf("key, mesh name : %s, %s\n", name, m->name);
+    elm_menu_item_add(menu, NULL, NULL, name, _change_resource, name);
+  }
+  eina_iterator_free(it);
+
+  return menu;
+}
+
+static void
 _entry_focused_cb(void *data, Evas_Object *obj, void *event)
 {
   ComponentProperties* cp = data;
@@ -129,6 +176,30 @@ _entry_focused_cb(void *data, Evas_Object *obj, void *event)
   printf("TODO stringshare del\n");
   cp->value_saved = str;
 }
+
+static void
+_entry_clicked_cb(void *data, Evas_Object *obj, void *event)
+{
+  ComponentProperties* cp = data;
+  Property* p = evas_object_data_get(obj, "property");
+
+  if (p->is_resource) {
+    Evas_Object* win = evas_object_top_get(evas_object_evas_get(obj));
+    Evas_Object* menu = _create_meshes_menu(win, resource_meshes_get(s_rm));
+    evas_object_data_set(menu, "component", cp->component);
+    evas_object_data_set(menu, "property", p);
+    evas_object_data_set(menu, "entry", obj);
+    evas_object_show(menu);
+
+    Evas_Coord x,y,w,h;
+    evas_object_geometry_get(obj, &x, &y, &w, &h);
+    elm_menu_move(menu, x, y);
+    
+  }
+  
+}
+
+
 
 static void
 _entry_unfocused_cb(void *data, Evas_Object *obj, void *event)
@@ -171,6 +242,8 @@ _property_add_entry(ComponentProperties* cp, Property* p)
   //elm_entry_select_all(en);
   evas_object_show(en);
   elm_box_pack_end(bx2, en);
+  if (p->is_resource)
+  elm_entry_editable_set(en, EINA_FALSE);
 
   evas_object_name_set(en, p->name);
 
@@ -185,6 +258,7 @@ _property_add_entry(ComponentProperties* cp, Property* p)
   evas_object_smart_callback_add(en, "aborted", _entry_aborted_cb, cp);
   evas_object_smart_callback_add(en, "focused", _entry_focused_cb, cp);
   evas_object_smart_callback_add(en, "unfocused", _entry_unfocused_cb, cp);
+  evas_object_smart_callback_add(en, "clicked", _entry_clicked_cb, cp);
   evas_object_data_set(en, "property", p);
 
   elm_entry_context_menu_disabled_set(en, EINA_TRUE);
@@ -412,7 +486,7 @@ _add_properties(ComponentProperties* cp, PropertySet* ps, Evas_Object* box)
 {
   Property *p;
   EINA_INARRAY_FOREACH(ps->array, p) {
-   //printf("name: %s , type: %d, offset: %d\n", p->name, p->type, p->offset);
+   printf("name: %s , type: %d, offset: %d\n", p->name, p->type, p->offset);
    //printf("   value is : ");
    switch(p->type) {
      case EET_T_DOUBLE:

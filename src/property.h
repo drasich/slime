@@ -2,6 +2,7 @@
 #define __property__
 #include <Eina.h>
 #include <Eet.h>
+#include "stdbool.h"
 
 typedef struct _Property Property;
 typedef struct _PropertySet PropertySet;
@@ -13,6 +14,9 @@ struct _Property
   int offset;
   size_t size;
   PropertySet* array;
+
+  bool is_resource;
+  const char* resource_type;
 };
 
 typedef enum _Hint Hint;
@@ -82,5 +86,23 @@ enum {
  } while(0)
 
 PropertySet* property_set_vec3();
+
+#define ADD_RESOURCE(ps, struct_type, member, resource_type) \
+ do {                                                   \
+   struct_type ___ett;                                                  \
+   Property p = { # member, EET_T_STRING, \
+     (char *)(& (___ett.member)) -        \
+     (char *)(& (___ett)),                \
+     sizeof ___ett.member, \
+     NULL,\
+     true,\
+     resource_type\
+     };                \
+   eina_inarray_push(ps->array, &p); \
+   \
+   PROPERTY_SET_TYPE(ps, struct_type); \
+   EET_DATA_DESCRIPTOR_ADD_BASIC(ps->descriptor, struct_type, # member, member, EET_T_STRING);\
+ } while(0)
+
 
 #endif

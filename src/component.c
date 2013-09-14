@@ -129,6 +129,14 @@ component_property_data_get(Component* c, Property* p)
   return *data;
 }
 
+void
+component_property_data_set(Component* c, Property* p, const void* data)
+{
+  void* cd = c->data;
+  memcpy(cd + p->offset, data, p->size);
+}
+
+
 static const char *
 _component_type_get(
       const void *data,

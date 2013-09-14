@@ -5,12 +5,16 @@ Mesh*
 resource_mesh_get(ResourceManager* rm, const char* name)
 {
   Mesh* m = eina_hash_find(rm->meshes, name);
-  if (m)
-  printf("found mesh %s\n", m->name);
-  else
-  printf("not found mesh \n");
+  if (!m)
+  printf("not found mesh %s \n", name);
 
   return m;
+}
+
+Eina_Hash*
+resource_meshes_get(ResourceManager* rm)
+{
+  return rm->meshes;
 }
 
 static void

@@ -466,7 +466,8 @@ _mesh_component_properties()
 {
   PropertySet* ps = create_property_set();
 
-  ADD_PROP(ps, MeshComponent, name, PROPERTY_FILENAME);
+  ADD_RESOURCE(ps, MeshComponent, name, "mesh");
+  //ADD_PROP(ps, MeshComponent, name, PROPERTY_FILENAME);
 
   return ps;
 }
