@@ -9,7 +9,6 @@
 
 //TODO put these in application
 static View* view;
-static Shader* shader_simple;
 
 static void
 create_workspace(Evas_Object* parent)
@@ -115,8 +114,9 @@ _object_mesh_create(const char* file)
   Object* o = create_object();
   Component* meshcomp = create_component(&mesh_desc);
   MeshComponent* mc = meshcomp->data;
-  mc->shader = shader_simple;
-  mc->name = file;
+  mc->shader_name = "simple";
+  mc->shader = resource_shader_get(s_rm, "simple");
+  mc->mesh_name = file;
   mc->mesh = resource_mesh_get(s_rm, file);
 
   object_add_component(o, meshcomp);
@@ -129,12 +129,6 @@ _object_mesh_create(const char* file)
 static void
 populate_scene(Control* c, Scene* s)
 {
-  shader_simple = create_shader("shader/simple.vert", "shader/simple.frag");
-  shader_simple->has_vertex = true;
-  shader_simple->has_normal = true;
-  shader_simple->has_texcoord = true;
-  shader_simple->has_uniform_normal_matrix = true;
-
    {
     Object* o = _object_mesh_create("model/Cube.mesh");
     o->name = eina_stringshare_add("cubel");
@@ -173,9 +167,9 @@ populate_scene(Control* c, Scene* s)
 
     Component* meshcomp = create_component(&mesh_desc);
     MeshComponent* mc = meshcomp->data;
-    mc->shader = shader_simple;
-    mc->name = "model/smallchar.mesh";
-    mc->mesh = resource_mesh_get(s_rm, mc->name);
+    mc->shader = resource_shader_get(s_rm, "simple");
+    mc->mesh_name = "model/smallchar.mesh";
+    mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
     object_add_component(empty, meshcomp);
 
     control_add_object(c,s,empty);
@@ -228,6 +222,8 @@ elm_main(int argc, char **argv)
   s_rm = resource_manager_create();
   resource_read_path(s_rm);
   resource_simple_mesh_create(s_rm);
+  resource_shader_create(s_rm);
+
   elm_config_preferred_engine_set("opengl_x11");
   //elm_config_focus_highlight_animate_set(EINA_TRUE);
   //elm_config_focus_highlight_enabled_set(EINA_TRUE);

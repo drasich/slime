@@ -132,18 +132,29 @@ _change_resource(void *data,
   Evas_Object* entry = evas_object_data_get(obj, "entry");
   elm_object_text_set(entry, name);
 
+
+  const char* old = component_property_data_get(c, p);
+  if (!strcmp(old, name)) {
+    printf("it's same, I return\n");
+    return;
+  }
+
   component_property_data_set(c, p, &name);
 
   //TODO
   if (!strcmp(c->name, "mesh")) {
     MeshComponent* mc = c->data;
+    if (!strcmp(p->name, "mesh"))
     mc->mesh = resource_mesh_get(s_rm, name);
+    else if (!strcmp(p->name, "shader")) {
+      mc->shader = resource_shader_get(s_rm, name);
+    }
   }
 }
 
 
 static Evas_Object*
-_create_meshes_menu(Evas_Object* win, Eina_Hash* meshes)
+_create_resource_menu(Evas_Object* win, const char* resource_type)
 {
   Evas_Object* menu;
   Elm_Object_Item *menu_it,*menu_it1;
@@ -151,13 +162,22 @@ _create_meshes_menu(Evas_Object* win, Eina_Hash* meshes)
   menu = elm_menu_add(win);
 
   Eina_Iterator* it;
+  Eina_Hash* hash = NULL;
   void *data;
 
-  it = eina_hash_iterator_tuple_new(meshes);
+  if (!strcmp(resource_type, "mesh"))
+  hash = resource_meshes_get(s_rm);
+  else if (!strcmp(resource_type, "shader"))
+  hash = resource_shaders_get(s_rm);
+
+  if (!hash) return NULL;
+
+  it = eina_hash_iterator_tuple_new(hash);
+
   while (eina_iterator_next(it, &data)) {
     Eina_Hash_Tuple *t = data;
     const char* name = t->key;
-    const Mesh* m = t->data;
+    //const Mesh* m = t->data;
     //printf("key, mesh name : %s, %s\n", name, m->name);
     elm_menu_item_add(menu, NULL, NULL, name, _change_resource, name);
   }
@@ -185,7 +205,8 @@ _entry_clicked_cb(void *data, Evas_Object *obj, void *event)
 
   if (p->is_resource) {
     Evas_Object* win = evas_object_top_get(evas_object_evas_get(obj));
-    Evas_Object* menu = _create_meshes_menu(win, resource_meshes_get(s_rm));
+    Evas_Object* menu = _create_resource_menu(win, p->resource_type);
+    if (!menu) return;
     evas_object_data_set(menu, "component", cp->component);
     evas_object_data_set(menu, "property", p);
     evas_object_data_set(menu, "entry", obj);

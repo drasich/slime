@@ -6,15 +6,31 @@ resource_mesh_get(ResourceManager* rm, const char* name)
 {
   Mesh* m = eina_hash_find(rm->meshes, name);
   if (!m)
-  printf("not found mesh %s \n", name);
+  printf("Cannot find mesh %s \n", name);
 
   return m;
+}
+
+Shader*
+resource_shader_get(ResourceManager* rm, const char* name)
+{
+  Shader* s = eina_hash_find(rm->shaders, name);
+  if (!s)
+  printf("Cannot find shader %s \n", name);
+
+  return s;
 }
 
 Eina_Hash*
 resource_meshes_get(ResourceManager* rm)
 {
   return rm->meshes;
+}
+
+Eina_Hash*
+resource_shaders_get(ResourceManager* rm)
+{
+  return rm->shaders;
 }
 
 static void
@@ -53,6 +69,7 @@ resource_manager_create()
 {
   ResourceManager* rm = calloc(1, sizeof *rm);
   rm->meshes = eina_hash_string_superfast_new(NULL);
+  rm->shaders = eina_hash_string_superfast_new(NULL);
   rm->meshes_to_load = NULL;
   return rm;
 
@@ -81,8 +98,27 @@ void
 resource_simple_mesh_create(ResourceManager* rm)
 {
   Mesh* m = mesh_create();
-  create_mesh_quad(m,100,100);
+  create_mesh_quad(m,1,1);
   m->name = "quad";
   eina_hash_add(rm->meshes, m->name, m);
+}
+
+void 
+resource_shader_create(ResourceManager* rm)
+{
+  Shader* simple = create_shader("shader/simple.vert", "shader/simple.frag");
+  simple->has_vertex = true;
+  simple->has_normal = true;
+  simple->has_texcoord = true;
+  simple->has_uniform_normal_matrix = true;
+
+  Shader* red = create_shader("shader/simple.vert", "shader/red.frag");
+  red->has_vertex = true;
+  red->has_normal = true;
+  red->has_texcoord = true;
+  red->has_uniform_normal_matrix = true;
+
+  eina_hash_add(rm->shaders, "simple", simple);
+  eina_hash_add(rm->shaders, "red", red);
 }
 

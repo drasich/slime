@@ -90,7 +90,7 @@ PropertySet* property_set_vec3();
 #define ADD_RESOURCE(ps, struct_type, member, resource_type) \
  do {                                                   \
    struct_type ___ett;                                                  \
-   Property p = { # member, EET_T_STRING, \
+   Property p = { resource_type, EET_T_STRING, \
      (char *)(& (___ett.member)) -        \
      (char *)(& (___ett)),                \
      sizeof ___ett.member, \

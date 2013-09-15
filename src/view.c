@@ -53,7 +53,6 @@ _view_resize_gl(Evas_Object *obj)
   //quad_resize(v->render->quad_outline->mesh, w, h);
   //quad_resize(v->render->quad_color->mesh, w, h);
   
-  printf("!!!!!!!!!!!!!!!!!view resize : %d, %d \n", w, h);
   MeshComponent* mc = object_component_get(v->render->quad_outline, "mesh");
   shader_use(mc->shader);
   gl->glUniform2f(mc->mesh->uniform_resolution, w, h);
@@ -778,8 +777,8 @@ create_render()
   r->quad_outline = create_object();
   Component* comp = create_component(&mesh_desc);
   MeshComponent* mc = comp->data;
-  mc->name = "quad";
-  mc->mesh = resource_mesh_get(s_rm, mc->name);
+  mc->mesh_name = "quad";
+  mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
   r->quad_outline->mesh = mc->mesh;
   object_add_component(r->quad_outline, comp);
   Vec3 t3 = {0,0,-100};

@@ -466,7 +466,8 @@ _mesh_component_properties()
 {
   PropertySet* ps = create_property_set();
 
-  ADD_RESOURCE(ps, MeshComponent, name, "mesh");
+  ADD_RESOURCE(ps, MeshComponent, mesh_name, "mesh");
+  ADD_RESOURCE(ps, MeshComponent, shader_name, "shader");
   //ADD_PROP(ps, MeshComponent, name, PROPERTY_FILENAME);
 
   return ps;
@@ -491,12 +492,11 @@ _mesh_draw(Component* c, Matrix4 world, struct _CCamera* cam)
   m->func->draw(m);
 }
 
-#include "object.h"
 static void 
 _mesh_component_draw(Component* c, Matrix4 world, struct _CCamera* cam)
 {
   MeshComponent* mc = c->data;
-  if (!mc->name)
+  if (!mc)
   return;
 
   Mesh* m = mc->mesh;

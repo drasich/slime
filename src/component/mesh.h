@@ -96,7 +96,8 @@ struct _MeshFunc {
 typedef struct _MeshComponent MeshComponent;
 struct _MeshComponent
 {
-  const char* name;
+  const char* mesh_name;
+  const char* shader_name;
   Mesh* mesh;
   Shader* shader;
 };
