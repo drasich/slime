@@ -785,7 +785,7 @@ create_render()
   object_set_position(r->quad_outline, t3);
   r->quad_outline->name = eina_stringshare_add("quad");
 
-  mc->shader = create_shader("shader/stencil.vert", "shader/stencil.frag");
+  mc->shader = create_shader("stencil", "shader/stencil.vert", "shader/stencil.frag");
   mc->shader->has_vertex = true;
   mc->shader->has_normal = false;
   mc->shader->has_texcoord = false;

@@ -1,8 +1,8 @@
 #include "shader.h"
-//#define gl() gl->
+#include "Eet.h"
 
 char* 
-stringFromFile(char* path)
+stringFromFile(const char* path)
 {
   FILE* f;
   long length;
@@ -131,10 +131,100 @@ shader_destroy(Shader* s)
 }
 
 Shader* 
-create_shader(char* vert_path, char* frag_path)
+create_shader(const char* name, const char* vert_path, const char* frag_path)
 {
   Shader* s = calloc(1,sizeof(Shader));
   s->vert_path = vert_path;
   s->frag_path = frag_path;
+  s->name = name;
   return s;
 };
+
+
+static Eet_Data_Descriptor *_shader_descriptor;
+static const char SHADER_FILE_ENTRY[] = "shader";
+
+void
+shader_descriptor_init(void)
+{
+  Eet_Data_Descriptor_Class eddc;
+
+  EET_EINA_STREAM_DATA_DESCRIPTOR_CLASS_SET(&eddc, Shader);
+  _shader_descriptor = eet_data_descriptor_stream_new(&eddc);
+
+#define ADD_BASIC(member, eet_type) \
+  EET_DATA_DESCRIPTOR_ADD_BASIC             \
+  (_shader_descriptor, Shader, # member, member, eet_type)
+
+  ADD_BASIC(name, EET_T_STRING);
+  ADD_BASIC(vert_path, EET_T_STRING);
+  ADD_BASIC(frag_path, EET_T_STRING);
+  ADD_BASIC(has_vertex, EET_T_UCHAR);
+  ADD_BASIC(has_normal, EET_T_UCHAR);
+  ADD_BASIC(has_texcoord, EET_T_UCHAR);
+  ADD_BASIC(has_uniform_normal_matrix, EET_T_UCHAR);
+
+#undef ADD_BASIC
+}
+
+
+Eina_Bool
+shader_write(const Shader* s)
+{
+  const char* filename = s->name;
+  printf("shader filename %s\n", filename);
+
+  Eina_Bool ret;
+  Eet_File *ef = eet_open(filename, EET_FILE_MODE_WRITE);
+  if (!ef) {
+    fprintf(stderr, "error reading file %s \n", filename);
+    return EINA_FALSE;
+  }
+
+  ret = eet_data_write(ef, _shader_descriptor, SHADER_FILE_ENTRY, s, EINA_TRUE);
+  eet_close(ef);
+  if (ret) {
+    printf("return value for save looks ok \n");
+  }
+  else
+    printf("return value for save NOT OK \n");
+
+  return ret;
+}
+
+static void 
+_output(void *data, const char *string)
+{
+  printf("%s", string);
+}
+
+
+Shader*
+shader_read(const char* filename)
+{
+  Shader* s;
+
+  Eet_File *ef = eet_open(filename, EET_FILE_MODE_READ);
+  if (!ef) {
+    fprintf(stderr, "error reading file %s \n", filename);
+    return NULL;
+  }
+
+  s = eet_data_read(ef, _shader_descriptor, SHADER_FILE_ENTRY);
+  printf("shader read data dump\n");
+  eet_data_dump(ef, SHADER_FILE_ENTRY, _output, NULL);
+  printf("shader read data dump end\n");
+  eet_close(ef);
+
+  if (s) {
+    //printf("Shader %s \n", s->name);
+    printf("Shader %s \n", s->vert_path);
+    printf("Shader %s \n", s->frag_path);
+  }
+  else
+  printf("s is null\n");
+ 
+  return s;  
+}
+
+

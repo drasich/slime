@@ -12,7 +12,7 @@ create_control(View* v)
   c->state = IDLE;
   c->view = v;
   c->redo = NULL;
-  c->shader_simple = create_shader("shader/simple.vert", "shader/simple.frag");
+  //c->shader_simple = create_shader("simple","shader/simple.vert", "shader/simple.frag");
   return c;
 }
 

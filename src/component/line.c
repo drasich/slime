@@ -213,7 +213,7 @@ line_init(Line* l)
     l->colors->members,
     GL_DYNAMIC_DRAW);
 
-  l->shader = create_shader("shader/line.vert", "shader/line.frag");
+  l->shader = create_shader("line", "shader/line.vert", "shader/line.frag");
   shader_use(l->shader);
   shader_init_attribute(l->shader, "vertex", &l->attribute_vertex);
   shader_init_attribute(l->shader, "color", &l->attribute_color);

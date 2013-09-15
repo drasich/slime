@@ -114,8 +114,8 @@ _object_mesh_create(const char* file)
   Object* o = create_object();
   Component* meshcomp = create_component(&mesh_desc);
   MeshComponent* mc = meshcomp->data;
-  mc->shader_name = "simple";
-  mc->shader = resource_shader_get(s_rm, "simple");
+  mc->shader = resource_shader_get(s_rm, "shader/simple.shader");
+  mc->shader_name = mc->shader->name;
   mc->mesh_name = file;
   mc->mesh = resource_mesh_get(s_rm, file);
 

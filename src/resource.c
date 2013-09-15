@@ -106,19 +106,28 @@ resource_simple_mesh_create(ResourceManager* rm)
 void 
 resource_shader_create(ResourceManager* rm)
 {
-  Shader* simple = create_shader("shader/simple.vert", "shader/simple.frag");
+  shader_descriptor_init();
+  /*
+  Shader* simple = create_shader("shader/simple.shader","shader/simple.vert", "shader/simple.frag");
   simple->has_vertex = true;
   simple->has_normal = true;
   simple->has_texcoord = true;
   simple->has_uniform_normal_matrix = true;
 
-  Shader* red = create_shader("shader/simple.vert", "shader/red.frag");
+  Shader* red = create_shader("shader/red.shader", "shader/simple.vert", "shader/red.frag");
   red->has_vertex = true;
   red->has_normal = true;
   red->has_texcoord = true;
   red->has_uniform_normal_matrix = true;
+  */
+  Shader* simple = shader_read("shader/simple.shader");
+  Shader* red = shader_read("shader/red.shader");
 
-  eina_hash_add(rm->shaders, "simple", simple);
-  eina_hash_add(rm->shaders, "red", red);
+  eina_hash_add(rm->shaders, simple->name, simple);
+  eina_hash_add(rm->shaders, red->name, red);
+  shader_write(red);
+  shader_write(simple);
+  //Shader* s = shader_read("shader/red.shader");
+  Shader* simplea = shader_read("shader/simple.shader");
 }
 

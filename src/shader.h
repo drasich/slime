@@ -8,24 +8,25 @@ typedef struct _Shader Shader;
 
 struct _Shader
 {
+  const char* name;
   GLuint vert_shader;
   GLuint frag_shader;
   GLuint program;
-  char* vert_path;
-  char* frag_path;
+  const char* vert_path;
+  const char* frag_path;
   bool is_init;
 
   //TODO make it has_attribute("vertex");
-  bool has_vertex;
-  bool has_normal;
-  bool has_texcoord;
+  Eina_Bool has_vertex;
+  Eina_Bool has_normal;
+  Eina_Bool has_texcoord;
 
-  bool has_uniform_normal_matrix;
+  Eina_Bool has_uniform_normal_matrix;
 };
 
 
 //void load_shader(Evas_Object *gl);
-char* stringFromFile(char* path);
+char* stringFromFile(const char* path);
 void shader_init(Shader* shader);
 
 void shader_init_string(
@@ -40,6 +41,10 @@ void shader_use(Shader* s);
 
 void shader_destroy(Shader* s);
 
-Shader* create_shader(char* vert_path, char* frag_path);
+Shader* create_shader(const char* name, const char* vert_path, const char* frag_path);
+Eina_Bool shader_write(const Shader* s);
+Shader* shader_read(const char* filename);
+
+void shader_descriptor_init(void);
 
 #endif

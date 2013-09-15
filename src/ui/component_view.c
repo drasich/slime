@@ -135,7 +135,6 @@ _change_resource(void *data,
 
   const char* old = component_property_data_get(c, p);
   if (!strcmp(old, name)) {
-    printf("it's same, I return\n");
     return;
   }
 
