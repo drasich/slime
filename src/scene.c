@@ -92,8 +92,8 @@ scene_object_get(Scene* s, const char* name)
 
 static Eet_Data_Descriptor *_scene_descriptor;
 
-static void
-_scene_descriptor_init(void)
+void
+scene_descriptor_init(void)
 {
   Eet_Data_Descriptor_Class eddc;
 
@@ -120,9 +120,6 @@ static const char SCENE_FILE_ENTRY[] = "scene";
 Eina_Bool
 scene_write(const Scene* s)
 {
-  //object_descriptor_init();
-  _scene_descriptor_init();
-
   const char* filename = "scene.eet";
 
   Eina_Bool ret;

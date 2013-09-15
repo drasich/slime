@@ -34,5 +34,6 @@ Scene* scene_read();
 void scene_print(Scene* s);
 
 void scene_post_read(Scene* s);
+void scene_descriptor_init(void);
 
 #endif

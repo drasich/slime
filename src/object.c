@@ -377,3 +377,10 @@ ComponentDesc object_desc = {
   property_set_object
 };
 
+/*
+void 
+object_post_read(Object* o)
+{
+
+}
+*/

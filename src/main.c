@@ -185,7 +185,9 @@ populate_scene(Control* c, Scene* s)
 static void 
 build_scene()
 {
+  scene_descriptor_init();
   Scene* s = create_scene();
+  //Scene* s = scene_read();
   evas_object_data_set(view->glview, "scene", s);
   s->view = view;
   view->context->scene = s;
@@ -193,6 +195,7 @@ build_scene()
 
   printf("scene ORIGINAL\n");
   scene_print(s);
+  /*
   printf("scene write*****\n");
   Eina_Bool b = scene_write(s);
   printf("scene write end, scene read____\n");
@@ -200,6 +203,7 @@ build_scene()
   printf("scene write read, scene read____\n");
   printf("scene COPY\n");
   scene_print(ss);
+  */
 
 }
 
