@@ -420,7 +420,7 @@ _property_add_fileselect(ComponentProperties* cp, Property* p)
 
 
 static void
-_component_property_update_data_recur(ComponentProperties* cp, void* data, PropertySet* ps)
+_component_property_update_data_recur(ComponentProperties* cp, void* data, const PropertySet* ps)
 {
   Property *p;
   EINA_INARRAY_FOREACH(ps->array, p) {
@@ -502,7 +502,7 @@ _remove_component(
 
 
 static void
-_add_properties(ComponentProperties* cp, PropertySet* ps, Evas_Object* box)
+_add_properties(ComponentProperties* cp, const PropertySet* ps, Evas_Object* box)
 {
   Property *p;
   EINA_INARRAY_FOREACH(ps->array, p) {

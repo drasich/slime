@@ -9,10 +9,18 @@ LATELY
   if the property is a pointer : check if there is an object
   with the entry string and then set the property with this pointer
 
+IDEAS
+- in the component managers, for all the components add objects
+  to component, then call init update on the component that calls it for
+  all objects that has this component... (but we cannot choose the order 
+  of the components)
+
 CLEAN
 - fix functions name -> put the verb at the end
 
-ISSUES
+ISSUES (must be done)
+- change properties in ComponentDesc so there is only one to be created and I
+  can remove the one in create_component and object_post_read
 - in control.c, _op_change_property save the data if it's not a pointer to existing data (like an int)
 - Fix property component update - remove object from parameter?
 - open play window and close the main window with the cross -> crash : because 

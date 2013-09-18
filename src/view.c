@@ -523,7 +523,7 @@ _addcomponent(void *data,
   printf("add component\n");
   Evas_Object* win = evas_object_top_get (evas_object_evas_get(obj));
   //Evas_Object* menu = v->menu;
-  Evas_Object* menu = _create_component_menu(win, v->control->component_manager->components);
+  Evas_Object* menu = _create_component_menu(win, s_component_manager->components);
   evas_object_data_set(menu, "view", v);
   evas_object_show(menu);
 
@@ -683,9 +683,9 @@ create_view(Evas_Object *win)
 
   view->context = calloc(1,sizeof *view->context);
   view->control = create_control(view);
-  view->control->component_manager = create_component_manager(win, view->control); //TODO
-  component_manager_load(view->control->component_manager);
-  component_descriptor_init(view->control->component_manager->components);
+  s_component_manager = create_component_manager(win, view->control); //TODO
+  component_manager_load(s_component_manager);
+  component_descriptor_init(s_component_manager->components);
 
   view->box = elm_box_add(win);
   evas_object_size_hint_weight_set(view->box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -738,31 +738,27 @@ view_update(View* v, double dt)
   r->objects = eina_list_free(r->objects);
 
   EINA_LIST_FOREACH(s->objects, l, o) {
-    if (!o->mesh) {
+    MeshComponent* mc = object_component_get(o, "mesh");
+    if (!mc ) {
       //TODO
       r->objects = eina_list_append(r->objects, o);
       continue;
     }
 
-    OBox b;
-    aabox_to_obox(o->mesh->box, b, o->Position, o->Orientation);
-    /*
-    int i = 0;
-    for (i = 0; i<8; ++i) {
-      b[i] = vec3_add(b[i], o->Position);
-      //printf("box[%d] : %f, %f, %f\n", i, b[i].X, b[i].Y, b[i].Z);
+    Mesh* m = mc->mesh;
+    if (!m) {
+      r->objects = eina_list_append(r->objects, o);
+      continue;
     }
-    */
+
+    OBox b;
+    aabox_to_obox(m->box, b, o->Position, o->Orientation);
+
     if (planes_is_box_in_allow_false_positives(planes, 6, b)) {
     //if (planes_is_in(planes, 6, o->Position)) {
       r->objects = eina_list_append(r->objects, o);
     }
-    //algo :
-    // frustum_is_box_in
   }
-
-  //printf("objects to draw : %d\n", eina_list_count(r->objects));
-
 }
 
 #include "resource.h"
@@ -905,7 +901,6 @@ view_draw(View* v)
 
   //Render objects
   EINA_LIST_FOREACH(r->objects, l, o) {
-
     //Frustum f;
     //camera_get_frustum(v->camera, &f);
     

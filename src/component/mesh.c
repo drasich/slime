@@ -5,6 +5,7 @@
 #include "read.h"
 #include "property.h"
 #include "component/camera.h"
+#include "resource.h" //TODO separate mesh component and mesh and put this header in the component
 
 void mesh_read_file(Mesh* mesh, FILE* f)
 {
@@ -500,17 +501,22 @@ _mesh_component_draw(Component* c, Matrix4 world, struct _CCamera* cam)
   return;
 
   Mesh* m = mc->mesh;
-  if (!m)
-  return;
+  if (!m) {
+    m = resource_mesh_get(s_rm, mc->mesh_name);
+    if (m) mc->mesh = m;
+    else return;
+  }
 
 
   Shader* s = mc->shader;
-  if (!s)
-  return;
+  if (!s) {
+    s = resource_shader_get(s_rm, mc->shader_name);
+    if (s) mc->shader = s;
+    else return;
+  }
 
   shader_use(s);
 
-  //printf("mesh init for %s\n", c->object->name);
   if (!m->is_init) {
     mesh_init(m);
   }

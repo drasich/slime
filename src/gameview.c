@@ -78,7 +78,7 @@ _gameview_del(void *data __UNUSED__, Evas *evas __UNUSED__, Evas_Object *obj, vo
   printf("win del will free\n");
   free(gv);
   printf("win del will free is done\n");
-  component_manager_unload(gv->control->component_manager);
+  component_manager_unload(s_component_manager);
   printf("win del has unload\n");
 }
 

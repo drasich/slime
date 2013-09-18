@@ -11,7 +11,7 @@ struct _ComponentProperties
 {
   Evas_Object* win;
   Evas_Object* box;
-  PropertySet *arr;
+  const PropertySet *arr;
   Eina_Hash *properties;
   struct _PropertyView *pw;
   // add callbacks here if we want to call something when data has changed.

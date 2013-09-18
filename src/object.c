@@ -377,10 +377,21 @@ ComponentDesc object_desc = {
   property_set_object
 };
 
-/*
 void 
 object_post_read(Object* o)
 {
+  o->component =  create_component(&object_desc);
+  o->component->data = o;
+  o->component->object = o;
 
+  Eina_List* l;
+  Component* c;
+
+  EINA_LIST_FOREACH(o->components, l, c) {
+    c->object = o;
+
+    c->funcs = component_manager_desc_get(s_component_manager, c->name);//TODO find from component manager;
+    c->properties = c->funcs->properties();
+  }
 }
-*/
+

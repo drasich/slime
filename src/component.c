@@ -199,3 +199,18 @@ component_descriptor_init(Eina_List* component_desc)
 
 }
 
+const ComponentDesc*
+component_manager_desc_get(const ComponentManager* cm, const char* name)
+{
+  Eina_List* l;
+  ComponentDesc* cd;
+  EINA_LIST_FOREACH(cm->components, l, cd) {
+    if (!strcmp(cd->name, name)) {
+      return cd;
+    }
+  }
+
+  printf("Could not find component description %s\n", name);
+  return NULL;
+
+}

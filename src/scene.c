@@ -179,9 +179,7 @@ scene_post_read(Scene* s)
     if (!strcmp(o->name, s->camera_name)) {
       s->camera = o;
     }
-    //TODO
-    //object_post_read(o);
-
+    object_post_read(o);
   }
 
 }
@@ -198,11 +196,12 @@ scene_print(Scene* s)
   EINA_LIST_FOREACH(s->objects, l, o) {
    printf("  object name : %s \n", o->name);
    EINA_LIST_FOREACH(o->components, cl, c) {
-     printf("     component name : %s \n", c->name);
+     printf("     component name, pointer : %s, %p \n", c->name,c);
      if (!c->name) continue;
      if (!strcmp(c->name, "mesh")) {
        MeshComponent* mc = c->data;
-       printf("        mesh name : %s \n", mc->mesh_name);
+       printf("        mesh name, mc pointer : %s, %p \n", mc->mesh_name, mc);
+       printf("        mesh pointer : %p \n", mc->mesh);
      }
      else if (!strcmp(c->name, "camera")) {
        CCamera* cc = c->data;

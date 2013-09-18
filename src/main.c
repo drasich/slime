@@ -124,8 +124,6 @@ _object_mesh_create(const char* file)
   return o;
 }
 
-#include "component/camera.h"
-#include "component/line.h"
 static void
 populate_scene(Control* c, Scene* s)
 {
@@ -186,18 +184,19 @@ static void
 build_scene()
 {
   scene_descriptor_init();
-  Scene* s = create_scene();
-  //Scene* s = scene_read();
+  //Scene* s = create_scene();
+  Scene* s = scene_read();
+  scene_post_read(s);
   evas_object_data_set(view->glview, "scene", s);
   s->view = view;
   view->context->scene = s;
-  populate_scene(view->control, s);
+  //populate_scene(view->control, s);
 
   printf("scene ORIGINAL\n");
   scene_print(s);
-  /*
   printf("scene write*****\n");
-  Eina_Bool b = scene_write(s);
+  //Eina_Bool b = scene_write(s);
+  /*
   printf("scene write end, scene read____\n");
   Scene* ss = scene_read();
   printf("scene write read, scene read____\n");
