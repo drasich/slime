@@ -140,6 +140,15 @@ _create_camera()
   return c;
 }
 
+static void
+_camera_init(Component* component)
+{
+  CCamera* c = component->data;
+  c->fovy = c->fovy_base;
+  c->height_base = c->height;
+  ccamera_update_projection(c);
+}
+
 static PropertySet* 
 _camera_properties()
 {
@@ -174,7 +183,7 @@ ComponentDesc camera_desc = {
   "camera",
   _create_camera,
   _camera_properties,
-  NULL,
+  _camera_init,
   NULL,
   NULL,
   _camera_on_property_changed,

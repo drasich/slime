@@ -16,6 +16,9 @@ _init_gl(Evas_Object *obj)
   gl->glDepthFunc(GL_LEQUAL);
   gl->glClearDepthf(1.0f);
   gl->glClearStencil(0);
+
+  GameView* gv = evas_object_data_get(obj, "gameview");
+  scene_init(gv->scene);
 }
 
 static void
@@ -178,6 +181,8 @@ gameview_draw(GameView* v)
   Scene* s = v->scene;
   Object* c = s->camera;
   CCamera* cam = object_component_get(c, "camera");
+  //printf("camera is %s\n", c->name);
+  //printf("camera pos.z %f\n", c->Position.Z);
 
   Matrix4 cam_mat_inv, mo;
 

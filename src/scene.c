@@ -12,6 +12,7 @@ create_scene()
   return s;
 }
 
+
 void
 scene_add_object(Scene* s, Object* o)
 {
@@ -172,11 +173,18 @@ scene_post_read(Scene* s)
   Object *o;
   EINA_LIST_FOREACH(s->objects, l, o) {
     if (!strcmp(o->name, s->camera_name)) {
+      printf("found camera!!!! %s\n", s->camera_name);
       s->camera = o;
     }
     object_post_read(o);
   }
 
+}
+
+void
+scene_init(Scene* s)
+{
+  scene_post_read(s);
 }
 
 void

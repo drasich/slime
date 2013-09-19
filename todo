@@ -1,8 +1,5 @@
 LATELY
-- save view : save camera position and scene... window size?
-- save scene: make component manager to put the functions somewhere
-- make material to handle textures, uniform etc
-- make scale
+- when reading the scene, play doesn't show anything
 - 2 choices : put attributes and uniforms in mesh component
   OR call init attribute that calls getattribute to get the good attr
 - load/unload components pb in object to get ref of name and func
@@ -20,6 +17,7 @@ CLEAN
 - fix functions name -> put the verb at the end
 
 ISSUES (must be done)
+- save the component functions in the component manager
 - change properties in ComponentDesc so there is only one to be created and I
   can remove the one in create_component and object_post_read
 - in control.c, _op_change_property save the data if it's not a pointer to existing data (like an int)
@@ -35,6 +33,7 @@ BUG
 
 
 RENDER
+- make scale
 - decide how to draw with camera ortho and per
 - mesh component
   - solve the quad stuff : 
@@ -43,10 +42,13 @@ RENDER
 - material
 
 VIEW
+- make draggers translate, rotation, scale
+- save view : save camera position and scene... window size?
 - make the camera display better
 - remove the animator for view?
 
 ARCHITECTURE
+- make material to handle textures, uniform etc
 - init mode et real mode
 - decider si transform devient un component a part en dehors d'object
 et aussi "object properties" "name, ..."
