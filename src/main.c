@@ -185,17 +185,18 @@ build_scene()
 {
   scene_descriptor_init();
   //Scene* s = create_scene();
-  Scene* s = scene_read();
+  Scene* s = scene_read("scene.eet");
   scene_post_read(s);
   evas_object_data_set(view->glview, "scene", s);
   s->view = view;
+  tree_scene_set(view->tree, s);
   view->context->scene = s;
   //populate_scene(view->control, s);
 
   printf("scene ORIGINAL\n");
   scene_print(s);
   printf("scene write*****\n");
-  //Eina_Bool b = scene_write(s);
+  Eina_Bool b = scene_write(s,"scene.eet");
   /*
   printf("scene write end, scene read____\n");
   Scene* ss = scene_read();
@@ -222,6 +223,8 @@ gameviewtest()
 EAPI_MAIN int
 elm_main(int argc, char **argv)
 {
+  eina_init();
+  eet_init();
   s_rm = resource_manager_create();
   resource_read_path(s_rm);
   resource_simple_mesh_create(s_rm);

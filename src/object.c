@@ -344,10 +344,15 @@ object_component_get(const Object* o, const char* name)
 
 }
 
+static PropertySet* s_ps_obj = NULL; //TODO put the property set in component manager
+
 PropertySet* 
 property_set_object()
 {
-  PropertySet* ps = create_property_set();
+  if (s_ps_obj) return s_ps_obj;
+
+  s_ps_obj = create_property_set();
+  PropertySet* ps = s_ps_obj;
   PROPERTY_SET_TYPE(ps, Object);
 
   PropertySet *vec3 = property_set_vec3();

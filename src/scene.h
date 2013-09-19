@@ -29,8 +29,8 @@ void scene_camera_set(Scene* s, Object* camera);
 
 Object* scene_object_get(Scene* s, const char* name);
 
-Eina_Bool scene_write(const Scene* s);
-Scene* scene_read();
+Eina_Bool scene_write(const Scene* s, const char* filename);
+Scene* scene_read(const char* filename);
 void scene_print(Scene* s);
 
 void scene_post_read(Scene* s);

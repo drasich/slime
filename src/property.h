@@ -49,7 +49,7 @@ enum {
  if (!ps->descriptor) { \
    Eet_Data_Descriptor_Class eddc; \
    EET_EINA_FILE_DATA_DESCRIPTOR_CLASS_SET(&eddc, type); \
-   ps->descriptor = eet_data_descriptor_file_new(&eddc); \
+   ps->descriptor = eet_data_descriptor_stream_new(&eddc); \
  }
 
 

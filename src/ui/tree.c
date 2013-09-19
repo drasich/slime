@@ -368,3 +368,14 @@ tree_remove_object(Tree* t,  Object* o)
   return;
 }
 
+void tree_scene_set(Tree* t, struct _Scene* s)
+{
+  Eina_List* l;
+  Object* o;
+
+  EINA_LIST_FOREACH(s->objects, l, o) {
+    tree_add_object(t,o);
+  }
+
+}
+

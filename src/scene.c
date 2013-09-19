@@ -105,23 +105,19 @@ scene_descriptor_init(void)
         Scene, "camera", camera_name, EET_T_STRING);
 
   PropertySet* object_ps = property_set_object();
-  //TODO delete object_ps;
 
   EET_DATA_DESCRIPTOR_ADD_LIST
    (_scene_descriptor, Scene, "objects", objects,
     //object_descriptor);
     object_ps->descriptor);
-
 }
 
 
 static const char SCENE_FILE_ENTRY[] = "scene";
 
 Eina_Bool
-scene_write(const Scene* s)
+scene_write(const Scene* s, const char* filename)
 {
-  const char* filename = "scene.eet";
-
   Eina_Bool ret;
   Eet_File *ef = eet_open(filename, EET_FILE_MODE_WRITE);
   if (!ef) {
@@ -150,10 +146,9 @@ _output(void *data, const char *string)
 
 
 Scene*
-scene_read()
+scene_read(const char* filename)
 {
   Scene* s;
-  const char* filename = "scene.eet";
 
   Eet_File *ef = eet_open(filename, EET_FILE_MODE_READ);
   if (!ef) {
@@ -162,10 +157,10 @@ scene_read()
   }
 
   s = eet_data_read(ef, _scene_descriptor, SCENE_FILE_ENTRY);
-  eet_close(ef);
   printf("scene read data dump\n");
   eet_data_dump(ef, SCENE_FILE_ENTRY, _output, NULL);
   printf("scene read data dump end\n");
+  eet_close(ef);
  
   return s;  
 }

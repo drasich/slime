@@ -26,6 +26,8 @@ void tree_select_object(Tree* t, struct _Object* o);
 void tree_select_objects(Tree* t, Eina_List* objects);
 void tree_update_object(Tree* t, struct _Object* o);
 
+void tree_scene_set(Tree* t, struct _Scene* s);
+
 void tree_unselect_all(Tree* t);
 
 #endif
