@@ -1,4 +1,5 @@
 LATELY
+- save view : save camera position and scene... window size?
 - save scene: make component manager to put the functions somewhere
 - make material to handle textures, uniform etc
 - make scale
@@ -29,7 +30,8 @@ ISSUES (must be done)
   be control in gameview... component manager I have to check
 
 BUG
-- focus play and main and close with escape sometimes window manager freeze
+- focus the play and main windows alternatively(with the mouse)
+  and close with escape sometimes window manager freeze.
 
 
 RENDER

@@ -32,8 +32,10 @@ static void
 _view_del_gl(Evas_Object *obj)
 {
   Scene* s = evas_object_data_get(obj, "scene");
-  if (s)
-  scene_destroy(s);
+  if (s) {
+    scene_write(s,"scene.eet");
+    scene_destroy(s);
+  }
 }
 
 static void
