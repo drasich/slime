@@ -299,6 +299,7 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
 
   if (c->state == IDLE) {
     if (!strcmp(e->keyname, "Escape")) {
+      view_destroy(c->view);
       elm_exit();
     } else if ( !strcmp(e->keyname, "g")) {
       //enter move mode

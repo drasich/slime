@@ -425,7 +425,7 @@ _component_property_update_data_recur(ComponentProperties* cp, void* data, const
   Property *p;
   EINA_INARRAY_FOREACH(ps->array, p) {
     Evas_Object* obj = eina_hash_find(cp->properties, &p);
-    //printf("name: %s , type: %d, offset: %d\n", p->name, p->type, p->offset);
+    //printf("component %s, name: %s , type: %d, offset: %d\n", cp->name, p->name, p->type, p->offset);
     switch(p->type) {
       case EET_T_DOUBLE:
          {

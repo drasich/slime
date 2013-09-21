@@ -70,8 +70,6 @@ create_component_manager(Evas_Object* win, Control* c)
   cm->control = c;
   //cm->win = win;
   printf("create compo manager\n");
-  cm->components = eina_list_append(cm->components, &camera_desc);
-  cm->components = eina_list_append(cm->components, &mesh_desc);
 
   return cm;
 }
@@ -99,13 +97,31 @@ component_manager_load(ComponentManager* cm)
   else 
     printf("symbol success\n");
 
+  cm->components = eina_list_append(cm->components, &camera_desc);
+  cm->components = eina_list_append(cm->components, &mesh_desc);
+
   Eina_List* user_components = initfunc();
   cm->components = eina_list_merge(cm->components, user_components);
   printf("init func done\n");
   //_create_widgets(cm);
+
+  component_descriptor_init(s_component_manager->components);
   printf("create components end\n");
+
   
 }
+
+static Eet_Data_Descriptor *_variant_unified_descriptor;
+
+static void
+_component_descriptor_delete(ComponentManager* cm)
+{
+  free(_variant_unified_descriptor);
+  _variant_unified_descriptor = NULL;
+  free(component_descriptor);
+  component_descriptor = NULL;
+}
+
 
 void
 component_manager_unload(ComponentManager* cm)
@@ -119,6 +135,8 @@ component_manager_unload(ComponentManager* cm)
 
   eina_list_free(cm->components);
   cm->components = NULL;
+
+  _component_descriptor_delete(cm);
 }
 
 
@@ -168,7 +186,6 @@ _component_type_set(
   return EINA_TRUE;
 }
 
-static Eet_Data_Descriptor *_variant_unified_descriptor;
 
 void
 component_descriptor_init(Eina_List* component_desc)

@@ -375,6 +375,15 @@ property_set_object()
   return ps;
 }
 
+void 
+object_descriptor_delete()
+{
+  free(s_ps_obj->descriptor);
+  free(s_ps_obj);
+  s_ps_obj = NULL;
+  //TODO also free the array
+}
+
 
 ComponentDesc object_desc = {
   "object",
@@ -397,7 +406,12 @@ object_post_read(Object* o)
   EINA_LIST_FOREACH(o->components, l, c) {
     c->object = o;
 
+    printf("component name : %s \n", c->name);
     c->funcs = component_manager_desc_get(s_component_manager, c->name);//TODO find from component manager;
+    if (c->funcs)
+    printf("component functions found, name : %s \n", c->name);
+    else
+    printf("component functions NOT found, name : %s \n", c->name);
     c->properties = c->funcs->properties();
 
     if (c->funcs->init)

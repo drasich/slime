@@ -69,5 +69,6 @@ ComponentDesc object_desc;
 PropertySet* property_set_object();
 
 void object_post_read(Object* o);
+void object_descriptor_delete();
 
 #endif

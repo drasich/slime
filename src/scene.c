@@ -92,6 +92,7 @@ scene_object_get(Scene* s, const char* name)
 
 
 static Eet_Data_Descriptor *_scene_descriptor;
+static PropertySet* _object_ps;
 
 void
 scene_descriptor_init(void)
@@ -105,12 +106,21 @@ scene_descriptor_init(void)
         _scene_descriptor,
         Scene, "camera", camera_name, EET_T_STRING);
 
-  PropertySet* object_ps = property_set_object();
+  _object_ps = property_set_object();
 
   EET_DATA_DESCRIPTOR_ADD_LIST
    (_scene_descriptor, Scene, "objects", objects,
     //object_descriptor);
-    object_ps->descriptor);
+    _object_ps->descriptor);
+}
+
+void 
+scene_descriptor_delete(void)
+{
+  free(_scene_descriptor);
+  _scene_descriptor = NULL;
+  object_descriptor_delete();
+  _object_ps = NULL;
 }
 
 
@@ -209,6 +219,10 @@ scene_print(Scene* s)
      else if (!strcmp(c->name, "camera")) {
        CCamera* cc = c->data;
        printf("       camera width : %f \n", cc->width);
+     }
+     else if (!strcmp(c->name, "player")) {
+       const char** yep = c->data;
+       printf("       player name : %s \n", *yep);
 
      }
    }

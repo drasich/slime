@@ -31,11 +31,6 @@ _view_init_gl(Evas_Object *obj)
 static void
 _view_del_gl(Evas_Object *obj)
 {
-  Scene* s = evas_object_data_get(obj, "scene");
-  if (s) {
-    scene_write(s,"scene.eet");
-    scene_destroy(s);
-  }
 }
 
 static void
@@ -242,7 +237,7 @@ _view_select_object(View *v, Object *o)
 }
 
 static void
-_makeRect(View* v, Scene* s, Evas_Event_Mouse_Down* ev)
+_makeRect(View* v, Evas_Event_Mouse_Down* ev)
 {
   printf("make rect : \n");
 
@@ -261,8 +256,8 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   Evas_Event_Mouse_Down *ev = (Evas_Event_Mouse_Down*) event_info;
   //elm_object_focus_set(o, EINA_TRUE);
 
-  Scene* s = evas_object_data_get(o, "scene");
   View* v = evas_object_data_get(o, "view");
+  Scene* s = v->context->scene;
   Control* cl = v->control;
   if (control_mouse_down(cl, ev))
     return;
@@ -270,7 +265,7 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   //if (ev->button == 3 ){
   const Evas_Modifier * mods = ev->modifiers;
   if (evas_key_modifier_is_set(mods, "Control")) {
-    _makeRect(v, s, ev);
+    _makeRect(v, ev);
     return;
   }
 
@@ -441,6 +436,27 @@ _pause(void *data,
   printf("pause\n");
 }
 
+static void
+_reload(void *data,
+      Evas_Object *obj,
+      void *event_info)
+{
+  printf("reload\n");
+  View* v = data;
+  scene_write(v->context->scene, "scenetmp.eet");
+  context_clean_objects(v->context);
+  scene_destroy(v->context->scene);
+  scene_descriptor_delete();
+  component_manager_unload(s_component_manager);
+  component_manager_load(s_component_manager);
+  scene_descriptor_init();
+  Scene* s = scene_read("scenetmp.eet");
+  scene_post_read(s);
+  v->context->scene = s;
+  scene_print(s);
+}
+
+
 /*
 static void
 _show(void *data, Evas *e, Evas_Object *obj, void *event_info)
@@ -609,6 +625,19 @@ _add_buttons(View* v, Evas_Object* win)
   evas_object_data_set(bt, "view", v);
   evas_object_smart_callback_add(bt, "clicked", _addcomponent, v);
 
+  ////////////////////////////////
+  bt = elm_button_add(win);
+  elm_object_focus_allow_set(bt, 0);
+
+  elm_object_text_set(bt, "reload");
+  evas_object_show(bt);
+
+  evas_object_color_set(bt, r,g,b,a);
+  evas_object_resize(bt, 50, 25);
+  evas_object_move(bt, 405, 15);
+  evas_object_data_set(bt, "view", v);
+  evas_object_smart_callback_add(bt, "clicked", _reload, v);
+
 }
 
 static void
@@ -673,7 +702,6 @@ create_view(Evas_Object *win)
   view->control = create_control(view);
   s_component_manager = create_component_manager(win, view->control); //TODO
   component_manager_load(s_component_manager);
-  component_descriptor_init(s_component_manager->components);
 
   view->box = elm_box_add(win);
   evas_object_size_hint_weight_set(view->box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -702,6 +730,7 @@ view_destroy(View* v)
   printf("destroy view\n");
   //TODO free camera
   //TODO free scene here?
+  scene_write(v->context->scene, "scene.eet");
   free(v->context);
   //TODO release control
   //free(v->control);

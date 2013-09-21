@@ -19,6 +19,7 @@ IDEAS
 
 CLEAN
 - fix functions name -> put the verb at the end
+- clean the scene when?
 
 ISSUES (must be done)
 - save the component functions in the component manager

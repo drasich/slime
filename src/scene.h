@@ -11,7 +11,6 @@ struct _Scene {
   //list of objects
   Eina_List* objects;
   Eina_List* ortho;
-  struct _View* view;
   Object* camera;
   const char* camera_name;
 };
@@ -35,6 +34,7 @@ void scene_print(Scene* s);
 
 void scene_post_read(Scene* s);
 void scene_descriptor_init(void);
+void scene_descriptor_delete(void);
 void scene_init(Scene* s);
 
 #endif

@@ -27,6 +27,7 @@ _player_properties(ComponentDesc* desc)
   ADD_PROP(ps, Player, name, EET_T_STRING);
   ADD_PROP(ps, Player, rotation_speed, EET_T_DOUBLE);
   ADD_PROP(ps, Player, target, PROPERTY_POINTER );
+  //ADD_PROP(ps, Player, my_test, EET_T_DOUBLE );
 
   return ps;
 }

@@ -187,8 +187,6 @@ build_scene()
   //Scene* s = create_scene();
   Scene* s = scene_read("scene.eet");
   scene_post_read(s);
-  evas_object_data_set(view->glview, "scene", s);
-  s->view = view;
   tree_scene_set(view->tree, s);
   view->context->scene = s;
   //populate_scene(view->control, s);
