@@ -13,6 +13,8 @@
 #include "gameview.h"
 #define __UNUSED__
 
+static bool s_view_destroyed = false;
+
 // Callbacks
 static void
 _view_init_gl(Evas_Object *obj)
@@ -410,6 +412,24 @@ _new_empty(void *data,
 
 }
 
+static void
+_gameview_closed(void *data, Evas_Object *obj, void *event_info)
+{
+  printf("gameview closed\n");
+  if (s_view_destroyed) return;
+
+  View* v = data;
+  Context* context = v->context;
+
+  scene_destroy(context->scene);
+  Scene* s = scene_read("scenecur.eet");
+  scene_post_read(s);
+
+  context_clean_objects(context);
+  context->scene = s;
+}
+
+
 Evas_Object* gameview_;
 
 static void
@@ -419,8 +439,12 @@ _play(void *data,
 {
   View* v = data;
 
-  if (!gameview_)
-  gameview_ = create_gameview_window(v->context->scene, &gameview_, v->control );
+  if (!gameview_) {
+    scene_write(v->context->scene, "scenecur.eet");
+
+    gameview_ = create_gameview_window(v->context->scene, &gameview_, v->control );
+    evas_object_smart_callback_add(gameview_, "delete,request", _gameview_closed, v);
+  }
   else {
     evas_object_show(gameview_);
     elm_win_raise(gameview_);
@@ -441,7 +465,8 @@ _reload(void *data,
       Evas_Object *obj,
       void *event_info)
 {
-  printf("reload\n");
+  if (gameview_) return; //TODO if state is play
+
   View* v = data;
   scene_write(v->context->scene, "scenetmp.eet");
   context_clean_objects(v->context);
@@ -724,17 +749,22 @@ create_view(Evas_Object *win)
   return view;
 }
 
+
 void
 view_destroy(View* v)
 {
   printf("destroy view\n");
   //TODO free camera
   //TODO free scene here?
-  scene_write(v->context->scene, "scene.eet");
+  if (!gameview_) {
+    scene_write(v->context->scene, "scene.eet");
+  }
+
   free(v->context);
   //TODO release control
   //free(v->control);
   free(v);
+  s_view_destroyed = true;
 }
 
 void

@@ -52,7 +52,6 @@ scene_destroy(Scene* s)
   }
 
   free(s);
-  eina_shutdown();
 }
 
 void

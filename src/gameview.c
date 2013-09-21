@@ -78,13 +78,8 @@ _gameview_del(void *data __UNUSED__, Evas *evas __UNUSED__, Evas_Object *obj, vo
 
   GameView* gv = evas_object_data_get(obj, "gameview");
   *gv->window = NULL;
-  printf("win del will free\n");
   free(gv);
-  printf("win del will free is done\n");
-  //component_manager_unload(s_component_manager);
-  printf("win del has unload\n");
 }
-
 
 static void
 _set_callbacks(Evas_Object* glview)
