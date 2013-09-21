@@ -1,7 +1,11 @@
 LATELY
-- when reading the scene, play doesn't show anything
-- 2 choices : put attributes and uniforms in mesh component
-  OR call init attribute that calls getattribute to get the good attr
+- modules loading/unloading, reupdate functions, and objects components:
+  It means re-reading the scene, etc... it means reloading includes:
+  - write the scene to a file
+  - delete the scene
+  - unload/reload library
+  - read the scene.
+  - question is : will it be fast enough?
 - load/unload components pb in object to get ref of name and func
 - in component_view.c, _entry_activated_cb:
   if the property is a pointer : check if there is an object
@@ -26,6 +30,8 @@ ISSUES (must be done)
   control is clean in view_destroy and then there is a pointer to control in gameview that is
   used in the cleaning for gameview, I removed the free(v->control) temporarily but there shouldn't
   be control in gameview... component manager I have to check
+- uniforms/attributes... 2 choices : put attributes and uniforms in mesh component
+  OR call init attribute that calls getattribute to get the good attr
 
 BUG
 - focus the play and main windows alternatively(with the mouse)

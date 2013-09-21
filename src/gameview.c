@@ -81,7 +81,7 @@ _gameview_del(void *data __UNUSED__, Evas *evas __UNUSED__, Evas_Object *obj, vo
   printf("win del will free\n");
   free(gv);
   printf("win del will free is done\n");
-  component_manager_unload(s_component_manager);
+  //component_manager_unload(s_component_manager);
   printf("win del has unload\n");
 }
 
@@ -147,10 +147,9 @@ win_del(void *data, Evas_Object *obj, void *event_info)
   */
 }
 
-Evas_Object* create_gameview_window(View* v, Evas_Object** window, Control* c)
+Evas_Object*
+create_gameview_window(Scene* s, Evas_Object** window, Control* c)
 {
-  Scene* s = v->context->scene;
-
   Evas_Object *win;
   win = elm_win_util_standard_add("slime", "gameview");
   Object* o = s->camera;
@@ -164,7 +163,6 @@ Evas_Object* create_gameview_window(View* v, Evas_Object** window, Control* c)
   //evas_object_smart_callback_add(win, "delete,request", win_del, gv);
   //Context* cx = v->context;
   gv->scene = s;
-  gv->camera = v->camera;
   gv->window = window;
   gv->control = c;
 

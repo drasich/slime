@@ -418,20 +418,6 @@ _new_empty(void *data,
 Evas_Object* gameview_;
 
 static void
-gameviewtestplay()
-{
-  Evas_Object *win;
-  win = elm_win_util_standard_add("gamview", "gameview");
-  evas_object_resize(win, 800, 200);
-  evas_object_show(win);
-  elm_win_autodel_set(win, EINA_TRUE);
-  //evas_object_smart_callback_add(win, "delete,request", win_del, NULL);
-  create_gameview(win);
-
-}
-
-
-static void
 _play(void *data,
       Evas_Object *obj,
       void *event_info)
@@ -439,7 +425,7 @@ _play(void *data,
   View* v = data;
 
   if (!gameview_)
-  gameview_ = create_gameview_window(v, &gameview_, v->control );
+  gameview_ = create_gameview_window(v->context->scene, &gameview_, v->control );
   else {
     evas_object_show(gameview_);
     elm_win_raise(gameview_);

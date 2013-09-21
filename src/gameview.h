@@ -14,7 +14,6 @@ struct _GameView
 {
   Evas_Object* glview;
   Evas_Object* box;
-  Camera* camera;
   //Render* render;
   struct _Scene* scene;
   Evas_Object** window;
@@ -23,7 +22,7 @@ struct _GameView
 };
 
 GameView* create_gameview(Evas_Object *win);
-Evas_Object* create_gameview_window(View* v, Evas_Object** window, Control* c);
+Evas_Object* create_gameview_window(Scene* s, Evas_Object** window, Control* c);
 //void gameview_destroy(View* v);
 //void gameview_update(View* v, double dt);
 
