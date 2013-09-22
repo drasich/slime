@@ -1,27 +1,14 @@
 LATELY
-- modules loading/unloading, reupdate functions, and objects components:
-  It means re-reading the scene, etc... it means reloading includes:
-  - write the scene to a file
-  - delete the scene
-  - unload/reload library
-  - read the scene.
-  - question is : will it be fast enough?
-- load/unload components pb in object to get ref of name and func
-- in component_view.c, _entry_activated_cb:
-  if the property is a pointer : check if there is an object
-  with the entry string and then set the property with this pointer
+-
 
-IDEAS
-- in the component managers, for all the components add objects
-  to component, then call init update on the component that calls it for
-  all objects that has this component... (but we cannot choose the order 
-  of the components)
 
 CLEAN
 - fix functions name -> put the verb at the end
 - clean the scene when?
 
 ISSUES (must be done)
+- handle the if name == "quad" stuff
+- don't create component with the orders of functions name etc
 - save the component functions in the component manager
 - change properties in ComponentDesc so there is only one to be created and I
   can remove the one in create_component and object_post_read
@@ -90,9 +77,16 @@ PROPERTIES
 CODE
 - release les components widgets correctement
 - check everything for cleaning
+  - component widget
+  - ...
 
 
 GAMEVIEW
 - check the gl callbacks init, update, draw.... for gameview;
 
+IDEAS
+- in the component managers, for all the components add objects
+  to component, then call init update on the component that calls it for
+  all objects that has this component... (but we cannot choose the order 
+  of the components)
 
