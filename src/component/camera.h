@@ -6,8 +6,15 @@
 #include "component.h"
 #include "component/line.h"
 
+#define ENUM(name, ... ) \
+ typedef enum { __VA_ARGS__ } name; \
+static const char* name ## _enum_string[] = { \
+  # __VA_ARGS__ \
+};
+
 typedef struct _CCamera CCamera;
-typedef enum {PERSPECTIVE, ORTHOGRAPHIC} Projection;
+//typedef enum {PERSPECTIVE, ORTHOGRAPHIC} Projection;
+ENUM(Projection, PERSPECTIVE, ORTHOGRAPHIC);
 
 struct _CCamera
 {

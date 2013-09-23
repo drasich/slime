@@ -147,6 +147,7 @@ _camera_init(Component* component)
   c->fovy = c->fovy_base;
   c->height_base = c->height;
   ccamera_update_projection(c);
+  printf("!!!!!!!!!!!!!!!!!!!!!!!!!! test from chris : %s\n", Projection_enum_string[0]);
 }
 
 static PropertySet* 

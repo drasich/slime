@@ -6,6 +6,7 @@
 #include "geometry.h"
 #include "component/camera.h"
 
+
 typedef struct _Camera Camera;
 struct _Camera
 {
