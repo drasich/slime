@@ -1,5 +1,15 @@
 LATELY
-- review how to add components desc : don't create component desc... with the orders of functions name etc
+- rename Camera to ViewCamera? make a viewcamera component?
+- create a new ortho camera and add the quads to it
+- camera choose ortho or pers, make an enum property
+- handle the if name == "quad" stuff: orthographic and pers. projection
+  - choose ortho or pers in mesh component?, but what if I want I special
+    width and height
+  - make a default camera, but make it possible to choose another camera, in
+    mesh component.
+  - objects inherit the camera from the parent or the root.
+  - there is a tree of objects, and also groups of objects, one group for
+    every camera
 
 
 CLEAN
@@ -7,8 +17,6 @@ CLEAN
 - clean the scene when?
 
 ISSUES (must be done)
-- handle the if name == "quad" stuff
-- don't create component with the orders of functions name etc
 - save the component functions in the component manager
 - change properties in ComponentDesc so there is only one to be created and I
   can remove the one in create_component and object_post_read

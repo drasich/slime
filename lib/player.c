@@ -27,7 +27,7 @@ _player_properties(ComponentDesc* desc)
   ADD_PROP(ps, Player, name, EET_T_STRING);
   ADD_PROP(ps, Player, rotation_speed, EET_T_DOUBLE);
   ADD_PROP(ps, Player, target, PROPERTY_POINTER );
-  //ADD_PROP(ps, Player, my_test, EET_T_DOUBLE );
+  ADD_PROP(ps, Player, my_test, EET_T_DOUBLE );
 
   return ps;
 }
@@ -44,11 +44,14 @@ create_player()
   return p;
 }
 
-ComponentDesc player_desc = { 
-  "player",
-  create_player,
-  _player_properties,
-  player_init, 
-  player_update,
-};
+ComponentDesc* component_player()
+{
+  ComponentDesc* cd = calloc(1, sizeof * cd);
+  cd->name = "player";
+  cd->create = create_player;
+  cd->properties = _player_properties;
+  cd->init = player_init;
+  cd->update = player_update;
+  return cd;
+}
 

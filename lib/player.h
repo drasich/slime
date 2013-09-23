@@ -11,6 +11,7 @@ struct _Player
   const char* name;
   int translation_state;
   double rotation_speed;
+  double my_test;
   bool rotate;
   Object* target;
 };
@@ -19,6 +20,5 @@ void player_init(Component* c);
 void player_update(Component* c, double dt);
 
 //Component* create_player();
-ComponentDesc player_desc;
-
+ComponentDesc* component_player();
 #endif
