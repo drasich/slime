@@ -185,7 +185,7 @@ build_scene()
 {
   scene_descriptor_init();
   //Scene* s = create_scene();
-  Scene* s = scene_read("scene.eet");
+  Scene* s = scene_read("scene/scene.eet");
   scene_post_read(s);
   tree_scene_set(view->tree, s);
   view->context->scene = s;
@@ -194,7 +194,7 @@ build_scene()
   printf("scene ORIGINAL\n");
   scene_print(s);
   printf("scene write*****\n");
-  Eina_Bool b = scene_write(s,"scene.eet");
+  Eina_Bool b = scene_write(s,"scene/scene.eet");
   /*
   printf("scene write end, scene read____\n");
   Scene* ss = scene_read();
