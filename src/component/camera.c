@@ -171,11 +171,11 @@ _camera_on_property_changed(Component* c)
 }
 
 static void
-_camera_draw_edit(Component* comp, Matrix4 world, struct _Camera* cam)
+_camera_draw_edit(Component* comp, Matrix4 world, Matrix4 projection)
 {
   Camera* c = comp->data;
   Line* l = c->line;
-  line_prepare_draw(l, world, cam);
+  line_prepare_draw(l, world, projection);
   line_draw(l);
 }
 

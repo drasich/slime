@@ -325,12 +325,13 @@ _mouse_wheel(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *ev
 }
 
 static Object* 
-_create_repere(float u)
+_create_repere(float u, Camera* camera)
 {
   Object* o = create_object();
   Component* comp = create_component(&line_desc);
   object_add_component(o,comp);
   Line* l = comp->data;
+  l->camera = camera;
   line_add_color(l, vec3(0,0,0), vec3(u,0,0), vec4(1,0,0,1));
   line_add_color(l, vec3(0,0,0), vec3(0,u,0), vec4(0,1,0,1));
   line_add_color(l, vec3(0,0,0), vec3(0,0,u), vec4(0,0,1,1));
@@ -339,12 +340,13 @@ _create_repere(float u)
 }
 
 static Object* 
-_create_grid()
+_create_grid(Camera* camera)
 {
   Object* grid = create_object();
   Component* comp = create_component(&line_desc);
   object_add_component(grid,comp);
   Line* l = comp->data;
+  l->camera = camera;
 
   line_add_grid(l, 100, 10);
   return grid;
@@ -668,16 +670,6 @@ _add_buttons(View* v, Evas_Object* win)
 static void
 _create_view_objects(View* v)
 {
-  v->repere = _create_repere(1);
-  Line* l = object_component_get(v->repere, "line");
-  if (l) line_set_size_fixed(l, true);
-
-  v->camera_repere = _create_repere(40);
-  v->camera_repere->Position = vec3(10,10, -10);
-  l = object_component_get(v->camera_repere, "line");
-  if (l) line_set_use_perspective(l, false);
-
-  v->grid = _create_grid();
   v->camera = view_camera_new();
   Vec3 p = {20,5,20};
   //v->camera->origin = p;
@@ -685,6 +677,15 @@ _create_view_objects(View* v)
   camera_pan(v->camera, p);
   Vec3 at = {0,0,0};
   camera_lookat(v->camera, at);
+
+  v->repere = _create_repere(1, v->camera->camera_component);
+  Line* l = object_component_get(v->repere, "line");
+  if (l) line_set_size_fixed(l, true);
+
+  v->camera_repere = _create_repere(40, v->camera->camera_component);
+  v->camera_repere->Position = vec3(10,10, -10);
+
+  v->grid = _create_grid(v->camera->camera_component);
 
 
   Evas* e = evas_object_evas_get(v->glview);
@@ -944,7 +945,7 @@ view_draw(View* v)
   Line* line = object_component_get(v->grid, "line");
   if (line) line->id_texture = r->fbo_all->texture_depth_stencil_id;
   mat4_multiply(cam_mat_inv, mo, mo);
-  object_draw_edit(v->grid, mo, cc);
+  object_draw_edit(v->grid, mo, cc->projection);
 
   //Render objects
   EINA_LIST_FOREACH(r->objects, l, o) {
@@ -993,7 +994,7 @@ view_draw(View* v)
     line = object_component_get(v->repere, "line");
     if (line) line->id_texture = r->fbo_all->texture_depth_stencil_id;
     mat4_multiply(cam_mat_inv, mo, mo);
-    object_draw_edit(v->repere, mo, cc);
+    object_draw_edit(v->repere, mo, cc->projection);
   }
 
   //Render outline with quad
@@ -1008,7 +1009,7 @@ view_draw(View* v)
     shader_init_uniform(mc->shader, "texture", &mc->mesh->uniform_texture);
     shader_init_uniform(mc->shader, "texture_all", &mc->mesh->uniform_texture_all);
 
-    object_draw_edit(r->quad_outline, mo, cc);
+    object_draw_edit(r->quad_outline, mo, cc->orthographic);
   }
 
   //Render camera repere
@@ -1024,7 +1025,7 @@ view_draw(View* v)
   if (line) line->id_texture = r->fbo_all->texture_depth_stencil_id;
 
   mat4_multiply(cam_mat_inv, mo, mo);
-  object_draw_edit(v->camera_repere, mo, cc);
+  object_draw_edit(v->camera_repere, mo, cc->orthographic);
  
 }
 

@@ -18,30 +18,28 @@ object_destroy(Object* o)
 }
 
 void
-object_draw(Object* o, Matrix4 world, struct _Camera* cam)
+object_draw(Object* o, Matrix4 world, Matrix4 projection)
 {
   Eina_List* l;
   Component* c;
 
   EINA_LIST_FOREACH(o->components, l, c) {
     if (c->funcs->draw)
-    c->funcs->draw(c, world, cam);
+    c->funcs->draw(c, world, projection);
   }
 }
 
 void
-object_draw_edit(Object* o, Matrix4 world, struct _Camera* cam)
+object_draw_edit(Object* o, Matrix4 world, Matrix4 projection)
 {
-  Matrix4* projection = &cam->projection;
-
   Eina_List* l;
   Component* c;
 
   EINA_LIST_FOREACH(o->components, l, c) {
     if (c->funcs->draw)
-    c->funcs->draw(c, world, cam);
+    c->funcs->draw(c, world, projection);
     if (c->funcs->draw_edit)
-    c->funcs->draw_edit(c, world, cam);
+    c->funcs->draw_edit(c, world, projection);
   }
 
 }
@@ -58,9 +56,9 @@ object_draw_edit_component(Object* o, Matrix4 world, struct _Camera* cam, const 
     if (strcmp(c->name, name)) continue;
 
     if (c->funcs->draw)
-    c->funcs->draw(c, world, cam);
+    c->funcs->draw(c, world, cam->projection);
     if (c->funcs->draw_edit)
-    c->funcs->draw_edit(c, world, cam);
+    c->funcs->draw_edit(c, world, cam->projection);
   }
 
 }

@@ -17,9 +17,9 @@ struct _ComponentDesc {
   PropertySet* (*properties)();
   void (*init)(Component* c); 
   void (*update)(Component* c, double dt); 
-  void (*draw)(Component* c, Matrix4 world, struct _Camera* cam); 
+  void (*draw)(Component* c, Matrix4 world, Matrix4 projection); 
   void (*on_property_changed)(Component* c); 
-  void (*draw_edit)(Component* c, Matrix4 world, struct _Camera* cam); 
+  void (*draw_edit)(Component* c, Matrix4 world, Matrix4 projection); 
 };
 
 typedef Component* (*create_component_function)(); 

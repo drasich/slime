@@ -494,7 +494,7 @@ _mesh_draw(Component* c, Matrix4 world, struct _Camera* cam)
 }
 
 static void 
-_mesh_component_draw(Component* c, Matrix4 world, struct _Camera* cam)
+_mesh_component_draw(Component* c, Matrix4 world, Matrix4 projection)
 {
   MeshComponent* mc = c->data;
   if (!mc)
@@ -524,15 +524,8 @@ _mesh_component_draw(Component* c, Matrix4 world, struct _Camera* cam)
   mesh_shader_init_attributes(m,s);
   mesh_shader_init_uniforms(m,s);
 
-  Matrix4* projection = &cam->projection;
-
-  //TODO change this
-  if (!strcmp("quad", m->name)){
-    projection = &cam->orthographic;
-  }
-
   shader_use(mc->shader);
-  mesh_set_matrices(m, world, *projection);
+  mesh_set_matrices(m, world, projection);
   m->func->draw(m);
 }
 

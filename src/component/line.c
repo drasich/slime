@@ -10,7 +10,6 @@ create_line()
   //TODO name, shader
   l->vertices = eina_inarray_new(sizeof(GLfloat), 3);
   l->colors = eina_inarray_new(sizeof(GLfloat), 4);
-  l->use_perspective = true;
   l->use_depth = false;
   return l;
 }
@@ -31,10 +30,10 @@ _line_properties()
 }
 
 static void
-_line_draw(Component* c, Matrix4 world, struct _Camera* cam)
+_line_draw(Component* c, Matrix4 world, Matrix4 projection)
 {
   Line* l = c->data;
-  line_prepare_draw(l, world, cam);
+  line_prepare_draw(l, world, projection);
   line_draw(l);
 }
 
@@ -289,7 +288,7 @@ line_set_use_depth(Line* l, bool b)
 }
 
 void
-line_prepare_draw(Line* l, Matrix4 mat, struct _Camera* c)
+line_prepare_draw(Line* l, Matrix4 mat, Matrix4 projection)
 {
   if (!l->is_init) {
     line_init(l);
@@ -297,17 +296,13 @@ line_prepare_draw(Line* l, Matrix4 mat, struct _Camera* c)
 
   shader_use(l->shader);
 
-  Matrix4* projection = &c->projection;
-  if (!l->use_perspective)
-  projection = &c->orthographic;
-
   Matrix4 tm;
-  mat4_multiply(*projection, mat, tm);
+  mat4_multiply(projection, mat, tm);
   mat4_transpose(tm, tm);
   mat4_to_gl(tm, l->matrix);
   gl->glUniformMatrix4fv(l->uniform_matrix, 1, GL_FALSE, l->matrix);
-  float width = c->width;
-  float height = c->height;
+  float width = l->camera->width;
+  float height = l->camera->height;
   gl->glUniform2f(l->uniform_resolution, width, height);
 
   gl->glUniform1i(l->uniform_use_depth, l->use_depth?1:0);
@@ -441,12 +436,6 @@ line_add_grid(Line* l, int num, int space)
     line_add_color(l, p1, p2,color);
   }
 
-}
-
-void
-line_set_use_perspective(Line* l, bool b)
-{
-  l->use_perspective = b;
 }
 
 void

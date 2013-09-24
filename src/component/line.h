@@ -36,7 +36,6 @@ struct _Line
   GLuint attribute_color;
   
   bool need_resend;
-  bool use_perspective;
   bool use_depth;
   bool use_size_fixed;
 
@@ -44,13 +43,14 @@ struct _Line
 
   GLuint fbo;
   GLuint rb;
+  struct _Camera* camera;
 };
 
 void line_init(Line* line);
 void line_resend(Line* line);
 
 void line_set_matrices(Line* line, Matrix4 mat, Matrix4 projection);
-void line_prepare_draw(Line* l, Matrix4 mat, struct _Camera* c);
+void line_prepare_draw(Line* l, Matrix4 mat, Matrix4 projection);
 
 void line_draw(Line* line);
 
