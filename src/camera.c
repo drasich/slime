@@ -1,9 +1,9 @@
 #include "camera.h"
 
-Camera*
-create_camera()
+ViewCamera*
+view_camera_new()
 {
-  Camera* c = calloc(1,sizeof *c);
+  ViewCamera* c = calloc(1,sizeof *c);
   c->object = create_object();
   Component* comp = create_component(&camera_desc);
   object_add_component(c->object,comp);
@@ -12,10 +12,10 @@ create_camera()
 }
 
 void 
-camera_lookat(Camera* cam, Vec3 at)
+camera_lookat(ViewCamera* cam, Vec3 at)
 {
   Object* o = cam->object;
-  CCamera* c = cam->camera_component;
+  Camera* c = cam->camera_component;
 
   Vec3 d = vec3_sub(at, o->Position);
 
@@ -38,10 +38,10 @@ camera_lookat(Camera* cam, Vec3 at)
 }
 
 void
-camera_rotate_around(Camera* cam, Quat q, Vec3 pivot)
+camera_rotate_around(ViewCamera* cam, Quat q, Vec3 pivot)
 {
   Object* o = cam->object;
-  CCamera* c = cam->camera_component;
+  Camera* c = cam->camera_component;
 
   Vec3 def = quat_rotate_around(q, pivot, c->origin);
   Vec3 doff = quat_rotate_vec3(q, c->local_offset);
@@ -49,10 +49,10 @@ camera_rotate_around(Camera* cam, Quat q, Vec3 pivot)
 }
 
 void
-camera_pan(Camera* cam, Vec3 t)
+camera_pan(ViewCamera* cam, Vec3 t)
 {
   Object* o = cam->object;
-  CCamera* c = cam->camera_component;
+  Camera* c = cam->camera_component;
 
   c->local_offset = vec3_add(c->local_offset, t);
   t = quat_rotate_vec3(o->Orientation, t);
@@ -60,10 +60,10 @@ camera_pan(Camera* cam, Vec3 t)
 }
 
 Ray
-ray_from_screen(Camera* cam, double x, double y, float length)
+ray_from_screen(ViewCamera* cam, double x, double y, float length)
 {
   Object* o = cam->object;
-  CCamera* c = cam->camera_component;
+  Camera* c = cam->camera_component;
 
   double near = c->near;
   Vec3 camz = quat_rotate_vec3(o->Orientation, vec3(0,0,-1));
@@ -104,10 +104,10 @@ ray_from_screen(Camera* cam, double x, double y, float length)
 }
 
 void
-camera_recalculate_origin(Camera* cam)
+camera_recalculate_origin(ViewCamera* cam)
 {
   Object* o = cam->object;
-  CCamera* c = cam->camera_component;
+  Camera* c = cam->camera_component;
 
   Vec3 offset = quat_rotate_vec3(o->Orientation, c->local_offset);
   Vec3 origin = vec3_sub(o->Position, offset);
@@ -115,10 +115,10 @@ camera_recalculate_origin(Camera* cam)
 }
 
 void
-camera_get_frustum(Camera* cam, Frustum* out)
+camera_get_frustum(ViewCamera* cam, Frustum* out)
 {
   Object* o = cam->object;
-  CCamera* c = cam->camera_component;
+  Camera* c = cam->camera_component;
 
   out->near = c->near;
   out->far = c->far;
@@ -130,10 +130,10 @@ camera_get_frustum(Camera* cam, Frustum* out)
 }
 
 void
-camera_get_frustum_planes(Camera* cam, Plane* p)
+camera_get_frustum_planes(ViewCamera* cam, Plane* p)
 {
   Object* o = cam->object;
-  CCamera* c = cam->camera_component;
+  Camera* c = cam->camera_component;
 
   //near plane
   Vec3 direction = quat_rotate_vec3(o->Orientation, vec3(0,0,-1));
@@ -195,13 +195,13 @@ camera_get_frustum_planes(Camera* cam, Plane* p)
 
 void
 camera_get_frustum_planes_rect(
-      Camera* cam,
+      ViewCamera* cam,
       Plane* p,
       float left, float top, float width, float height)
 {
 
   Object* o = cam->object;
-  CCamera* c = cam->camera_component;
+  Camera* c = cam->camera_component;
 
   Vec3 direction = quat_rotate_vec3(o->Orientation, vec3(0,0,-1));
   Vec3 right = quat_rotate_vec3(o->Orientation, vec3(1,0,0));

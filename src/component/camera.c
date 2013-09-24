@@ -4,7 +4,7 @@
 #include "object.h"
 
 static void
-_camera_display(CCamera* c)
+_camera_display(Camera* c)
 {
   line_clear(c->line);
   float near = c->near;
@@ -123,7 +123,7 @@ _camera_display(CCamera* c)
 static void *
 _create_camera()
 {
-  CCamera* c = calloc(1, sizeof *c);
+  Camera* c = calloc(1, sizeof *c);
 
   c->fovy = M_PI/4.0;
   c->fovy_base = M_PI/4.0;
@@ -143,11 +143,10 @@ _create_camera()
 static void
 _camera_init(Component* component)
 {
-  CCamera* c = component->data;
+  Camera* c = component->data;
   c->fovy = c->fovy_base;
   c->height_base = c->height;
   ccamera_update_projection(c);
-  printf("!!!!!!!!!!!!!!!!!!!!!!!!!! test from chris : %s\n", Projection_enum_string[0]);
 }
 
 static PropertySet* 
@@ -155,11 +154,11 @@ _camera_properties()
 {
   PropertySet* ps = create_property_set();
 
-  ADD_PROP(ps, CCamera, width, EET_T_DOUBLE);
-  ADD_PROP(ps, CCamera, height, EET_T_DOUBLE);
-  ADD_PROP(ps, CCamera, fovy_base, EET_T_DOUBLE);
-  ADD_PROP(ps, CCamera, near, EET_T_DOUBLE);
-  ADD_PROP(ps, CCamera, far, EET_T_DOUBLE);
+  ADD_PROP(ps, Camera, width, EET_T_DOUBLE);
+  ADD_PROP(ps, Camera, height, EET_T_DOUBLE);
+  ADD_PROP(ps, Camera, fovy_base, EET_T_DOUBLE);
+  ADD_PROP(ps, Camera, near, EET_T_DOUBLE);
+  ADD_PROP(ps, Camera, far, EET_T_DOUBLE);
 
   return ps;
 }
@@ -172,9 +171,9 @@ _camera_on_property_changed(Component* c)
 }
 
 static void
-_camera_draw_edit(Component* comp, Matrix4 world, struct _CCamera* cam)
+_camera_draw_edit(Component* comp, Matrix4 world, struct _Camera* cam)
 {
-  CCamera* c = comp->data;
+  Camera* c = comp->data;
   Line* l = c->line;
   line_prepare_draw(l, world, cam);
   line_draw(l);
@@ -193,7 +192,7 @@ ComponentDesc camera_desc = {
 
 
 void
-ccamera_update_projection(CCamera* c)
+ccamera_update_projection(Camera* c)
 {
   c->aspect = (float)c->width/(float)c->height;
   c->fovy = c->fovy_base * (float)c->height/(float)c->height_base;
@@ -201,14 +200,14 @@ ccamera_update_projection(CCamera* c)
 }
 
 void
-ccamera_update_orthographic(CCamera* c)
+ccamera_update_orthographic(Camera* c)
 {
  // mat4_set_orthographic(c->orthographic, c->width/2, c->height/2, c->near, c->far);
   mat4_set_orthographic(c->orthographic, c->width/2, c->height/2, -1000, c->far);
 }
 
 void 
-ccamera_set_resolution(CCamera* c, int w, int h)
+ccamera_set_resolution(Camera* c, int w, int h)
 {
   if (w != c->width || h != c->height) {
     c->width = w;

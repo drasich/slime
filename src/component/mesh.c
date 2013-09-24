@@ -476,7 +476,7 @@ _mesh_component_properties()
 
 
 static void 
-_mesh_draw(Component* c, Matrix4 world, struct _CCamera* cam)
+_mesh_draw(Component* c, Matrix4 world, struct _Camera* cam)
 {
   Mesh* m = c->data;
   if (!m->name)
@@ -494,7 +494,7 @@ _mesh_draw(Component* c, Matrix4 world, struct _CCamera* cam)
 }
 
 static void 
-_mesh_component_draw(Component* c, Matrix4 world, struct _CCamera* cam)
+_mesh_component_draw(Component* c, Matrix4 world, struct _Camera* cam)
 {
   MeshComponent* mc = c->data;
   if (!mc)

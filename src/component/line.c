@@ -31,7 +31,7 @@ _line_properties()
 }
 
 static void
-_line_draw(Component* c, Matrix4 world, struct _CCamera* cam)
+_line_draw(Component* c, Matrix4 world, struct _Camera* cam)
 {
   Line* l = c->data;
   line_prepare_draw(l, world, cam);
@@ -289,7 +289,7 @@ line_set_use_depth(Line* l, bool b)
 }
 
 void
-line_prepare_draw(Line* l, Matrix4 mat, struct _CCamera* c)
+line_prepare_draw(Line* l, Matrix4 mat, struct _Camera* c)
 {
   if (!l->is_init) {
     line_init(l);

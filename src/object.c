@@ -18,7 +18,7 @@ object_destroy(Object* o)
 }
 
 void
-object_draw(Object* o, Matrix4 world, struct _CCamera* cam)
+object_draw(Object* o, Matrix4 world, struct _Camera* cam)
 {
   Eina_List* l;
   Component* c;
@@ -30,7 +30,7 @@ object_draw(Object* o, Matrix4 world, struct _CCamera* cam)
 }
 
 void
-object_draw_edit(Object* o, Matrix4 world, struct _CCamera* cam)
+object_draw_edit(Object* o, Matrix4 world, struct _Camera* cam)
 {
   Matrix4* projection = &cam->projection;
 
@@ -47,7 +47,7 @@ object_draw_edit(Object* o, Matrix4 world, struct _CCamera* cam)
 }
 
 void
-object_draw_edit_component(Object* o, Matrix4 world, struct _CCamera* cam, const char* name)
+object_draw_edit_component(Object* o, Matrix4 world, struct _Camera* cam, const char* name)
 {
   Matrix4* projection = &cam->projection;
 

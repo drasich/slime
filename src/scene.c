@@ -54,11 +54,13 @@ scene_destroy(Scene* s)
   free(s);
 }
 
+/*
 void
 scene_draw(Scene* s, Camera* c)
 {
 
 }
+*/
 
 void
 scene_update(Scene* s)
@@ -216,7 +218,7 @@ scene_print(Scene* s)
        printf("        mesh pointer : %p \n", mc->mesh);
      }
      else if (!strcmp(c->name, "camera")) {
-       CCamera* cc = c->data;
+       Camera* cc = c->data;
        printf("       camera width : %f \n", cc->width);
      }
      else if (!strcmp(c->name, "player")) {

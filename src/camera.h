@@ -7,39 +7,39 @@
 #include "component/camera.h"
 
 
-typedef struct _Camera Camera;
-struct _Camera
+typedef struct _ViewCamera ViewCamera;
+struct _ViewCamera
 {
   Object* object;
-  CCamera* camera_component;
+  Camera* camera_component;
 };
 
-Camera* create_camera();
-Camera* create_camera_from_object(Object* o);
+ViewCamera* view_camera_new();
+ViewCamera* create_camera_from_object(Object* o);
 
-void camera_pan(Camera* cam, Vec3 v); // same as trans
-void camera_rotate(Camera* cam, Quat q); // same as -pos, rot, + pos
-void camera_rotate_around_position(Camera* cam, Quat q, Vec3 v);  //same as rotate the cam pos and look at v
-void camera_update_projection(Camera* c);
-void camera_update_orthographic(Camera* c);
+void camera_pan(ViewCamera* cam, Vec3 v); // same as trans
+void camera_rotate(ViewCamera* cam, Quat q); // same as -pos, rot, + pos
+void camera_rotate_around_position(ViewCamera* cam, Quat q, Vec3 v);  //same as rotate the cam pos and look at v
+void camera_update_projection(ViewCamera* c);
+void camera_update_orthographic(ViewCamera* c);
 
-void camera_set_resolution(Camera* cam, int w, int h);
+void camera_set_resolution(ViewCamera* cam, int w, int h);
 
-void camera_lookat(Camera* c, Vec3 at);
+void camera_lookat(ViewCamera* c, Vec3 at);
 
-void camera_rotate_around(Camera* c, Quat q, Vec3 pivot);
+void camera_rotate_around(ViewCamera* c, Quat q, Vec3 pivot);
 
-void camera_pan(Camera* c, Vec3 t);
+void camera_pan(ViewCamera* c, Vec3 t);
 
-void camera_recalculate_origin(Camera* c);
+void camera_recalculate_origin(ViewCamera* c);
 
-Ray ray_from_screen(Camera* c, double x, double y, float length);
+Ray ray_from_screen(ViewCamera* c, double x, double y, float length);
 
-void camera_get_frustum(Camera* c, Frustum* out);
+void camera_get_frustum(ViewCamera* c, Frustum* out);
 
-void camera_get_frustum_planes(Camera* c, Plane* p);
+void camera_get_frustum_planes(ViewCamera* c, Plane* p);
 void camera_get_frustum_planes_rect(
-      Camera*c,
+      ViewCamera*c,
       Plane* out_planes,
       float left, float top, float width, float height);
 

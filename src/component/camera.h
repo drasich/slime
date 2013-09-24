@@ -8,15 +8,16 @@
 
 #define ENUM(name, ... ) \
  typedef enum { __VA_ARGS__ } name; \
-static const char* name ## _enum_string[] = { \
-  # __VA_ARGS__ \
-};
+ static const char* name ## _enum_string = # __VA_ARGS__;
 
-typedef struct _CCamera CCamera;
+typedef struct _Camera Camera;
 //typedef enum {PERSPECTIVE, ORTHOGRAPHIC} Projection;
 ENUM(Projection, PERSPECTIVE, ORTHOGRAPHIC);
 
-struct _CCamera
+#define ENUM_STRINGS_GET(name, num) \
+ eina_str_split_full( name ## _enum_string, ",", 0, num);
+
+struct _Camera
 {
   Matrix4 projection;
   Matrix4 orthographic;
@@ -43,7 +44,7 @@ struct _CCamera
 ComponentDesc camera_desc;
 
 void ccamera_recalculate_origin(Component* comp);
-void ccamera_set_resolution(CCamera* c, int w, int h);
-void ccamera_update_projection(CCamera* c);
+void ccamera_set_resolution(Camera* c, int w, int h);
+void ccamera_update_projection(Camera* c);
 
 #endif

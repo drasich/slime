@@ -9,7 +9,7 @@ typedef struct _ComponentDesc ComponentDesc;
 typedef struct _Component Component;
 typedef struct _ComponentManager ComponentManager;
 
-struct _CCamera;
+struct _Camera;
 
 struct _ComponentDesc {
   const char* name;
@@ -17,9 +17,9 @@ struct _ComponentDesc {
   PropertySet* (*properties)();
   void (*init)(Component* c); 
   void (*update)(Component* c, double dt); 
-  void (*draw)(Component* c, Matrix4 world, struct _CCamera* cam); 
+  void (*draw)(Component* c, Matrix4 world, struct _Camera* cam); 
   void (*on_property_changed)(Component* c); 
-  void (*draw_edit)(Component* c, Matrix4 world, struct _CCamera* cam); 
+  void (*draw_edit)(Component* c, Matrix4 world, struct _Camera* cam); 
 };
 
 typedef Component* (*create_component_function)(); 

@@ -58,7 +58,7 @@ _control_center_camera(Control* c)
 {
   View* v = c->view;
   Object* o = context_object_get(v->context);
-  Camera* cam = v->camera;
+  ViewCamera* cam = v->camera;
   if (o != NULL && c->state == IDLE) {
     //TODO get the distance from the size of the object on the screen
     Vec3 v = vec3(0,0,30);
@@ -77,7 +77,7 @@ _control_center_camera(Control* c)
 static void 
 _rotate_camera(View* v, float x, float y)
 {
-  CCamera* cam = v->camera->camera_component;
+  Camera* cam = v->camera->camera_component;
   Object* c = v->camera->object;
 
   cam->yaw += 0.005f*x;

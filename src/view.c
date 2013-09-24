@@ -191,7 +191,7 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   evas_object_resize(rect, yepx, yepy);
 
 
-  Camera* c = v->camera;
+  ViewCamera* c = v->camera;
   //Frustum f;
   //frustum_from_rect(&f, c, sx, sy, yepx, yepy);
 
@@ -678,7 +678,7 @@ _create_view_objects(View* v)
   if (l) line_set_use_perspective(l, false);
 
   v->grid = _create_grid();
-  v->camera = create_camera();
+  v->camera = view_camera_new();
   Vec3 p = {20,5,20};
   //v->camera->origin = p;
   //v->camera->object.Position = p;
@@ -871,9 +871,9 @@ create_render()
 void
 view_draw(View* v)
 {
-  Camera* c = v->camera;
+  ViewCamera* c = v->camera;
   Object* co = c->object;
-  CCamera* cc = c->camera_component;
+  Camera* cc = c->camera_component;
   Context* cx = v->context;
   Render* r = v->render;
   Scene* s = cx->scene;
