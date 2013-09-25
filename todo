@@ -1,16 +1,4 @@
 LATELY
-- rename Camera to ViewCamera? make a viewcamera component?
-- create a new ortho camera and add the quads to it
-- camera choose ortho or pers, make an enum property
-- handle the if name == "quad" stuff: orthographic and pers. projection
-  - choose ortho or pers in mesh component?, but what if I want I special
-    width and height
-  - make a default camera, but make it possible to choose another camera, in
-    mesh component.
-  - objects inherit the camera from the parent or the root.
-  - there is a tree of objects, and also groups of objects, one group for
-    every camera
-
 
 CLEAN
 - fix functions name -> put the verb at the end
@@ -37,10 +25,17 @@ BUG
 RENDER
 - make scale
 - decide how to draw with camera ortho and per
+  - choose ortho or pers in mesh component?, but what if I want I special
+    width and height
+  - make a default camera, but make it possible to choose another camera, in
+    mesh component.
+  - objects inherit the camera from the parent or the root.
+  - there is a tree of objects, and also groups of objects, one group for
+    every camera
+  - make something like draw(Component* c, Render_info* info) where info has the matrix
+    the uniform to sets etc...?
 - mesh component
-  - solve the quad stuff : 
-   make a mesh method : drawelements or drawarrays, etc
-  - create, choose file, etc...
+   - be able to choose between drawelements or drawarrays, etc ?
 - material
 
 VIEW
@@ -61,6 +56,7 @@ et aussi "object properties" "name, ..."
 PROPERTIES
 - make a hash of property_set, create_component(component manager, desc)
   get propertyset or create if doesn't exit yet
+- camera choose ortho or pers, make an enum property
 
 - make vec4 a possible type to edit easily
 - material
