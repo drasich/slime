@@ -7,6 +7,9 @@ void
 object_init(Object* o)
 {
   quat_set_identity(&o->Orientation);
+  o->scale.X = 1;
+  o->scale.Y = 1;
+  o->scale.Z = 1;
   //o->name = eina_stringshare_add("dance");
 }
 
@@ -69,10 +72,15 @@ void
 object_compute_matrix(Object* o, Matrix4 mat)
 {
   o->Orientation = quat_angles_deg(o->angles.Y, o->angles.X, o->angles.Z);
-  Matrix4 mt, mr;
+  Matrix4 mt, mr, ms;
+  mat4_set_scale(ms, o->scale);
   mat4_set_translation(mt, o->Position);
   mat4_set_rotation_quat(mr, o->Orientation);
-  mat4_multiply(mt, mr, mat);
+
+  mat4_multiply(mr, ms, mat);
+  mat4_multiply(mt, mat, mat);
+
+  //mat4_multiply(mt, mr, mat);
 }
 
 void
@@ -353,15 +361,18 @@ property_set_object()
   PropertySet* ps = s_ps_obj;
   PROPERTY_SET_TYPE(ps, Object);
 
-  PropertySet *vec3 = property_set_vec3();
-  //TODO clean the property sets
 
   ADD_PROP(ps, Object, name, EET_T_STRING);
 
+  //TODO clean the property sets
+  PropertySet *vec3 = property_set_vec3();
   ADD_PROP_STRUCT_NESTED(ps, Object, Position, vec3);
 
   PropertySet *an = property_set_vec3();
   ADD_PROP_STRUCT_NESTED(ps, Object, angles, an);
+
+  PropertySet *scale = property_set_vec3();
+  ADD_PROP_STRUCT_NESTED(ps, Object, scale, scale);
 
   // other components
   Eet_Data_Descriptor *ob_descriptor = ps->descriptor;

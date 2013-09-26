@@ -15,6 +15,7 @@ struct _Object {
   Transform transform;
   Vec3 Position;
   Quat Orientation;
+  Vec3 scale;
   Vec3 angles;
   const char* name;
   struct _Scene* scene; //TODO make a list of this?

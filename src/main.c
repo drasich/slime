@@ -95,7 +95,7 @@ create_window()
   elm_object_part_content_set(panes, "left", view->box);
   elm_object_part_content_set(panes, "right", hpanes);
 
-  elm_panes_content_left_size_set(panes, 0.70f);
+  elm_panes_content_left_size_set(panes, 0.60f);
 
 
   //evas_object_resize(win, 800/3, 400/3);

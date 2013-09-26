@@ -800,7 +800,7 @@ view_update(View* v, double dt)
     }
 
     OBox b;
-    aabox_to_obox(m->box, b, o->Position, o->Orientation);
+    aabox_to_obox(m->box, b, o->Position, o->Orientation, o->scale);
 
     if (planes_is_box_in_allow_false_positives(planes, 6, b)) {
     //if (planes_is_in(planes, 6, o->Position)) {

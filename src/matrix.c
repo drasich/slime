@@ -626,3 +626,16 @@ mat4_get_quat(Matrix4 m)
 
    return q;
 }
+
+void
+mat4_set_scale(Matrix4 m, const Vec3 v)
+{
+  m[0] = v.X;
+  m[5] = v.Y;
+  m[10] = v.Z;
+  m[15] = 1;
+
+  m[1] = m[2] = m[3] = m[4] = 0;
+  m[6] = m[7] = m[8] = m[9] = 0;
+  m[11] = m[12] = m[13] = m[14] = 0;
+}

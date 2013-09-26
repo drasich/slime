@@ -54,6 +54,26 @@ _control_move(Control* c)
 }
 
 static void
+_control_scale(Control* c)
+{
+  View* v = c->view;
+  int x, y;
+  //evas_pointer_output_xy_get(evas_object_evas_get(v->glview), &x, &y);
+  evas_pointer_canvas_xy_get(evas_object_evas_get(v->glview), &x, &y);
+  Vec2 mousepos = vec2(x,y);
+  //printf("mouse pos : %f, %f \n", mousepos.X, mousepos.Y);
+  Object* o = context_object_get(v->context);
+  if (o != NULL && c->state != CONTROL_SCALE) {
+    c->state = CONTROL_SCALE;
+    //c->start = o->Position;
+    c->start = _objects_center(c, context_objects_get(v->context));
+    c->mouse_start = mousepos;
+  }
+
+}
+
+
+static void
 _control_center_camera(Control* c)
 {
   View* v = c->view;
@@ -125,6 +145,37 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
       }
     }
   } else if (c->state == MOVE) {
+    Eina_List* objects = context_objects_get(v->context);
+    Plane p = { c->start, quat_rotate_vec3(v->camera->object->Orientation, vec3(0,0,-1)) };
+
+    Ray rstart = ray_from_screen(v->camera, c->mouse_start.X, c->mouse_start.Y, 1);
+
+    float x = e->cur.canvas.x;
+    float y = e->cur.canvas.y;
+    Ray r = ray_from_screen(v->camera, x, y, 1);
+
+    IntersectionRay ir =  intersection_ray_plane(r, p);
+    IntersectionRay irstart =  intersection_ray_plane(rstart, p);
+    
+    if (ir.hit && irstart.hit) {
+      Vec3 translation = vec3_sub(ir.position, irstart.position);
+      Eina_List *l;
+      Object *o;
+      int i = 0;
+      Vec3 center = vec3_zero();
+      EINA_LIST_FOREACH(objects, l, o) {
+        Vec3* origin = (Vec3*) eina_inarray_nth(c->positions, i);
+        o->Position = vec3_add(*origin, translation);
+        ++i;
+        center = vec3_add(center, o->Position);
+      }
+      if (i>0) center = vec3_mul(center, 1.0f/ (float) i);
+      v->context->mos.center =  center;
+
+      if (i == 1)
+      control_property_update_transform(c);
+    }
+  } else if (c->state == CONTROL_SCALE) {
     Eina_List* objects = context_objects_get(v->context);
     Plane p = { c->start, quat_rotate_vec3(v->camera->object->Orientation, vec3(0,0,-1)) };
 
@@ -269,8 +320,21 @@ control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
   if (c->state == MOVE) {
     c->state = IDLE;
 
+    Eina_List* objects = context_objects_get(c->view->context);
+
+    Vec3 center = _objects_center(c, objects);
+
+    Operation* op = _op_move_object(
+          objects,
+          vec3_sub(center, c->start));
+
+    control_add_operation(c, op);
+    return true;
+  }
+  else if (c->state == CONTROL_SCALE) {
+    c->state = IDLE;
+
     //TODO
-    Object* o = context_object_get(c->view->context);
     Eina_List* objects = context_objects_get(c->view->context);
 
     Vec3 center = _objects_center(c, objects);
@@ -302,8 +366,9 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
       view_destroy(c->view);
       elm_exit();
     } else if ( !strcmp(e->keyname, "g")) {
-      //enter move mode
       _control_move(c);
+    } else if ( !strcmp(e->keyname, "s")) {
+      _control_scale(c);
     } else if (!strcmp(e->keyname, "z") 
           && evas_key_modifier_is_set(mods, "Control")) {
       control_undo(c);
@@ -323,6 +388,26 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
     }
 
   } else if (c->state == MOVE) {
+    if (!strcmp(e->keyname, "Escape")) {
+      c->state = IDLE;
+
+      // put back the objects to original position
+      Eina_List *l;
+      Object *o;
+      Object *last;
+      int i = 0;
+      EINA_LIST_FOREACH(objects, l, o) {
+        Vec3* origin = (Vec3*) eina_inarray_nth(c->positions, i);
+        o->Position = *origin;
+        last = o;
+        i++;
+      }
+
+      if (i == 1)
+      control_property_update_transform(c);
+
+    }
+  } else if (c->state == CONTROL_SCALE) {
     if (!strcmp(e->keyname, "Escape")) {
       c->state = IDLE;
 

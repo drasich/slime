@@ -34,6 +34,7 @@ double vec4_length2(Vec4 v);
 Vec3 vec3_add(Vec3 v1, Vec3 v2);
 Vec3 vec3_sub(Vec3 v1, Vec3 v2);
 Vec3 vec3_mul(Vec3 v1, double s);
+Vec3 vec3_vec3_mul(Vec3 v1, Vec3 v2);
 Vec3 vec3_normalized(Vec3 v);
 
 double vec3_dot(Vec3 v1, Vec3 v2);

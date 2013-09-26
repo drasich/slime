@@ -175,7 +175,7 @@ intersection_ray_aabox(Ray ray, AABox box)
 }
 
 IntersectionRay
-intersection_ray_box(Ray ray, AABox box, Vec3 position, Quat rotation)
+intersection_ray_box(Ray ray, AABox box, Vec3 position, Quat rotation, Vec3 scale)
 {
   Repere r = {position, rotation};
   //transform the ray in box/object coord
@@ -183,6 +183,9 @@ intersection_ray_box(Ray ray, AABox box, Vec3 position, Quat rotation)
   newray.Start = world_to_local(r, ray.Start);
   newray.Direction = world_to_local(r, vec3_add(ray.Direction, ray.Start));
   newray.Direction = vec3_sub(newray.Direction, newray.Start);
+
+  box.Min = vec3_vec3_mul(box.Min, scale);
+  box.Max = vec3_vec3_mul(box.Max, scale);
 
   IntersectionRay ir = intersection_ray_aabox(newray, box);
 
@@ -338,7 +341,7 @@ intersection_ray_object(Ray ray, Object* o)
   Mesh* m = mc->mesh;
   if (!m) return out;
 
-  IntersectionRay ir_box = intersection_ray_box(ray, m->box, o->Position, o->Orientation);
+  IntersectionRay ir_box = intersection_ray_box(ray, m->box, o->Position, o->Orientation, o->scale);
   if (!ir_box.hit) return out;
 
   //TODO perf: we compute these 2 times
@@ -368,6 +371,11 @@ intersection_ray_object(Ray ray, Object* o)
       m->vertices[id*3 + 1],
       m->vertices[id*3 + 2]
     };
+
+    v0 = vec3_vec3_mul(v0, o->scale);
+    v1 = vec3_vec3_mul(v1, o->scale);
+    v2 = vec3_vec3_mul(v2, o->scale);
+
     Triangle tri = { v0, v1, v2};
     out = intersection_ray_triangle(newray,tri,1);
     if (out.hit) {
@@ -509,7 +517,7 @@ planes_is_in_object(const Plane* planes, int nb_planes, const Object* o)
 
   //first test the box and then test the object/mesh
   OBox b;
-  aabox_to_obox(m->box, b, o->Position, o->Orientation);
+  aabox_to_obox(m->box, b, o->Position, o->Orientation, o->scale);
   if (!planes_is_box_in_allow_false_positives(planes, 6, b)) return false;
 
   Plane p[nb_planes];
@@ -549,6 +557,11 @@ planes_is_in_object(const Plane* planes, int nb_planes, const Object* o)
       m->vertices[id*3 + 1],
       m->vertices[id*3 + 2]
     };
+
+    v0 = vec3_vec3_mul(v0, o->scale);
+    v1 = vec3_vec3_mul(v1, o->scale);
+    v2 = vec3_vec3_mul(v2, o->scale);
+
     Triangle tri = { v0, v1, v2};
     if (planes_is_in_triangle(p, nb_planes, tri)) return true;
   }

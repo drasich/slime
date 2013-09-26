@@ -22,16 +22,15 @@ void frustum_set(
 }
 
 void
-aabox_to_obox(AABox a, OBox o, Vec3 p, Quat q)
+aabox_to_obox(AABox a, OBox o, Vec3 p, Quat q, Vec3 scale)
 {
   Vec3 x = quat_rotate_vec3(q, vec3(1,0,0));
   Vec3 y = quat_rotate_vec3(q, vec3(0,1,0));
   Vec3 z = quat_rotate_vec3(q, vec3(0,0,1));
 
-  //Vec3 min = quat_rotate_vec3(q, a.Min);
-  //Vec3 max = quat_rotate_vec3(q, a.Max);
+  a.Min = vec3_vec3_mul(a.Min, scale);
+  a.Max = vec3_vec3_mul(a.Max, scale);
 
-  //o[0] = min;
   o[0] = vec3_add(
             vec3_add(
               vec3_mul(x, a.Min.X), 

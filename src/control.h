@@ -11,7 +11,8 @@ typedef struct _Control Control;
 
 enum {
   IDLE,
-  MOVE
+  MOVE,
+  CONTROL_SCALE
 };
 
 struct _Control{

@@ -80,6 +80,8 @@ void mat4_decompose(Matrix4 m, Vec3* position, Quat* rotation, Vec3* scale);
 
 Quat mat4_get_quat(Matrix4 m);
 
+void mat4_set_scale(Matrix4 m, const Vec3 v);
+
 #endif
 
 

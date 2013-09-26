@@ -132,3 +132,14 @@ vec3_equal(Vec3 v1, Vec3 v2)
    v1.Y == v2.Y &&
    v1.Z == v2.Z;
 }
+
+Vec3
+vec3_vec3_mul(Vec3 v1, Vec3 v2)
+{
+  Vec3 r;
+  r.X = v1.X * v2.X;
+  r.Y = v1.Y * v2.Y;
+  r.Z = v1.Z * v2.Z;
+  return r;
+}
+

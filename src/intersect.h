@@ -20,7 +20,7 @@ IntersectionRay intersection_ray_sphere(Ray ray, Sphere sphere);
 
 //TODO Intersection ray - aaabox
 IntersectionRay intersection_ray_aabox(Ray ray, AABox box);
-IntersectionRay intersection_ray_box(Ray ray, AABox box, Vec3 position, Quat rotation);
+IntersectionRay intersection_ray_box(Ray ray, AABox box, Vec3 position, Quat rotation, Vec3 scale);
 
 Vec3 world_to_local(Repere r, Vec3 v);
 Vec3 local_to_world(Repere r, Vec3 v);

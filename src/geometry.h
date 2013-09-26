@@ -81,7 +81,7 @@ struct _OBox {
 };
 */
 
-void aabox_to_obox(AABox a, OBox o, Vec3 v, Quat q);
+void aabox_to_obox(AABox a, OBox o, Vec3 v, Quat q, Vec3 scale);
 
 
 typedef struct _Segment Segment;
