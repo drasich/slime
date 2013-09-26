@@ -309,11 +309,10 @@ _property_add_spinner(ComponentProperties* cp, Property* p, Evas_Object* box)
   elm_spinner_step_set(en, 0.1);
   elm_spinner_min_max_set(en, -DBL_MAX, DBL_MAX);
   elm_object_style_set (en, "vertical");
-
-
+  elm_spinner_editable_set(en, EINA_TRUE);
 
   char s[50];
-  sprintf(s, "%s : %s", p->name, "%f");
+  sprintf(s, "%s : %s", p->name, "%.4f");
 
   elm_spinner_label_format_set(en, s);
 
