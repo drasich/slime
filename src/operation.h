@@ -61,4 +61,17 @@ struct _Op_Object_Add_Component
 void operation_object_add_component_do(Control *c, void* data);
 void operation_object_add_component_undo(Control *c, void* data);
 
+
+///////////////////////////////////////////////
+typedef struct _Op_Scale_Object Op_Scale_Object;
+struct _Op_Scale_Object
+{
+  Eina_List* objects;
+  Vec3 scale;
+};
+
+void operation_scale_object_do(Control *c, void* data);
+void operation_scale_object_undo(Control *c, void* data);
+
+
 #endif

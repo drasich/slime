@@ -54,6 +54,22 @@ _control_move(Control* c)
 }
 
 static void
+_scale_prepare(Control* c, Eina_List* objects)
+{
+  int size = eina_list_count(objects);
+  c->scales = eina_inarray_new (sizeof(Vec3), size);
+
+  Eina_List *l;
+  Object *o;
+  EINA_LIST_FOREACH(objects, l, o) {
+    eina_inarray_push(c->scales, &o->scale);
+  }
+
+  c->state = CONTROL_SCALE;
+}
+
+
+static void
 _control_scale(Control* c)
 {
   View* v = c->view;
@@ -64,9 +80,7 @@ _control_scale(Control* c)
   //printf("mouse pos : %f, %f \n", mousepos.X, mousepos.Y);
   Object* o = context_object_get(v->context);
   if (o != NULL && c->state != CONTROL_SCALE) {
-    c->state = CONTROL_SCALE;
-    //c->start = o->Position;
-    c->start = _objects_center(c, context_objects_get(v->context));
+    _scale_prepare(c, context_objects_get(v->context));
     c->mouse_start = mousepos;
   }
 
@@ -177,35 +191,25 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
     }
   } else if (c->state == CONTROL_SCALE) {
     Eina_List* objects = context_objects_get(v->context);
-    Plane p = { c->start, quat_rotate_vec3(v->camera->object->Orientation, vec3(0,0,-1)) };
-
-    Ray rstart = ray_from_screen(v->camera, c->mouse_start.X, c->mouse_start.Y, 1);
 
     float x = e->cur.canvas.x;
     float y = e->cur.canvas.y;
-    Ray r = ray_from_screen(v->camera, x, y, 1);
 
-    IntersectionRay ir =  intersection_ray_plane(r, p);
-    IntersectionRay irstart =  intersection_ray_plane(rstart, p);
-    
-    if (ir.hit && irstart.hit) {
-      Vec3 translation = vec3_sub(ir.position, irstart.position);
-      Eina_List *l;
-      Object *o;
-      int i = 0;
-      Vec3 center = vec3_zero();
-      EINA_LIST_FOREACH(objects, l, o) {
-        Vec3* origin = (Vec3*) eina_inarray_nth(c->positions, i);
-        o->Position = vec3_add(*origin, translation);
-        ++i;
-        center = vec3_add(center, o->Position);
-      }
-      if (i>0) center = vec3_mul(center, 1.0f/ (float) i);
-      v->context->mos.center =  center;
+    Vec2 d = vec2(x - c->mouse_start.X, y - c->mouse_start.Y);
+    c->scale_factor = vec2_length(d) * 0.1f;
 
-      if (i == 1)
-      control_property_update_transform(c);
+    Eina_List *l;
+    Object *o;
+    int i = 0;
+    EINA_LIST_FOREACH(objects, l, o) {
+      Vec3* scale_origin = (Vec3*) eina_inarray_nth(c->scales, i);
+      o->scale = vec3_mul(*scale_origin, c->scale_factor);
+      ++i;
     }
+
+    if (i == 1)
+    control_property_update_transform(c);
+    
   }
 
 }
@@ -312,7 +316,22 @@ _op_object_remove_component(Object* o, Component* c)
 }
 
 
+static Operation* 
+_op_scale_object(Eina_List* objects, Vec3 scale)
+{
+  Operation* op = calloc(1, sizeof *op);
 
+  op->do_cb = operation_scale_object_do;
+  op->undo_cb = operation_scale_object_undo;
+
+  Op_Scale_Object* oso = calloc(1, sizeof *oso);
+  oso->objects = eina_list_clone(objects);
+  oso->scale = scale;
+
+  op->data = oso;
+
+  return op;
+}
 
 bool
 control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
@@ -337,11 +356,9 @@ control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
     //TODO
     Eina_List* objects = context_objects_get(c->view->context);
 
-    Vec3 center = _objects_center(c, objects);
-
-    Operation* op = _op_move_object(
+    Operation* op = _op_scale_object(
           objects,
-          vec3_sub(center, c->start));
+          vec3(c->scale_factor, c->scale_factor, c->scale_factor));
 
     control_add_operation(c, op);
     return true;
@@ -394,12 +411,10 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
       // put back the objects to original position
       Eina_List *l;
       Object *o;
-      Object *last;
       int i = 0;
       EINA_LIST_FOREACH(objects, l, o) {
         Vec3* origin = (Vec3*) eina_inarray_nth(c->positions, i);
         o->Position = *origin;
-        last = o;
         i++;
       }
 
@@ -411,15 +426,12 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
     if (!strcmp(e->keyname, "Escape")) {
       c->state = IDLE;
 
-      // put back the objects to original position
       Eina_List *l;
       Object *o;
-      Object *last;
       int i = 0;
       EINA_LIST_FOREACH(objects, l, o) {
-        Vec3* origin = (Vec3*) eina_inarray_nth(c->positions, i);
-        o->Position = *origin;
-        last = o;
+        Vec3* scale_origin = (Vec3*) eina_inarray_nth(c->scales, i);
+        o->scale = *scale_origin;
         i++;
       }
 
@@ -557,4 +569,5 @@ void control_on_object_components_changed(Control* c, Object* o)
     property_object_display(c->view->property, o);
 
 }
+
 

@@ -169,3 +169,39 @@ operation_object_add_component_undo(Control*c, void* data)
 }
 
 
+
+////////////////////////////////////////////////////////////
+void 
+operation_scale_object_do(Control* c, void* data)
+{
+  Op_Scale_Object* od = (Op_Scale_Object*) data;
+
+  Eina_List *l;
+  Object *o;
+  EINA_LIST_FOREACH(od->objects, l, o) {
+    o->scale = vec3_vec3_mul(o->scale, od->scale);
+  }
+
+}
+
+void 
+operation_scale_object_undo(Control* c, void* data)
+{
+  Op_Scale_Object* od = (Op_Scale_Object*) data;
+
+  Eina_List *l;
+  Object *o;
+  EINA_LIST_FOREACH(od->objects, l, o) {
+    o->scale = vec3_vec3_mul(
+          o->scale,
+          vec3(
+            1.0f/od->scale.X,
+            1.0f/od->scale.Y,
+            1.0f/od->scale.Z
+            )
+          );
+  }
+}
+
+////////////////
+

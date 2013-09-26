@@ -24,6 +24,9 @@ struct _Control{
   Eina_Inarray* positions;
   Eina_List* undo;
   Eina_List* redo;
+
+  Eina_Inarray* scales;
+  float scale_factor;
 };
 
 

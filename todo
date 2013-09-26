@@ -1,4 +1,5 @@
 LATELY
+- scale with 's'
 - use id instead of comparing string strcmp(component->name,"mesh") ?
 
 CLEAN
