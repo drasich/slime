@@ -220,9 +220,12 @@ Object* create_object_file(const char* path)
 
       //TODO box component
       /*
-      o->line = create_line();
-      line_set_use_depth(o->line, true);
-      line_add_box(o->line, mesh->box, vec4(0,1,0,0.2));
+      Component* cline = create_component(&line_desc);
+      //o->line = create_line();
+      Line *line = cline->data; 
+      line_set_use_depth(line, true);
+      line_add_box(line, mesh->box, vec4(0,1,0,0.2));
+      object_add_component(o,cline);
       */
     }
     else if (!strcmp(type, "armature")){

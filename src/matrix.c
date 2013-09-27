@@ -424,6 +424,18 @@ mat4_mul(const Matrix4 m, Vec3 v)
         );
 }
 
+Vec4 
+mat4_vec4_mul(const Matrix4 m, Vec4 v)
+{
+  return vec4(
+        m[0]*v.X + m[1]*v.Y + m[2]*v.Z + m[3]*v.W,
+        m[4]*v.X + m[5]*v.Y + m[6]*v.Z + m[7]*v.W,
+        m[8]*v.X + m[9]*v.Y + m[10]*v.Z + m[11]*v.W,
+        m[12]*v.X + m[13]*v.Y + m[14]*v.Z + m[15]*v.W
+        );
+}
+
+
 Vec3
 mat4_premul(const Matrix4 m, Vec3 v)
 {
@@ -432,6 +444,18 @@ mat4_premul(const Matrix4 m, Vec3 v)
         v.X*m[1] + v.Y*m[5] + v.Z*m[9],
         v.X*m[2] + v.Y*m[6] + v.Z*m[10]);
 }
+
+Vec4
+mat4_vec4_premul(const Matrix4 m, Vec4 v)
+{
+  return vec4(
+        v.X*m[0] + v.Y*m[4] + v.Z*m[8] + v.W*m[12],
+        v.X*m[1] + v.Y*m[5] + v.Z*m[9] + v.W*m[13],
+        v.X*m[2] + v.Y*m[6] + v.Z*m[10] + v.W*m[14],
+        v.X*m[3] + v.Y*m[7] + v.Z*m[11] + v.W*m[15]
+        );
+}
+
 
 void
 mat4_pos_ori(Vec3 position, Quat orientation, Matrix4 out)

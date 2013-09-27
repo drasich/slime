@@ -1,12 +1,12 @@
 LATELY
-- scale with 's'
-- use id instead of comparing string strcmp(component->name,"mesh") ?
 
 CLEAN
+- TODO in the code.
 - fix functions name -> put the verb at the end
 - clean the scene when?
 
 ISSUES (must be done)
+- use id instead of comparing string strcmp(component->name,"mesh") ?
 - save the component functions in the component manager
 - change properties in ComponentDesc so there is only one to be created and I
   can remove the one in create_component and object_post_read
@@ -21,11 +21,11 @@ ISSUES (must be done)
 
 BUG
 - focus the play and main windows alternatively(with the mouse)
-  and close with escape sometimes window manager freeze.
+  and close with escape sometimes window manager freeze. (maybe when
+  there is composite in the window manager)
 
 
 RENDER
-- make scale
 - decide how to draw with camera ortho and per
   - choose ortho or pers in mesh component?, but what if I want I special
     width and height
@@ -78,6 +78,7 @@ PROPERTIES
 - handle properties when multiple objects selected?
   => make a structure in context with position and rotation
   be able to create an empty and change mesh in the properties
+- spinner : handle undo/redo->add signals
 
 
 CODE

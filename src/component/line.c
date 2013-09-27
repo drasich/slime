@@ -299,6 +299,21 @@ line_prepare_draw(Line* l, Matrix4 mat, Matrix4 projection)
   Matrix4 tm;
   mat4_multiply(projection, mat, tm);
   mat4_transpose(tm, tm);
+  //testing code
+  /*
+  if (l->fixed) {
+    Vec4 zero = vec4(0,0,0,1);
+    Vec4 vw = mat4_vec4_mul(tm, zero);
+    double w = vw.W * 0.01;
+    line_clear(l);
+    AABox bb = l->boxtest;
+    bb.Max = vec3_mul(bb.Max, w);
+    bb.Min = vec3_mul(bb.Min, w);
+    line_add_box(l, bb, vec4(0,0,1,0.2));
+    line_resend(l);
+  }
+  */
+
   mat4_to_gl(tm, l->matrix);
   gl->glUniformMatrix4fv(l->uniform_matrix, 1, GL_FALSE, l->matrix);
   float width = l->camera->width;

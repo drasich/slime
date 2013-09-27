@@ -17,7 +17,7 @@ struct _Line
   GLuint buffer_colors;
   GLuint id_texture;
 
-  GLfloat*  vertices_gl;
+  //GLfloat*  vertices_gl;
   uint32_t vertices_len;
   Shader* shader;
 

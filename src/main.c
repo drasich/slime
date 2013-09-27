@@ -158,19 +158,30 @@ populate_scene(Control* c, Scene* s)
     scene_camera_set(s,cam);
    }
 
-  if (false)
+  if (true)
    {
     Object* empty = create_object();
     empty->name = eina_stringshare_add("empty");
 
     Component* meshcomp = create_component(&mesh_desc);
     MeshComponent* mc = meshcomp->data;
-    mc->shader = resource_shader_get(s_rm, "simple");
+    mc->shader = resource_shader_get(s_rm, "shader/simple.shader");
     mc->mesh_name = "model/smallchar.mesh";
     mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
     object_add_component(empty, meshcomp);
 
     control_add_object(c,s,empty);
+
+    /* testing code, can be removed
+    Component* cline = create_component(&line_desc);
+    Line *line = cline->data; 
+    line->camera = c->view->camera->camera_component;
+    line_set_use_depth(line, true);
+    line_add_box(line, mc->mesh->box, vec4(0,1,0,0.2));
+    line->fixed  = true;
+    line->boxtest = mc->mesh->box;
+    object_add_component(empty, cline);
+    */
    }
 
 
@@ -184,12 +195,12 @@ static void
 build_scene()
 {
   scene_descriptor_init();
-  //Scene* s = create_scene();
-  Scene* s = scene_read("scene/scene.eet");
-  scene_post_read(s);
-  tree_scene_set(view->tree, s);
+  Scene* s = create_scene();
+  //Scene* s = scene_read("scene/scene.eet");
+  //scene_post_read(s);
+  //tree_scene_set(view->tree, s);
   view->context->scene = s;
-  //populate_scene(view->control, s);
+  populate_scene(view->control, s);
 
   printf("scene ORIGINAL\n");
   scene_print(s);
