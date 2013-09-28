@@ -339,6 +339,25 @@ _create_repere(float u, Camera* camera)
   return o;
 }
 
+#include "resource.h"
+static Object* 
+_create_dragger()
+{
+  Object* o = create_object();
+  Component* comp = create_component(&mesh_desc);
+  object_add_component(o, comp);
+  MeshComponent* mc = comp->data;
+  //mc->shader = resource_shader_get(s_rm, "shader/dragger.shader");
+  mc->shader = resource_shader_get(s_rm, "shader/simple.shader");
+  mc->shader_name = mc->shader->name;
+  mc->mesh_name = "model/Arrow.mesh";
+  mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
+
+  object_add_component(o, comp);
+  return o;
+}
+
+
 static Object* 
 _create_grid(Camera* camera)
 {
@@ -682,6 +701,8 @@ _create_view_objects(View* v)
   Line* l = object_component_get(v->repere, "line");
   if (l) line_set_size_fixed(l, true);
 
+  v->dragger = _create_dragger();
+
   v->camera_repere = _create_repere(40, v->camera->camera_component);
   v->camera_repere->Position = vec3(10,10, -10);
 
@@ -986,6 +1007,7 @@ view_draw(View* v)
   }
 
   //repere
+  /*
   if (last_obj) {
     gl->glClear(GL_DEPTH_BUFFER_BIT);
     v->repere->Position = repere_position;
@@ -995,6 +1017,16 @@ view_draw(View* v)
     if (line) line->id_texture = r->fbo_all->texture_depth_stencil_id;
     mat4_multiply(cam_mat_inv, mo, mo);
     object_draw_edit(v->repere, mo, cc->projection);
+  }
+  */
+
+  if (last_obj) {
+    gl->glClear(GL_DEPTH_BUFFER_BIT);
+    v->dragger->Position = repere_position;
+    v->dragger->angles = last_obj->angles;
+    object_compute_matrix(v->dragger, mo);
+    mat4_multiply(cam_mat_inv, mo, mo);
+    object_draw_edit(v->dragger, mo, cc->projection);
   }
 
   //Render outline with quad

@@ -57,7 +57,6 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
 static void
 _entry_activated_cb(void *data, Evas_Object *obj, void *event)
 {
-  printf("activated\n");
   ComponentProperties* cp = data;
   const char* s = elm_object_text_get(obj);
 
@@ -505,7 +504,7 @@ _add_properties(ComponentProperties* cp, const PropertySet* ps, Evas_Object* box
 {
   Property *p;
   EINA_INARRAY_FOREACH(ps->array, p) {
-   printf("name: %s , type: %d, offset: %d\n", p->name, p->type, p->offset);
+   //printf("name: %s , type: %d, offset: %d\n", p->name, p->type, p->offset);
    //printf("   value is : ");
    switch(p->type) {
      case EET_T_DOUBLE:

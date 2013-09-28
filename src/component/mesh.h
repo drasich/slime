@@ -73,6 +73,7 @@ struct _Mesh
   GLuint attribute_barycentric;
   GLuint attribute_texcoord;
 
+  ///*
   GLint uniform_matrix;
   GLint uniform_normal_matrix;
   GLint uniform_wireframe;
@@ -81,6 +82,7 @@ struct _Mesh
 
   //TODO remove and make material
   GLint uniform_texture_all;
+  //*/
 
   bool is_init;
   MeshFunc* func;

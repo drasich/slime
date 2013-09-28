@@ -115,6 +115,7 @@ _object_mesh_create(const char* file)
   Component* meshcomp = create_component(&mesh_desc);
   MeshComponent* mc = meshcomp->data;
   mc->shader = resource_shader_get(s_rm, "shader/simple.shader");
+  //mc->shader = resource_shader_get(s_rm, "shader/dragger.shader");
   mc->shader_name = mc->shader->name;
   mc->mesh_name = file;
   mc->mesh = resource_mesh_get(s_rm, file);
@@ -166,6 +167,7 @@ populate_scene(Control* c, Scene* s)
     Component* meshcomp = create_component(&mesh_desc);
     MeshComponent* mc = meshcomp->data;
     mc->shader = resource_shader_get(s_rm, "shader/simple.shader");
+    //mc->shader = resource_shader_get(s_rm, "shader/dragger.shader");
     mc->mesh_name = "model/smallchar.mesh";
     mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
     object_add_component(empty, meshcomp);

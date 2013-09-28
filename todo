@@ -1,4 +1,8 @@
 LATELY
+- shader/mesh uniform stuff blabla
+- dragger
+- make the mesh/resource manager. just input the name and it loads in
+  the background
 
 CLEAN
 - TODO in the code.

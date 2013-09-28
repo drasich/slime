@@ -22,6 +22,16 @@ struct _Shader
   Eina_Bool has_texcoord;
 
   Eina_Bool has_uniform_normal_matrix;
+
+  //TODO here list, hash, something of uniform and attributes
+  GLint uniform_matrix;
+  GLint uniform_normal_matrix;
+  GLint uniform_wireframe;
+  GLint uniform_texture;
+  GLint uniform_resolution;
+
+  //TODO remove and make material
+  GLint uniform_texture_all;
 };
 
 

@@ -524,7 +524,6 @@ _mesh_component_draw(Component* c, Matrix4 world, Matrix4 projection)
   mesh_shader_init_attributes(m,s);
   mesh_shader_init_uniforms(m,s);
 
-  shader_use(mc->shader);
   mesh_set_matrices(m, world, projection);
   m->func->draw(m);
 }
