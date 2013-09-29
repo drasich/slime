@@ -240,6 +240,7 @@ elm_main(int argc, char **argv)
   resource_read_path(s_rm);
   resource_simple_mesh_create(s_rm);
   resource_shader_create(s_rm);
+  resource_texture_create(s_rm);
 
   elm_config_preferred_engine_set("opengl_x11");
   //elm_config_focus_highlight_animate_set(EINA_TRUE);

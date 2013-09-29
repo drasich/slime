@@ -10,6 +10,7 @@ struct _ResourceManager {
   Eina_Hash* meshes;
   Eina_Hash* shaders;
   Eina_List* meshes_to_load;
+  Eina_Hash* textures;
 };
 
 Mesh* resource_mesh_get(ResourceManager* rm, const char* name);
@@ -23,6 +24,7 @@ void resource_load(ResourceManager* rm);
 
 void resource_simple_mesh_create(ResourceManager* rm);
 void resource_shader_create(ResourceManager* rm);
+void resource_texture_create(ResourceManager* rm);
 
 Eina_Hash* resource_meshes_get(ResourceManager* rm);
 Eina_Hash* resource_shaders_get(ResourceManager* rm);

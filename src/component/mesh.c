@@ -445,6 +445,7 @@ static void*
 _mesh_component_create()
 {
   MeshComponent* m = calloc(1,sizeof *m);
+  m->texture_ids = eina_inarray_new(sizeof(GLuint), 0);
   return m;
 }
 

@@ -65,12 +65,11 @@ struct _Mesh
   Eina_Array* vertexgroups;
   Eina_Inarray* vertices_base;
   //For animation I need original vertex and vertex to send
-
+  
   AABox box;
 
   bool is_init;
   MeshFunc* func;
-
 };
 
 struct _MeshFunc {
@@ -86,6 +85,7 @@ struct _MeshComponent
   const char* shader_name;
   Mesh* mesh;
   Shader* shader;
+  Eina_Inarray* texture_ids;
 };
 
 ComponentDesc mesh_desc;
