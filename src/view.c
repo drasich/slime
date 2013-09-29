@@ -54,7 +54,10 @@ _view_resize_gl(Evas_Object *obj)
   
   MeshComponent* mc = object_component_get(v->render->quad_outline, "mesh");
   shader_use(mc->shader);
-  gl->glUniform2f(mc->mesh->uniform_resolution, w, h);
+
+  GLint uni_resolution = shader_uniform_location_get(mc->shader, "resolution");
+  if (uni_resolution >= 0) gl->glUniform2f(uni_resolution, w, h);
+
   quad_resize(mc->mesh, w, h);
 
   /*
@@ -851,17 +854,12 @@ create_render()
   r->quad_outline->name = eina_stringshare_add("quad");
 
   mc->shader = create_shader("stencil", "shader/stencil.vert", "shader/stencil.frag");
-  mc->shader->has_vertex = true;
-  mc->shader->has_normal = false;
-  mc->shader->has_texcoord = false;
-  mc->shader->has_uniform_normal_matrix = false;
+  shader_attrib_add(mc->shader, "vertex");
+  shader_uniform_add(mc->shader, "matrix");
+  shader_uniform_add(mc->shader, "resolution");
+  shader_uniform_add(mc->shader, "texture");
+  shader_uniform_add(mc->shader, "texture_all");
 
-  shader_use(mc->shader);
-  shader_init_attribute(mc->shader, "vertex", &mc->mesh->attribute_vertex);
-  shader_init_uniform(mc->shader, "matrix", &mc->mesh->uniform_matrix);
-  shader_init_uniform(mc->shader, "resolution", &mc->mesh->uniform_resolution);
-  shader_init_uniform(mc->shader, "texture", &mc->mesh->uniform_texture);
-  shader_init_uniform(mc->shader, "texture_all", &mc->mesh->uniform_texture_all);
 
   /*
   r->quad_color = create_object();
@@ -1036,11 +1034,6 @@ view_draw(View* v)
     Mesh* mesh = mc->mesh;
     mesh->id_texture = r->fbo_selected->texture_depth_stencil_id;
     mesh->id_texture_all = r->fbo_all->texture_depth_stencil_id;
-    shader_init_uniform(mc->shader, "matrix", &mc->mesh->uniform_matrix);
-    shader_init_uniform(mc->shader, "resolution", &mc->mesh->uniform_resolution);
-    shader_init_uniform(mc->shader, "texture", &mc->mesh->uniform_texture);
-    shader_init_uniform(mc->shader, "texture_all", &mc->mesh->uniform_texture_all);
-
     object_draw_edit(r->quad_outline, mo, cc->orthographic);
   }
 

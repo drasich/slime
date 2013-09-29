@@ -1,8 +1,10 @@
 LATELY
+- unbind the buffers after shader_mesh_draw and m->func->draw .
 - shader/mesh uniform stuff blabla
 - dragger
 - make the mesh/resource manager. just input the name and it loads in
   the background
+- texture manager
 
 CLEAN
 - TODO in the code.

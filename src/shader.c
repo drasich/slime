@@ -1,5 +1,6 @@
 #include "shader.h"
 #include "Eet.h"
+#include "component/mesh.h"
 
 char* 
 stringFromFile(const char* path)
@@ -23,12 +24,59 @@ stringFromFile(const char* path)
   return buf;
 }
 
+static void
+_shader_attribute_location_init(Shader* s, Attribute* att)
+{
+  GLint att_tmp = gl->glGetAttribLocation(s->program, att->name);
+  if (att_tmp == -1) {
+    printf("Error in getting attribute %s \n", att->name);
+  }
+  else {
+     att->location = att_tmp;
+  }
+}
+
+static void
+_shader_uniform_location_init(Shader* s, Uniform* uni)
+{
+  GLint uni_tmp = gl->glGetUniformLocation(s->program, uni->name);
+  if (uni_tmp == -1) {
+    printf("Error in getting attribute %s \n", uni->name);
+  }
+  else {
+     uni->location = uni_tmp;
+  }
+}
+
+
+static void 
+shader_attributes_locations_init(Shader* s)
+{
+  Attribute* att;
+  EINA_INARRAY_FOREACH(s->attributes, att) {
+    _shader_attribute_location_init(s, att);
+  }
+}
+
+static void 
+shader_uniforms_locations_init(Shader* s)
+{
+  Uniform* uni;
+  EINA_INARRAY_FOREACH(s->uniforms, uni) {
+    _shader_uniform_location_init(s, uni);
+  }
+}
+
+
+
 void 
 shader_init(Shader* s)
 {
   char* vert = stringFromFile(s->vert_path);
   char* frag = stringFromFile(s->frag_path);
   shader_init_string(s, vert, frag);
+  shader_attributes_locations_init(s);
+  shader_uniforms_locations_init(s);
   free(vert);
   free(frag);
   s->is_init = true;
@@ -130,6 +178,8 @@ shader_destroy(Shader* s)
   gl->glDeleteProgram(s->program);
 }
 
+
+
 Shader* 
 create_shader(const char* name, const char* vert_path, const char* frag_path)
 {
@@ -137,8 +187,30 @@ create_shader(const char* name, const char* vert_path, const char* frag_path)
   s->vert_path = vert_path;
   s->frag_path = frag_path;
   s->name = name;
+  s->attributes = eina_inarray_new(sizeof(Attribute), 0);
+  s->uniforms = eina_inarray_new(sizeof(Uniform), 0);
+
   return s;
 };
+
+void
+shader_attrib_add(Shader* s, const char* name)
+{
+  Attribute att;
+  att.name = name;
+  att.location = 0;
+  eina_inarray_push(s->attributes, &att);
+}
+
+void
+shader_uniform_add(Shader* s, const char* name)
+{
+  Uniform uni;
+  uni.name = name;
+  uni.location = 0;
+  eina_inarray_push(s->uniforms, &uni);
+}
+
 
 
 static Eet_Data_Descriptor *_shader_descriptor;
@@ -159,10 +231,6 @@ shader_descriptor_init(void)
   ADD_BASIC(name, EET_T_STRING);
   ADD_BASIC(vert_path, EET_T_STRING);
   ADD_BASIC(frag_path, EET_T_STRING);
-  ADD_BASIC(has_vertex, EET_T_UCHAR);
-  ADD_BASIC(has_normal, EET_T_UCHAR);
-  ADD_BASIC(has_texcoord, EET_T_UCHAR);
-  ADD_BASIC(has_uniform_normal_matrix, EET_T_UCHAR);
 
 #undef ADD_BASIC
 }
@@ -227,4 +295,136 @@ shader_read(const char* filename)
   return s;  
 }
 
+void 
+shader_mesh_draw(Shader* s, MeshComponent* mc)
+{
+  Mesh* m = mc->mesh;
+
+  GLint uni_tex = shader_uniform_location_get(s, "texture");
+  if (uni_tex >= 0) {
+    gl->glUniform1i(uni_tex, 0);
+    gl->glActiveTexture(GL_TEXTURE0);
+    gl->glBindTexture(GL_TEXTURE_2D, m->id_texture);
+  }
+
+  uni_tex = shader_uniform_location_get(s, "texture_all");
+  if (uni_tex >= 0) {
+    gl->glUniform1i(uni_tex, 1);
+    gl->glActiveTexture(GL_TEXTURE0 + 1);
+    gl->glBindTexture(GL_TEXTURE_2D, m->id_texture_all);
+  }
+
+  //texcoord
+  GLint att_tex = shader_attribute_location_get(s, "texcoord");
+  if (m->has_uv && att_tex >= 0) {
+    gl->glEnableVertexAttribArray(att_tex);
+    gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_texcoords);
+    gl->glVertexAttribPointer(
+          att_tex,
+          2,
+          GL_FLOAT,
+          GL_FALSE,
+          0,
+          0);
+  }
+
+  GLint att_vert = shader_attribute_location_get(s, "vertex");
+  if (att_vert >= 0) {
+    gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_vertices);
+    gl->glEnableVertexAttribArray(att_vert);
+
+    gl->glVertexAttribPointer(
+          att_vert,
+          3,
+          GL_FLOAT,
+          GL_FALSE,
+          0,
+          0);
+  }
+
+  GLint att_normal = shader_attribute_location_get(s, "normal");
+  if (att_normal >= 0) {
+    gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_normals);
+    gl->glEnableVertexAttribArray(att_normal);
+    gl->glVertexAttribPointer(
+          att_normal,
+          3,
+          GL_FLOAT,
+          GL_FALSE,
+          0,
+          0);
+  }
+
+  /*
+  gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->buffer_indices);
+  gl->glDrawElements(
+        GL_TRIANGLES, 
+        m->indices_len,
+        GL_UNSIGNED_INT,
+        0);
+  gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+  gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+  if (att_vert >= 0)
+  gl->glDisableVertexAttribArray(m->attribute_vertex);
+  if (att_normal >= 0)
+  gl->glDisableVertexAttribArray(m->attribute_normal);
+
+  if (m->has_uv && att_tex >= 0)
+  gl->glDisableVertexAttribArray(att_tex);
+  */
+
+}
+
+
+GLint
+shader_attribute_location_get(Shader* s, const char* name)
+{
+  Attribute* att;
+  EINA_INARRAY_FOREACH(s->attributes, att) {
+    if (!strcmp(att->name, name)) 
+    return att->location;
+  }
+  return -1;
+}
+
+GLint
+shader_uniform_location_get(Shader* s, const char* name)
+{
+  Uniform* uni;
+  EINA_INARRAY_FOREACH(s->uniforms, uni) {
+    if (!strcmp(uni->name, name)) 
+    return uni->location;
+  }
+  return -1;
+}
+
+
+void
+shader_matrices_set(Shader* s, Matrix4 mat, Matrix4 projection)
+{
+  Matrix4GL matrix;
+  Matrix3GL matrix_normal;
+
+  Matrix3 normal_mat;
+  mat4_to_mat3(mat, normal_mat);
+  mat3_inverse(normal_mat, normal_mat);
+  mat3_transpose(normal_mat, normal_mat);
+  mat3_to_gl(normal_mat, matrix_normal);
+
+  Matrix4 tm;
+  mat4_multiply(projection, mat, tm);
+  mat4_transpose(tm, tm);
+  mat4_to_gl(tm, matrix);
+
+  GLint uni_matrix = shader_uniform_location_get(s, "matrix");
+  if (uni_matrix >= 0)
+  gl->glUniformMatrix4fv(uni_matrix, 1, GL_FALSE, matrix);
+
+  uni_matrix = shader_uniform_location_get(s, "normal_matrix");
+  if (uni_matrix >= 0)
+  gl->glUniformMatrix3fv(uni_matrix, 1, GL_FALSE, matrix_normal);
+
+}
 

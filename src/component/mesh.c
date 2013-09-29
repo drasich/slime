@@ -274,6 +274,7 @@ mesh_set_matrix(Mesh* mesh, Matrix4 mat)
 }
 */
 
+/*
 void
 mesh_set_matrices(Mesh* mesh, Matrix4 mat, Matrix4 projection)
 {
@@ -290,11 +291,13 @@ mesh_set_matrices(Mesh* mesh, Matrix4 mat, Matrix4 projection)
   gl->glUniformMatrix4fv(mesh->uniform_matrix, 1, GL_FALSE, mesh->matrix);
   gl->glUniformMatrix3fv(mesh->uniform_normal_matrix, 1, GL_FALSE, mesh->matrix_normal);
 }
+*/
 
 
 void
 mesh_draw(Mesh* m)
 {
+  /*
   if (!m->is_init) {
     mesh_init(m);
   }
@@ -337,6 +340,7 @@ mesh_draw(Mesh* m)
     GL_FALSE,
     0,
     0);
+  */
 
   gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->buffer_indices);
   gl->glDrawElements(
@@ -344,14 +348,16 @@ mesh_draw(Mesh* m)
         m->indices_len,
         GL_UNSIGNED_INT,
         0);
-
-  gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
   gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+  /*
+  gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
   gl->glDisableVertexAttribArray(m->attribute_vertex);
   gl->glDisableVertexAttribArray(m->attribute_normal);
 
   if (m->has_uv)
   gl->glDisableVertexAttribArray(m->attribute_texcoord);
+  */
 }
 
 
@@ -398,17 +404,7 @@ mesh_find_vertexgroup(Mesh* mesh, char* name)
 
 }
 
-void 
-mesh_shader_init_attributes(Mesh* m, Shader* s)
-{
-  if (!s) return;
-  shader_init_attribute(s, "vertex", &m->attribute_vertex);
-  if (s->has_normal)
-  shader_init_attribute(s, "normal", &m->attribute_normal);
-  if (s->has_texcoord)
-  shader_init_attribute(s, "texcoord", &m->attribute_texcoord);
-}
-
+/*
 void 
 mesh_shader_init_uniforms(Mesh* m, Shader* s)
 {
@@ -417,6 +413,7 @@ mesh_shader_init_uniforms(Mesh* m, Shader* s)
   if (s->has_uniform_normal_matrix)
   shader_init_uniform(s, "normal_matrix", &m->uniform_normal_matrix);
 }
+*/
 
 
 void
@@ -474,25 +471,6 @@ _mesh_component_properties()
   return ps;
 }
 
-
-static void 
-_mesh_draw(Component* c, Matrix4 world, struct _Camera* cam)
-{
-  Mesh* m = c->data;
-  if (!m->name)
-  return;
-
-  Matrix4* projection = &cam->projection;
-
-  //TODO change this
-  if (!strcmp("quad", m->name)){
-    projection = &cam->orthographic;
-  }
-
-  mesh_set_matrices(m, world, *projection);
-  m->func->draw(m);
-}
-
 static void 
 _mesh_component_draw(Component* c, Matrix4 world, Matrix4 projection)
 {
@@ -521,10 +499,8 @@ _mesh_component_draw(Component* c, Matrix4 world, Matrix4 projection)
     mesh_init(m);
   }
 
-  mesh_shader_init_attributes(m,s);
-  mesh_shader_init_uniforms(m,s);
-
-  mesh_set_matrices(m, world, projection);
+  shader_matrices_set(s, world, projection);
+  shader_mesh_draw(s,mc);
   m->func->draw(m);
 }
 
@@ -551,19 +527,6 @@ mesh_file_set(Mesh* m, const char* filename)
   fclose(f);
 
 }
-
-/*
-ComponentDesc mesh_desc = {
-  "mesh",
-  _create_mesh,
-  _mesh_properties,
-  NULL,
-  NULL,
-  _mesh_draw,
-  NULL,
-  NULL,
-};
-*/
 
 ComponentDesc mesh_desc = {
   "mesh",

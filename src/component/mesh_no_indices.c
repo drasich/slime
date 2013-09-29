@@ -240,6 +240,7 @@ mesh_resend_no_indices(Mesh* m)
 void
 mesh_draw_no_indices(Mesh* m)
 {
+  /*
   //shader_use(m->shader);
 
   gl->glActiveTexture(GL_TEXTURE0);
@@ -301,6 +302,7 @@ mesh_draw_no_indices(Mesh* m)
   
   if (m->has_uv)
   gl->glDisableVertexAttribArray(m->attribute_texcoord);
+  */
 }
 
 void
@@ -308,7 +310,7 @@ mesh_show_wireframe(Mesh* m, bool b)
 {
   printf("todo %s, %s\n", __FILE__, __LINE__);
   //shader_use(m->shader);
-  gl->glUniform1i(m->uniform_wireframe, b?1:0);
+  //gl->glUniform1i(m->uniform_wireframe, b?1:0);
 }
 
 void
@@ -484,6 +486,7 @@ quad_init(Mesh* m)
 void
 quad_draw(Mesh* m)
 {
+  /*
   if (!m->is_init) {
     quad_init(m);
   }
@@ -501,19 +504,17 @@ quad_draw(Mesh* m)
   gl->glBindTexture(GL_TEXTURE_2D, m->id_texture_all);
 
   //texcoord
-  /*
-  if (m->has_uv) {
-    gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_texcoords);
-    gl->glEnableVertexAttribArray(m->attribute_texcoord);
-    gl->glVertexAttribPointer(
-          m->attribute_texcoord,
-          2,
-          GL_FLOAT,
-          GL_FALSE,
-          0,
-          0);
-  }
-  */
+  //if (m->has_uv) {
+    //gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_texcoords);
+    //gl->glEnableVertexAttribArray(m->attribute_texcoord);
+    //gl->glVertexAttribPointer(
+          //m->attribute_texcoord,
+          //2,
+          //GL_FLOAT,
+          //GL_FALSE,
+          //0,
+          //0);
+  //}
 
   gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_vertices);
   gl->glEnableVertexAttribArray(m->attribute_vertex);
@@ -526,40 +527,33 @@ quad_draw(Mesh* m)
     0,
     0);
 
-  /*
-  gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_normals);
-  gl->glEnableVertexAttribArray(m->attribute_normal);
-  gl->glVertexAttribPointer(
-    m->attribute_normal,
-    3,
-    GL_FLOAT,
-    GL_FALSE,
-    0,
-    0);
-    */
 
-  /*
-  gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_barycentric);
-  gl->glEnableVertexAttribArray(m->attribute_barycentric);
-  
-  gl->glVertexAttribPointer(
-    m->attribute_barycentric,
-    3,
-    GL_FLOAT,
-    GL_FALSE,
-    0,
-    0);
+  //gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_barycentric);
+  //gl->glEnableVertexAttribArray(m->attribute_barycentric);
+  //
+  //gl->glVertexAttribPointer(
+    //m->attribute_barycentric,
+    //3,
+    //GL_FLOAT,
+    //GL_FALSE,
+    //0,
+    //0);
+    //
     */
 
   gl->glDrawArrays(GL_TRIANGLES,0, m->vertices_len/3);
 
   gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+  /*
   gl->glDisableVertexAttribArray(m->attribute_vertex);
+
   //gl->glDisableVertexAttribArray(m->attribute_normal);
   //gl->glDisableVertexAttribArray(m->attribute_barycentric);
   
   //if (m->has_uv)
   //gl->glDisableVertexAttribArray(m->attribute_texcoord);
+  */
 }
 
 MeshFunc mesh_quad = {

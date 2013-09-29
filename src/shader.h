@@ -2,6 +2,16 @@
 #define __shader__
 #include "gl.h"
 #include "stdbool.h"
+#include "matrix.h"
+
+typedef struct _Attribute Uniform;
+typedef struct _Attribute Attribute;
+
+struct _Attribute{
+  const char* name;
+  GLuint location;
+};
+
 
 typedef struct _Shader Shader;
 //typedef char GLchar; // currently not in 1.7.3 and 1.7.4 but is in svn.
@@ -16,22 +26,8 @@ struct _Shader
   const char* frag_path;
   bool is_init;
 
-  //TODO make it has_attribute("vertex");
-  Eina_Bool has_vertex;
-  Eina_Bool has_normal;
-  Eina_Bool has_texcoord;
-
-  Eina_Bool has_uniform_normal_matrix;
-
-  //TODO here list, hash, something of uniform and attributes
-  GLint uniform_matrix;
-  GLint uniform_normal_matrix;
-  GLint uniform_wireframe;
-  GLint uniform_texture;
-  GLint uniform_resolution;
-
-  //TODO remove and make material
-  GLint uniform_texture_all;
+  Eina_Inarray* attributes;
+  Eina_Inarray* uniforms;
 };
 
 
@@ -56,5 +52,7 @@ Eina_Bool shader_write(const Shader* s);
 Shader* shader_read(const char* filename);
 
 void shader_descriptor_init(void);
+GLint shader_attribute_location_get(Shader* shader, const char* name);
+void shader_matrices_set(Shader* mesh, Matrix4 mat, Matrix4 projection);
 
 #endif

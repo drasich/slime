@@ -107,13 +107,19 @@ void
 resource_shader_create(ResourceManager* rm)
 {
   shader_descriptor_init();
-  /*
   Shader* simple = create_shader("shader/simple.shader","shader/simple.vert", "shader/simple.frag");
-  simple->has_vertex = true;
-  simple->has_normal = true;
-  simple->has_texcoord = true;
-  simple->has_uniform_normal_matrix = true;
+  shader_attrib_add(simple, "vertex");
+  shader_attrib_add(simple, "normal");
+  shader_attrib_add(simple, "texcoord");
+  //simple->has_vertex = true;
+  //simple->has_normal = true;
+  //simple->has_texcoord = true;
+  //simple->has_uniform_normal_matrix = true;
+  shader_uniform_add(simple, "matrix");
+  shader_uniform_add(simple, "normal_matrix");
+  shader_uniform_add(simple, "texture");
 
+  /*
   Shader* red = create_shader("shader/red.shader", "shader/simple.vert", "shader/red.frag");
   red->has_vertex = true;
   red->has_normal = true;
@@ -123,18 +129,20 @@ resource_shader_create(ResourceManager* rm)
 
   Shader* dragger = create_shader("shader/dragger.shader","shader/dragger.vert", "shader/dragger.frag");
   //Shader* dragger = create_shader("shader/dragger.shader","shader/simple.vert", "shader/simple.frag");
-  dragger->has_vertex = true;
+  //dragger->has_vertex = true;
   shader_write(dragger);
 
-  Shader* simple = shader_read("shader/simple.shader");
+  //Shader* simple = shader_read("shader/simple.shader");
   Shader* red = shader_read("shader/red.shader");
 
   eina_hash_add(rm->shaders, simple->name, simple);
   eina_hash_add(rm->shaders, red->name, red);
   eina_hash_add(rm->shaders, dragger->name, dragger);
+
+
   //shader_write(red);
   //shader_write(simple);
   //Shader* s = shader_read("shader/red.shader");
-  Shader* simplea = shader_read("shader/simple.shader");
+  //Shader* simplea = shader_read("shader/simple.shader");
 }
 
