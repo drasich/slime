@@ -11,6 +11,7 @@ struct _ResourceManager {
   Eina_Hash* shaders;
   Eina_List* meshes_to_load;
   Eina_Hash* textures;
+  Eina_List* textures_to_load;
 };
 
 Mesh* resource_mesh_get(ResourceManager* rm, const char* name);

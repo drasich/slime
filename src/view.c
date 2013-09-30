@@ -852,6 +852,9 @@ create_render()
   Vec3 t3 = {0,0,-100};
   object_set_position(r->quad_outline, t3);
   r->quad_outline->name = eina_stringshare_add("quad");
+  GLuint id;
+  eina_inarray_push(mc->texture_ids, &id);
+  eina_inarray_push(mc->texture_ids, &id);
 
   mc->shader = create_shader("stencil", "shader/stencil.vert", "shader/stencil.frag");
   shader_attrib_add(mc->shader, "vertex");
@@ -1034,6 +1037,9 @@ view_draw(View* v)
     Mesh* mesh = mc->mesh;
     mesh->id_texture = r->fbo_selected->texture_depth_stencil_id;
     mesh->id_texture_all = r->fbo_all->texture_depth_stencil_id;
+    //TODO do this only one time, don't need every update.
+    eina_inarray_replace_at(mc->texture_ids, 0, &r->fbo_selected->texture_depth_stencil_id);
+    eina_inarray_replace_at(mc->texture_ids, 1, &r->fbo_all->texture_depth_stencil_id);
     object_draw_edit(r->quad_outline, mo, cc->orthographic);
   }
 

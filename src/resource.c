@@ -153,30 +153,8 @@ void
 resource_texture_create(ResourceManager* rm)
 {
   const char* filetex = "model/ceil.png";
-  Texture* tex = texture_read_png_file(filetex);
-
-  GLuint idtex;
-  gl->glGenTextures(1, &idtex);
-  eina_hash_add(rm->textures, filetex, &idtex); //TODO data must be void*
-
-	gl->glBindTexture(GL_TEXTURE_2D, idtex);
-	gl->glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	gl->glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-  gl->glTexImage2D(
-        GL_TEXTURE_2D,
-        0,
-        //GL_RGBA, //4,
-        tex->internal_format,
-        tex->width,
-        tex->height,
-        0,
-        //GL_RGBA,
-        tex->format,
-        GL_UNSIGNED_BYTE,
-        tex->data);
-
-  free(tex->data);
-  free(tex);
-
+  //rm->textures_to_load = eina_list_append(rm->textures_to_load, eina_stringshare_add(filetex));
+  Texture* tex = texture_new();
+  tex->filename = filetex;
 }
+
