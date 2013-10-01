@@ -445,7 +445,7 @@ static void*
 _mesh_component_create()
 {
   MeshComponent* m = calloc(1,sizeof *m);
-  m->texture_ids = eina_inarray_new(sizeof(GLuint), 0);
+  m->textures = eina_hash_string_superfast_new(NULL);
   return m;
 }
 
@@ -547,4 +547,21 @@ MeshFunc mesh_generic = {
   NULL,
   mesh_draw
 };
+
+
+GLint
+mesh_component_texture_id_get(MeshComponent* mc, const char* name)
+{
+  Texture* t = eina_hash_find(mc->textures, name);
+  
+  if (!t) return -1;
+
+  if (t->is_fbo && t->fbo_id) {
+    return *(t->fbo_id);
+  }
+
+  return -1;
+
+}
+
 

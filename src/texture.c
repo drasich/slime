@@ -462,3 +462,11 @@ texture_png_read(Texture* tex)
 
 }
 
+void
+texture_fbo_link(Texture* t, GLuint* id)
+{
+  t->fbo_id = id;
+  t->is_fbo = true;
+  t->is_init = true;
+}
+

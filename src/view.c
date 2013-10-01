@@ -11,6 +11,7 @@
 #include "intersect.h"
 #include "glview.h"
 #include "gameview.h"
+#include "texture.h"
 #define __UNUSED__
 
 static bool s_view_destroyed = false;
@@ -852,9 +853,14 @@ create_render()
   Vec3 t3 = {0,0,-100};
   object_set_position(r->quad_outline, t3);
   r->quad_outline->name = eina_stringshare_add("quad");
-  GLuint id;
-  eina_inarray_push(mc->texture_ids, &id);
-  eina_inarray_push(mc->texture_ids, &id);
+
+  Texture* tsel = texture_new();
+  Texture* tall = texture_new();
+  eina_hash_add(mc->textures, "texture", tsel);
+  eina_hash_add(mc->textures, "texture_all", tall);
+  
+  texture_fbo_link(tsel, &r->fbo_selected->texture_depth_stencil_id);
+  texture_fbo_link(tall, &r->fbo_all->texture_depth_stencil_id);
 
   mc->shader = create_shader("stencil", "shader/stencil.vert", "shader/stencil.frag");
   shader_attrib_add(mc->shader, "vertex");
@@ -1033,13 +1039,6 @@ view_draw(View* v)
   //Render outline with quad
   if (last_obj) {
     object_compute_matrix(r->quad_outline, mo);
-    MeshComponent* mc = object_component_get(r->quad_outline, "mesh");
-    Mesh* mesh = mc->mesh;
-    mesh->id_texture = r->fbo_selected->texture_depth_stencil_id;
-    mesh->id_texture_all = r->fbo_all->texture_depth_stencil_id;
-    //TODO do this only one time, don't need every update.
-    eina_inarray_replace_at(mc->texture_ids, 0, &r->fbo_selected->texture_depth_stencil_id);
-    eina_inarray_replace_at(mc->texture_ids, 1, &r->fbo_all->texture_depth_stencil_id);
     object_draw_edit(r->quad_outline, mo, cc->orthographic);
   }
 

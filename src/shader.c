@@ -301,17 +301,19 @@ shader_mesh_draw(Shader* s, MeshComponent* mc)
   Mesh* m = mc->mesh;
 
   GLint uni_tex = shader_uniform_location_get(s, "texture");
-  if (uni_tex >= 0) {
+  GLint tex_id = mesh_component_texture_id_get(mc, "texture");
+  if (uni_tex >= 0 && tex_id >= 0) {
     gl->glUniform1i(uni_tex, 0);
     gl->glActiveTexture(GL_TEXTURE0);
-    gl->glBindTexture(GL_TEXTURE_2D, m->id_texture);
+    gl->glBindTexture(GL_TEXTURE_2D, tex_id);
   }
 
   uni_tex = shader_uniform_location_get(s, "texture_all");
+  tex_id = mesh_component_texture_id_get(mc, "texture_all");
   if (uni_tex >= 0) {
     gl->glUniform1i(uni_tex, 1);
     gl->glActiveTexture(GL_TEXTURE0 + 1);
-    gl->glBindTexture(GL_TEXTURE_2D, m->id_texture_all);
+    gl->glBindTexture(GL_TEXTURE_2D, tex_id);
   }
 
   //texcoord

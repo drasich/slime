@@ -1,8 +1,16 @@
 #ifndef __texture__
 #define __texture__
 #include <stdbool.h>
+#include "fbo.h"
 
 #include "gl.h"
+
+enum TextureType
+{
+  TEX_IMAGE,
+  TEX_FBO
+};
+
 
 typedef struct _Texture Texture;
 
@@ -19,6 +27,8 @@ struct _Texture
   bool is_init;
 
   GLuint id;
+  bool is_fbo;
+  GLuint* fbo_id;
 };
 
 Texture* texture_new();
@@ -30,5 +40,6 @@ void save_png(GLuint* pix, int width, int height);
 
 void texture_init(Texture* t);
 
+void texture_fbo_link(Texture* t, GLuint* id);
 
 #endif

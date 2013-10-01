@@ -85,7 +85,7 @@ struct _MeshComponent
   const char* shader_name;
   Mesh* mesh;
   Shader* shader;
-  Eina_Inarray* texture_ids;
+  Eina_Hash* textures;
 };
 
 ComponentDesc mesh_desc;
@@ -130,5 +130,7 @@ void create_mesh_quad(Mesh* m, int w, int h);
 void quad_resize(Mesh* m, int w, int h);
 void quad_init(Mesh* m);
 void quad_draw(Mesh* m);
+
+GLint mesh_component_texture_id_get(MeshComponent* mc, const char* mame);
 
 #endif
