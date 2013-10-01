@@ -300,20 +300,21 @@ shader_mesh_draw(Shader* s, MeshComponent* mc)
 {
   Mesh* m = mc->mesh;
 
-  GLint uni_tex = shader_uniform_location_get(s, "texture");
-  GLint tex_id = mesh_component_texture_id_get(mc, "texture");
-  if (uni_tex >= 0 && tex_id >= 0) {
-    gl->glUniform1i(uni_tex, 0);
-    gl->glActiveTexture(GL_TEXTURE0);
-    gl->glBindTexture(GL_TEXTURE_2D, tex_id);
-  }
+  //TODO for each texture uniforms only
+  Uniform* uni;
+  GLuint i = 0;
+  EINA_INARRAY_FOREACH(s->uniforms, uni) {
+    const char* uniname = uni->name;
 
-  uni_tex = shader_uniform_location_get(s, "texture_all");
-  tex_id = mesh_component_texture_id_get(mc, "texture_all");
-  if (uni_tex >= 0) {
-    gl->glUniform1i(uni_tex, 1);
-    gl->glActiveTexture(GL_TEXTURE0 + 1);
-    gl->glBindTexture(GL_TEXTURE_2D, tex_id);
+    GLint uni_tex = shader_uniform_location_get(s, uniname);
+    GLint tex_id = mesh_component_texture_id_get(mc, uniname);
+
+    if (uni_tex >= 0 && tex_id >= 0) {
+      gl->glUniform1i(uni_tex, i);
+      gl->glActiveTexture(GL_TEXTURE0 + i);
+      gl->glBindTexture(GL_TEXTURE_2D, tex_id);
+      ++i;
+    }
   }
 
   //texcoord

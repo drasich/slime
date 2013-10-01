@@ -28,6 +28,7 @@ struct _Shader
 
   Eina_Inarray* attributes;
   Eina_Inarray* uniforms;
+  //TODO uniforms texture
 };
 
 
