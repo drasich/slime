@@ -110,16 +110,16 @@ resource_shader_create(ResourceManager* rm)
 {
   shader_descriptor_init();
   Shader* simple = create_shader("shader/simple.shader","shader/simple.vert", "shader/simple.frag");
-  shader_attrib_add(simple, "vertex");
-  shader_attrib_add(simple, "normal");
-  shader_attrib_add(simple, "texcoord");
+  shader_attribute_add(simple, "vertex", 3, GL_FLOAT);
+  shader_attribute_add(simple, "normal", 3, GL_FLOAT);
+  shader_attribute_add(simple, "texcoord", 2, GL_FLOAT);
   //simple->has_vertex = true;
   //simple->has_normal = true;
   //simple->has_texcoord = true;
   //simple->has_uniform_normal_matrix = true;
   shader_uniform_add(simple, "matrix");
   shader_uniform_add(simple, "normal_matrix");
-  shader_uniform_add(simple, "texture");
+  shader_uniform_type_add(simple, "texture", UNIFORM_TEXTURE);
 
   /*
   Shader* red = create_shader("shader/red.shader", "shader/simple.vert", "shader/red.frag");

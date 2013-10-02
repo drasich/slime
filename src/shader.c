@@ -194,11 +194,13 @@ create_shader(const char* name, const char* vert_path, const char* frag_path)
 };
 
 void
-shader_attrib_add(Shader* s, const char* name)
+shader_attribute_add(Shader* s, const char* name, GLint size, GLenum type)
 {
   Attribute att;
   att.name = name;
   att.location = 0;
+  att.size = size;
+  att.type = type;
   eina_inarray_push(s->attributes, &att);
 }
 
@@ -208,6 +210,7 @@ shader_uniform_add(Shader* s, const char* name)
   Uniform uni;
   uni.name = name;
   uni.location = 0;
+  uni.type = UNIFORM_BASIC;
   eina_inarray_push(s->uniforms, &uni);
 }
 
@@ -304,17 +307,25 @@ shader_mesh_draw(Shader* s, MeshComponent* mc)
   Uniform* uni;
   GLuint i = 0;
   EINA_INARRAY_FOREACH(s->uniforms, uni) {
-    const char* uniname = uni->name;
+    if (uni->type == UNIFORM_TEXTURE) {
+      const char* uniname = uni->name;
 
-    GLint uni_tex = shader_uniform_location_get(s, uniname);
-    GLint tex_id = mesh_component_texture_id_get(mc, uniname);
+      GLint uni_tex = shader_uniform_location_get(s, uniname);
+      GLint tex_id = mesh_component_texture_id_get(mc, uniname);
 
-    if (uni_tex >= 0 && tex_id >= 0) {
-      gl->glUniform1i(uni_tex, i);
-      gl->glActiveTexture(GL_TEXTURE0 + i);
-      gl->glBindTexture(GL_TEXTURE_2D, tex_id);
-      ++i;
+      if (uni_tex >= 0 && tex_id >= 0) {
+        gl->glUniform1i(uni_tex, i);
+        gl->glActiveTexture(GL_TEXTURE0 + i);
+        gl->glBindTexture(GL_TEXTURE_2D, tex_id);
+        ++i;
+      }
     }
+  }
+
+  Attribute* att;
+  EINA_INARRAY_FOREACH(s->attributes, att) {
+    //TODO
+
   }
 
   //texcoord
@@ -429,5 +440,16 @@ shader_matrices_set(Shader* s, Matrix4 mat, Matrix4 projection)
   if (uni_matrix >= 0)
   gl->glUniformMatrix3fv(uni_matrix, 1, GL_FALSE, matrix_normal);
 
+}
+
+
+void
+shader_uniform_type_add(Shader* s, const char* name, UniformType type)
+{
+  Uniform uni;
+  uni.name = name;
+  uni.location = 0;
+  uni.type = type;
+  eina_inarray_push(s->uniforms, &uni);
 }
 

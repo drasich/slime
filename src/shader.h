@@ -4,12 +4,26 @@
 #include "stdbool.h"
 #include "matrix.h"
 
-typedef struct _Attribute Uniform;
+typedef struct _Uniform Uniform;
 typedef struct _Attribute Attribute;
 
 struct _Attribute{
   const char* name;
   GLuint location;
+  GLint size;
+  GLenum type;
+};
+
+
+typedef enum {
+  UNIFORM_BASIC,
+  UNIFORM_TEXTURE,
+} UniformType;
+
+struct _Uniform{
+  const char* name;
+  GLuint location;
+  UniformType type;
 };
 
 
@@ -55,5 +69,10 @@ Shader* shader_read(const char* filename);
 void shader_descriptor_init(void);
 GLint shader_attribute_location_get(Shader* shader, const char* name);
 void shader_matrices_set(Shader* mesh, Matrix4 mat, Matrix4 projection);
+
+void shader_uniform_add(Shader* s, const char* name);
+void shader_uniform_type_add(Shader* s, const char* name, UniformType type);
+
+void shader_attribute_add(Shader* s, const char* name, GLint size, GLenum type);
 
 #endif
