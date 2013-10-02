@@ -1,4 +1,5 @@
 LATELY
+- remove the functions in mesh_init and handles the indices in draw
 - for each uniform texture bind the data in shader_mesh_draw
 - unbind the buffers after shader_mesh_draw and m->func->draw .
 - shader/mesh uniform stuff blabla

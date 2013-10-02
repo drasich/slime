@@ -46,6 +46,13 @@ void mesh_read_file(Mesh* mesh, FILE* f)
     }
   }
 
+  mesh_buffer_add(
+        mesh,
+        "vertex",
+        GL_ARRAY_BUFFER,
+        mesh->vertices,
+        mesh->vertices_len* sizeof(GLfloat));
+
   //printf("bounds min : %f %f %f\n", mesh->box.Min.X,mesh->box.Min.Y,mesh->box.Min.Z);
   //printf("bounds max : %4.16f %4.16f %4.16f\n", mesh->box.Max.X,mesh->box.Max.Y,mesh->box.Max.Z);
 
@@ -58,6 +65,15 @@ void mesh_read_file(Mesh* mesh, FILE* f)
   for (i = 0; i< count*3; ++i) {
     fread(&index, 2,1,f);
     mesh->indices[i] = index;
+  }
+
+  if (mesh->indices_len > 0) {
+    mesh_buffer_add(
+          mesh,
+          "index",
+          GL_ELEMENT_ARRAY_BUFFER,
+          mesh->indices,
+          mesh->indices_len* sizeof(GLuint));
   }
 
   fread(&count, sizeof(count),1,f);
@@ -74,6 +90,15 @@ void mesh_read_file(Mesh* mesh, FILE* f)
     else if (i % 3 == 2) vi->normal.Z = x;
   }
 
+  if (mesh->normals_len > 0) {
+    mesh_buffer_add(
+          mesh,
+          "normal",
+          GL_ARRAY_BUFFER,
+          mesh->normals,
+          mesh->normals_len* sizeof(GLfloat));
+  }
+
   fread(&count, sizeof(count),1,f);
   printf("uv size: %d\n", count);
   
@@ -87,6 +112,16 @@ void mesh_read_file(Mesh* mesh, FILE* f)
       mesh->uvs[i] = x;
     }
   }
+
+  if (mesh->uvs_len > 0) {
+    mesh_buffer_add(
+          mesh,
+          "texcoord",
+          GL_ARRAY_BUFFER,
+          mesh->uvs,
+          mesh->uvs_len* sizeof(GLfloat));
+  }
+
 
   uint16_t vertex_group_count = read_uint16(f);
   mesh->vertexgroups = eina_array_new(vertex_group_count);
@@ -154,13 +189,19 @@ mesh_read(Mesh* mesh, const char* path)
 }
 
 void
-mesh_init_buffer(Mesh* m, GLenum type, GLuint* buffer)
-{
-}
-
-void
 mesh_init(Mesh* m)
 {
+  Buffer* b;
+  EINA_INARRAY_FOREACH(m->buffers, b) {
+    gl->glGenBuffers(1, &b->id);
+    gl->glBindBuffer(b->target, b->id);
+    gl->glBufferData(
+          b->target,
+          b->size,
+          b->data,
+          GL_DYNAMIC_DRAW);
+  }
+
   //TODO factorize these functions
   gl->glGenBuffers(1, &m->buffer_vertices);
   gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_vertices);
@@ -375,6 +416,7 @@ Mesh*
 mesh_create()
 {
   Mesh* m = calloc(1,sizeof(Mesh));
+  m->buffers = eina_inarray_new(sizeof(Buffer),0);
   return m;
 }
 
@@ -564,4 +606,37 @@ mesh_component_texture_id_get(MeshComponent* mc, const char* name)
 
 }
 
+GLint
+mesh_buffer_get(Mesh* m, const char* name)
+{
+  Buffer* b;
+  EINA_INARRAY_FOREACH(m->buffers, b) {
+    if (!strcmp(b->name, name)) {
+      return b->id;
+    }
+  }
+
+  return -1;
+}
+
+void
+mesh_buffer_add(Mesh* m, const char* name, GLenum target, const void* data, int size)
+{
+  Buffer b;
+  b.name = name;
+  b.data = data;
+  b.size = size;
+  b.target = target;
+  eina_inarray_push(m->buffers, &b);
+
+  /*
+  gl->glGenBuffers(1, &b.id);
+  gl->glBindBuffer(target, b.id);
+  gl->glBufferData(
+    target,
+    size,
+    data,
+    GL_DYNAMIC_DRAW);
+    */
+}
 

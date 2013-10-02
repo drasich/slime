@@ -353,6 +353,13 @@ create_mesh_quad(Mesh* m, int w, int h)
   m->vertices[16] = -hh;
   m->vertices[17] = 0;
 
+  mesh_buffer_add(
+        m,
+        "vertex",
+        GL_ARRAY_BUFFER,
+        m->vertices,
+        m->vertices_len* sizeof(GLfloat));
+
   m->barycentric = calloc(nb_vert*3, sizeof(GLfloat));
   m->barycentric_len = nb_vert*3;
   for (index = 0; index < nb_vert; ++index){
@@ -365,6 +372,14 @@ create_mesh_quad(Mesh* m, int w, int h)
     m->barycentric[index*3 +2] = 1;
   }
 
+  mesh_buffer_add(
+        m,
+        "barycentric",
+        GL_ARRAY_BUFFER,
+        m->barycentric,
+        m->barycentric_len* sizeof(GLfloat));
+
+
   m->normals = calloc(nb_vert*3, sizeof(GLfloat));
   m->normals_len = nb_vert*3;
   for (index = 0; index < nb_vert; ++index){
@@ -372,6 +387,13 @@ create_mesh_quad(Mesh* m, int w, int h)
     m->normals[index*3+1] = 0;
     m->normals[index*3+2] = 1;
   }
+
+  mesh_buffer_add(
+        m,
+        "normal",
+        GL_ARRAY_BUFFER,
+        m->normals,
+        m->normals_len* sizeof(GLfloat));
 
   m->has_uv = true;
   if (m->has_uv) {
@@ -396,6 +418,13 @@ create_mesh_quad(Mesh* m, int w, int h)
     m->uvs[10] = 1;
     m->uvs[11] = 0;
   }
+
+  mesh_buffer_add(
+        m,
+        "texcoord",
+        GL_ARRAY_BUFFER,
+        m->uvs,
+        m->uvs_len* sizeof(GLfloat));
 
   //return m;
 }

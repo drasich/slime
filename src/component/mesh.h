@@ -29,6 +29,25 @@ struct _VertexInfo
   Eina_Inarray* weights;
 };
 
+/*
+typedef enum {
+  BUFFER_VERTEX,
+  BUFFER_INDEX,
+  BUFFER_NORMALS,
+  BUFFER_UV,
+} BufferType;
+*/
+
+typedef struct _Buffer Buffer;
+struct _Buffer
+{
+  const char* name;
+  GLuint id;
+  const void* data;
+  int size;
+  GLenum target;
+};
+
 typedef struct _Mesh Mesh;
 typedef struct _MeshFunc MeshFunc;
 
@@ -70,6 +89,8 @@ struct _Mesh
 
   bool is_init;
   MeshFunc* func;
+
+  Eina_Inarray* buffers;
 };
 
 struct _MeshFunc {
@@ -132,5 +153,8 @@ void quad_init(Mesh* m);
 void quad_draw(Mesh* m);
 
 GLint mesh_component_texture_id_get(MeshComponent* mc, const char* mame);
+GLint mesh_buffer_get(Mesh*, const char* name);
+
+void mesh_buffer_add(Mesh* m, const char* name, GLenum target, const void* data, int size);
 
 #endif

@@ -330,8 +330,11 @@ shader_mesh_draw(Shader* s, MeshComponent* mc)
 
   //texcoord
   GLint att_tex = shader_attribute_location_get(s, "texcoord");
+  GLint buf_tex = mesh_buffer_get(m, "texcoord");
+  //if (buf_tex >= 0 && att_tex >= 0) {
   if (m->has_uv && att_tex >= 0) {
     gl->glEnableVertexAttribArray(att_tex);
+    //gl->glBindBuffer(GL_ARRAY_BUFFER, buf_tex);
     gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_texcoords);
     gl->glVertexAttribPointer(
           att_tex,
@@ -343,8 +346,11 @@ shader_mesh_draw(Shader* s, MeshComponent* mc)
   }
 
   GLint att_vert = shader_attribute_location_get(s, "vertex");
-  if (att_vert >= 0) {
-    gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_vertices);
+  GLint buf_vert = mesh_buffer_get(m, "vertex");
+  if (att_vert >= 0 && buf_vert >= 0) {
+  //if (att_vert >= 0 ) {
+    gl->glBindBuffer(GL_ARRAY_BUFFER, buf_vert);
+    //gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_vertices);
     gl->glEnableVertexAttribArray(att_vert);
 
     gl->glVertexAttribPointer(
@@ -357,8 +363,9 @@ shader_mesh_draw(Shader* s, MeshComponent* mc)
   }
 
   GLint att_normal = shader_attribute_location_get(s, "normal");
-  if (att_normal >= 0) {
-    gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_normals);
+  GLint buf_nor = mesh_buffer_get(m, "normal");
+  if (att_normal >= 0 && buf_nor >= 0) {
+    gl->glBindBuffer(GL_ARRAY_BUFFER, buf_nor);
     gl->glEnableVertexAttribArray(att_normal);
     gl->glVertexAttribPointer(
           att_normal,
