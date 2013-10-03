@@ -334,8 +334,8 @@ shader_mesh_draw(Shader* s, MeshComponent* mc)
   //if (buf_tex >= 0 && att_tex >= 0) {
   if (m->has_uv && att_tex >= 0) {
     gl->glEnableVertexAttribArray(att_tex);
-    //gl->glBindBuffer(GL_ARRAY_BUFFER, buf_tex);
-    gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_texcoords);
+    gl->glBindBuffer(GL_ARRAY_BUFFER, buf_tex);
+    //gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_texcoords);
     gl->glVertexAttribPointer(
           att_tex,
           2,
@@ -376,25 +376,30 @@ shader_mesh_draw(Shader* s, MeshComponent* mc)
           0);
   }
 
-  /*
-  gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->buffer_indices);
-  gl->glDrawElements(
-        GL_TRIANGLES, 
-        m->indices_len,
-        GL_UNSIGNED_INT,
-        0);
-  gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+  GLint buf_indices = mesh_buffer_get(m, "index");
+  if (buf_indices >= 0 ) {
+    gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf_indices);
+    gl->glDrawElements(
+          GL_TRIANGLES, 
+          m->indices_len,
+          GL_UNSIGNED_INT,
+          0);
+    gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  }
+  else {
+    gl->glDrawArrays(GL_TRIANGLES,0, m->vertices_len/3);
+    gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
+  }
 
   gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
 
   if (att_vert >= 0)
-  gl->glDisableVertexAttribArray(m->attribute_vertex);
+  gl->glDisableVertexAttribArray(att_vert);
   if (att_normal >= 0)
-  gl->glDisableVertexAttribArray(m->attribute_normal);
-
-  if (m->has_uv && att_tex >= 0)
+  gl->glDisableVertexAttribArray(att_normal);
+  if (att_tex >= 0)
   gl->glDisableVertexAttribArray(att_tex);
-  */
 
 }
 

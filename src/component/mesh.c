@@ -339,50 +339,6 @@ void
 mesh_draw(Mesh* m)
 {
   /*
-  if (!m->is_init) {
-    mesh_init(m);
-  }
-
-  gl->glUniform1i(m->uniform_texture, 0);
-
-  gl->glActiveTexture(GL_TEXTURE0);
-  gl->glBindTexture(GL_TEXTURE_2D, m->id_texture);
-
-  //texcoord
-  if (m->has_uv) {
-    gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_texcoords);
-    gl->glEnableVertexAttribArray(m->attribute_texcoord);
-    gl->glVertexAttribPointer(
-          m->attribute_texcoord,
-          2,
-          GL_FLOAT,
-          GL_FALSE,
-          0,
-          0);
-  }
-
-  gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_vertices);
-  gl->glEnableVertexAttribArray(m->attribute_vertex);
-  
-  gl->glVertexAttribPointer(
-    m->attribute_vertex,
-    3,
-    GL_FLOAT,
-    GL_FALSE,
-    0,
-    0);
-
-  gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_normals);
-  gl->glEnableVertexAttribArray(m->attribute_normal);
-  gl->glVertexAttribPointer(
-    m->attribute_normal,
-    3,
-    GL_FLOAT,
-    GL_FALSE,
-    0,
-    0);
-  */
-
   gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->buffer_indices);
   gl->glDrawElements(
         GL_TRIANGLES, 
@@ -390,14 +346,6 @@ mesh_draw(Mesh* m)
         GL_UNSIGNED_INT,
         0);
   gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-  /*
-  gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
-  gl->glDisableVertexAttribArray(m->attribute_vertex);
-  gl->glDisableVertexAttribArray(m->attribute_normal);
-
-  if (m->has_uv)
-  gl->glDisableVertexAttribArray(m->attribute_texcoord);
   */
 }
 
@@ -544,7 +492,7 @@ _mesh_component_draw(Component* c, Matrix4 world, Matrix4 projection)
 
   shader_matrices_set(s, world, projection);
   shader_mesh_draw(s,mc);
-  m->func->draw(m);
+  //m->func->draw(m);
 }
 
 
