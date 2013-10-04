@@ -323,7 +323,6 @@ shader_mesh_draw(Shader* s, MeshComponent* mc)
 
   Attribute* att;
   EINA_INARRAY_FOREACH(s->attributes, att) {
-    //TODO
     Buffer* buf = mesh_buffer_get(m, att->name);
     if (buf) {
       if (buf->target == GL_ARRAY_BUFFER) {
@@ -337,10 +336,8 @@ shader_mesh_draw(Shader* s, MeshComponent* mc)
               GL_FALSE,
               0,
               0);
-
       }
     }
-
   }
 
   Buffer* buf_indices = mesh_buffer_get(m, "index");
@@ -363,7 +360,6 @@ shader_mesh_draw(Shader* s, MeshComponent* mc)
   EINA_INARRAY_FOREACH(s->attributes, att) {
     gl->glDisableVertexAttribArray(att->location);
   }
-
 
 }
 
