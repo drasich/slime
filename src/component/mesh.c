@@ -554,17 +554,17 @@ mesh_component_texture_id_get(MeshComponent* mc, const char* name)
 
 }
 
-GLint
+Buffer*
 mesh_buffer_get(Mesh* m, const char* name)
 {
   Buffer* b;
   EINA_INARRAY_FOREACH(m->buffers, b) {
     if (!strcmp(b->name, name)) {
-      return b->id;
+      return b;
     }
   }
 
-  return -1;
+  return NULL;
 }
 
 void

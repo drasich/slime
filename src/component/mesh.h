@@ -153,7 +153,7 @@ void quad_init(Mesh* m);
 void quad_draw(Mesh* m);
 
 GLint mesh_component_texture_id_get(MeshComponent* mc, const char* mame);
-GLint mesh_buffer_get(Mesh*, const char* name);
+Buffer* mesh_buffer_get(Mesh* m, const char* name);
 
 void mesh_buffer_add(Mesh* m, const char* name, GLenum target, const void* data, int size);
 

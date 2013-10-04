@@ -303,7 +303,6 @@ shader_mesh_draw(Shader* s, MeshComponent* mc)
 {
   Mesh* m = mc->mesh;
 
-  //TODO for each texture uniforms only
   Uniform* uni;
   GLuint i = 0;
   EINA_INARRAY_FOREACH(s->uniforms, uni) {
@@ -325,61 +324,28 @@ shader_mesh_draw(Shader* s, MeshComponent* mc)
   Attribute* att;
   EINA_INARRAY_FOREACH(s->attributes, att) {
     //TODO
+    Buffer* buf = mesh_buffer_get(m, att->name);
+    if (buf) {
+      if (buf->target == GL_ARRAY_BUFFER) {
+        gl->glBindBuffer(buf->target, buf->id);
+        gl->glEnableVertexAttribArray(att->location);
+
+        gl->glVertexAttribPointer(
+              att->location,
+              att->size,
+              att->type,
+              GL_FALSE,
+              0,
+              0);
+
+      }
+    }
 
   }
 
-  //texcoord
-  GLint att_tex = shader_attribute_location_get(s, "texcoord");
-  GLint buf_tex = mesh_buffer_get(m, "texcoord");
-  //if (buf_tex >= 0 && att_tex >= 0) {
-  if (m->has_uv && att_tex >= 0) {
-    gl->glEnableVertexAttribArray(att_tex);
-    gl->glBindBuffer(GL_ARRAY_BUFFER, buf_tex);
-    //gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_texcoords);
-    gl->glVertexAttribPointer(
-          att_tex,
-          2,
-          GL_FLOAT,
-          GL_FALSE,
-          0,
-          0);
-  }
-
-  GLint att_vert = shader_attribute_location_get(s, "vertex");
-  GLint buf_vert = mesh_buffer_get(m, "vertex");
-  if (att_vert >= 0 && buf_vert >= 0) {
-  //if (att_vert >= 0 ) {
-    gl->glBindBuffer(GL_ARRAY_BUFFER, buf_vert);
-    //gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_vertices);
-    gl->glEnableVertexAttribArray(att_vert);
-
-    gl->glVertexAttribPointer(
-          att_vert,
-          3,
-          GL_FLOAT,
-          GL_FALSE,
-          0,
-          0);
-  }
-
-  GLint att_normal = shader_attribute_location_get(s, "normal");
-  GLint buf_nor = mesh_buffer_get(m, "normal");
-  if (att_normal >= 0 && buf_nor >= 0) {
-    gl->glBindBuffer(GL_ARRAY_BUFFER, buf_nor);
-    gl->glEnableVertexAttribArray(att_normal);
-    gl->glVertexAttribPointer(
-          att_normal,
-          3,
-          GL_FLOAT,
-          GL_FALSE,
-          0,
-          0);
-  }
-
-
-  GLint buf_indices = mesh_buffer_get(m, "index");
-  if (buf_indices >= 0 ) {
-    gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf_indices);
+  Buffer* buf_indices = mesh_buffer_get(m, "index");
+  if (buf_indices) {
+    gl->glBindBuffer(buf_indices->target, buf_indices->id);
     gl->glDrawElements(
           GL_TRIANGLES, 
           m->indices_len,
@@ -394,12 +360,10 @@ shader_mesh_draw(Shader* s, MeshComponent* mc)
 
   gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-  if (att_vert >= 0)
-  gl->glDisableVertexAttribArray(att_vert);
-  if (att_normal >= 0)
-  gl->glDisableVertexAttribArray(att_normal);
-  if (att_tex >= 0)
-  gl->glDisableVertexAttribArray(att_tex);
+  EINA_INARRAY_FOREACH(s->attributes, att) {
+    gl->glDisableVertexAttribArray(att->location);
+  }
+
 
 }
 
