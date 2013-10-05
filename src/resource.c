@@ -113,10 +113,6 @@ resource_shader_create(ResourceManager* rm)
   shader_attribute_add(simple, "vertex", 3, GL_FLOAT);
   shader_attribute_add(simple, "normal", 3, GL_FLOAT);
   shader_attribute_add(simple, "texcoord", 2, GL_FLOAT);
-  //simple->has_vertex = true;
-  //simple->has_normal = true;
-  //simple->has_texcoord = true;
-  //simple->has_uniform_normal_matrix = true;
   shader_uniform_add(simple, "matrix");
   shader_uniform_add(simple, "normal_matrix");
   shader_uniform_type_add(simple, "texture", UNIFORM_TEXTURE);
@@ -130,8 +126,8 @@ resource_shader_create(ResourceManager* rm)
   */
 
   Shader* dragger = create_shader("shader/dragger.shader","shader/dragger.vert", "shader/dragger.frag");
-  //Shader* dragger = create_shader("shader/dragger.shader","shader/simple.vert", "shader/simple.frag");
-  //dragger->has_vertex = true;
+  shader_attribute_add(dragger, "vertex", 3, GL_FLOAT);
+  shader_uniform_add(dragger, "matrix");
   shader_write(dragger);
 
   //Shader* simple = shader_read("shader/simple.shader");

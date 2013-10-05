@@ -351,8 +351,8 @@ _create_dragger()
   Component* comp = create_component(&mesh_desc);
   object_add_component(o, comp);
   MeshComponent* mc = comp->data;
-  //mc->shader = resource_shader_get(s_rm, "shader/dragger.shader");
-  mc->shader = resource_shader_get(s_rm, "shader/simple.shader");
+  mc->shader = resource_shader_get(s_rm, "shader/dragger.shader");
+  //mc->shader = resource_shader_get(s_rm, "shader/simple.shader");
   mc->shader_name = mc->shader->name;
   mc->mesh_name = "model/Arrow.mesh";
   mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
@@ -1013,6 +1013,12 @@ view_draw(View* v)
     last_obj = (Object*) eina_list_last(cxol)->data;
   }
 
+  //Render outline with quad
+  if (last_obj) {
+    object_compute_matrix(r->quad_outline, mo);
+    object_draw_edit(r->quad_outline, mo, cc->orthographic);
+  }
+
   //repere
   /*
   if (last_obj) {
@@ -1036,11 +1042,6 @@ view_draw(View* v)
     object_draw_edit(v->dragger, mo, cc->projection);
   }
 
-  //Render outline with quad
-  if (last_obj) {
-    object_compute_matrix(r->quad_outline, mo);
-    object_draw_edit(r->quad_outline, mo, cc->orthographic);
-  }
 
   //Render camera repere
   gl->glClear(GL_DEPTH_BUFFER_BIT);

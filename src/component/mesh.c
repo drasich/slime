@@ -250,48 +250,6 @@ mesh_init_texture(Mesh* m)
   free(tex);
 }
 
-/*
-void
-mesh_set_matrix(Mesh* mesh, Matrix4 mat)
-{
-  shader_use(mesh->shader);
-  Matrix3 normal_mat;
-  mat4_to_mat3(mat, normal_mat);
-  mat3_inverse(normal_mat, normal_mat);
-  mat3_to_gl(normal_mat, mesh->matrix_normal);
-
-  Matrix4 projection;
-  mat4_set_frustum(projection, -1,1,-1,1,1,1000.0f);
-
-  Matrix4 tm;
-  mat4_multiply(projection, mat, tm);
-  mat4_transpose(tm, tm);
-  mat4_to_gl(tm, mesh->matrix);
-  gl->glUniformMatrix4fv(mesh->uniform_matrix, 1, GL_FALSE, mesh->matrix);
-  gl->glUniformMatrix3fv(mesh->uniform_normal_matrix, 1, GL_FALSE, mesh->matrix_normal);
-}
-*/
-
-/*
-void
-mesh_set_matrices(Mesh* mesh, Matrix4 mat, Matrix4 projection)
-{
-  Matrix3 normal_mat;
-  mat4_to_mat3(mat, normal_mat);
-  mat3_inverse(normal_mat, normal_mat);
-  mat3_transpose(normal_mat, normal_mat);
-  mat3_to_gl(normal_mat, mesh->matrix_normal);
-
-  Matrix4 tm;
-  mat4_multiply(projection, mat, tm);
-  mat4_transpose(tm, tm);
-  mat4_to_gl(tm, mesh->matrix);
-  gl->glUniformMatrix4fv(mesh->uniform_matrix, 1, GL_FALSE, mesh->matrix);
-  gl->glUniformMatrix3fv(mesh->uniform_normal_matrix, 1, GL_FALSE, mesh->matrix_normal);
-}
-*/
-
-
 void
 mesh_draw(Mesh* m)
 {
