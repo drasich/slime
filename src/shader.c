@@ -29,7 +29,7 @@ _shader_attribute_location_init(Shader* s, Attribute* att)
 {
   GLint att_tmp = gl->glGetAttribLocation(s->program, att->name);
   if (att_tmp == -1) {
-    printf("Error in getting attribute %s \n", att->name);
+    printf("Error in getting attribute '%s'\n", att->name);
   }
   else {
      att->location = att_tmp;
@@ -41,7 +41,7 @@ _shader_uniform_location_init(Shader* s, Uniform* uni)
 {
   GLint uni_tmp = gl->glGetUniformLocation(s->program, uni->name);
   if (uni_tmp == -1) {
-    printf("Error in getting attribute %s \n", uni->name);
+    printf("Error in getting uniform '%s'\n", uni->name);
   }
   else {
      uni->location = uni_tmp;

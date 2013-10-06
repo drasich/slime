@@ -14,10 +14,14 @@ struct _Dragger
 {
   Context* context;
   AABox box;
-  Line* line; //TODO To be removed
+  double scale;
+  Line* line;
+  Vec4 color;
+  Vec4 color_wanted;
 };
 
 ComponentDesc* dragger_desc();
 
+void dragger_highlight_set(Dragger* d, bool highlight);
 
 #endif

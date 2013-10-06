@@ -11,7 +11,7 @@ create_component(ComponentDesc *cd)
   Component* c = calloc(1, sizeof *c);
   c->funcs = cd;
   if (cd->create) c->data = cd->create();
-  c->properties = cd->properties();
+  if (cd->properties) c->properties = cd->properties();
   c->name = cd->name;
   return c;
 }

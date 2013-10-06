@@ -143,3 +143,12 @@ vec3_vec3_mul(Vec3 v1, Vec3 v2)
   return r;
 }
 
+bool
+vec4_equal(Vec4 v1, Vec4 v2)
+{
+  return v1.X == v2.X &&
+   v1.Y == v2.Y &&
+   v1.Z == v2.Z &&
+   v1.W == v1.W;
+}
+

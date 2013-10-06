@@ -163,18 +163,8 @@ static void frustum_from_rect(
 }
 */
 
-static void
-_mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
+static void _handle_rect_select(View* v, Evas_Event_Mouse_Move* ev)
 {
-  //elm_object_focus_set(o, EINA_TRUE);
-  Evas_Event_Mouse_Move *ev = (Evas_Event_Mouse_Move*) event_info;
-
-  View* v = evas_object_data_get(o, "view");
-
-  const Evas_Modifier * mods = ev->modifiers;
-  if ( evas_key_modifier_is_set(mods, "Control") &&
-        (ev->buttons & 1) != 0 ) {
-
   Evas_Object* rect = v->select_rect;
 
   int yepx = ev->cur.canvas.x - startx;
@@ -214,14 +204,25 @@ _mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   }
 
   context_objects_set(v->context, newlist);
-
-
   /*
   bool b = frustum_is_in(&f, o->Position);
   if (!b) continue;
       */
+}
 
-  return;
+static void
+_mouse_move(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
+{
+  //elm_object_focus_set(o, EINA_TRUE);
+  Evas_Event_Mouse_Move *ev = (Evas_Event_Mouse_Move*) event_info;
+
+  View* v = evas_object_data_get(o, "view");
+
+  const Evas_Modifier * mods = ev->modifiers;
+  if ( evas_key_modifier_is_set(mods, "Control") &&
+        (ev->buttons & 1) != 0 ) {
+    _handle_rect_select(v,ev);
+    return;
   }
 
   Control* cl = v->control;
@@ -344,8 +345,9 @@ _create_repere(float u, Camera* camera)
 }
 
 #include "resource.h"
+#include "component/dragger.h"
 static Object* 
-_create_dragger()
+_create_dragger(Camera* camera)
 {
   Object* o = create_object();
   Component* comp = create_component(&mesh_desc);
@@ -358,6 +360,24 @@ _create_dragger()
   mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
 
   object_add_component(o, comp);
+
+  /*
+  comp = create_component(&line_desc);
+  object_add_component(o,comp);
+  Line* l = comp->data;
+  l->camera = camera;
+  AABox b = mc->mesh->box;
+  line_add_box(l, b, vec4(0,1,0,1));
+  line_set_use_depth(l, false);
+  line_set_size_fixed(l, true);
+  */
+
+  comp = create_component(dragger_desc());
+  object_add_component(o,comp);
+  Dragger* d = comp->data;
+  d->line->camera = camera;
+  d->box = mc->mesh->box;
+
   return o;
 }
 
@@ -705,7 +725,7 @@ _create_view_objects(View* v)
   Line* l = object_component_get(v->repere, "line");
   if (l) line_set_size_fixed(l, true);
 
-  v->dragger = _create_dragger();
+  v->dragger = _create_dragger(v->camera->camera_component);
 
   v->camera_repere = _create_repere(40, v->camera->camera_component);
   v->camera_repere->Position = vec3(10,10, -10);

@@ -288,7 +288,7 @@ line_set_use_depth(Line* l, bool b)
 }
 
 void
-line_prepare_draw(Line* l, Matrix4 mat, Matrix4 projection)
+line_prepare_draw(Line* l, Matrix4 world, Matrix4 projection)
 {
   if (!l->is_init) {
     line_init(l);
@@ -297,7 +297,7 @@ line_prepare_draw(Line* l, Matrix4 mat, Matrix4 projection)
   shader_use(l->shader);
 
   Matrix4 tm;
-  mat4_multiply(projection, mat, tm);
+  mat4_multiply(projection, world, tm);
   mat4_transpose(tm, tm);
   //testing code
   /*

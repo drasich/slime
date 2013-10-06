@@ -137,7 +137,7 @@ _rotate_camera(View* v, float x, float y)
   camera_rotate_around(v->camera, result, cam->center);
 }
 
-
+#include "component/dragger.h"
 void
 control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
 {
@@ -146,7 +146,22 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
 
   View* v = c->view;
   if (c->state == IDLE) {
-    if ( (e->buttons & 1) == 1){
+    if ( e->buttons == 0){
+      //TODO test if there is a collision with a dragger and change its color;
+      Object* od = v->dragger;
+      Dragger* d = object_component_get(od, "dragger");
+      if (!d) return;
+
+      Ray r = ray_from_screen(v->camera, e->cur.canvas.x, e->cur.canvas.y, 1000);
+      AABox bb = d->box;
+      bb.Min = vec3_mul(bb.Min, d->scale);
+      bb.Max = vec3_mul(bb.Max, d->scale);
+
+      IntersectionRay ir = intersection_ray_box(r, bb, od->Position, od->Orientation, vec3(1,1,1));
+    
+      dragger_highlight_set(d, ir.hit);
+    }
+    else if ( (e->buttons & 1) == 1){
       float x = e->cur.canvas.x - e->prev.canvas.x;
       float y = e->cur.canvas.y - e->prev.canvas.y;
 
