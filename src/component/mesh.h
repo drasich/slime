@@ -79,6 +79,7 @@ struct _Mesh
   Eina_Inarray* buffers;
 };
 
+typedef struct _ShaderUniformChange ShaderUniformChange;
 struct _ShaderUniformChange
 {
   const char* name;
@@ -143,5 +144,7 @@ GLint mesh_component_texture_id_get(MeshComponent* mc, const char* mame);
 Buffer* mesh_buffer_get(Mesh* m, const char* name);
 
 void mesh_buffer_add(Mesh* m, const char* name, GLenum target, const void* data, int size);
+
+void mesh_component_shader_uniform_change_add(MeshComponent* mc, ShaderUniformChange* suc);
 
 #endif

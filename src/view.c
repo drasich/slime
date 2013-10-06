@@ -377,6 +377,7 @@ _create_dragger(Camera* camera)
   Dragger* d = comp->data;
   d->line->camera = camera;
   d->box = mc->mesh->box;
+  d->mc = mc;
 
   return o;
 }

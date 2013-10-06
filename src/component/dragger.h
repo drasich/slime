@@ -18,6 +18,7 @@ struct _Dragger
   Line* line;
   Vec4 color;
   Vec4 color_wanted;
+  MeshComponent* mc;
 };
 
 ComponentDesc* dragger_desc();

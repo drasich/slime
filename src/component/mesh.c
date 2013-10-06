@@ -377,6 +377,25 @@ _mesh_component_draw(Component* c, Matrix4 world, Matrix4 projection)
 
   shader_use(s);
 
+  Eina_List* l;
+  ShaderUniformChange* suc;
+
+  EINA_LIST_FOREACH(mc->uniform_changes, l, suc) {
+    GLint uniloc = shader_uniform_location_get(s, suc->name);
+    if (uniloc >= 0) {
+      //TODO data
+      Vec4* v = suc->data;
+      gl->glUniform4f(uniloc, v->X,v->Y,v->Z,v->W);
+    }
+    else
+    printf("no such uniform \n");
+  }
+
+  if (mc->uniform_changes != NULL) {
+    eina_list_free(mc->uniform_changes);
+    mc->uniform_changes = NULL;
+  }
+
   if (!m->is_init) {
     mesh_init(m);
   }
@@ -469,3 +488,8 @@ mesh_buffer_add(Mesh* m, const char* name, GLenum target, const void* data, int 
     */
 }
 
+void
+mesh_component_shader_uniform_change_add(MeshComponent* mc, ShaderUniformChange* suc)
+{
+  mc->uniform_changes = eina_list_append(mc->uniform_changes, suc);
+}

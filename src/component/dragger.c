@@ -57,6 +57,7 @@ _dragger_draw_edit(Component* comp, Matrix4 world, Matrix4 projection)
   line_draw(l);
   */
 
+  /*
   if (!vec4_equal(d->color,d->color_wanted)) {
     d->color = d->color_wanted;
     Object* o = comp->object;
@@ -73,6 +74,7 @@ _dragger_draw_edit(Component* comp, Matrix4 world, Matrix4 projection)
     else
     printf("no such uniform \n");
   }
+  */
 }
 
 ComponentDesc* dragger_desc()
@@ -91,9 +93,27 @@ ComponentDesc* dragger_desc()
 void
 dragger_highlight_set(Dragger* d, bool highlight)
 {
+  /*
   if (highlight)
   d->color_wanted = vec4(0,1,1,1);
   else
   d->color_wanted = vec4(0,0,1,1);
+  */
+
+  if (!d->mc) {
+    printf("no mesh component\n");
+    return;
+  }
+
+  ShaderUniformChange* suc = calloc(1, sizeof *suc);
+  suc->name = "color";
+  Vec4* v = calloc(1, sizeof *v);
+  if (highlight)
+  *v = vec4(0,1,1,1);
+  else
+  *v = vec4(0,0,1,1);
+  suc->data = v;
+
+  mesh_component_shader_uniform_change_add(d->mc, suc);
 
 }
