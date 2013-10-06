@@ -9,7 +9,6 @@
 
 void mesh_read_file(Mesh* mesh, FILE* f)
 {
-  mesh->func = &mesh_generic;
   printf("mesh_read-file\n");
   mesh->name = read_name(f);
 
@@ -385,7 +384,6 @@ _mesh_component_draw(Component* c, Matrix4 world, Matrix4 projection)
 
   shader_matrices_set(s, world, projection);
   shader_mesh_draw(s,mc);
-  //m->func->draw(m);
 }
 
 
@@ -422,15 +420,6 @@ ComponentDesc mesh_desc = {
   NULL,
   NULL,
 };
-
-
-
-MeshFunc mesh_generic = {
-  mesh_init,
-  NULL,
-  mesh_draw
-};
-
 
 GLint
 mesh_component_texture_id_get(MeshComponent* mc, const char* name)

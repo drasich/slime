@@ -76,16 +76,10 @@ struct _Mesh
   AABox box;
 
   bool is_init;
-  MeshFunc* func;
 
   Eina_Inarray* buffers;
 };
 
-struct _MeshFunc {
-  void (*init)(Mesh* n); 
-  void (*update)(Mesh* c, double dt); 
-  void (*draw)(Mesh* c); 
-};
 
 typedef struct _MeshComponent MeshComponent;
 struct _MeshComponent
@@ -98,8 +92,6 @@ struct _MeshComponent
 };
 
 ComponentDesc mesh_desc;
-MeshFunc mesh_quad;
-MeshFunc mesh_generic;
 
 void mesh_file_set(Mesh* m, const char* filename);
 

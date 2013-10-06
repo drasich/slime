@@ -189,7 +189,6 @@ mesh_show_wireframe(Mesh* m, bool b)
 void
 create_mesh_quad(Mesh* m, int w, int h)
 {
-  m->func = &mesh_quad;
   //Mesh* m = calloc(1,sizeof(Mesh));
   m->name = "quad";
 
