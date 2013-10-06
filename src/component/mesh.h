@@ -55,10 +55,6 @@ struct _Mesh
 {
   const char* name;
 
-  GLuint buffer_vertices;
-  GLuint buffer_indices;
-  GLuint buffer_normals;
-  GLuint id_texture;
   //TODO remove
   GLuint id_texture_all;
   GLuint buffer_texcoords;

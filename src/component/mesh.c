@@ -208,24 +208,21 @@ mesh_init(Mesh* m)
 void
 mesh_resend(Mesh* m)
 {
-  gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_vertices);
-  gl->glBufferSubData(
-    GL_ARRAY_BUFFER,
-    0,
-    m->vertices_len* sizeof(GLfloat),
-    m->vertices);
-
-  gl->glBindBuffer(GL_ARRAY_BUFFER, m->buffer_normals);
-  gl->glBufferSubData(
-    GL_ARRAY_BUFFER,
-    0,
-    m->normals_len* sizeof(GLfloat),
-    m->normals);
+  Buffer* b;
+  EINA_INARRAY_FOREACH(m->buffers, b) {
+    gl->glBindBuffer(b->target, b->id);
+    gl->glBufferSubData(
+          b->target,
+          0,
+          b->size,
+          b->data);
+  }
 }
 
 void
 mesh_init_texture(Mesh* m)
 {
+  /*
   //TODO texture path
   Texture* tex = texture_read_png_file("model/ceil.png");
   gl->glGenTextures(1, &m->id_texture);
@@ -248,6 +245,7 @@ mesh_init_texture(Mesh* m)
 
   free(tex->data);
   free(tex);
+  */
 }
 
 void
@@ -324,24 +322,16 @@ mesh_shader_init_uniforms(Mesh* m, Shader* s)
 void
 mesh_destroy(Mesh* m)
 {
+  printf("todo mesh destroy \n");
   //TODO clean non opengl data
-
   if (!m->is_init) return;
 
-  gl->glDeleteBuffers(1,&m->buffer_vertices);
-  gl->glDeleteBuffers(1,&m->buffer_normals);
-  
-  //TODO not yet
-  //gl->glDeleteBuffers(1,&m->buffer_indices);
-  
-  if (m->has_uv) {
-    gl->glDeleteBuffers(1,&m->buffer_texcoords);
-    gl->glDeleteTextures(1,&m->id_texture);
-  }
-
-  gl->glDeleteBuffers(1,&m->buffer_barycentric);
-
   //TODO arrays
+
+  Buffer* b;
+  EINA_INARRAY_FOREACH(m->buffers, b) {
+    gl->glDeleteBuffers(1,&b->id);
+  }
 }
 
 
