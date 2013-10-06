@@ -301,11 +301,8 @@ _object_update_mesh_vertex(Object* o)
     ++i;
   }
 
-  //TOD
-  printf("TODO resend mesh vertex, %s, %d\n", __FILE__, __LINE__);
-  printf("TODO or make shader vertex animation, %s, %d\n", __FILE__, __LINE__);
-  //mesh_resend(mesh);
-  //mesh_resend_no_indices(mesh);
+  //TODO shader vertex anim
+  mesh_resend(mesh);
 }
 
 void 

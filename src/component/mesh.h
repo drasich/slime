@@ -49,7 +49,6 @@ struct _Buffer
 };
 
 typedef struct _Mesh Mesh;
-typedef struct _MeshFunc MeshFunc;
 
 struct _Mesh
 {
@@ -80,6 +79,12 @@ struct _Mesh
   Eina_Inarray* buffers;
 };
 
+struct _ShaderUniformChange
+{
+  const char* name;
+  void* data;
+};
+
 
 typedef struct _MeshComponent MeshComponent;
 struct _MeshComponent
@@ -89,6 +94,8 @@ struct _MeshComponent
   Mesh* mesh;
   Shader* shader;
   Eina_Hash* textures;
+  //TODO shader uniform wanted changes
+  Eina_List* uniform_changes;
 };
 
 ComponentDesc mesh_desc;

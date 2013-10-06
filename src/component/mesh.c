@@ -183,7 +183,6 @@ mesh_read(Mesh* mesh, const char* path)
 
   mesh->name = read_name(f);
   mesh_read_file(mesh, f);
-  //mesh_read_file_no_indices(mesh, f);
   fclose(f);
 }
 
