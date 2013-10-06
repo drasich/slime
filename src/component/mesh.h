@@ -55,11 +55,6 @@ struct _Mesh
 {
   const char* name;
 
-  //TODO remove
-  GLuint id_texture_all;
-  GLuint buffer_texcoords;
-  GLuint buffer_barycentric;
-
   GLfloat*  vertices;
   GLuint*  indices;
   GLfloat*  normals;
@@ -73,9 +68,6 @@ struct _Mesh
   uint32_t barycentric_len;
 
   bool has_uv;
-
-  //Matrix4GL matrix;
-  //Matrix3GL matrix_normal;
 
   Eina_Array* vertexgroups;
   Eina_Inarray* vertices_base;

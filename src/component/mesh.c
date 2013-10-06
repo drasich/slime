@@ -307,18 +307,6 @@ mesh_find_vertexgroup(Mesh* mesh, char* name)
 
 }
 
-/*
-void 
-mesh_shader_init_uniforms(Mesh* m, Shader* s)
-{
-  if (!s) return;
-  shader_init_uniform(s, "matrix", &m->uniform_matrix);
-  if (s->has_uniform_normal_matrix)
-  shader_init_uniform(s, "normal_matrix", &m->uniform_normal_matrix);
-}
-*/
-
-
 void
 mesh_destroy(Mesh* m)
 {
