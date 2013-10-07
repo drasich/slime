@@ -309,7 +309,8 @@ shader_mesh_draw(Shader* s, MeshComponent* mc)
     if (uni->type == UNIFORM_TEXTURE) {
       const char* uniname = uni->name;
 
-      GLint uni_tex = shader_uniform_location_get(s, uniname);
+      //GLint uni_tex = shader_uniform_location_get(s, uniname);
+      GLint uni_tex = uni->location;
       GLint tex_id = mesh_component_texture_id_get(mc, uniname);
 
       if (uni_tex >= 0 && tex_id >= 0) {

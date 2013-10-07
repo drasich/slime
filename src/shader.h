@@ -16,8 +16,12 @@ struct _Attribute{
 
 
 typedef enum {
-  UNIFORM_BASIC,
+  UNIFORM_BASIC, //TODO remove
   UNIFORM_TEXTURE,
+  UNIFORM_VEC3,
+  UNIFORM_VEC4,
+  UNIFORM_MATRIX3,
+  UNIFORM_MATRIX4,
 } UniformType;
 
 struct _Uniform{
@@ -25,6 +29,15 @@ struct _Uniform{
   GLuint location;
   UniformType type;
 };
+
+typedef struct _UniformData UniformData;
+struct _UniformData
+{
+  const char* name;
+  UniformType type;
+  void* data;
+};
+
 
 
 typedef struct _Shader Shader;
@@ -74,5 +87,13 @@ void shader_uniform_add(Shader* s, const char* name);
 void shader_uniform_type_add(Shader* s, const char* name, UniformType type);
 
 void shader_attribute_add(Shader* s, const char* name, GLint size, GLenum type);
+
+typedef struct _ShaderInstance ShaderInstance;
+struct ShaderInstance
+{
+  //list, hash of uniform
+
+};
+
 
 #endif

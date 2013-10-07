@@ -105,15 +105,14 @@ dragger_highlight_set(Dragger* d, bool highlight)
     return;
   }
 
-  ShaderUniformChange* suc = calloc(1, sizeof *suc);
-  suc->name = "color";
-  Vec4* v = calloc(1, sizeof *v);
+  //Vec4* v = calloc(1, sizeof *v);
+  Vec4* v = mesh_component_shader_uniform_data_get(d->mc, "color");
+  if (!v) return;
+
   if (highlight)
   *v = vec4(0,1,1,1);
   else
   *v = vec4(0,0,1,1);
-  suc->data = v;
 
-  mesh_component_shader_uniform_change_add(d->mc, suc);
 
 }

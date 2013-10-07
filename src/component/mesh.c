@@ -378,22 +378,17 @@ _mesh_component_draw(Component* c, Matrix4 world, Matrix4 projection)
   shader_use(s);
 
   Eina_List* l;
-  ShaderUniformChange* suc;
+  UniformData* sud;
 
-  EINA_LIST_FOREACH(mc->uniform_changes, l, suc) {
-    GLint uniloc = shader_uniform_location_get(s, suc->name);
+  EINA_LIST_FOREACH(mc->uniform_data, l, sud) {
+    GLint uniloc = shader_uniform_location_get(s, sud->name);
     if (uniloc >= 0) {
       //TODO data
-      Vec4* v = suc->data;
+      Vec4* v = sud->data;
       gl->glUniform4f(uniloc, v->X,v->Y,v->Z,v->W);
     }
     else
     printf("no such uniform \n");
-  }
-
-  if (mc->uniform_changes != NULL) {
-    eina_list_free(mc->uniform_changes);
-    mc->uniform_changes = NULL;
   }
 
   if (!m->is_init) {
@@ -489,7 +484,40 @@ mesh_buffer_add(Mesh* m, const char* name, GLenum target, const void* data, int 
 }
 
 void
-mesh_component_shader_uniform_change_add(MeshComponent* mc, ShaderUniformChange* suc)
+mesh_component_shader_uniform_data_add(MeshComponent* mc, UniformData* sud)
 {
-  mc->uniform_changes = eina_list_append(mc->uniform_changes, suc);
+  mc->uniform_data = eina_list_append(mc->uniform_data, sud);
 }
+
+void
+mesh_component_shader_uniform_data_set(MeshComponent* mc, const char* name, void* data)
+{
+  Eina_List* l;
+  UniformData* sud;
+
+  EINA_LIST_FOREACH(mc->uniform_data, l, sud) {
+    if (!strcmp(name, sud->name)) {
+      sud->data = data;
+      return;
+    }
+  }
+
+  printf("no such uniform '%s'\n", name);
+}
+
+void*
+mesh_component_shader_uniform_data_get(MeshComponent* mc, const char* name)
+{
+  Eina_List* l;
+  UniformData* sud;
+
+  EINA_LIST_FOREACH(mc->uniform_data, l, sud) {
+    if (!strcmp(name, sud->name)) {
+      return sud->data;
+    }
+  }
+
+  printf("no such uniform '%s'\n", name);
+  return NULL;
+}
+

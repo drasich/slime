@@ -359,6 +359,12 @@ _create_dragger(Camera* camera)
   mc->mesh_name = "model/Arrow.mesh";
   mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
 
+  UniformData* sud = calloc(1, sizeof *sud);
+  Vec4* v = calloc(1, sizeof *v);
+  sud->data = v;
+  sud->name = "color";
+  mesh_component_shader_uniform_data_add(mc, sud);
+
   object_add_component(o, comp);
 
   /*

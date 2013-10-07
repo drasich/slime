@@ -79,13 +79,6 @@ struct _Mesh
   Eina_Inarray* buffers;
 };
 
-typedef struct _ShaderUniformChange ShaderUniformChange;
-struct _ShaderUniformChange
-{
-  const char* name;
-  void* data;
-};
-
 
 typedef struct _MeshComponent MeshComponent;
 struct _MeshComponent
@@ -95,8 +88,7 @@ struct _MeshComponent
   Mesh* mesh;
   Shader* shader;
   Eina_Hash* textures;
-  //TODO shader uniform wanted changes
-  Eina_List* uniform_changes;
+  Eina_List* uniform_data;
 };
 
 ComponentDesc mesh_desc;
@@ -129,22 +121,17 @@ void mesh_resend_no_indices(Mesh* mesh);
 void mesh_draw_no_indices(Mesh* m);
 void mesh_show_wireframe(Mesh* m, bool b);
 
-void mesh_init_uniforms(Mesh* s);
-void mesh_shader_init_uniforms(Mesh* m, Shader* s);
-
-void mesh_init_uniforms(Mesh* s);
-
 //Mesh* create_mesh_quad(int w, int h);
 void create_mesh_quad(Mesh* m, int w, int h);
 void quad_resize(Mesh* m, int w, int h);
-void quad_init(Mesh* m);
-void quad_draw(Mesh* m);
 
 GLint mesh_component_texture_id_get(MeshComponent* mc, const char* mame);
 Buffer* mesh_buffer_get(Mesh* m, const char* name);
 
 void mesh_buffer_add(Mesh* m, const char* name, GLenum target, const void* data, int size);
 
-void mesh_component_shader_uniform_change_add(MeshComponent* mc, ShaderUniformChange* suc);
+void mesh_component_shader_uniform_data_add(MeshComponent* mc, UniformData* sud);
+void mesh_component_shader_uniform_data_set(MeshComponent* mc, const char* name, void* data);
+void* mesh_component_shader_uniform_data_get(MeshComponent* mc, const char* name);
 
 #endif
