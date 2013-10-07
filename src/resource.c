@@ -128,7 +128,7 @@ resource_shader_create(ResourceManager* rm)
   Shader* dragger = create_shader("shader/dragger.shader","shader/dragger.vert", "shader/dragger.frag");
   shader_attribute_add(dragger, "vertex", 3, GL_FLOAT);
   shader_uniform_add(dragger, "matrix");
-  shader_uniform_add(dragger, "color");
+  shader_uniform_type_add(dragger, "color", UNIFORM_VEC4 );
   shader_write(dragger);
 
   //Shader* simple = shader_read("shader/simple.shader");

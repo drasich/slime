@@ -379,13 +379,22 @@ shader_attribute_location_get(Shader* s, const char* name)
 GLint
 shader_uniform_location_get(Shader* s, const char* name)
 {
+  Uniform* uni = shader_uniform_get(s, name);
+  if (uni) return uni->location;
+  else return -1;
+}
+
+Uniform*
+shader_uniform_get(Shader* s, const char* name)
+{
   Uniform* uni;
   EINA_INARRAY_FOREACH(s->uniforms, uni) {
     if (!strcmp(uni->name, name)) 
-    return uni->location;
+    return uni;
   }
-  return -1;
+  return NULL;
 }
+
 
 
 void
@@ -424,5 +433,37 @@ shader_uniform_type_add(Shader* s, const char* name, UniformType type)
   uni.location = 0;
   uni.type = type;
   eina_inarray_push(s->uniforms, &uni);
+}
+
+ShaderInstance*
+shader_instance_create(Shader* s)
+{
+  ShaderInstance* si = calloc(1, sizeof *si);
+  si->textures = eina_hash_string_superfast_new(NULL);
+  si->uniforms = eina_hash_string_superfast_new(NULL);
+
+  Uniform* uni;
+  EINA_INARRAY_FOREACH(s->uniforms, uni) {
+    if (uni->type == UNIFORM_TEXTURE) {
+      eina_hash_add(si->textures, uni->name, NULL);
+    }
+    else {
+      eina_hash_add(si->uniforms, uni->name, NULL);
+    }
+  }
+
+  return si;
+}
+
+void
+shader_instance_uniform_data_set(ShaderInstance* si, const char* name, void* data)
+{
+  eina_hash_set(si->uniforms, name, data);
+}
+
+void*
+shader_instance_uniform_data_get(ShaderInstance* si, const char* name)
+{
+  return eina_hash_find(si->uniforms, name);
 }
 

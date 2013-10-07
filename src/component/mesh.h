@@ -88,7 +88,7 @@ struct _MeshComponent
   Mesh* mesh;
   Shader* shader;
   Eina_Hash* textures;
-  Eina_List* uniform_data;
+  ShaderInstance* shader_instance;
 };
 
 ComponentDesc mesh_desc;
@@ -130,8 +130,7 @@ Buffer* mesh_buffer_get(Mesh* m, const char* name);
 
 void mesh_buffer_add(Mesh* m, const char* name, GLenum target, const void* data, int size);
 
-void mesh_component_shader_uniform_data_add(MeshComponent* mc, UniformData* sud);
-void mesh_component_shader_uniform_data_set(MeshComponent* mc, const char* name, void* data);
-void* mesh_component_shader_uniform_data_get(MeshComponent* mc, const char* name);
+void mesh_component_shader_set(MeshComponent* mc, const char* name);
+
 
 #endif

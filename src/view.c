@@ -353,17 +353,18 @@ _create_dragger(Camera* camera)
   Component* comp = create_component(&mesh_desc);
   object_add_component(o, comp);
   MeshComponent* mc = comp->data;
-  mc->shader = resource_shader_get(s_rm, "shader/dragger.shader");
-  //mc->shader = resource_shader_get(s_rm, "shader/simple.shader");
-  mc->shader_name = mc->shader->name;
+  mesh_component_shader_set(mc, "shader/dragger.shader");
+
+
   mc->mesh_name = "model/Arrow.mesh";
   mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
 
-  UniformData* sud = calloc(1, sizeof *sud);
+  //UniformData* sud = calloc(1, sizeof *sud);
   Vec4* v = calloc(1, sizeof *v);
-  sud->data = v;
-  sud->name = "color";
-  mesh_component_shader_uniform_data_add(mc, sud);
+  //sud->data = v;
+  //sud->name = "color";
+  //mesh_component_shader_uniform_data_add(mc, sud);
+  shader_instance_uniform_data_set(mc->shader_instance, "color", v);
 
   object_add_component(o, comp);
 

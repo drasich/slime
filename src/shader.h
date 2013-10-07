@@ -30,16 +30,6 @@ struct _Uniform{
   UniformType type;
 };
 
-typedef struct _UniformData UniformData;
-struct _UniformData
-{
-  const char* name;
-  UniformType type;
-  void* data;
-};
-
-
-
 typedef struct _Shader Shader;
 //typedef char GLchar; // currently not in 1.7.3 and 1.7.4 but is in svn.
 
@@ -85,15 +75,20 @@ void shader_matrices_set(Shader* mesh, Matrix4 mat, Matrix4 projection);
 
 void shader_uniform_add(Shader* s, const char* name);
 void shader_uniform_type_add(Shader* s, const char* name, UniformType type);
+Uniform* shader_uniform_get(Shader* s, const char* name);
 
 void shader_attribute_add(Shader* s, const char* name, GLint size, GLenum type);
 
 typedef struct _ShaderInstance ShaderInstance;
-struct ShaderInstance
+struct _ShaderInstance
 {
-  //list, hash of uniform
-
+  Eina_Hash* textures;
+  Eina_Hash* uniforms;
 };
+
+ShaderInstance* shader_instance_create(Shader* s);
+void shader_instance_uniform_data_set(ShaderInstance* si, const char* name, void* data);
+void* shader_instance_uniform_data_get(ShaderInstance* si, const char* name);
 
 
 #endif

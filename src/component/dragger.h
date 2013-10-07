@@ -16,8 +16,7 @@ struct _Dragger
   AABox box;
   double scale;
   Line* line;
-  Vec4 color;
-  Vec4 color_wanted;
+  //Vec4 color;
   MeshComponent* mc;
 };
 

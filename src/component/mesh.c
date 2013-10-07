@@ -353,6 +353,30 @@ _mesh_component_properties()
   return ps;
 }
 
+static Eina_Bool uniform_send(
+      const Eina_Hash *hash,
+      const void *key,
+      void *data,
+      void *fdata)
+{
+  Shader* s = fdata;
+
+  Uniform* uni = shader_uniform_get(s, key);
+  GLint uniloc =  uni->location;
+  if (uniloc < 0) {
+    printf("no such uniform '%s' \n", key);
+    return;
+  }
+
+  //TODO data
+  if (uni->type == UNIFORM_VEC4) {
+    Vec4* v = data;
+    gl->glUniform4f(uniloc, v->X,v->Y,v->Z,v->W);
+  }
+
+  return EINA_TRUE;
+}
+
 static void 
 _mesh_component_draw(Component* c, Matrix4 world, Matrix4 projection)
 {
@@ -377,18 +401,9 @@ _mesh_component_draw(Component* c, Matrix4 world, Matrix4 projection)
 
   shader_use(s);
 
-  Eina_List* l;
-  UniformData* sud;
-
-  EINA_LIST_FOREACH(mc->uniform_data, l, sud) {
-    GLint uniloc = shader_uniform_location_get(s, sud->name);
-    if (uniloc >= 0) {
-      //TODO data
-      Vec4* v = sud->data;
-      gl->glUniform4f(uniloc, v->X,v->Y,v->Z,v->W);
-    }
-    else
-    printf("no such uniform \n");
+  //TODO remove the if test
+  if (mc->shader_instance) {
+    eina_hash_foreach(mc->shader_instance->uniforms, uniform_send, s);
   }
 
   if (!m->is_init) {
@@ -484,40 +499,29 @@ mesh_buffer_add(Mesh* m, const char* name, GLenum target, const void* data, int 
 }
 
 void
-mesh_component_shader_uniform_data_add(MeshComponent* mc, UniformData* sud)
+mesh_component_shader_set(MeshComponent* mc, const char* name)
 {
-  mc->uniform_data = eina_list_append(mc->uniform_data, sud);
-}
+  mc->shader_name = name;
+  //TODO load in the background
+  Shader* s = resource_shader_get(s_rm, name);
 
-void
-mesh_component_shader_uniform_data_set(MeshComponent* mc, const char* name, void* data)
-{
-  Eina_List* l;
-  UniformData* sud;
-
-  EINA_LIST_FOREACH(mc->uniform_data, l, sud) {
-    if (!strcmp(name, sud->name)) {
-      sud->data = data;
-      return;
-    }
+  if (!s) {
+    printf("cannot find shader '%s'\n", name);
+    return;
   }
 
-  printf("no such uniform '%s'\n", name);
-}
+  mc->shader = s;
 
-void*
-mesh_component_shader_uniform_data_get(MeshComponent* mc, const char* name)
-{
-  Eina_List* l;
-  UniformData* sud;
-
-  EINA_LIST_FOREACH(mc->uniform_data, l, sud) {
-    if (!strcmp(name, sud->name)) {
-      return sud->data;
-    }
+  if (mc->shader_instance) {
+    //TODO save the instance for later use? if someone else will link to this shader we already have
+    //an instance
+    eina_hash_free(mc->shader_instance->textures);
+    eina_hash_free(mc->shader_instance->uniforms);
+    mc->shader_instance->textures = NULL;
+    mc->shader_instance->uniforms = NULL;
+    free(mc->shader_instance);
+    mc->shader_instance = NULL;
   }
 
-  printf("no such uniform '%s'\n", name);
-  return NULL;
+  mc->shader_instance = shader_instance_create(s);
 }
-
