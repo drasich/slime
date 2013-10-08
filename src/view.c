@@ -239,8 +239,8 @@ _mouse_in(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event
 static void
 _view_select_object(View *v, Object *o)
 {
-  context_clean_objects(v->context);
-  context_add_object(v->context, o);
+  context_objects_clean(v->context);
+  context_object_add(v->context, o);
 }
 
 static void
@@ -439,8 +439,8 @@ _file_chosen(void *data, Evas_Object *obj __UNUSED__, void *event_info)
     object_set_position(yep, cp);
     control_object_add(v->control, v->context->scene, yep);
 
-    context_clean_objects(v->context);
-    context_add_object(v->context, yep);
+    context_objects_clean(v->context);
+    context_object_add(v->context, yep);
    }
    */
 }
@@ -464,8 +464,8 @@ _new_empty(void *data,
   object_set_position(yep, cp);
   control_object_add(v->control, v->context->scene, yep);
 
-  context_clean_objects(v->context);
-  context_add_object(v->context, yep);
+  context_objects_clean(v->context);
+  context_object_add(v->context, yep);
 
 }
 
@@ -482,7 +482,7 @@ _gameview_closed(void *data, Evas_Object *obj, void *event_info)
   Scene* s = scene_read("scenecur.eet");
   scene_post_read(s);
 
-  context_clean_objects(context);
+  context_objects_clean(context);
   context->scene = s;
 }
 
@@ -526,7 +526,7 @@ _reload(void *data,
 
   View* v = data;
   scene_write(v->context->scene, "scenetmp.eet");
-  context_clean_objects(v->context);
+  context_objects_clean(v->context);
   scene_destroy(v->context->scene);
   scene_descriptor_delete();
   component_manager_unload(s_component_manager);

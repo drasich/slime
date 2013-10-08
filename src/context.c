@@ -18,12 +18,12 @@ _context_send_message(Context* c, const char* msg)
 void
 context_object_set(Context* c, struct _Object* o)
 {
-  context_add_object(c, o);
+  context_object_add(c, o);
 
 }
 
 void
-context_clean_objects(Context* c)
+context_objects_clean(Context* c)
 {
   c->objects = eina_list_free(c->objects);
   c->object = NULL;
@@ -31,7 +31,7 @@ context_clean_objects(Context* c)
 }
 
 void
-context_add_object(Context* c, struct _Object* o)
+context_object_add(Context* c, struct _Object* o)
 {
   if (!eina_list_data_find_list(c->objects, o)) {
     c->objects = eina_list_append(c->objects, o);
@@ -56,7 +56,7 @@ context_objects_set(Context* c, Eina_List* objects)
 }
 
 void
-context_remove_object(Context* c, struct _Object* o)
+context_object_remove(Context* c, struct _Object* o)
 {
   c->objects = eina_list_remove(c->objects, o);
   _context_send_message(c, "remove_object");

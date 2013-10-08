@@ -62,7 +62,7 @@ gl4_sel(void *data, Evas_Object *obj __UNUSED__, void *event_info)
    if (v) { 
      Context* context = v->context;
      //context_clean_objects(context);
-     context_add_object(context, (Object*) elm_object_item_data_get(glit));
+     context_object_add(context, (Object*) elm_object_item_data_get(glit));
    }
 }
 
@@ -128,7 +128,7 @@ gl4_unselect(void *data __UNUSED__, Evas_Object *obj __UNUSED__, void *event_inf
    View* v = data;
    if (v) { 
      Context* context = v->context;
-     context_remove_object(context, (Object*) elm_object_item_data_get(glit));
+     context_object_remove(context, (Object*) elm_object_item_data_get(glit));
    }
 }
 

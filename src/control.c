@@ -168,7 +168,7 @@ _translate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
     v->context->mos.center =  center;
 
     if (i == 1)
-    control_property_update_transform(c);
+    control_property_transform_update(c);
   }
 }
 
@@ -232,7 +232,7 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
     }
 
     if (i == 1)
-    control_property_update_transform(c);
+    control_property_transform_update(c);
   }
   else if (c->state == CONTROL_DRAGGER) {
     _translate_moving(c,e, vec3(0,0,1));
@@ -489,7 +489,7 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
         control_remove_object(c, s, objects);
       }
     } else if (!strcmp(e->keyname, "a")) {
-      context_clean_objects(v->context);
+      context_objects_clean(v->context);
     }
 
   } else if (c->state == CONTROL_MOVE) {
@@ -507,7 +507,7 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
       }
 
       if (i == 1)
-      control_property_update_transform(c);
+      control_property_transform_update(c);
 
     }
   } else if (c->state == CONTROL_SCALE) {
@@ -524,7 +524,7 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
       }
 
       if (i == 1)
-      control_property_update_transform(c);
+      control_property_transform_update(c);
 
     }
   }
@@ -618,7 +618,7 @@ control_property_update(Control* c, Component* component)
 }
 
 void
-control_property_update_transform(Control* c)
+control_property_transform_update(Control* c)
 {
   property_update_component(c->view->property, "object");
 }

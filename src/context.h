@@ -27,9 +27,9 @@ struct _Object;
 
 void context_object_set(Context* c, struct _Object* o);
 
-void context_clean_objects(Context*c);
-void context_add_object(Context* c, struct _Object* o);
-void context_remove_object(Context* c, struct _Object* o);
+void context_objects_clean(Context*c);
+void context_object_add(Context* c, struct _Object* o);
+void context_object_remove(Context* c, struct _Object* o);
 void context_objects_set(Context* c, Eina_List* objects);
 
 struct _Object* context_object_get(Context* c);

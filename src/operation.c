@@ -49,7 +49,7 @@ operation_add_object_undo(Control*c, void* data)
 
   if (od->o == o &&  od->s == c->view->context->scene){
     //c->view->context->object = NULL;
-    context_remove_object(c->view->context, o);
+    context_object_remove(c->view->context, o);
   }
   //TODO context if object was the object in the context remove it
 }
@@ -70,7 +70,7 @@ operation_remove_object_do(Control *c, void* data)
     tree_remove_object(c->view->tree,  o);
     if (od->s == context->scene){
       if (eina_list_data_find(context->objects, o)) {
-        context_remove_object(context, o);
+        context_object_remove(context, o);
       }
     }
   }
