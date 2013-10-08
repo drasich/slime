@@ -535,7 +535,7 @@ void
 control_operation_add(Control* c, Operation* op)
 {
   c->undo = eina_list_append(c->undo, op);
-  control_clean_redo(c);
+  control_redo_clean(c);
 }
 
 
@@ -564,7 +564,7 @@ control_redo(Control* c)
 }
 
 void
-control_clean_redo(Control* c)
+control_redo_clean(Control* c)
 {
   Operation *op;
 
@@ -578,7 +578,7 @@ control_clean_redo(Control* c)
 
 
 void
-control_add_object(Control* c, Scene* s, Object* o)
+control_object_add(Control* c, Scene* s, Object* o)
 {
   Operation* op = _op_add_object(s,o);
   control_operation_add(c, op);
@@ -594,7 +594,7 @@ control_remove_object(Control* c, Scene* s, Eina_List* objects)
 }
 
 void
-control_change_property(Control* c, Component* component, Property* p, const void* data_old, const void* data_new)
+control_property_change(Control* c, Component* component, Property* p, const void* data_old, const void* data_new)
 {
   Operation* op = _op_change_property(component, p, data_old, data_new);
   control_operation_add(c, op);
@@ -625,7 +625,7 @@ control_property_update_transform(Control* c)
 
 
 void
-control_object_add_component(Control* c, Object* o, Component* comp)
+control_component_add(Control* c, Object* o, Component* comp)
 {
   Operation* op = _op_object_add_component(o,comp);
   control_operation_add(c, op);
@@ -633,7 +633,7 @@ control_object_add_component(Control* c, Object* o, Component* comp)
 }
 
 void
-control_object_remove_component(Control* c, Object* o, Component* comp)
+control_component_remove(Control* c, Object* o, Component* comp)
 {
   Operation* op = _op_object_remove_component(o,comp);
   control_operation_add(c, op);

@@ -134,7 +134,7 @@ populate_scene(Control* c, Scene* s)
 
     Vec3 t = {0,0,0};
     object_set_position(o, t);
-    control_add_object(c, s, o);
+    control_object_add(c, s, o);
    }
 
    {
@@ -144,7 +144,7 @@ populate_scene(Control* c, Scene* s)
 
     Vec3 t2 = {-10,0,0};
     object_set_position(yep, t2);
-    control_add_object(c,s,yep);
+    control_object_add(c,s,yep);
    }
 
    {
@@ -155,7 +155,7 @@ populate_scene(Control* c, Scene* s)
     Component* compcam = create_component(&camera_desc);
     object_add_component(cam, compcam);
 
-    control_add_object(c,s,cam);
+    control_object_add(c,s,cam);
     scene_camera_set(s,cam);
    }
 
@@ -172,7 +172,7 @@ populate_scene(Control* c, Scene* s)
     mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
     object_add_component(empty, meshcomp);
 
-    control_add_object(c,s,empty);
+    control_object_add(c,s,empty);
 
     /* testing code, can be removed
     Component* cline = create_component(&line_desc);

@@ -64,7 +64,7 @@ _entry_activated_cb(void *data, Evas_Object *obj, void *event)
     Property* p = evas_object_data_get(obj, "property");
 
     if (p->type == EET_T_STRING)
-    control_change_property(cp->control, cp->component, p, cp->value_saved, s);
+    control_property_change(cp->control, cp->component, p, cp->value_saved, s);
     else if (p->type == PROPERTY_POINTER) {
       //TODO c'est un peu naze de get la scene comme ca
       Scene* scene = cp->control->view->context->scene;
@@ -86,7 +86,7 @@ _entry_activated_cb(void *data, Evas_Object *obj, void *event)
       if (pointer)
       printf("pointer name :%s \n", (pointer)->name);
       printf("o name :%s \n", o->name);
-      control_change_property(cp->control, cp->component, p, pointer, o);
+      control_property_change(cp->control, cp->component, p, pointer, o);
 
     }
 
@@ -228,7 +228,7 @@ _entry_unfocused_cb(void *data, Evas_Object *obj, void *event)
   if (strcmp(cp->value_saved, s)) {
     cp->value_saved = s;
     Property* p = evas_object_data_get(obj, "property");
-    control_change_property(cp->control, cp->component, p, cp->value_saved, s);
+    control_property_change(cp->control, cp->component, p, cp->value_saved, s);
   }
 }
 
@@ -495,7 +495,7 @@ _remove_component(
   printf("TODO remove component\n");
   ComponentProperties* cp = data;
   if (cp->pw->context->object)
-  control_object_remove_component(cp->control, cp->pw->context->object, cp->component);
+  control_component_remove(cp->control, cp->pw->context->object, cp->component);
 }
 
 

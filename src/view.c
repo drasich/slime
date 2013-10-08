@@ -437,7 +437,7 @@ _file_chosen(void *data, Evas_Object *obj __UNUSED__, void *event_info)
           vec3_mul(direction, 30));
     
     object_set_position(yep, cp);
-    control_add_object(v->control, v->context->scene, yep);
+    control_object_add(v->control, v->context->scene, yep);
 
     context_clean_objects(v->context);
     context_add_object(v->context, yep);
@@ -462,7 +462,7 @@ _new_empty(void *data,
         vec3_mul(direction, 30));
 
   object_set_position(yep, cp);
-  control_add_object(v->control, v->context->scene, yep);
+  control_object_add(v->control, v->context->scene, yep);
 
   context_clean_objects(v->context);
   context_add_object(v->context, yep);
@@ -562,7 +562,7 @@ _addcomp(void *data,
     //object_add_component(v->context->object, c); //TODO
     //
     Component* c = create_component(cd);
-    control_object_add_component(v->control, o, c);
+    control_component_add(v->control, o, c);
   }
         //find the object currently selected
 }

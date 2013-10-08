@@ -54,12 +54,12 @@ struct _Operation {
 void control_operation_add(Control* c, Operation* op);
 void control_undo(Control* c);
 void control_redo(Control* c);
-void control_clean_redo(Control* c);
+void control_redo_clean(Control* c);
 
-void control_add_object(Control* c, Scene* s, Object* o);
-void control_change_property(Control* c, Component* component, Property* p, const void* data_old, const void* data_new);
-void control_object_add_component(Control* c, Object* o, Component* comp);
-void control_object_remove_component(Control* c, Object* o, Component* comp);
+void control_object_add(Control* c, Scene* s, Object* o);
+void control_property_change(Control* c, Component* component, Property* p, const void* data_old, const void* data_new);
+void control_component_add(Control* c, Object* o, Component* comp);
+void control_component_remove(Control* c, Object* o, Component* comp);
 
 void control_property_update_transform(Control* c);
 
