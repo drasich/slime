@@ -378,7 +378,6 @@ control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
 
     if (ir.hit) {
       dragger_state_set(d, DRAGGER_SELECTED);
-      //c->mouse_start = vec2(e->canvas.x, e->canvas.y);
       _control_move_prepare(c);
       c->state = CONTROL_DRAGGER;
       return true;
@@ -395,7 +394,7 @@ control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
           objects,
           vec3_sub(center, c->start));
 
-    control_add_operation(c, op);
+    control_operation_add(c, op);
     return true;
   }
   else if (c->state == CONTROL_SCALE) {
@@ -408,7 +407,7 @@ control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
           objects,
           vec3(c->scale_factor, c->scale_factor, c->scale_factor));
 
-    control_add_operation(c, op);
+    control_operation_add(c, op);
     return true;
   }
 
@@ -447,7 +446,7 @@ control_mouse_up(Control* c, Evas_Event_Mouse_Up *e)
           objects,
           vec3_sub(center, c->start));
 
-    control_add_operation(c, op);
+    control_operation_add(c, op);
 
     return true;
   }
@@ -533,7 +532,7 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
 }
 
 void 
-control_add_operation(Control* c, Operation* op)
+control_operation_add(Control* c, Operation* op)
 {
   c->undo = eina_list_append(c->undo, op);
   control_clean_redo(c);
@@ -582,7 +581,7 @@ void
 control_add_object(Control* c, Scene* s, Object* o)
 {
   Operation* op = _op_add_object(s,o);
-  control_add_operation(c, op);
+  control_operation_add(c, op);
   op->do_cb(c, op->data);
 }
 
@@ -590,7 +589,7 @@ void
 control_remove_object(Control* c, Scene* s, Eina_List* objects)
 {
   Operation* op = _op_remove_object(s,objects);
-  control_add_operation(c, op);
+  control_operation_add(c, op);
   op->do_cb(c, op->data);
 }
 
@@ -598,7 +597,7 @@ void
 control_change_property(Control* c, Component* component, Property* p, const void* data_old, const void* data_new)
 {
   Operation* op = _op_change_property(component, p, data_old, data_new);
-  control_add_operation(c, op);
+  control_operation_add(c, op);
   op->do_cb(c, op->data);
   if (p->type == PROPERTY_POINTER)
    {
@@ -629,7 +628,7 @@ void
 control_object_add_component(Control* c, Object* o, Component* comp)
 {
   Operation* op = _op_object_add_component(o,comp);
-  control_add_operation(c, op);
+  control_operation_add(c, op);
   op->do_cb(c, op->data);
 }
 
@@ -637,7 +636,7 @@ void
 control_object_remove_component(Control* c, Object* o, Component* comp)
 {
   Operation* op = _op_object_remove_component(o,comp);
-  control_add_operation(c, op);
+  control_operation_add(c, op);
   op->do_cb(c, op->data);
 }
 

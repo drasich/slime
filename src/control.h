@@ -51,7 +51,7 @@ struct _Operation {
 };
 
 
-void control_add_operation(Control* c, Operation* op);
+void control_operation_add(Control* c, Operation* op);
 void control_undo(Control* c);
 void control_redo(Control* c);
 void control_clean_redo(Control* c);
