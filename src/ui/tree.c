@@ -140,14 +140,14 @@ _context_tree_msg_receive(Context* c, void* tree, const char* msg)
   if (!strcmp(msg, "clean_objects"))
   tree_unselect_all(tree);
   else if (!strcmp(msg, "add_object"))
-  tree_select_objects(tree, c->objects);
+  tree_objects_select(tree, c->objects);
   else if (!strcmp(msg, "objects_changed")) {
-    tree_select_objects(tree, c->objects);
+    tree_objects_select(tree, c->objects);
   }
 }
 
 Tree* 
-create_widget_tree(Evas_Object* win, struct _View* v)
+tree_widget_new(Evas_Object* win, struct _View* v)
 {
   Tree *t = calloc(1, sizeof *t);
   t->context = v->context;
@@ -222,7 +222,7 @@ create_widget_tree(Evas_Object* win, struct _View* v)
 
 
 void
-tree_add_object(Tree* t,  Object* o)
+tree_object_add(Tree* t,  Object* o)
 {
   //elm_genlist_item_append(t->gl, itc4,
         //(void *)1/* item data */, NULL/* parent */, ELM_GENLIST_ITEM_TREE, gl4_sel/* func */,
@@ -283,7 +283,7 @@ _tree_get_item(Tree* t, Object* o)
 
 
 void
-tree_select_object(Tree* t, Object* o)
+tree_object_select(Tree* t, Object* o)
 {
   Elm_Object_Item* item = _tree_get_item(t, o);
 
@@ -307,7 +307,7 @@ tree_unselect_all(Tree* t)
 }
 
 void
-tree_select_objects(Tree* t, Eina_List* objects)
+tree_objects_select(Tree* t, Eina_List* objects)
 {
   Eina_List* l;
   Object* o;
@@ -339,7 +339,7 @@ tree_select_objects(Tree* t, Eina_List* objects)
 
 
 void
-tree_update_object(Tree* t, Object* o)
+tree_object_update(Tree* t, Object* o)
 { 
   Elm_Object_Item* item = _tree_get_item(t, o);
 
@@ -349,7 +349,7 @@ tree_update_object(Tree* t, Object* o)
 
 
 void
-tree_remove_object(Tree* t,  Object* o)
+tree_object_remove(Tree* t,  Object* o)
 {
   Elm_Object_Item* item = elm_genlist_first_item_get(t->gl);
   if (!item) return;
@@ -374,7 +374,7 @@ void tree_scene_set(Tree* t, struct _Scene* s)
   Object* o;
 
   EINA_LIST_FOREACH(s->objects, l, o) {
-    tree_add_object(t,o);
+    tree_object_add(t,o);
   }
 
 }

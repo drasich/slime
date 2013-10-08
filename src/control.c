@@ -614,7 +614,7 @@ control_property_update(Control* c, Component* component)
   property_update_components_data(c->view->property, component);
 
   if (!strcmp(component->name, "object"))
-  tree_update_object(c->view->tree, component->object);
+  tree_object_update(c->view->tree, component->object);
 }
 
 void

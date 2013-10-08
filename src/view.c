@@ -798,7 +798,7 @@ create_view(Evas_Object *win)
   _add_buttons(view, win);
 
   view->property = create_property(win, view->context, view->control);
-  view->tree = create_widget_tree(win, view);
+  view->tree = tree_widget_new(win, view);
   evas_object_data_set(view->glview, "view", view);
 
   _create_view_objects(view);

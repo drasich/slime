@@ -17,14 +17,13 @@ struct _Tree
   Control* control;
 };
 
-//Tree* create_widget_tree(Evas_Object* win, Context* context);
-Tree* create_widget_tree(Evas_Object* win, View* view);
-void tree_add_object(Tree* t,  struct _Object* o);
-void tree_remove_object(Tree* t,  struct _Object* o);
+Tree* tree_widget_new(Evas_Object* win, View* view);
+void tree_object_add(Tree* t,  struct _Object* o);
+void tree_object_remove(Tree* t,  struct _Object* o);
 
-void tree_select_object(Tree* t, struct _Object* o);
-void tree_select_objects(Tree* t, Eina_List* objects);
-void tree_update_object(Tree* t, struct _Object* o);
+void tree_object_select(Tree* t, struct _Object* o);
+void tree_objects_select(Tree* t, Eina_List* objects);
+void tree_object_update(Tree* t, struct _Object* o);
 
 void tree_scene_set(Tree* t, struct _Scene* s);
 
