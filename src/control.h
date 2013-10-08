@@ -10,9 +10,10 @@
 typedef struct _Control Control;
 
 enum {
-  IDLE,
-  MOVE,
-  CONTROL_SCALE
+  CONTROL_IDLE,
+  CONTROL_MOVE,
+  CONTROL_SCALE,
+  CONTROL_DRAGGER
 };
 
 struct _Control{
@@ -34,6 +35,7 @@ Control* create_control(struct _View* v);
 
 void control_mouse_move(Control* c, Evas_Event_Mouse_Move *e);
 bool control_mouse_down(Control* c, Evas_Event_Mouse_Down *e);
+bool control_mouse_up(Control* c, Evas_Event_Mouse_Up *e);
 void control_key_down(Control* c, Evas_Event_Key_Down *e);
 
 void control_property_update(Control* c, Component* component);

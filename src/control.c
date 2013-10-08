@@ -9,7 +9,7 @@ Control*
 create_control(View* v)
 {
   Control* c = calloc(1, sizeof *c);
-  c->state = IDLE;
+  c->state = CONTROL_IDLE;
   c->view = v;
   c->redo = NULL;
   //c->shader_simple = create_shader("simple","shader/simple.vert", "shader/simple.frag");
@@ -35,7 +35,7 @@ _objects_center(Control* c, Eina_List* objects)
 }
 
 static void
-_control_move(Control* c)
+_control_move_prepare(Control* c)
 {
   View* v = c->view;
   int x, y;
@@ -43,13 +43,8 @@ _control_move(Control* c)
   evas_pointer_canvas_xy_get(evas_object_evas_get(v->glview), &x, &y);
   Vec2 mousepos = vec2(x,y);
   //printf("mouse pos : %f, %f \n", mousepos.X, mousepos.Y);
-  Object* o = context_object_get(v->context);
-  if (o != NULL && c->state != MOVE) {
-    c->state = MOVE;
-    //c->start = o->Position;
-    c->start = _objects_center(c, context_objects_get(v->context));
-    c->mouse_start = mousepos;
-  }
+  c->start = _objects_center(c, context_objects_get(v->context));
+  c->mouse_start = mousepos;
 
 }
 
@@ -93,7 +88,7 @@ _control_center_camera(Control* c)
   View* v = c->view;
   Object* o = context_object_get(v->context);
   ViewCamera* cam = v->camera;
-  if (o != NULL && c->state == IDLE) {
+  if (o != NULL && c->state == CONTROL_IDLE) {
     //TODO get the distance from the size of the object on the screen
     Vec3 v = vec3(0,0,30);
     v = quat_rotate_vec3(cam->object->Orientation, v);
@@ -137,6 +132,46 @@ _rotate_camera(View* v, float x, float y)
   camera_rotate_around(v->camera, result, cam->center);
 }
 
+static void
+_translate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
+{
+  View* v = c->view;
+
+  Eina_List* objects = context_objects_get(v->context);
+  Plane p = { c->start, quat_rotate_vec3(v->camera->object->Orientation, vec3(0,0,-1)) };
+
+  Ray rstart = ray_from_screen(v->camera, c->mouse_start.X, c->mouse_start.Y, 1);
+
+  float x = e->cur.canvas.x;
+  float y = e->cur.canvas.y;
+  Ray r = ray_from_screen(v->camera, x, y, 1);
+
+  IntersectionRay ir =  intersection_ray_plane(r, p);
+  IntersectionRay irstart =  intersection_ray_plane(rstart, p);
+
+  if (ir.hit && irstart.hit) {
+    Vec3 translation = vec3_sub(ir.position, irstart.position);
+    translation = vec3_vec3_mul(translation, constraint);
+    Eina_List *l;
+    Object *o;
+    int i = 0;
+    Vec3 center = vec3_zero();
+    EINA_LIST_FOREACH(objects, l, o) {
+      Vec3* origin = (Vec3*) eina_inarray_nth(c->positions, i);
+      o->Position = vec3_add(*origin, translation);
+      ++i;
+      center = vec3_add(center, o->Position);
+    }
+    //v->dragger->Position = vec3_add(c->start, translation);
+
+    if (i>0) center = vec3_mul(center, 1.0f/ (float) i);
+    v->context->mos.center =  center;
+
+    if (i == 1)
+    control_property_update_transform(c);
+  }
+}
+
 #include "component/dragger.h"
 void
 control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
@@ -145,9 +180,8 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
   c->mouse_current.Y = e->cur.canvas.y;
 
   View* v = c->view;
-  if (c->state == IDLE) {
-    if ( e->buttons == 0){
-      //TODO test if there is a collision with a dragger and change its color;
+  if (c->state == CONTROL_IDLE) {
+    if (e->buttons == 0){
       Object* od = v->dragger;
       Dragger* d = object_component_get(od, "dragger");
       if (!d) return;
@@ -159,7 +193,11 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
 
       IntersectionRay ir = intersection_ray_box(r, bb, od->Position, od->Orientation, vec3(1,1,1));
     
-      dragger_highlight_set(d, ir.hit);
+      //dragger_highlight_set(d, ir.hit);
+      if (ir.hit)
+      dragger_state_set(d, DRAGGER_HIGHLIGHT);
+      else
+      dragger_state_set(d, DRAGGER_IDLE);
     }
     else if ( (e->buttons & 1) == 1){
       float x = e->cur.canvas.x - e->prev.canvas.x;
@@ -173,37 +211,8 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
         _rotate_camera(v, x, y);
       }
     }
-  } else if (c->state == MOVE) {
-    Eina_List* objects = context_objects_get(v->context);
-    Plane p = { c->start, quat_rotate_vec3(v->camera->object->Orientation, vec3(0,0,-1)) };
-
-    Ray rstart = ray_from_screen(v->camera, c->mouse_start.X, c->mouse_start.Y, 1);
-
-    float x = e->cur.canvas.x;
-    float y = e->cur.canvas.y;
-    Ray r = ray_from_screen(v->camera, x, y, 1);
-
-    IntersectionRay ir =  intersection_ray_plane(r, p);
-    IntersectionRay irstart =  intersection_ray_plane(rstart, p);
-    
-    if (ir.hit && irstart.hit) {
-      Vec3 translation = vec3_sub(ir.position, irstart.position);
-      Eina_List *l;
-      Object *o;
-      int i = 0;
-      Vec3 center = vec3_zero();
-      EINA_LIST_FOREACH(objects, l, o) {
-        Vec3* origin = (Vec3*) eina_inarray_nth(c->positions, i);
-        o->Position = vec3_add(*origin, translation);
-        ++i;
-        center = vec3_add(center, o->Position);
-      }
-      if (i>0) center = vec3_mul(center, 1.0f/ (float) i);
-      v->context->mos.center =  center;
-
-      if (i == 1)
-      control_property_update_transform(c);
-    }
+  } else if (c->state == CONTROL_MOVE) {
+    _translate_moving(c,e, vec3(1,1,1));
   } else if (c->state == CONTROL_SCALE) {
     Eina_List* objects = context_objects_get(v->context);
 
@@ -224,7 +233,9 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
 
     if (i == 1)
     control_property_update_transform(c);
-    
+  }
+  else if (c->state == CONTROL_DRAGGER) {
+    _translate_moving(c,e, vec3(0,0,1));
   }
 
 }
@@ -351,8 +362,30 @@ _op_scale_object(Eina_List* objects, Vec3 scale)
 bool
 control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
 {
-  if (c->state == MOVE) {
-    c->state = IDLE;
+  View* v = c->view;
+
+  if (c->state == CONTROL_IDLE) {
+    Object* od = v->dragger;
+    Dragger* d = object_component_get(od, "dragger");
+    if (!d) return;
+
+    Ray r = ray_from_screen(v->camera, e->canvas.x, e->canvas.y, 1000);
+    AABox bb = d->box;
+    bb.Min = vec3_mul(bb.Min, d->scale);
+    bb.Max = vec3_mul(bb.Max, d->scale);
+
+    IntersectionRay ir = intersection_ray_box(r, bb, od->Position, od->Orientation, vec3(1,1,1));
+
+    if (ir.hit) {
+      dragger_state_set(d, DRAGGER_SELECTED);
+      //c->mouse_start = vec2(e->canvas.x, e->canvas.y);
+      _control_move_prepare(c);
+      c->state = CONTROL_DRAGGER;
+      return true;
+    }
+  }
+  else if (c->state == CONTROL_MOVE) {
+    c->state = CONTROL_IDLE;
 
     Eina_List* objects = context_objects_get(c->view->context);
 
@@ -366,7 +399,7 @@ control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
     return true;
   }
   else if (c->state == CONTROL_SCALE) {
-    c->state = IDLE;
+    c->state = CONTROL_IDLE;
 
     //TODO
     Eina_List* objects = context_objects_get(c->view->context);
@@ -376,6 +409,46 @@ control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
           vec3(c->scale_factor, c->scale_factor, c->scale_factor));
 
     control_add_operation(c, op);
+    return true;
+  }
+
+  return false;
+}
+
+bool
+control_mouse_up(Control* c, Evas_Event_Mouse_Up *e)
+{
+  View* v = c->view;
+
+  if (c->state == CONTROL_DRAGGER) {
+    c->state = CONTROL_IDLE;
+
+    Object* od = v->dragger;
+    Dragger* d = object_component_get(od, "dragger");
+    if (!d) return;
+
+    Ray r = ray_from_screen(v->camera, e->canvas.x, e->canvas.y, 1000);
+    AABox bb = d->box;
+    bb.Min = vec3_mul(bb.Min, d->scale);
+    bb.Max = vec3_mul(bb.Max, d->scale);
+
+    IntersectionRay ir = intersection_ray_box(r, bb, od->Position, od->Orientation, vec3(1,1,1));
+
+    if (ir.hit)
+    dragger_state_set(d, DRAGGER_HIGHLIGHT);
+    else
+    dragger_state_set(d, DRAGGER_IDLE);
+
+    Eina_List* objects = context_objects_get(v->context);
+
+    Vec3 center = _objects_center(c, objects);
+
+    Operation* op = _op_move_object(
+          objects,
+          vec3_sub(center, c->start));
+
+    control_add_operation(c, op);
+
     return true;
   }
 
@@ -393,12 +466,13 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
 
   const Evas_Modifier * mods = e->modifiers;
 
-  if (c->state == IDLE) {
+  if (c->state == CONTROL_IDLE) {
     if (!strcmp(e->keyname, "Escape")) {
       view_destroy(c->view);
       elm_exit();
-    } else if ( !strcmp(e->keyname, "g")) {
-      _control_move(c);
+    } else if (!strcmp(e->keyname, "g") && o!= NULL) {
+      _control_move_prepare(c);
+      c->state = CONTROL_MOVE;
     } else if ( !strcmp(e->keyname, "s")) {
       _control_scale(c);
     } else if (!strcmp(e->keyname, "z") 
@@ -419,9 +493,9 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
       context_clean_objects(v->context);
     }
 
-  } else if (c->state == MOVE) {
+  } else if (c->state == CONTROL_MOVE) {
     if (!strcmp(e->keyname, "Escape")) {
-      c->state = IDLE;
+      c->state = CONTROL_IDLE;
 
       // put back the objects to original position
       Eina_List *l;
@@ -439,7 +513,7 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
     }
   } else if (c->state == CONTROL_SCALE) {
     if (!strcmp(e->keyname, "Escape")) {
-      c->state = IDLE;
+      c->state = CONTROL_IDLE;
 
       Eina_List *l;
       Object *o;
@@ -507,13 +581,9 @@ control_clean_redo(Control* c)
 void
 control_add_object(Control* c, Scene* s, Object* o)
 {
-  printf("scene %p \n", s);
   Operation* op = _op_add_object(s,o);
-  printf("add object 00 \n");
   control_add_operation(c, op);
-  printf("add object 10\n");
   op->do_cb(c, op->data);
-  printf("add object 20\n");
 }
 
 void
@@ -534,14 +604,7 @@ control_change_property(Control* c, Component* component, Property* p, const voi
    {
     const Object* old = data_old;
     const Object* new = data_new;
-    printf("change property object from to : %p, %p\n", old, new);
-    if (!old)
-    printf("change property object from to, names, only new : %s\n", new->name);
-    else
-    printf("change property object from to, names : %s, %s\n", old->name, new->name);
    }
-  else
-  printf("change property with : %s, %s\n", data_old, data_new);
 }
 
 

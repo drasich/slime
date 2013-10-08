@@ -15,7 +15,8 @@ _dragger_create()
 static void
 _dragger_init(Component* component)
 {
-  //Dragger* d = component->data;
+  Dragger* d = component->data;
+  dragger_state_set(d, DRAGGER_IDLE);
 }
 
 static double _resize_to_cam(Matrix4 world, Matrix4 projection, double factor)
@@ -85,5 +86,29 @@ dragger_highlight_set(Dragger* d, bool highlight)
   *v = vec4(0,1,1,1);
   else
   *v = vec4(0,0,1,1);
-
 }
+
+void
+dragger_state_set(Dragger* d, DraggerState state)
+{
+  if (state == d->state) return;
+
+  if (!d->mc) {
+    printf("no mesh component\n");
+    return;
+  }
+
+  Vec4* v = shader_instance_uniform_data_get(d->mc->shader_instance, "color");
+  if (!v) return;
+
+  if (state == DRAGGER_HIGHLIGHT)
+  *v = vec4(0,1,1,1);
+  else if (state == DRAGGER_IDLE)
+  *v = vec4(0,0,1,1);
+  else if (state == DRAGGER_SELECTED)
+  *v = vec4(1,0,1,1);
+
+  d->state = state;
+}
+
+

@@ -314,6 +314,10 @@ _mouse_up(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event
   View* v = evas_object_data_get(o, "view");
   Evas_Object* rect = v->select_rect;
   evas_object_hide(rect);
+
+  Control* cl = v->control;
+  if (control_mouse_up(cl, ev))
+  return;
 }
 
 static void
