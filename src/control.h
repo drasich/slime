@@ -13,7 +13,8 @@ enum {
   CONTROL_IDLE,
   CONTROL_MOVE,
   CONTROL_SCALE,
-  CONTROL_DRAGGER
+  CONTROL_DRAGGER_TRANSLATE,
+  CONTROL_DRAGGER_SCALE,
 };
 
 struct _Control{
@@ -28,7 +29,7 @@ struct _Control{
   Eina_List* redo;
 
   Eina_Inarray* scales;
-  float scale_factor;
+  Vec3 scale_factor;
 };
 
 

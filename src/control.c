@@ -36,7 +36,7 @@ _objects_center(Control* c, Eina_List* objects)
 }
 
 static void
-_control_move_prepare(Control* c)
+_control_move(Control* c)
 {
   View* v = c->view;
   int x, y;
@@ -50,7 +50,7 @@ _control_move_prepare(Control* c)
 }
 
 static void
-_scale_prepare(Control* c, Eina_List* objects)
+_control_scale_prepare(Control* c, Eina_List* objects)
 {
   int size = eina_list_count(objects);
   c->scales = eina_inarray_new (sizeof(Vec3), size);
@@ -76,7 +76,7 @@ _control_scale(Control* c)
   //printf("mouse pos : %f, %f \n", mousepos.X, mousepos.Y);
   Object* o = context_object_get(v->context);
   if (o != NULL && c->state != CONTROL_SCALE) {
-    _scale_prepare(c, context_objects_get(v->context));
+    _control_scale_prepare(c, context_objects_get(v->context));
     c->mouse_start = mousepos;
   }
 
@@ -177,6 +177,38 @@ _translate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
 }
 
 static void
+_scale_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
+{
+  View* v = c->view;
+
+  Eina_List* objects = context_objects_get(v->context);
+
+  float x = e->cur.canvas.x;
+  float y = e->cur.canvas.y;
+
+  //TODO scale better (don't start from 0)
+  Vec2 d = vec2(x - c->mouse_start.X, y - c->mouse_start.Y);
+  double s = vec2_length(d) * 0.1f;
+  c->scale_factor = vec3(s,s,s);
+  if (constraint.X == 0) c->scale_factor.X = 1;
+  if (constraint.Y == 0) c->scale_factor.Y = 1;
+  if (constraint.Z == 0) c->scale_factor.Z = 1;
+
+  Eina_List *l;
+  Object *o;
+  int i = 0;
+  EINA_LIST_FOREACH(objects, l, o) {
+    Vec3* scale_origin = (Vec3*) eina_inarray_nth(c->scales, i);
+    //o->scale = vec3_mul(*scale_origin, c->scale_factor);
+    o->scale = vec3_vec3_mul(*scale_origin, c->scale_factor);
+    ++i;
+  }
+
+  if (i == 1)
+  control_property_transform_update(c);
+}
+
+static void
 _draggers_highlight_check(Control* c, Evas_Coord x, Evas_Coord y)
 {
   View* v = c->view;
@@ -257,8 +289,14 @@ _draggers_click_check(Control* c, Evas_Event_Mouse_Down* e)
   
   if (ir.hit && drag_hit) {
       dragger_state_set(drag_hit, DRAGGER_SELECTED);
-      _control_move_prepare(c);
-      c->state = CONTROL_DRAGGER;
+      if (drag_hit->type == DRAGGER_TRANSLATE) {
+        _control_move(c);
+        c->state = CONTROL_DRAGGER_TRANSLATE;
+      }
+      else if (drag_hit->type == DRAGGER_SCALE) {
+        _control_scale(c);
+        c->state = CONTROL_DRAGGER_SCALE;
+      }
       c->constraint = drag_hit->constraint;
   }
 }
@@ -290,28 +328,13 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
   } else if (c->state == CONTROL_MOVE) {
     _translate_moving(c,e, vec3(1,1,1));
   } else if (c->state == CONTROL_SCALE) {
-    Eina_List* objects = context_objects_get(v->context);
-
-    float x = e->cur.canvas.x;
-    float y = e->cur.canvas.y;
-
-    Vec2 d = vec2(x - c->mouse_start.X, y - c->mouse_start.Y);
-    c->scale_factor = vec2_length(d) * 0.1f;
-
-    Eina_List *l;
-    Object *o;
-    int i = 0;
-    EINA_LIST_FOREACH(objects, l, o) {
-      Vec3* scale_origin = (Vec3*) eina_inarray_nth(c->scales, i);
-      o->scale = vec3_mul(*scale_origin, c->scale_factor);
-      ++i;
-    }
-
-    if (i == 1)
-    control_property_transform_update(c);
+    _scale_moving(c,e, vec3(1,1,1));
   }
-  else if (c->state == CONTROL_DRAGGER) {
+  else if (c->state == CONTROL_DRAGGER_TRANSLATE) {
     _translate_moving(c,e, c->constraint);
+  }
+  else if (c->state == CONTROL_DRAGGER_SCALE) {
+    _scale_moving(c,e, c->constraint);
   }
 
 }
@@ -460,12 +483,11 @@ control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
   else if (c->state == CONTROL_SCALE) {
     c->state = CONTROL_IDLE;
 
-    //TODO
     Eina_List* objects = context_objects_get(c->view->context);
 
     Operation* op = _op_scale_object(
           objects,
-          vec3(c->scale_factor, c->scale_factor, c->scale_factor));
+          c->scale_factor);
 
     control_operation_add(c, op);
     return true;
@@ -479,7 +501,7 @@ control_mouse_up(Control* c, Evas_Event_Mouse_Up *e)
 {
   View* v = c->view;
 
-  if (c->state == CONTROL_DRAGGER) {
+  if (c->state == CONTROL_DRAGGER_TRANSLATE) {
     c->state = CONTROL_IDLE;
 
     _draggers_highlight_check(c,e->canvas.x, e->canvas.y);
@@ -495,6 +517,22 @@ control_mouse_up(Control* c, Evas_Event_Mouse_Up *e)
 
     return true;
   }
+  else if (c->state == CONTROL_DRAGGER_SCALE) {
+    c->state = CONTROL_IDLE;
+
+    _draggers_highlight_check(c,e->canvas.x, e->canvas.y);
+
+    Eina_List* objects = context_objects_get(c->view->context);
+
+    Operation* op = _op_scale_object(
+          objects,
+          c->scale_factor);
+
+    control_operation_add(c, op);
+
+    return true;
+  }
+
 
   return false;
 }
@@ -515,7 +553,7 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
       view_destroy(c->view);
       elm_exit();
     } else if (!strcmp(e->keyname, "g") && o!= NULL) {
-      _control_move_prepare(c);
+      _control_move(c);
       c->state = CONTROL_MOVE;
     } else if ( !strcmp(e->keyname, "s")) {
       _control_scale(c);

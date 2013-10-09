@@ -350,6 +350,8 @@ _create_repere(float u, Camera* camera)
 
 #include "resource.h"
 #include "component/dragger.h"
+typedef Object* (*dragger_create_fn)(Camera* camera, Vec3 constraint, Vec4 color, bool plane);
+
 static Object* 
 _dragger_translate_create(Camera* camera, Vec3 constraint, Vec4 color, bool plane)
 {
@@ -392,10 +394,48 @@ _dragger_translate_create(Camera* camera, Vec3 constraint, Vec4 color, bool plan
   d->mc = mc;
   d->constraint = constraint;
   d->color_idle = color;
+  d->type = DRAGGER_TRANSLATE;
   dragger_state_set(d, DRAGGER_IDLE);
 
   return o;
 }
+
+static Object* 
+_dragger_scale_create(Camera* c, Vec3 constraint, Vec4 color, bool plane)
+{
+  Object* o = create_object();
+  Component* comp = create_component(&mesh_desc);
+  object_add_component(o, comp);
+  MeshComponent* mc = comp->data;
+  mesh_component_shader_set(mc, "shader/dragger.shader");
+
+  if (plane) {
+    mc->mesh_name = "model/dragger_plane.mesh";
+    mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
+  }
+  else {
+    mc->mesh_name = "model/dragger_scale.mesh";
+    mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
+  }
+
+  Vec4* v = calloc(1, sizeof *v);
+  shader_instance_uniform_data_set(mc->shader_instance, "color", v);
+
+  object_add_component(o, comp);
+
+  comp = create_component(dragger_desc());
+  object_add_component(o,comp);
+  Dragger* d = comp->data;
+  d->box = mc->mesh->box;
+  d->mc = mc;
+  d->constraint = constraint;
+  d->color_idle = color;
+  d->type = DRAGGER_SCALE;
+  dragger_state_set(d, DRAGGER_IDLE);
+
+  return o;
+}
+
 
 
 static Object* 
@@ -727,13 +767,13 @@ _add_buttons(View* v, Evas_Object* win)
 }
 
 static void
-_view_translate_draggers_create(View* v)
+_view_translate_draggers_create(View* v, dragger_create_fn dfn )
 {
   Vec4 red = vec4(1.0,0.247,0.188,1);
   Vec4 green = vec4(0.2117,0.949,0.4156,1);
   Vec4 blue = vec4(0,0.4745,1,1);
 
-  Object* dragger = _dragger_translate_create(
+  Object* dragger = dfn(
         v->camera->camera_component,
         vec3(1,0,0),
         red,
@@ -741,7 +781,7 @@ _view_translate_draggers_create(View* v)
   dragger->angles.Y = -90;
   v->draggers = eina_list_append(v->draggers, dragger);
 
-  dragger = _dragger_translate_create(
+  dragger = dfn(
         v->camera->camera_component,
         vec3(0,1,0),
         green,
@@ -749,7 +789,7 @@ _view_translate_draggers_create(View* v)
   dragger->angles.X = 90;
   v->draggers = eina_list_append(v->draggers, dragger);
 
-  dragger = _dragger_translate_create(
+  dragger = dfn(
         v->camera->camera_component,
         vec3(0,0,1),
         blue,
@@ -760,14 +800,14 @@ _view_translate_draggers_create(View* v)
   green.W = 0.1f;
   blue.W = 0.1f;
 
-  dragger = _dragger_translate_create(
+  dragger = dfn(
         v->camera->camera_component,
         vec3(0,1,1),
         blue,
         true);
   v->draggers = eina_list_append(v->draggers, dragger);
 
-  dragger = _dragger_translate_create(
+  dragger = dfn(
         v->camera->camera_component,
         vec3(1,1,0),
         red,
@@ -775,7 +815,7 @@ _view_translate_draggers_create(View* v)
   dragger->angles.Y = -90;
   v->draggers = eina_list_append(v->draggers, dragger);
 
-  dragger = _dragger_translate_create(
+  dragger = dfn(
         v->camera->camera_component,
         vec3(1,0,1),
         green,
@@ -799,7 +839,8 @@ _create_view_objects(View* v)
   Line* l = object_component_get(v->repere, "line");
   if (l) line_set_size_fixed(l, true);
 
-  _view_translate_draggers_create(v);
+  //_view_translate_draggers_create(v, _dragger_translate_create);
+  _view_translate_draggers_create(v, _dragger_scale_create);
 
 
   v->camera_repere = _create_repere(40, v->camera->camera_component);

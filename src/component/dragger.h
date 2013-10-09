@@ -15,6 +15,13 @@ typedef enum {
   DRAGGER_HIDE
 } DraggerState;
 
+typedef enum {
+  DRAGGER_TRANSLATE = 1,
+  DRAGGER_SCALE,
+  DRAGGER_ROTATE,
+} DraggerType;
+
+
 typedef struct _Dragger Dragger;
 
 struct _Dragger
@@ -27,6 +34,7 @@ struct _Dragger
   MeshComponent* mc;
   DraggerState state;
   Vec3 constraint;
+  DraggerType type;
 };
 
 ComponentDesc* dragger_desc();
