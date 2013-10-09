@@ -436,6 +436,37 @@ _dragger_scale_create(Camera* c, Vec3 constraint, Vec4 color, bool plane)
   return o;
 }
 
+static Object* 
+_dragger_rotate_create(Camera* c, Vec3 constraint, Vec4 color, bool plane)
+{
+  Object* o = create_object();
+  Component* comp = create_component(&mesh_desc);
+  object_add_component(o, comp);
+  MeshComponent* mc = comp->data;
+  mesh_component_shader_set(mc, "shader/dragger.shader");
+
+  mc->mesh_name = "model/dragger_rotate.mesh";
+  mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
+
+  Vec4* v = calloc(1, sizeof *v);
+  shader_instance_uniform_data_set(mc->shader_instance, "color", v);
+
+  object_add_component(o, comp);
+
+  comp = create_component(dragger_desc());
+  object_add_component(o,comp);
+  Dragger* d = comp->data;
+  d->box = mc->mesh->box;
+  d->mc = mc;
+  d->constraint = constraint;
+  d->color_idle = color;
+  d->type = DRAGGER_ROTATE;
+  dragger_state_set(d, DRAGGER_IDLE);
+
+  return o;
+}
+
+
 
 
 static Object* 
@@ -767,13 +798,15 @@ _add_buttons(View* v, Evas_Object* win)
 }
 
 static void
-_view_translate_draggers_create(View* v, dragger_create_fn dfn )
+_view_draggers_create(View* v, dragger_create_fn dfn, bool create_plane )
 {
   Vec4 red = vec4(1.0,0.247,0.188,1);
   Vec4 green = vec4(0.2117,0.949,0.4156,1);
   Vec4 blue = vec4(0,0.4745,1,1);
 
-  Object* dragger = dfn(
+  Object* dragger;
+
+  dragger = dfn(
         v->camera->camera_component,
         vec3(1,0,0),
         red,
@@ -795,6 +828,8 @@ _view_translate_draggers_create(View* v, dragger_create_fn dfn )
         blue,
         false);
   v->draggers = eina_list_append(v->draggers, dragger);
+
+  if (!create_plane) return;
 
   red.W = 0.1f;
   green.W = 0.1f;
@@ -839,8 +874,9 @@ _create_view_objects(View* v)
   Line* l = object_component_get(v->repere, "line");
   if (l) line_set_size_fixed(l, true);
 
-  //_view_translate_draggers_create(v, _dragger_translate_create);
-  _view_translate_draggers_create(v, _dragger_scale_create);
+  //_view_draggers_create(v, _dragger_translate_create, true);
+  //_view_draggers_create(v, _dragger_scale_create, true);
+  _view_draggers_create(v, _dragger_rotate_create, false);
 
 
   v->camera_repere = _create_repere(40, v->camera->camera_component);
