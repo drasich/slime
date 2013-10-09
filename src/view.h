@@ -36,7 +36,7 @@ struct _View
   Evas_Object* select_rect;
   Evas_Object* menu;
 
-  Object* dragger;
+  Eina_List* draggers;
 };
 
 View* create_view(Evas_Object *win);

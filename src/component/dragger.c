@@ -102,11 +102,11 @@ dragger_state_set(Dragger* d, DraggerState state)
   if (!v) return;
 
   if (state == DRAGGER_HIGHLIGHT)
-  *v = vec4(0,1,1,1);
+  *v = vec4(1,0.97,0,1);
   else if (state == DRAGGER_IDLE)
-  *v = vec4(0,0,1,1);
+  *v = vec4(0.0,0.4745,1,1);
   else if (state == DRAGGER_SELECTED)
-  *v = vec4(1,0,1,1);
+  *v = vec4(1,1,1,1);
 
   d->state = state;
 }

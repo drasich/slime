@@ -25,6 +25,7 @@ struct _Dragger
   //Vec4 color;
   MeshComponent* mc;
   DraggerState state;
+  Vec3 constraint;
 };
 
 ComponentDesc* dragger_desc();

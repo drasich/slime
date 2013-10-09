@@ -4,6 +4,7 @@
 #include "view.h"
 #include "operation.h"
 #include "ui/tree.h"
+#include "component/dragger.h"
 
 Control* 
 create_control(View* v)
@@ -139,6 +140,10 @@ _translate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
 
   Eina_List* objects = context_objects_get(v->context);
   Plane p = { c->start, quat_rotate_vec3(v->camera->object->Orientation, vec3(0,0,-1)) };
+  if (constraint.X == 0)
+  p.Normal = vec3(1,0,0);
+  else if (constraint.Y == 0)
+  p.Normal = vec3(0,1,0);
 
   Ray rstart = ray_from_screen(v->camera, c->mouse_start.X, c->mouse_start.Y, 1);
 
@@ -162,7 +167,6 @@ _translate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
       ++i;
       center = vec3_add(center, o->Position);
     }
-    //v->dragger->Position = vec3_add(c->start, translation);
 
     if (i>0) center = vec3_mul(center, 1.0f/ (float) i);
     v->context->mos.center =  center;
@@ -172,7 +176,97 @@ _translate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
   }
 }
 
-#include "component/dragger.h"
+static void
+_draggers_highlight_check(Control* c, Evas_Coord x, Evas_Coord y)
+{
+  View* v = c->view;
+  IntersectionRay ir;
+  ir.hit = false;
+  Dragger* drag_hit = NULL;
+
+  Eina_List* l;
+  Object* dragger;
+  EINA_LIST_FOREACH(v->draggers, l, dragger) {
+    Dragger* d = object_component_get(dragger, "dragger");
+    if (!d) continue;
+
+    Ray r = ray_from_screen(v->camera, x, y, 1000);
+    AABox bb = d->box;
+    bb.Min = vec3_mul(bb.Min, d->scale);
+    bb.Max = vec3_mul(bb.Max, d->scale);
+
+    IntersectionRay irtest = intersection_ray_box(r, bb, dragger->Position, dragger->Orientation, vec3(1,1,1));
+    if (irtest.hit) {
+      //printf("there is a hit\n");
+      if (ir.hit) {
+        Vec3 old = vec3_sub(ir.position, r.Start);
+        Vec3 new = vec3_sub(irtest.position, r.Start);
+        if (vec3_length2(new) < vec3_length2(old)) {
+          ir = irtest;
+          drag_hit = d;
+        }
+      }
+      else {
+        ir = irtest;
+        drag_hit = d;
+      }
+    }
+    else {
+      //printf("there is no hit\n");
+      dragger_state_set(d, DRAGGER_IDLE);
+    }
+  }
+  
+  if (ir.hit && drag_hit) {
+    dragger_state_set(drag_hit, DRAGGER_HIGHLIGHT);
+  }
+}
+
+static void
+_draggers_click_check(Control* c, Evas_Event_Mouse_Down* e)
+{
+  View* v = c->view;
+  IntersectionRay ir;
+  ir.hit = false;
+  Dragger* drag_hit = NULL;
+
+  Eina_List* l;
+  Object* dragger;
+  EINA_LIST_FOREACH(v->draggers, l, dragger) {
+    Dragger* d = object_component_get(dragger, "dragger");
+    if (!d) continue;
+
+    Ray r = ray_from_screen(v->camera, e->canvas.x, e->canvas.y, 1000);
+    AABox bb = d->box;
+    bb.Min = vec3_mul(bb.Min, d->scale);
+    bb.Max = vec3_mul(bb.Max, d->scale);
+
+    IntersectionRay irtest = intersection_ray_box(r, bb, dragger->Position, dragger->Orientation, vec3(1,1,1));
+    if (irtest.hit) {
+      if (ir.hit) {
+        Vec3 old = vec3_sub(ir.position, r.Start);
+        Vec3 new = vec3_sub(irtest.position, r.Start);
+        if (vec3_length2(new) < vec3_length2(old)) {
+          ir = irtest;
+          drag_hit = d;
+        }
+      }
+      else {
+        ir = irtest;
+        drag_hit = d;
+      }
+    }
+  }
+  
+  if (ir.hit && drag_hit) {
+      dragger_state_set(drag_hit, DRAGGER_SELECTED);
+      _control_move_prepare(c);
+      c->state = CONTROL_DRAGGER;
+      c->constraint = drag_hit->constraint;
+  }
+}
+
+
 void
 control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
 {
@@ -182,22 +276,7 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
   View* v = c->view;
   if (c->state == CONTROL_IDLE) {
     if (e->buttons == 0){
-      Object* od = v->dragger;
-      Dragger* d = object_component_get(od, "dragger");
-      if (!d) return;
-
-      Ray r = ray_from_screen(v->camera, e->cur.canvas.x, e->cur.canvas.y, 1000);
-      AABox bb = d->box;
-      bb.Min = vec3_mul(bb.Min, d->scale);
-      bb.Max = vec3_mul(bb.Max, d->scale);
-
-      IntersectionRay ir = intersection_ray_box(r, bb, od->Position, od->Orientation, vec3(1,1,1));
-    
-      //dragger_highlight_set(d, ir.hit);
-      if (ir.hit)
-      dragger_state_set(d, DRAGGER_HIGHLIGHT);
-      else
-      dragger_state_set(d, DRAGGER_IDLE);
+       _draggers_highlight_check(c,e->cur.canvas.x, e->cur.canvas.y);
     }
     else if ( (e->buttons & 1) == 1){
       float x = e->cur.canvas.x - e->prev.canvas.x;
@@ -235,7 +314,7 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
     control_property_transform_update(c);
   }
   else if (c->state == CONTROL_DRAGGER) {
-    _translate_moving(c,e, vec3(0,0,1));
+    _translate_moving(c,e, c->constraint);
   }
 
 }
@@ -365,23 +444,7 @@ control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
   View* v = c->view;
 
   if (c->state == CONTROL_IDLE) {
-    Object* od = v->dragger;
-    Dragger* d = object_component_get(od, "dragger");
-    if (!d) return;
-
-    Ray r = ray_from_screen(v->camera, e->canvas.x, e->canvas.y, 1000);
-    AABox bb = d->box;
-    bb.Min = vec3_mul(bb.Min, d->scale);
-    bb.Max = vec3_mul(bb.Max, d->scale);
-
-    IntersectionRay ir = intersection_ray_box(r, bb, od->Position, od->Orientation, vec3(1,1,1));
-
-    if (ir.hit) {
-      dragger_state_set(d, DRAGGER_SELECTED);
-      _control_move_prepare(c);
-      c->state = CONTROL_DRAGGER;
-      return true;
-    }
+      _draggers_click_check(c, e);
   }
   else if (c->state == CONTROL_MOVE) {
     c->state = CONTROL_IDLE;
@@ -422,24 +485,9 @@ control_mouse_up(Control* c, Evas_Event_Mouse_Up *e)
   if (c->state == CONTROL_DRAGGER) {
     c->state = CONTROL_IDLE;
 
-    Object* od = v->dragger;
-    Dragger* d = object_component_get(od, "dragger");
-    if (!d) return;
-
-    Ray r = ray_from_screen(v->camera, e->canvas.x, e->canvas.y, 1000);
-    AABox bb = d->box;
-    bb.Min = vec3_mul(bb.Min, d->scale);
-    bb.Max = vec3_mul(bb.Max, d->scale);
-
-    IntersectionRay ir = intersection_ray_box(r, bb, od->Position, od->Orientation, vec3(1,1,1));
-
-    if (ir.hit)
-    dragger_state_set(d, DRAGGER_HIGHLIGHT);
-    else
-    dragger_state_set(d, DRAGGER_IDLE);
+    _draggers_highlight_check(c,e->canvas.x, e->canvas.y);
 
     Eina_List* objects = context_objects_get(v->context);
-
     Vec3 center = _objects_center(c, objects);
 
     Operation* op = _op_move_object(

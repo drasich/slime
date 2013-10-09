@@ -351,7 +351,7 @@ _create_repere(float u, Camera* camera)
 #include "resource.h"
 #include "component/dragger.h"
 static Object* 
-_create_dragger(Camera* camera)
+_create_dragger(Camera* camera, Vec3 constraint)
 {
   Object* o = create_object();
   Component* comp = create_component(&mesh_desc);
@@ -359,15 +359,10 @@ _create_dragger(Camera* camera)
   MeshComponent* mc = comp->data;
   mesh_component_shader_set(mc, "shader/dragger.shader");
 
-
-  mc->mesh_name = "model/Arrow.mesh";
+  mc->mesh_name = "model/dragger_arrow.mesh";
   mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
 
-  //UniformData* sud = calloc(1, sizeof *sud);
   Vec4* v = calloc(1, sizeof *v);
-  //sud->data = v;
-  //sud->name = "color";
-  //mesh_component_shader_uniform_data_add(mc, sud);
   shader_instance_uniform_data_set(mc->shader_instance, "color", v);
 
   object_add_component(o, comp);
@@ -389,6 +384,7 @@ _create_dragger(Camera* camera)
   d->line->camera = camera;
   d->box = mc->mesh->box;
   d->mc = mc;
+  d->constraint = constraint;
 
   return o;
 }
@@ -737,7 +733,8 @@ _create_view_objects(View* v)
   Line* l = object_component_get(v->repere, "line");
   if (l) line_set_size_fixed(l, true);
 
-  v->dragger = _create_dragger(v->camera->camera_component);
+  Object* dragger = _create_dragger(v->camera->camera_component, vec3(0,0,1));
+  v->draggers = eina_list_append(v->draggers, dragger);
 
   v->camera_repere = _create_repere(40, v->camera->camera_component);
   v->camera_repere->Position = vec3(10,10, -10);
@@ -1066,12 +1063,16 @@ view_draw(View* v)
   */
 
   if (last_obj) {
+    Object* dragger;
+    Eina_List* l;
     gl->glClear(GL_DEPTH_BUFFER_BIT);
-    v->dragger->Position = repere_position;
-    v->dragger->angles = last_obj->angles;
-    object_compute_matrix(v->dragger, mo);
-    mat4_multiply(cam_mat_inv, mo, mo);
-    object_draw_edit(v->dragger, mo, cc->projection);
+    EINA_LIST_FOREACH(v->draggers, l, dragger){
+      dragger->Position = repere_position;
+      //v->dragger->angles = last_obj->angles;
+      object_compute_matrix(dragger, mo);
+      mat4_multiply(cam_mat_inv, mo, mo);
+      object_draw_edit(dragger, mo, cc->projection);
+    }
   }
 
 

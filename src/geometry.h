@@ -7,14 +7,12 @@
 #undef far
 
 typedef struct _Ray Ray;
-
 struct _Ray {
   Vec3 Start;
   Vec3 Direction;
 };
 
 typedef struct _Plane Plane;
-
 struct _Plane {
   Vec3 Point;
   Vec3 Normal;
