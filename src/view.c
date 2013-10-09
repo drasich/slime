@@ -461,6 +461,7 @@ _dragger_rotate_create(Camera* c, Vec3 constraint, Vec4 color, bool plane)
   d->constraint = constraint;
   d->color_idle = color;
   d->type = DRAGGER_ROTATE;
+  d->collider = resource_mesh_get(s_rm, "model/dragger_rotate_collider.mesh");
   dragger_state_set(d, DRAGGER_IDLE);
 
   return o;

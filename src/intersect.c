@@ -332,20 +332,11 @@ intersection_ray_triangle(Ray r, Triangle t, double min)
 }
 
 IntersectionRay
-intersection_ray_object(Ray ray, Object* o)
+intersection_ray_mesh(Ray ray, Mesh* m, Vec3 position, Quat rotation, Vec3 scale)
 {
   IntersectionRay out = { .hit = false};
 
-  MeshComponent* mc = object_component_get(o,"mesh");
-  if (!mc) return out;
-  Mesh* m = mc->mesh;
-  if (!m) return out;
-
-  IntersectionRay ir_box = intersection_ray_box(ray, m->box, o->Position, o->Orientation, o->scale);
-  if (!ir_box.hit) return out;
-
-  //TODO perf: we compute these 2 times
-  Repere r = {o->Position, o->Orientation};
+  Repere r = {position, rotation};
   Ray newray;
   newray.Start = world_to_local(r, ray.Start);
   newray.Direction = world_to_local(r, vec3_add(ray.Direction, ray.Start));
@@ -372,21 +363,40 @@ intersection_ray_object(Ray ray, Object* o)
       m->vertices[id*3 + 2]
     };
 
-    v0 = vec3_vec3_mul(v0, o->scale);
-    v1 = vec3_vec3_mul(v1, o->scale);
-    v2 = vec3_vec3_mul(v2, o->scale);
+    v0 = vec3_vec3_mul(v0, scale);
+    v1 = vec3_vec3_mul(v1, scale);
+    v2 = vec3_vec3_mul(v2, scale);
 
     Triangle tri = { v0, v1, v2};
     out = intersection_ray_triangle(newray,tri,1);
     if (out.hit) {
       //transform back
       out.position = local_to_world(r, out.position);
-      out.normal = quat_rotate_vec3(o->Orientation, out.normal);
+      out.normal = quat_rotate_vec3(rotation, out.normal);
       return out;
     }
   }
 
   return out;
+
+}
+
+IntersectionRay
+intersection_ray_object(Ray ray, Object* o)
+{
+  IntersectionRay out = { .hit = false};
+
+  MeshComponent* mc = object_component_get(o,"mesh");
+  if (!mc) return out;
+  Mesh* m = mc->mesh;
+  if (!m) return out;
+
+  IntersectionRay ir_box = intersection_ray_box(ray, m->box, o->Position, o->Orientation, o->scale);
+  if (!ir_box.hit) return out;
+
+  return intersection_ray_mesh(ray, m, o->Position, o->Orientation, o->scale);
+
+  //TODO perf: we compute the repere 2 times in box and then mesh.
 }
 
 bool

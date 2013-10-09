@@ -79,8 +79,41 @@ _control_scale(Control* c)
     _control_scale_prepare(c, context_objects_get(v->context));
     c->mouse_start = mousepos;
   }
+}
+
+static void
+_control_rotate_prepare(Control* c, Eina_List* objects)
+{
+  int size = eina_list_count(objects);
+  c->rotates = eina_inarray_new (sizeof(Vec3), size);
+
+  Eina_List *l;
+  Object *o;
+  EINA_LIST_FOREACH(objects, l, o) {
+    eina_inarray_push(c->rotates, &o->angles);
+  }
+
+  c->state = CONTROL_ROTATE;
+}
+
+
+static void
+_control_rotate(Control* c)
+{
+  View* v = c->view;
+  int x, y;
+  //evas_pointer_output_xy_get(evas_object_evas_get(v->glview), &x, &y);
+  evas_pointer_canvas_xy_get(evas_object_evas_get(v->glview), &x, &y);
+  Vec2 mousepos = vec2(x,y);
+  //printf("mouse pos : %f, %f \n", mousepos.X, mousepos.Y);
+  Object* o = context_object_get(v->context);
+  if (o != NULL && c->state != CONTROL_ROTATE) {
+    _control_rotate_prepare(c, context_objects_get(v->context));
+    c->mouse_start = mousepos;
+  }
 
 }
+
 
 
 static void
@@ -209,6 +242,41 @@ _scale_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
 }
 
 static void
+_rotate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
+{
+  View* v = c->view;
+
+  Eina_List* objects = context_objects_get(v->context);
+
+  float x = e->cur.canvas.x;
+  float y = e->cur.canvas.y;
+
+  Vec2 d = vec2(x - c->mouse_start.X, y - c->mouse_start.Y);
+  double s = vec2_length(d);
+  /*
+  c->scale_factor = vec3(s,s,s);
+  if (constraint.X == 0) c->scale_factor.X = 0;
+  if (constraint.Y == 0) c->scale_factor.Y = 0;
+  if (constraint.Z == 0) c->scale_factor.Z = 0;
+  */
+  c->scale_factor = vec3_mul(constraint,s);
+
+  Eina_List *l;
+  Object *o;
+  int i = 0;
+  EINA_LIST_FOREACH(objects, l, o) {
+    Vec3* angles_origin = (Vec3*) eina_inarray_nth(c->rotates, i);
+    //o->scale = vec3_mul(*scale_origin, c->scale_factor);
+    o->angles = vec3_add(*angles_origin, c->scale_factor);
+    ++i;
+  }
+
+  if (i == 1)
+  control_property_transform_update(c);
+}
+
+
+static void
 _draggers_highlight_check(Control* c, Evas_Coord x, Evas_Coord y)
 {
   View* v = c->view;
@@ -228,7 +296,16 @@ _draggers_highlight_check(Control* c, Evas_Coord x, Evas_Coord y)
     bb.Min = vec3_mul(bb.Min, d->scale);
     bb.Max = vec3_mul(bb.Max, d->scale);
 
-    IntersectionRay irtest = intersection_ray_box(r, bb, dragger->Position, dragger->Orientation, vec3(1,1,1));
+    IntersectionRay irtest = { .hit = false };
+    if (d->type == DRAGGER_ROTATE) {
+      if (d->collider)
+      irtest = intersection_ray_mesh(
+            r, d->collider,
+            dragger->Position,
+            dragger->Orientation, vec3(d->scale,d->scale,d->scale));
+    }
+    else
+    irtest = intersection_ray_box(r, bb, dragger->Position, dragger->Orientation, vec3(1,1,1));
     if (irtest.hit) {
       if (ir.hit) {
         Vec3 old = vec3_sub(ir.position, r.Start);
@@ -270,7 +347,17 @@ _draggers_click_check(Control* c, Evas_Event_Mouse_Down* e)
     bb.Min = vec3_mul(bb.Min, d->scale);
     bb.Max = vec3_mul(bb.Max, d->scale);
 
-    IntersectionRay irtest = intersection_ray_box(r, bb, dragger->Position, dragger->Orientation, vec3(1,1,1));
+    IntersectionRay irtest = { .hit = false };
+    if (d->type == DRAGGER_ROTATE) {
+      if (d->collider)
+      irtest = intersection_ray_mesh(
+            r, d->collider,
+            dragger->Position,
+            dragger->Orientation, vec3(d->scale,d->scale,d->scale));
+    }
+    else
+    irtest = intersection_ray_box(r, bb, dragger->Position, dragger->Orientation, vec3(1,1,1));
+
     if (irtest.hit) {
       if (ir.hit) {
         Vec3 old = vec3_sub(ir.position, r.Start);
@@ -296,6 +383,10 @@ _draggers_click_check(Control* c, Evas_Event_Mouse_Down* e)
       else if (drag_hit->type == DRAGGER_SCALE) {
         _control_scale(c);
         c->state = CONTROL_DRAGGER_SCALE;
+      }
+      else if (drag_hit->type == DRAGGER_ROTATE) {
+        _control_rotate(c);
+        c->state = CONTROL_DRAGGER_ROTATE;
       }
       c->constraint = drag_hit->constraint;
       return true;
@@ -338,6 +429,9 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
   }
   else if (c->state == CONTROL_DRAGGER_SCALE) {
     _scale_moving(c,e, c->constraint);
+  }
+  else if (c->state == CONTROL_DRAGGER_ROTATE) {
+    _rotate_moving(c,e, c->constraint);
   }
 
 }
@@ -461,6 +555,24 @@ _op_scale_object(Eina_List* objects, Vec3 scale)
   return op;
 }
 
+static Operation* 
+_op_rotate_object(Eina_List* objects, Vec3 rotate)
+{
+  Operation* op = calloc(1, sizeof *op);
+
+  op->do_cb = operation_rotate_object_do;
+  op->undo_cb = operation_rotate_object_undo;
+
+  Op_Rotate_Object* oro = calloc(1, sizeof *oro);
+  oro->objects = eina_list_clone(objects);
+  oro->angle = rotate;
+
+  op->data = oro;
+
+  return op;
+}
+
+
 bool
 control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
 {
@@ -533,6 +645,20 @@ control_mouse_up(Control* c, Evas_Event_Mouse_Up *e)
 
     control_operation_add(c, op);
 
+    return true;
+  }
+  else if (c->state == CONTROL_DRAGGER_ROTATE) {
+    c->state = CONTROL_IDLE;
+
+    _draggers_highlight_check(c,e->canvas.x, e->canvas.y);
+
+    Eina_List* objects = context_objects_get(c->view->context);
+
+    Operation* op = _op_rotate_object(
+          objects,
+          c->scale_factor);
+
+    control_operation_add(c, op);
     return true;
   }
 

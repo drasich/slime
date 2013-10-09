@@ -73,5 +73,16 @@ struct _Op_Scale_Object
 void operation_scale_object_do(Control *c, void* data);
 void operation_scale_object_undo(Control *c, void* data);
 
+///////////////////////////////////////////////////////////
+
+typedef struct _Op_Rotate_Object Op_Rotate_Object;
+struct _Op_Rotate_Object
+{
+  Eina_List* objects;
+  Vec3 angle;
+};
+
+void operation_rotate_object_do(Control *c, void* data);
+void operation_rotate_object_undo(Control *c, void* data);
 
 #endif

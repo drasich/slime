@@ -205,3 +205,28 @@ operation_scale_object_undo(Control* c, void* data)
 
 ////////////////
 
+void 
+operation_rotate_object_do(Control* c, void* data)
+{
+  Op_Rotate_Object* od = (Op_Rotate_Object*) data;
+
+  Eina_List *l;
+  Object *o;
+  EINA_LIST_FOREACH(od->objects, l, o) {
+    o->angles = vec3_add(o->angles, od->angle);
+  }
+
+}
+
+void 
+operation_rotate_object_undo(Control* c, void* data)
+{
+  Op_Rotate_Object* od = (Op_Rotate_Object*) data;
+
+  Eina_List *l;
+  Object *o;
+  EINA_LIST_FOREACH(od->objects, l, o) {
+    o->angles = vec3_sub(o->angles, od->angle);
+  }
+}
+

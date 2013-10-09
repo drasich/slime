@@ -27,6 +27,7 @@ Vec3 local_to_world(Repere r, Vec3 v);
 
 IntersectionRay intersection_ray_triangle(Ray ray, Triangle, double min);
 IntersectionRay intersection_ray_object(Ray ray, Object* o);
+IntersectionRay intersection_ray_mesh(Ray ray, Mesh* m, Vec3 position, Quat rotation, Vec3 scale);
 
 
 bool frustum_is_in(Frustum* f, Vec3 p);

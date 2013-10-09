@@ -35,6 +35,7 @@ struct _Dragger
   DraggerState state;
   Vec3 constraint;
   DraggerType type;
+  Mesh* collider;
 };
 
 ComponentDesc* dragger_desc();
