@@ -9,7 +9,7 @@
 #include "component/line.h"
 
 typedef enum {
-  DRAGGER_IDLE,
+  DRAGGER_IDLE = 1,
   DRAGGER_HIGHLIGHT,
   DRAGGER_SELECTED
 } DraggerState;
@@ -21,8 +21,8 @@ struct _Dragger
   Context* context;
   AABox box;
   double scale;
-  Line* line;
-  //Vec4 color;
+  //Line* line;
+  Vec4 color_idle;
   MeshComponent* mc;
   DraggerState state;
   Vec3 constraint;

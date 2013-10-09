@@ -189,6 +189,7 @@ _draggers_highlight_check(Control* c, Evas_Coord x, Evas_Coord y)
   EINA_LIST_FOREACH(v->draggers, l, dragger) {
     Dragger* d = object_component_get(dragger, "dragger");
     if (!d) continue;
+    dragger_state_set(d, DRAGGER_IDLE);
 
     Ray r = ray_from_screen(v->camera, x, y, 1000);
     AABox bb = d->box;
@@ -197,7 +198,6 @@ _draggers_highlight_check(Control* c, Evas_Coord x, Evas_Coord y)
 
     IntersectionRay irtest = intersection_ray_box(r, bb, dragger->Position, dragger->Orientation, vec3(1,1,1));
     if (irtest.hit) {
-      //printf("there is a hit\n");
       if (ir.hit) {
         Vec3 old = vec3_sub(ir.position, r.Start);
         Vec3 new = vec3_sub(irtest.position, r.Start);
@@ -210,10 +210,6 @@ _draggers_highlight_check(Control* c, Evas_Coord x, Evas_Coord y)
         ir = irtest;
         drag_hit = d;
       }
-    }
-    else {
-      //printf("there is no hit\n");
-      dragger_state_set(d, DRAGGER_IDLE);
     }
   }
   

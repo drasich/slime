@@ -351,7 +351,7 @@ _create_repere(float u, Camera* camera)
 #include "resource.h"
 #include "component/dragger.h"
 static Object* 
-_create_dragger(Camera* camera, Vec3 constraint)
+_create_dragger(Camera* camera, Vec3 constraint, Vec4 color)
 {
   Object* o = create_object();
   Component* comp = create_component(&mesh_desc);
@@ -381,10 +381,12 @@ _create_dragger(Camera* camera, Vec3 constraint)
   comp = create_component(dragger_desc());
   object_add_component(o,comp);
   Dragger* d = comp->data;
-  d->line->camera = camera;
+  //d->line->camera = camera;
   d->box = mc->mesh->box;
   d->mc = mc;
   d->constraint = constraint;
+  d->color_idle = color;
+  dragger_state_set(d, DRAGGER_IDLE);
 
   return o;
 }
@@ -719,6 +721,21 @@ _add_buttons(View* v, Evas_Object* win)
 }
 
 static void
+_view_translate_draggers_create(View* v)
+{
+  Object* dragger = _create_dragger(v->camera->camera_component, vec3(1,0,0), vec4(1.0,0.247,0.188,1));
+  dragger->angles.Y = -90;
+  v->draggers = eina_list_append(v->draggers, dragger);
+
+  dragger = _create_dragger(v->camera->camera_component, vec3(0,1,0), vec4(0.2117,0.949,0.4156,1));
+  dragger->angles.X = 90;
+  v->draggers = eina_list_append(v->draggers, dragger);
+
+  dragger = _create_dragger(v->camera->camera_component, vec3(0,0,1), vec4(0,0.4745,1,1));
+  v->draggers = eina_list_append(v->draggers, dragger);
+}
+
+static void
 _create_view_objects(View* v)
 {
   v->camera = view_camera_new();
@@ -733,8 +750,8 @@ _create_view_objects(View* v)
   Line* l = object_component_get(v->repere, "line");
   if (l) line_set_size_fixed(l, true);
 
-  Object* dragger = _create_dragger(v->camera->camera_component, vec3(0,0,1));
-  v->draggers = eina_list_append(v->draggers, dragger);
+  _view_translate_draggers_create(v);
+
 
   v->camera_repere = _create_repere(40, v->camera->camera_component);
   v->camera_repere->Position = vec3(10,10, -10);

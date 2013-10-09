@@ -7,7 +7,7 @@ static void*
 _dragger_create()
 {
   Dragger* d = calloc(1, sizeof *d);
-  d->line = create_line();
+  //d->line = create_line();
   return d;
 }
 
@@ -36,10 +36,12 @@ _dragger_draw_edit(Component* comp, Matrix4 world, Matrix4 projection)
 {
   Dragger* d = comp->data;
 
+  /*
   Line* l = d->line;
   line_set_use_depth(l, false);
   line_set_size_fixed(l, false);
   line_clear(l);
+  */
   AABox bb = d->box;
   double w = _resize_to_cam(world, projection, 0.1);
   bb.Max = vec3_mul(bb.Max, w);
@@ -104,7 +106,7 @@ dragger_state_set(Dragger* d, DraggerState state)
   if (state == DRAGGER_HIGHLIGHT)
   *v = vec4(1,0.97,0,1);
   else if (state == DRAGGER_IDLE)
-  *v = vec4(0.0,0.4745,1,1);
+  *v = d->color_idle;
   else if (state == DRAGGER_SELECTED)
   *v = vec4(1,1,1,1);
 
