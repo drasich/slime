@@ -250,7 +250,7 @@ _draggers_highlight_check(Control* c, Evas_Coord x, Evas_Coord y)
   }
 }
 
-static void
+static bool
 _draggers_click_check(Control* c, Evas_Event_Mouse_Down* e)
 {
   View* v = c->view;
@@ -298,7 +298,10 @@ _draggers_click_check(Control* c, Evas_Event_Mouse_Down* e)
         c->state = CONTROL_DRAGGER_SCALE;
       }
       c->constraint = drag_hit->constraint;
+      return true;
   }
+
+  return false;
 }
 
 
@@ -464,7 +467,7 @@ control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
   View* v = c->view;
 
   if (c->state == CONTROL_IDLE) {
-      _draggers_click_check(c, e);
+      if (_draggers_click_check(c, e)) return true;
   }
   else if (c->state == CONTROL_MOVE) {
     c->state = CONTROL_IDLE;
