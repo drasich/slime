@@ -11,7 +11,8 @@
 typedef enum {
   DRAGGER_IDLE = 1,
   DRAGGER_HIGHLIGHT,
-  DRAGGER_SELECTED
+  DRAGGER_SELECTED,
+  DRAGGER_HIDE
 } DraggerState;
 
 typedef struct _Dragger Dragger;

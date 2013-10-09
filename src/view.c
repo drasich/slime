@@ -351,7 +351,7 @@ _create_repere(float u, Camera* camera)
 #include "resource.h"
 #include "component/dragger.h"
 static Object* 
-_create_dragger(Camera* camera, Vec3 constraint, Vec4 color)
+_dragger_translate_create(Camera* camera, Vec3 constraint, Vec4 color, bool plane)
 {
   Object* o = create_object();
   Component* comp = create_component(&mesh_desc);
@@ -359,8 +359,14 @@ _create_dragger(Camera* camera, Vec3 constraint, Vec4 color)
   MeshComponent* mc = comp->data;
   mesh_component_shader_set(mc, "shader/dragger.shader");
 
-  mc->mesh_name = "model/dragger_arrow.mesh";
-  mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
+  if (plane) {
+    mc->mesh_name = "model/dragger_plane.mesh";
+    mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
+  }
+  else {
+    mc->mesh_name = "model/dragger_arrow.mesh";
+    mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
+  }
 
   Vec4* v = calloc(1, sizeof *v);
   shader_instance_uniform_data_set(mc->shader_instance, "color", v);
@@ -723,15 +729,58 @@ _add_buttons(View* v, Evas_Object* win)
 static void
 _view_translate_draggers_create(View* v)
 {
-  Object* dragger = _create_dragger(v->camera->camera_component, vec3(1,0,0), vec4(1.0,0.247,0.188,1));
+  Vec4 red = vec4(1.0,0.247,0.188,1);
+  Vec4 green = vec4(0.2117,0.949,0.4156,1);
+  Vec4 blue = vec4(0,0.4745,1,1);
+
+  Object* dragger = _dragger_translate_create(
+        v->camera->camera_component,
+        vec3(1,0,0),
+        red,
+        false);
   dragger->angles.Y = -90;
   v->draggers = eina_list_append(v->draggers, dragger);
 
-  dragger = _create_dragger(v->camera->camera_component, vec3(0,1,0), vec4(0.2117,0.949,0.4156,1));
+  dragger = _dragger_translate_create(
+        v->camera->camera_component,
+        vec3(0,1,0),
+        green,
+        false);
   dragger->angles.X = 90;
   v->draggers = eina_list_append(v->draggers, dragger);
 
-  dragger = _create_dragger(v->camera->camera_component, vec3(0,0,1), vec4(0,0.4745,1,1));
+  dragger = _dragger_translate_create(
+        v->camera->camera_component,
+        vec3(0,0,1),
+        blue,
+        false);
+  v->draggers = eina_list_append(v->draggers, dragger);
+
+  red.W = 0.1f;
+  green.W = 0.1f;
+  blue.W = 0.1f;
+
+  dragger = _dragger_translate_create(
+        v->camera->camera_component,
+        vec3(0,1,1),
+        blue,
+        true);
+  v->draggers = eina_list_append(v->draggers, dragger);
+
+  dragger = _dragger_translate_create(
+        v->camera->camera_component,
+        vec3(1,1,0),
+        red,
+        true);
+  dragger->angles.Y = -90;
+  v->draggers = eina_list_append(v->draggers, dragger);
+
+  dragger = _dragger_translate_create(
+        v->camera->camera_component,
+        vec3(1,0,1),
+        green,
+        true);
+  dragger->angles.Z = 90;
   v->draggers = eina_list_append(v->draggers, dragger);
 }
 

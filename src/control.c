@@ -231,6 +231,7 @@ _draggers_click_check(Control* c, Evas_Event_Mouse_Down* e)
   EINA_LIST_FOREACH(v->draggers, l, dragger) {
     Dragger* d = object_component_get(dragger, "dragger");
     if (!d) continue;
+    dragger_state_set(d, DRAGGER_HIDE);
 
     Ray r = ray_from_screen(v->camera, e->canvas.x, e->canvas.y, 1000);
     AABox bb = d->box;
