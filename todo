@@ -51,6 +51,7 @@ VIEW
 - remove the animator for view?
 
 ARCHITECTURE
+- child and parent
 - make material to handle textures, uniform etc
 - init mode et real mode
 - decider si transform devient un component a part en dehors d'object

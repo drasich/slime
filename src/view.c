@@ -445,7 +445,8 @@ _dragger_rotate_create(Camera* c, Vec3 constraint, Vec4 color, bool plane)
   MeshComponent* mc = comp->data;
   mesh_component_shader_set(mc, "shader/dragger.shader");
 
-  mc->mesh_name = "model/dragger_rotate.mesh";
+  //mc->mesh_name = "model/dragger_rotate_half.mesh";
+  mc->mesh_name = "model/dragger_rotate_test.mesh";
   mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
 
   Vec4* v = calloc(1, sizeof *v);
@@ -877,7 +878,16 @@ _create_view_objects(View* v)
 
   //_view_draggers_create(v, _dragger_translate_create, true);
   //_view_draggers_create(v, _dragger_scale_create, true);
-  _view_draggers_create(v, _dragger_rotate_create, false);
+  //_view_draggers_create(v, _dragger_rotate_create, false);
+
+  Object* dragger;
+
+  dragger = _dragger_rotate_create(
+        v->camera->camera_component,
+        vec3(1,0,0),
+        vec4(0,0,1,1),
+        false);
+  v->draggers = eina_list_append(v->draggers, dragger);
 
 
   v->camera_repere = _create_repere(40, v->camera->camera_component);
@@ -1070,6 +1080,33 @@ create_render()
 
 }
 
+static void
+_object_camera_face(Object* o, ViewCamera* c)
+{
+  /*
+  Quat q = quat_lookat(o->Position, c->object->Position, vec3(0,1,0));
+  Vec3 a = quat_to_euler(q);
+  a = vec3_mul(a, 180.0f/3.141519f);
+  //o->angles = a;
+  //o->Orientation = q;
+  //printf("angles : %f, %f, %f\n", a.X, a.Y,a.Z);
+  */
+
+  Vec3 diff = vec3_sub(o->Position, c->object->Position);
+  double dot = vec3_dot(diff, vec3(1,0,0));
+  if (dot > 0)
+  o->angles.Y = 90;
+  else
+  o->angles.Y = 0;
+
+  dot = vec3_dot(diff, vec3(0,1,0));
+  if (dot > 0)
+  o->angles.X = -90;
+  else
+  o->angles.X = 0;
+
+}
+
 void
 view_draw(View* v)
 {
@@ -1212,7 +1249,10 @@ view_draw(View* v)
     gl->glClear(GL_DEPTH_BUFFER_BIT);
     EINA_LIST_FOREACH(v->draggers, l, dragger){
       dragger->Position = repere_position;
-      //v->dragger->angles = last_obj->angles;
+      Dragger* d = object_component_get(dragger, "dragger");
+      if (d && d->type == DRAGGER_ROTATE) {
+        _object_camera_face(dragger, c);
+      }
       object_compute_matrix(dragger, mo);
       mat4_multiply(cam_mat_inv, mo, mo);
       object_draw_edit(dragger, mo, cc->projection);
