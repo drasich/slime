@@ -431,3 +431,8 @@ object_post_read(Object* o)
   }
 }
 
+void
+object_child_add(Object* parent, Object* child)
+{
+  parent->children = eina_list_append(parent->children, child);
+}

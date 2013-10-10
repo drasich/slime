@@ -31,6 +31,9 @@ struct _Object {
   Armature* armature;
   Eina_List* components;
   Component* component;
+
+  Object* parent;
+  Eina_List* children;
 };
 
 struct _Camera;
@@ -55,7 +58,6 @@ void object_play_animation(Object* o, char* action_name);
 
 void object_compute_matrix(Object* o, Matrix4 out);
 
-
 //test
 void object_compute_matrix_with_angles(Object* o, Matrix4 mat);
 void object_compute_matrix_with_quat(Object* o, Matrix4 mat);
@@ -73,5 +75,7 @@ PropertySet* property_set_object();
 
 void object_post_read(Object* o);
 void object_descriptor_delete();
+
+void object_child_add(Object* parent, Object* child);
 
 #endif

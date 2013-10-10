@@ -99,8 +99,8 @@ create_window()
 
 
   //evas_object_resize(win, 800/3, 400/3);
-  //evas_object_resize(win, 800, 200);
-  evas_object_resize(win, 1200, 400);
+  evas_object_resize(win, 800, 200);
+  //evas_object_resize(win, 1200, 400);
   evas_object_show(win);
 
 
@@ -128,6 +128,7 @@ _object_mesh_create(const char* file)
 static void
 populate_scene(Control* c, Scene* s)
 {
+  Object* parent;
    {
     Object* o = _object_mesh_create("model/Cube.mesh");
     o->name = eina_stringshare_add("cubel");
@@ -135,6 +136,7 @@ populate_scene(Control* c, Scene* s)
     Vec3 t = {0,0,0};
     object_set_position(o, t);
     control_object_add(c, s, o);
+    parent = o;
    }
 
    {
@@ -171,8 +173,10 @@ populate_scene(Control* c, Scene* s)
     mc->mesh_name = "model/smallchar.mesh";
     mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
     object_add_component(empty, meshcomp);
+    empty->Position = vec3(6,0,0);
 
-    control_object_add(c,s,empty);
+    //control_object_add(c,s,empty);
+    object_child_add(parent, empty);
 
     /* testing code, can be removed
     Component* cline = create_component(&line_desc);

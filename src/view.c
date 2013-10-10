@@ -257,6 +257,46 @@ _makeRect(View* v, Evas_Event_Mouse_Down* ev)
   evas_object_show(r);
 }
 
+static Evas_Object*
+_context_menu_create(Evas_Object* win, View* v)
+{
+  Evas_Object* menu;
+  Elm_Object_Item *menu_it,*menu_it1;
+
+  menu = elm_menu_add(win);
+  evas_object_data_set(menu, "view", v);
+
+  Context* c = v->context;
+  Eina_List* objects = context_objects_get(c);
+  int count = eina_list_count(objects);
+  if (count == 0) {
+    elm_menu_item_add(menu, NULL, NULL, "Add empty", NULL, NULL);
+  }
+  else {
+    if (count == 1) {
+    }
+    else if (count >1) {
+      elm_menu_item_add(menu, NULL, NULL, "Set parent", NULL, NULL);
+    }
+    elm_menu_item_add(menu, NULL, NULL, "Duplicate", NULL, NULL);
+    elm_menu_item_add(menu, NULL, NULL, "Remove", NULL, NULL);
+    elm_menu_item_add(menu, NULL, NULL, "Add Component", NULL, NULL);
+  }
+
+
+
+  /*
+  Eina_List* l;
+  ComponentDesc* c;
+  EINA_LIST_FOREACH(components, l, c) {
+    printf("component name : %s\n", c->name);
+    elm_menu_item_add(menu, NULL, NULL, c->name, _addcomp, c);
+  }
+  */
+  return menu;
+}
+
+
 static void
 _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
 {
@@ -271,8 +311,20 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
 
   //if (ev->button == 3 ){
   const Evas_Modifier * mods = ev->modifiers;
-  if (evas_key_modifier_is_set(mods, "Control")) {
+  if ( ev->button == 1 && evas_key_modifier_is_set(mods, "Control")) {
     _makeRect(v, ev);
+    return;
+  }
+
+  if (ev->button == 3) {
+    Evas_Object* win = evas_object_top_get (evas_object_evas_get(o));
+    Evas_Object* menu = _context_menu_create(win, v);
+    evas_object_show(menu);
+    elm_menu_move(menu, ev->canvas.x, ev->canvas.y);
+    return;
+  }
+
+  if (ev->button != 1){
     return;
   }
 
@@ -675,7 +727,6 @@ _create_component_menu(Evas_Object* win, Eina_List* components)
   return menu;
 }
 
-
 static void
 _addcomponent(void *data,
       Evas_Object *obj,
@@ -876,10 +927,11 @@ _create_view_objects(View* v)
   Line* l = object_component_get(v->repere, "line");
   if (l) line_set_size_fixed(l, true);
 
-  //_view_draggers_create(v, _dragger_translate_create, true);
+  _view_draggers_create(v, _dragger_translate_create, true);
   //_view_draggers_create(v, _dragger_scale_create, true);
   //_view_draggers_create(v, _dragger_rotate_create, false);
 
+  /*
   Object* dragger;
 
   dragger = _dragger_rotate_create(
@@ -888,6 +940,7 @@ _create_view_objects(View* v)
         vec4(0,0,1,1),
         false);
   v->draggers = eina_list_append(v->draggers, dragger);
+  */
 
 
   v->camera_repere = _create_repere(40, v->camera->camera_component);
@@ -1192,12 +1245,25 @@ view_draw(View* v)
     
     //bool b = frustum_is_in(&f, o->Position);
     //if (!b) continue;
+    Matrix4 yep;
 
-    object_compute_matrix(o, mo);
-    mat4_multiply(cam_mat_inv, mo, mo);
+    object_compute_matrix(o, yep);
+    mat4_multiply(cam_mat_inv, yep, mo);
     //mat4_multiply(cam_mat_inv, o->matrix, mo);
     //object_draw(o, mo, *projection);
     object_draw_edit_component(o, mo, cc, "mesh");
+
+    Object* child;
+    Eina_List* lc;
+    EINA_LIST_FOREACH(o->children, lc, child) {
+      //TODO parent children wip
+      object_compute_matrix(child, mo);
+      mat4_multiply(yep, mo, mo);
+      mat4_multiply(cam_mat_inv, mo, mo);
+      object_draw_edit_component(child, mo, cc, "mesh");
+
+    }
+
   }
 
   //TODO avoid compute matrix 2 times

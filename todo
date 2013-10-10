@@ -1,7 +1,5 @@
 LATELY
-- dragger
-- make the mesh/resource manager. just input the name and it loads in
-  the background
+- finish rotate dragger, and cycle between draggers
 - texture manager
 
 CLEAN
@@ -20,8 +18,6 @@ ISSUES (must be done)
   control is clean in view_destroy and then there is a pointer to control in gameview that is
   used in the cleaning for gameview, I removed the free(v->control) temporarily but there shouldn't
   be control in gameview... component manager I have to check
-- uniforms/attributes... 2 choices : put attributes and uniforms in mesh component
-  OR call init attribute that calls getattribute to get the good attr
 
 BUG
 - focus the play and main windows alternatively(with the mouse)
@@ -51,6 +47,8 @@ VIEW
 - remove the animator for view?
 
 ARCHITECTURE
+- make the mesh/resource manager. just input the name and it loads in
+  the background
 - child and parent
 - make material to handle textures, uniform etc
 - init mode et real mode

@@ -579,33 +579,37 @@ control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
   View* v = c->view;
 
   if (c->state == CONTROL_IDLE) {
-      if (_draggers_click_check(c, e)) return true;
+      if (e->button == 1 && _draggers_click_check(c, e)) return true;
   }
   else if (c->state == CONTROL_MOVE) {
-    c->state = CONTROL_IDLE;
+    if (e->button == 1) {
+      c->state = CONTROL_IDLE;
 
-    Eina_List* objects = context_objects_get(c->view->context);
+      Eina_List* objects = context_objects_get(c->view->context);
 
-    Vec3 center = _objects_center(c, objects);
+      Vec3 center = _objects_center(c, objects);
 
-    Operation* op = _op_move_object(
-          objects,
-          vec3_sub(center, c->start));
+      Operation* op = _op_move_object(
+            objects,
+            vec3_sub(center, c->start));
 
-    control_operation_add(c, op);
-    return true;
+      control_operation_add(c, op);
+      return true;
+    }
   }
   else if (c->state == CONTROL_SCALE) {
-    c->state = CONTROL_IDLE;
+    if (e->button == 1) {
+      c->state = CONTROL_IDLE;
 
-    Eina_List* objects = context_objects_get(c->view->context);
+      Eina_List* objects = context_objects_get(c->view->context);
 
-    Operation* op = _op_scale_object(
-          objects,
-          c->scale_factor);
+      Operation* op = _op_scale_object(
+            objects,
+            c->scale_factor);
 
-    control_operation_add(c, op);
-    return true;
+      control_operation_add(c, op);
+      return true;
+    }
   }
 
   return false;
