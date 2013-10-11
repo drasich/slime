@@ -38,5 +38,7 @@ Eina_List* context_objects_get(Context* c);
 
 void context_add_callback(Context* c, context_cb cb, void* listener);
 
+bool context_object_contains(Context* c, struct _Object* o);
+
 
 #endif

@@ -391,10 +391,16 @@ intersection_ray_object(Ray ray, Object* o)
   Mesh* m = mc->mesh;
   if (!m) return out;
 
-  IntersectionRay ir_box = intersection_ray_box(ray, m->box, o->Position, o->Orientation, o->scale);
+  Vec3 wp = object_world_position_get(o);
+  Quat wq = object_world_orientation_get(o);
+  Vec3 ws = object_world_scale_get(o);
+
+  //IntersectionRay ir_box = intersection_ray_box(ray, m->box, o->Position, o->Orientation, o->scale);
+  IntersectionRay ir_box = intersection_ray_box(ray, m->box, wp, wq, ws);
   if (!ir_box.hit) return out;
 
-  return intersection_ray_mesh(ray, m, o->Position, o->Orientation, o->scale);
+  //return intersection_ray_mesh(ray, m, o->Position, o->Orientation, o->scale);
+  return intersection_ray_mesh(ray, m, wp, wq, ws);
 
   //TODO perf: we compute the repere 2 times in box and then mesh.
 }

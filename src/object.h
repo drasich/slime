@@ -58,11 +58,26 @@ void object_draw_edit(
       const Matrix4 projection,
       const Matrix4 parent);
 
+void 
+object_draw_edit2(
+      Object* o,
+      const Matrix4 cam_inv,
+      const Matrix4 projection,
+      const Matrix4 world);
+
 void object_draw_edit_component(
       Object* o,
       const Matrix4 cam_inv,
       const Matrix4 projection,
       const Matrix4 parent,
+      const char* name);
+
+void 
+object_draw_edit_component2(
+      Object* o,
+      const Matrix4 cam_inv,
+      const Matrix4 projection,
+      const Matrix4 world,
       const char* name);
 
 void object_update(Object* o);
@@ -98,5 +113,9 @@ void object_post_read(Object* o);
 void object_descriptor_delete();
 
 void object_child_add(Object* parent, Object* child);
+
+Vec3 object_world_position_get(Object* o);
+Quat object_world_orientation_get(Object* o);
+Vec3 object_world_scale_get(Object* o);
 
 #endif

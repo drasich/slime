@@ -84,6 +84,53 @@ object_draw_edit(
   */
 }
 
+void 
+object_draw_edit2(
+      Object* o,
+      const Matrix4 cam_inv,
+      const Matrix4 projection,
+      const Matrix4 world)
+{
+  Matrix4 mo;
+  mat4_multiply(cam_inv, world, mo);
+
+  Eina_List* l;
+  Component* c;
+
+  EINA_LIST_FOREACH(o->components, l, c) {
+    if (c->funcs->draw)
+    c->funcs->draw(c, mo, projection);
+    if (c->funcs->draw_edit)
+    c->funcs->draw_edit(c, mo, projection);
+  }
+}
+
+void 
+object_draw_edit_component2(
+      Object* o,
+      const Matrix4 cam_inv,
+      const Matrix4 projection,
+      const Matrix4 world,
+      const char* name)
+{
+  Matrix4 mo;
+  mat4_multiply(cam_inv, world, mo);
+
+  Eina_List* l;
+  Component* c;
+
+  EINA_LIST_FOREACH(o->components, l, c) {
+    if (strcmp(c->name, name)) continue;
+
+    if (c->funcs->draw)
+    c->funcs->draw(c, mo, projection);
+    if (c->funcs->draw_edit)
+    c->funcs->draw_edit(c, mo, projection);
+  }
+}
+
+
+
 void
 object_draw_edit_component(
       Object* o,
@@ -111,15 +158,6 @@ object_draw_edit_component(
     if (c->funcs->draw_edit)
     c->funcs->draw_edit(c, mo, projection);
   }
-
-  /*
-  Object* child;
-  Eina_List* lc;
-  EINA_LIST_FOREACH(o->children, lc, child) {
-    object_draw_edit(child, cam_inv, projection, world);
-  }
-  */
-
 }
 
 
@@ -493,4 +531,30 @@ void
 object_child_add(Object* parent, Object* child)
 {
   parent->children = eina_list_append(parent->children, child);
+  child->parent = parent;
+}
+
+Vec3 object_world_position_get(Object* o)
+{
+  if (o->parent)
+  return vec3_add(o->Position, object_world_position_get(o->parent));
+  else
+  return o->Position;
+}
+
+Quat object_world_orientation_get(Object* o)
+{
+  if (o->parent)
+  return quat_mul(object_world_orientation_get(o->parent), o->Orientation);
+  else
+  return o->Orientation;
+}
+
+Vec3 object_world_scale_get(Object* o)
+{
+  if (o->parent)
+  return vec3_vec3_mul(o->scale, object_world_scale_get(o->parent));
+  else
+  return o->scale;
+
 }

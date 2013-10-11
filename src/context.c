@@ -82,3 +82,16 @@ context_add_callback(Context* c, context_cb cb, void* listener)
   c->listener = eina_list_append(c->listener, listener);
 }
 
+
+bool
+context_object_contains(Context* c, struct _Object* o)
+{
+  Eina_List *l;
+  struct _Object* ob;
+
+  EINA_LIST_FOREACH(c->objects, l, ob) {
+    if (ob == o) return true;
+  }
+
+  return false;
+}

@@ -334,16 +334,20 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   Object* clicked = NULL;
 
   Eina_List *list;
-  Object *ob;
-  EINA_LIST_FOREACH(s->objects, list, ob) {
-    IntersectionRay ir = intersection_ray_object(r, ob);
+  //Object *ob;
+  RenderObject *ro;
+  //EINA_LIST_FOREACH(s->objects, list, ob) {
+  EINA_LIST_FOREACH(v->render->render_objects, list, ro) {
+    //IntersectionRay ir = intersection_ray_object(r, ob);
+    IntersectionRay ir = intersection_ray_object(r, ro->object);
     
     if (ir.hit) {
       double diff = vec3_length2(vec3_sub(ir.position, v->camera->object->Position));
       if ( (found && diff < d) || !found) {
         found = true;
         d = diff;
-        clicked = ob;
+        //clicked = ob;
+        clicked = ro->object;
       }
     }
   }
@@ -1030,12 +1034,15 @@ view_destroy(View* v)
 }
 
 static void
-_render_object_add(Render* r, Object* o, Matrix4 root)
+_render_object_add(View* v, Object* o, Matrix4 root)
 {
   RenderObject* ro = calloc(1, sizeof *ro);
   ro->object = o;
-  mat4_copy(root, ro->parent);
-  r->render_objects = eina_list_append(r->render_objects, ro);
+  object_compute_matrix(o, ro->world);
+  mat4_multiply(root, ro->world, ro->world);
+  v->render->render_objects = eina_list_append(v->render->render_objects, ro);
+  if (context_object_contains(v->context, o))
+  v->render->render_objects_selected = eina_list_append(v->render->render_objects_selected, ro);
 }
 
 static void
@@ -1047,13 +1054,13 @@ _render_objects_add(View* v, Matrix4 root, Plane* planes, Eina_List* objects)
     MeshComponent* mc = object_component_get(o, "mesh");
     if (!mc ) {
       //TODO
-      _render_object_add(v->render, o, root);
+      _render_object_add(v, o, root);
       continue;
     }
 
     Mesh* m = mc->mesh;
     if (!m) {
-      _render_object_add(v->render, o, root);
+      _render_object_add(v, o, root);
       continue;
     }
 
@@ -1062,7 +1069,7 @@ _render_objects_add(View* v, Matrix4 root, Plane* planes, Eina_List* objects)
 
     if (planes_is_box_in_allow_false_positives(planes, 6, b)) {
     //if (planes_is_in(planes, 6, o->Position)) {
-      _render_object_add(v->render, o, root);
+      _render_object_add(v, o, root);
     }
 
     Matrix4 world;
@@ -1090,6 +1097,7 @@ view_update(View* v, double dt)
   Matrix4 id4;
   mat4_set_identity(id4);
   v->render->render_objects = eina_list_free(v->render->render_objects);
+  v->render->render_objects_selected = eina_list_free(v->render->render_objects_selected);
   _render_objects_add(v, id4, planes, s->objects);
   r->objects = eina_list_free(r->objects);
 
@@ -1115,6 +1123,7 @@ view_update(View* v, double dt)
       r->objects = eina_list_append(r->objects, o);
     }
   }
+  
 }
 
 #include "resource.h"
@@ -1232,9 +1241,17 @@ view_draw(View* v)
 
   fbo_use(r->fbo_selected);
   gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT) ;
+  /*
   EINA_LIST_FOREACH(cxol, l, o) {
     object_draw_edit_component(o, cam_mat_inv, cc->projection , id4, "mesh");
   }
+  */
+
+  RenderObject* ro;
+  EINA_LIST_FOREACH(r->render_objects_selected, l, ro) {
+    object_draw_edit_component2(ro->object, cam_mat_inv, cc->projection, ro->world, "mesh");
+  }
+
   fbo_use_end();
 
 
@@ -1247,9 +1264,16 @@ view_draw(View* v)
   gl->glStencilFunc(GL_ALWAYS, 0x1, 0x1);
   gl->glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
+  /*
   EINA_LIST_FOREACH(r->objects, l, o) {
     object_draw_edit_component(o, cam_mat_inv, cc->projection , id4, "mesh");
   }
+  */
+
+  EINA_LIST_FOREACH(r->render_objects, l, ro) {
+    object_draw_edit_component2(ro->object, cam_mat_inv, cc->projection, ro->world, "mesh");
+  }
+
   //gl->glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 
   //was a test, can be removed
@@ -1293,9 +1317,8 @@ view_draw(View* v)
   }
   */
 
-  RenderObject* ro;
   EINA_LIST_FOREACH(r->render_objects, l, ro) {
-    object_draw_edit(ro->object, cam_mat_inv, cc->projection, ro->parent);
+    object_draw_edit2(ro->object, cam_mat_inv, cc->projection, ro->world);
   }
 
   //TODO avoid compute matrix 2 times
@@ -1311,7 +1334,7 @@ view_draw(View* v)
       line->id_texture = r->fbo_all->texture_depth_stencil_id;
       object_draw_edit_component(o, cam_mat_inv, cc->projection , id4, "line");
     }
-    repere_position = vec3_add(repere_position, o->Position);
+    repere_position = vec3_add(repere_position, object_world_position_get(o));
   }
 
   int cxol_size = eina_list_count(cxol);

@@ -10,7 +10,7 @@
 typedef struct _RenderObject RenderObject;
 struct _RenderObject
 {
-  Matrix4 parent;
+  Matrix4 world;
   Object* object;
 };
 
@@ -24,6 +24,7 @@ struct _Render
 
   Eina_List* objects;
   Eina_List* render_objects;
+  Eina_List* render_objects_selected;
 };
 
 typedef struct _View View;
