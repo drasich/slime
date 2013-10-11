@@ -19,7 +19,7 @@ _dragger_init(Component* component)
   dragger_state_set(d, DRAGGER_IDLE);
 }
 
-static double _resize_to_cam(Matrix4 world, Matrix4 projection, double factor)
+static double _resize_to_cam(Matrix4 world, const Matrix4 projection, double factor)
 {
   Matrix4 tm;
   mat4_multiply(projection, world, tm);
@@ -32,7 +32,7 @@ static double _resize_to_cam(Matrix4 world, Matrix4 projection, double factor)
 }
 
 static void
-_dragger_draw_edit(Component* comp, Matrix4 world, Matrix4 projection)
+_dragger_draw_edit(Component* comp, Matrix4 world, const Matrix4 projection)
 {
   Dragger* d = comp->data;
 

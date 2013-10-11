@@ -178,6 +178,8 @@ gameview_draw(GameView* v)
   //printf("camera pos.z %f\n", c->Position.Z);
 
   Matrix4 cam_mat_inv, mo;
+  Matrix4 id4;
+  mat4_set_identity(id4);
 
   mat4_inverse(((Object*)c)->matrix, cam_mat_inv);
   Matrix4* projection = &cam->projection;
@@ -196,10 +198,7 @@ gameview_draw(GameView* v)
   gl->glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
   EINA_LIST_FOREACH(s->objects, l, o) {
-    object_compute_matrix(o, mo);
-    mat4_multiply(cam_mat_inv, mo, mo);
-    //mat4_multiply(cam_mat_inv, o->matrix, mo);
-    object_draw(o, mo, cam->projection);
+    object_draw(o, cam_mat_inv, cam->projection, id4);
   }
   //gl->glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
  

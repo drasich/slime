@@ -945,6 +945,7 @@ _create_view_objects(View* v)
 
   v->camera_repere = _create_repere(40, v->camera->camera_component);
   v->camera_repere->Position = vec3(10,10, -10);
+  v->camera_repere->orientation_type = ORIENTATION_QUAT;
 
   v->grid = _create_grid(v->camera->camera_component);
 
@@ -1171,6 +1172,8 @@ view_draw(View* v)
   Scene* s = cx->scene;
 
   Matrix4 cam_mat_inv, mo;
+  Matrix4 id4;
+  mat4_set_identity(id4);
 
   mat4_inverse(co->matrix, cam_mat_inv);
   Matrix4* projection = &cc->projection;
@@ -1184,9 +1187,7 @@ view_draw(View* v)
   fbo_use(r->fbo_selected);
   gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT) ;
   EINA_LIST_FOREACH(cxol, l, o) {
-    object_compute_matrix(o, mo);
-    mat4_multiply(cam_mat_inv, mo, mo);
-    object_draw_edit_component(o, mo, cc, "mesh");
+    object_draw_edit_component(o, cam_mat_inv, cc->projection , id4, "mesh");
   }
   fbo_use_end();
 
@@ -1201,9 +1202,7 @@ view_draw(View* v)
   gl->glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
   EINA_LIST_FOREACH(r->objects, l, o) {
-    object_compute_matrix(o, mo);
-    mat4_multiply(cam_mat_inv, mo, mo);
-    object_draw_edit_component(o, mo, cc, "mesh");
+    object_draw_edit_component(o, cam_mat_inv, cc->projection , id4, "mesh");
   }
   //gl->glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 
@@ -1233,37 +1232,17 @@ view_draw(View* v)
   //TODO 2)and also we find the first component but there might be more of the same component
   //TODO 3)same below with other objects
   //TODO 4)also object_draw_edit_component is so so
-  Line* line = object_component_get(v->grid, "line");
-  if (line) line->id_texture = r->fbo_all->texture_depth_stencil_id;
-  mat4_multiply(cam_mat_inv, mo, mo);
-  object_draw_edit(v->grid, mo, cc->projection);
+  //Line* line = object_component_get(v->grid, "line");
+  //if (line) line->id_texture = r->fbo_all->texture_depth_stencil_id;
+  object_draw_edit(v->grid, cam_mat_inv, cc->projection, id4);
 
   //Render objects
   EINA_LIST_FOREACH(r->objects, l, o) {
     //Frustum f;
     //camera_get_frustum(v->camera, &f);
-    
     //bool b = frustum_is_in(&f, o->Position);
     //if (!b) continue;
-    Matrix4 yep;
-
-    object_compute_matrix(o, yep);
-    mat4_multiply(cam_mat_inv, yep, mo);
-    //mat4_multiply(cam_mat_inv, o->matrix, mo);
-    //object_draw(o, mo, *projection);
-    object_draw_edit_component(o, mo, cc, "mesh");
-
-    Object* child;
-    Eina_List* lc;
-    EINA_LIST_FOREACH(o->children, lc, child) {
-      //TODO parent children wip
-      object_compute_matrix(child, mo);
-      mat4_multiply(yep, mo, mo);
-      mat4_multiply(cam_mat_inv, mo, mo);
-      object_draw_edit_component(child, mo, cc, "mesh");
-
-    }
-
+    object_draw_edit(o, cam_mat_inv, cc->projection, id4);
   }
 
   //TODO avoid compute matrix 2 times
@@ -1274,10 +1253,10 @@ view_draw(View* v)
   EINA_LIST_FOREACH(cxol, l, o) {
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
-    line = object_component_get(o, "line");
+    Line* line = object_component_get(o, "line");
     if (line) {
       line->id_texture = r->fbo_all->texture_depth_stencil_id;
-      object_draw_edit_component(o, mo, cc, "line");
+      object_draw_edit_component(o, cam_mat_inv, cc->projection , id4, "line");
     }
     repere_position = vec3_add(repere_position, o->Position);
   }
@@ -1291,8 +1270,7 @@ view_draw(View* v)
 
   //Render outline with quad
   if (last_obj) {
-    object_compute_matrix(r->quad_outline, mo);
-    object_draw_edit(r->quad_outline, mo, cc->orthographic);
+    object_draw_edit(r->quad_outline, id4, cc->orthographic, id4);
   }
 
   //repere
@@ -1304,8 +1282,7 @@ view_draw(View* v)
     object_compute_matrix(v->repere, mo);
     line = object_component_get(v->repere, "line");
     if (line) line->id_texture = r->fbo_all->texture_depth_stencil_id;
-    mat4_multiply(cam_mat_inv, mo, mo);
-    object_draw_edit(v->repere, mo, cc->projection);
+    object_draw_edit(v->repere, cam_mat_inv, cc->projection, id4);
   }
   */
 
@@ -1319,9 +1296,7 @@ view_draw(View* v)
       if (d && d->type == DRAGGER_ROTATE) {
         _object_camera_face(dragger, c);
       }
-      object_compute_matrix(dragger, mo);
-      mat4_multiply(cam_mat_inv, mo, mo);
-      object_draw_edit(dragger, mo, cc->projection);
+      object_draw_edit(dragger, cam_mat_inv, cc->projection, id4);
     }
   }
 
@@ -1335,11 +1310,10 @@ view_draw(View* v)
   v->camera_repere->Position = vec3(-cc->width/2.0 +m, -cc->height/2.0 + m, -10);
   v->camera_repere->Orientation = quat_inverse(co->Orientation);
   object_compute_matrix_with_quat(v->camera_repere, mo);
-  line = object_component_get(v->camera_repere, "line");
+  Line* line = object_component_get(v->camera_repere, "line");
   if (line) line->id_texture = r->fbo_all->texture_depth_stencil_id;
 
-  mat4_multiply(cam_mat_inv, mo, mo);
-  object_draw_edit(v->camera_repere, mo, cc->orthographic);
+  object_draw_edit(v->camera_repere, id4, cc->orthographic, id4);
  
 }
 

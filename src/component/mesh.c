@@ -378,7 +378,7 @@ static Eina_Bool uniform_send(
 }
 
 static void 
-_mesh_component_draw(Component* c, Matrix4 world, Matrix4 projection)
+_mesh_component_draw(Component* c, Matrix4 world, const Matrix4 projection)
 {
   MeshComponent* mc = c->data;
   if (!mc)

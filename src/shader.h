@@ -71,7 +71,7 @@ Shader* shader_read(const char* filename);
 
 void shader_descriptor_init(void);
 GLint shader_attribute_location_get(Shader* shader, const char* name);
-void shader_matrices_set(Shader* mesh, Matrix4 mat, Matrix4 projection);
+void shader_matrices_set(Shader* mesh, Matrix4 mat, const Matrix4 projection);
 
 void shader_uniform_add(Shader* s, const char* name);
 void shader_uniform_type_add(Shader* s, const char* name, UniformType type);

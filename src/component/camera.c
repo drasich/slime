@@ -171,8 +171,10 @@ _camera_on_property_changed(Component* c)
 }
 
 static void
-_camera_draw_edit(Component* comp, Matrix4 world, Matrix4 projection)
+_camera_draw_edit(Component* comp, Matrix4 world, const Matrix4 projection)
 {
+  //TODO
+  return;
   Camera* c = comp->data;
   Line* l = c->line;
   line_prepare_draw(l, world, projection);

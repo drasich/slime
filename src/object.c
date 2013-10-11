@@ -21,36 +21,82 @@ object_destroy(Object* o)
 }
 
 void
-object_draw(Object* o, Matrix4 world, Matrix4 projection)
+object_draw(
+      Object* o,
+      const Matrix4 cam_inv,
+      const Matrix4 projection,
+      const Matrix4 parent)
 {
+  Matrix4 world;
+  object_compute_matrix(o, world);
+
+  mat4_multiply(parent, world, world);
+
+  Matrix4 mo;
+  mat4_multiply(cam_inv, world, mo);
+
   Eina_List* l;
   Component* c;
 
   EINA_LIST_FOREACH(o->components, l, c) {
     if (c->funcs->draw)
-    c->funcs->draw(c, world, projection);
+    c->funcs->draw(c, mo, projection);
+  }
+
+  Object* child;
+  Eina_List* lc;
+  EINA_LIST_FOREACH(o->children, lc, child) {
+    object_draw_edit(child, cam_inv, projection, world);
   }
 }
 
-void
-object_draw_edit(Object* o, Matrix4 world, Matrix4 projection)
+void 
+object_draw_edit(
+      Object* o,
+      const Matrix4 cam_inv,
+      const Matrix4 projection,
+      const Matrix4 parent)
 {
+  Matrix4 world;
+  object_compute_matrix(o, world);
+
+  mat4_multiply(parent, world, world);
+
+  Matrix4 mo;
+  mat4_multiply(cam_inv, world, mo);
+
   Eina_List* l;
   Component* c;
 
   EINA_LIST_FOREACH(o->components, l, c) {
     if (c->funcs->draw)
-    c->funcs->draw(c, world, projection);
+    c->funcs->draw(c, mo, projection);
     if (c->funcs->draw_edit)
-    c->funcs->draw_edit(c, world, projection);
+    c->funcs->draw_edit(c, mo, projection);
   }
 
+  Object* child;
+  Eina_List* lc;
+  EINA_LIST_FOREACH(o->children, lc, child) {
+    object_draw_edit(child, cam_inv, projection, world);
+  }
 }
 
 void
-object_draw_edit_component(Object* o, Matrix4 world, struct _Camera* cam, const char* name)
+object_draw_edit_component(
+      Object* o,
+      const Matrix4 cam_inv,
+      const Matrix4 projection,
+      const Matrix4 parent,
+      const char* name)
 {
-  Matrix4* projection = &cam->projection;
+  Matrix4 world;
+  object_compute_matrix(o, world);
+
+  mat4_multiply(parent, world, world);
+
+  Matrix4 mo;
+  mat4_multiply(cam_inv, world, mo);
 
   Eina_List* l;
   Component* c;
@@ -59,9 +105,15 @@ object_draw_edit_component(Object* o, Matrix4 world, struct _Camera* cam, const 
     if (strcmp(c->name, name)) continue;
 
     if (c->funcs->draw)
-    c->funcs->draw(c, world, cam->projection);
+    c->funcs->draw(c, mo, projection);
     if (c->funcs->draw_edit)
-    c->funcs->draw_edit(c, world, cam->projection);
+    c->funcs->draw_edit(c, mo, projection);
+  }
+
+  Object* child;
+  Eina_List* lc;
+  EINA_LIST_FOREACH(o->children, lc, child) {
+    object_draw_edit(child, cam_inv, projection, world);
   }
 
 }
@@ -71,7 +123,9 @@ object_draw_edit_component(Object* o, Matrix4 world, struct _Camera* cam, const 
 void
 object_compute_matrix(Object* o, Matrix4 mat)
 {
+  if (o->orientation_type == ORIENTATION_EULER)
   o->Orientation = quat_angles_deg(o->angles.Y, o->angles.X, o->angles.Z);
+
   Matrix4 mt, mr, ms;
   mat4_set_scale(ms, o->scale);
   mat4_set_translation(mt, o->Position);

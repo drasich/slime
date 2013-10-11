@@ -30,7 +30,7 @@ _line_properties()
 }
 
 static void
-_line_draw(Component* c, Matrix4 world, Matrix4 projection)
+_line_draw(Component* c, Matrix4 world, const Matrix4 projection)
 {
   Line* l = c->data;
   line_prepare_draw(l, world, projection);
@@ -288,7 +288,7 @@ line_set_use_depth(Line* l, bool b)
 }
 
 void
-line_prepare_draw(Line* l, Matrix4 world, Matrix4 projection)
+line_prepare_draw(Line* l, Matrix4 world, const Matrix4 projection)
 {
   if (!l->is_init) {
     line_init(l);
