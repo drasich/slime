@@ -75,11 +75,13 @@ object_draw_edit(
     c->funcs->draw_edit(c, mo, projection);
   }
 
+  /*
   Object* child;
   Eina_List* lc;
   EINA_LIST_FOREACH(o->children, lc, child) {
     object_draw_edit(child, cam_inv, projection, world);
   }
+  */
 }
 
 void
@@ -110,11 +112,13 @@ object_draw_edit_component(
     c->funcs->draw_edit(c, mo, projection);
   }
 
+  /*
   Object* child;
   Eina_List* lc;
   EINA_LIST_FOREACH(o->children, lc, child) {
     object_draw_edit(child, cam_inv, projection, world);
   }
+  */
 
 }
 

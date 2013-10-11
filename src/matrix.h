@@ -85,6 +85,8 @@ Quat mat4_get_quat(Matrix4 m);
 
 void mat4_set_scale(Matrix4 m, const Vec3 v);
 
+void mat4_copy(const Matrix4 in, Matrix4 out);
+
 #endif
 
 

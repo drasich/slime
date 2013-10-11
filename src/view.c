@@ -296,7 +296,6 @@ _context_menu_create(Evas_Object* win, View* v)
   return menu;
 }
 
-
 static void
 _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
 {
@@ -1030,6 +1029,49 @@ view_destroy(View* v)
   s_view_destroyed = true;
 }
 
+static void
+_render_object_add(Render* r, Object* o, Matrix4 root)
+{
+  RenderObject* ro = calloc(1, sizeof *ro);
+  ro->object = o;
+  mat4_copy(root, ro->parent);
+  r->render_objects = eina_list_append(r->render_objects, ro);
+}
+
+static void
+_render_objects_add(View* v, Matrix4 root, Plane* planes, Eina_List* objects)
+{
+  Eina_List* l;
+  Object* o;
+  EINA_LIST_FOREACH(objects, l, o) {
+    MeshComponent* mc = object_component_get(o, "mesh");
+    if (!mc ) {
+      //TODO
+      _render_object_add(v->render, o, root);
+      continue;
+    }
+
+    Mesh* m = mc->mesh;
+    if (!m) {
+      _render_object_add(v->render, o, root);
+      continue;
+    }
+
+    OBox b;
+    aabox_to_obox(m->box, b, o->Position, o->Orientation, o->scale);
+
+    if (planes_is_box_in_allow_false_positives(planes, 6, b)) {
+    //if (planes_is_in(planes, 6, o->Position)) {
+      _render_object_add(v->render, o, root);
+    }
+
+    Matrix4 world;
+    object_compute_matrix(o, world);
+
+    _render_objects_add(v, world, planes, o->children);
+  }
+}
+
 void
 view_update(View* v, double dt)
 {
@@ -1045,6 +1087,10 @@ view_update(View* v, double dt)
 
   Plane planes[6];
   camera_get_frustum_planes(v->camera, planes);
+  Matrix4 id4;
+  mat4_set_identity(id4);
+  v->render->render_objects = eina_list_free(v->render->render_objects);
+  _render_objects_add(v, id4, planes, s->objects);
   r->objects = eina_list_free(r->objects);
 
   EINA_LIST_FOREACH(s->objects, l, o) {
@@ -1237,12 +1283,19 @@ view_draw(View* v)
   object_draw_edit(v->grid, cam_mat_inv, cc->projection, id4);
 
   //Render objects
+  /*
   EINA_LIST_FOREACH(r->objects, l, o) {
     //Frustum f;
     //camera_get_frustum(v->camera, &f);
     //bool b = frustum_is_in(&f, o->Position);
     //if (!b) continue;
     object_draw_edit(o, cam_mat_inv, cc->projection, id4);
+  }
+  */
+
+  RenderObject* ro;
+  EINA_LIST_FOREACH(r->render_objects, l, ro) {
+    object_draw_edit(ro->object, cam_mat_inv, cc->projection, ro->parent);
   }
 
   //TODO avoid compute matrix 2 times
@@ -1316,4 +1369,5 @@ view_draw(View* v)
   object_draw_edit(v->camera_repere, id4, cc->orthographic, id4);
  
 }
+
 

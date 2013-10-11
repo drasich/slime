@@ -6,6 +6,14 @@
 #include "ui/property_view.h"
 //#include "ui/tree.h"
 
+
+typedef struct _RenderObject RenderObject;
+struct _RenderObject
+{
+  Matrix4 parent;
+  Object* object;
+};
+
 typedef struct _Render Render;
 struct _Render
 {
@@ -15,6 +23,7 @@ struct _Render
   Fbo* fbo_all;
 
   Eina_List* objects;
+  Eina_List* render_objects;
 };
 
 typedef struct _View View;
