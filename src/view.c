@@ -326,6 +326,7 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   if (ev->button != 1){
     return;
   }
+  else printf("click \n");
 
   Ray r = ray_from_screen(v->camera, ev->canvas.x, ev->canvas.y, 1000);
 

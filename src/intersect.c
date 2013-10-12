@@ -387,9 +387,15 @@ intersection_ray_object(Ray ray, Object* o)
   IntersectionRay out = { .hit = false};
 
   MeshComponent* mc = object_component_get(o,"mesh");
-  if (!mc) return out;
+  if (!mc) {
+    printf("no mesh component %s \n", o->name);
+  return out;
+  }
   Mesh* m = mc->mesh;
-  if (!m) return out;
+  if (!m) {
+    printf("no mesh %s \n", o->name);
+    return out;
+  }
 
   Vec3 wp = object_world_position_get(o);
   Quat wq = object_world_orientation_get(o);
@@ -397,7 +403,9 @@ intersection_ray_object(Ray ray, Object* o)
 
   //IntersectionRay ir_box = intersection_ray_box(ray, m->box, o->Position, o->Orientation, o->scale);
   IntersectionRay ir_box = intersection_ray_box(ray, m->box, wp, wq, ws);
-  if (!ir_box.hit) return out;
+  if (!ir_box.hit) {
+    return out;
+  }
 
   //return intersection_ray_mesh(ray, m, o->Position, o->Orientation, o->scale);
   return intersection_ray_mesh(ray, m, wp, wq, ws);

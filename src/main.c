@@ -99,8 +99,8 @@ create_window()
 
 
   //evas_object_resize(win, 800/3, 400/3);
-  evas_object_resize(win, 800, 200);
-  //evas_object_resize(win, 1200, 400);
+  //evas_object_resize(win, 800, 200);
+  evas_object_resize(win, 1200, 400);
   evas_object_show(win);
 
 
@@ -252,6 +252,10 @@ elm_main(int argc, char **argv)
   create_window();
 
   build_scene();
+  Quat qa = quat_angles_deg(10, 20, 30);
+  Vec3 angles = quat_to_euler(qa);
+  angles = vec3_mul(angles, 180.0f/3.1415f);
+   printf("AAAAAAAAAAAAAAAAAAA %f, %f, %f \n", angles.X, angles.Y, angles.Z);
   //gameviewtest();
 
   elm_run();

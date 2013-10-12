@@ -332,6 +332,16 @@ quat_to_euler(Quat q)
     asin(2*(q.W*q.Y - q.Z*q.X)),
     atan2(2*(q.W*q.Z + q.X*q.Y), 1- (q.Y*q.Y + q.Z*q.Z))
   };
+  /*
+  Vec3 v = {
+    asin(2*(q.X*q.Y + q.Z*q.W)),
+    atan2(2*(q.Y*q.W - q.X*q.Z), 1- 2*(q.Y*q.Y + q.Z*q.Z)),
+    atan2(2*(q.X*q.W - q.Y*q.Z), 1- 2*(q.X*q.X + q.Z*q.Z))
+  };
+  //heading = atan2(2*qy*qw-2*qx*qz , 1 - 2*qy2 - 2*qz2) = yaw = y
+  //attitude = asin(2*qx*qy + 2*qz*qw) = pitch = x
+  //bank = atan2(2*qx*qw-2*qy*qz , 1 - 2*qx2 - 2*qz2) = roll = z
+*/
   return v;
 }
 

@@ -536,8 +536,12 @@ object_child_add(Object* parent, Object* child)
 
 Vec3 object_world_position_get(Object* o)
 {
-  if (o->parent)
-  return vec3_add(o->Position, object_world_position_get(o->parent));
+  if (o->parent) {
+    Quat wo = object_world_orientation_get(o->parent);
+    Vec3 p = quat_rotate_vec3(wo, o->Position);
+    //return vec3_add(o->Position, object_world_position_get(o->parent));
+    return vec3_add(p, object_world_position_get(o->parent));
+  }
   else
   return o->Position;
 }
@@ -556,5 +560,17 @@ Vec3 object_world_scale_get(Object* o)
   return vec3_vec3_mul(o->scale, object_world_scale_get(o->parent));
   else
   return o->scale;
+}
 
+void
+object_world_position_set(Object* o, Vec3 worldpos)
+{
+  if (o->parent) {
+    Vec3 parentworld = object_world_position_get(o->parent);
+    Quat wo = object_world_orientation_get(o->parent);
+    Vec3 diff = vec3_sub(worldpos, parentworld);
+    o->Position = quat_rotate_vec3(quat_inverse(wo), diff);
+  }
+  else
+  o->Position = worldpos;
 }

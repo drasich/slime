@@ -26,8 +26,13 @@ _objects_center(Control* c, Eina_List* objects)
   Object *o;
   Vec3 v = vec3_zero();
   EINA_LIST_FOREACH(objects, l, o) {
+    Vec3 wp = object_world_position_get(o);
+    v = vec3_add(v, wp);
+    eina_inarray_push(c->positions, &wp);
+    /*
     v = vec3_add(v, o->Position);
     eina_inarray_push(c->positions, &o->Position);
+    */
   }
 
   v = vec3_mul(v, 1.0/(float)size);
@@ -173,10 +178,18 @@ _translate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
 
   Eina_List* objects = context_objects_get(v->context);
   Plane p = { c->start, quat_rotate_vec3(v->camera->object->Orientation, vec3(0,0,-1)) };
-  if (constraint.X == 0)
-  p.Normal = vec3(1,0,0);
-  else if (constraint.Y == 0)
-  p.Normal = vec3(0,1,0);
+
+  if (constraint.Z == 1) {
+    p.Normal.Z = 0;
+  }
+  else if (constraint.Y == 1) {
+    p.Normal.Y = 0;
+  }
+  else if (constraint.X == 1) {
+    p.Normal.X = 0;
+  }
+
+  p.Normal = vec3_normalized(p.Normal);
 
   Ray rstart = ray_from_screen(v->camera, c->mouse_start.X, c->mouse_start.Y, 1);
 
@@ -196,7 +209,10 @@ _translate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
     Vec3 center = vec3_zero();
     EINA_LIST_FOREACH(objects, l, o) {
       Vec3* origin = (Vec3*) eina_inarray_nth(c->positions, i);
-      o->Position = vec3_add(*origin, translation);
+      Vec3 wordpos = vec3_add(*origin, translation);
+      object_world_position_set(o, wordpos);
+      //o->Position = vec3_add(*origin, translation);
+      //o->Position = vec3_add(*origin, translation);
       ++i;
       center = vec3_add(center, o->Position);
     }
@@ -579,7 +595,10 @@ control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
   View* v = c->view;
 
   if (c->state == CONTROL_IDLE) {
-      if (e->button == 1 && _draggers_click_check(c, e)) return true;
+    if (e->button == 1 && 
+          context_object_get(c->view->context) &&
+          _draggers_click_check(c, e)) 
+    return true;
   }
   else if (c->state == CONTROL_MOVE) {
     if (e->button == 1) {
