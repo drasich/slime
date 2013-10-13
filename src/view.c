@@ -869,6 +869,9 @@ _view_draggers_create(View* v, dragger_create_fn dfn, bool create_plane )
         red,
         false);
   dragger->angles.Y = -90;
+  //must be the component
+  Dragger* dc = object_component_get(dragger, "dragger");
+  dc->ori = quat_angles_deg(-90,0,0);
   v->draggers = eina_list_append(v->draggers, dragger);
 
   dragger = dfn(
@@ -877,6 +880,8 @@ _view_draggers_create(View* v, dragger_create_fn dfn, bool create_plane )
         green,
         false);
   dragger->angles.X = 90;
+  dc = object_component_get(dragger, "dragger");
+  dc->ori = quat_angles_deg(0, 90,0);
   v->draggers = eina_list_append(v->draggers, dragger);
 
   dragger = dfn(
@@ -884,6 +889,8 @@ _view_draggers_create(View* v, dragger_create_fn dfn, bool create_plane )
         vec3(0,0,1),
         blue,
         false);
+  dc = object_component_get(dragger, "dragger");
+  dc->ori = quat_identity();
   v->draggers = eina_list_append(v->draggers, dragger);
 
   if (!create_plane) return;
@@ -897,6 +904,8 @@ _view_draggers_create(View* v, dragger_create_fn dfn, bool create_plane )
         vec3(0,1,1),
         blue,
         true);
+  dc = object_component_get(dragger, "dragger");
+  dc->ori = quat_identity();
   v->draggers = eina_list_append(v->draggers, dragger);
 
   dragger = dfn(
@@ -905,6 +914,8 @@ _view_draggers_create(View* v, dragger_create_fn dfn, bool create_plane )
         red,
         true);
   dragger->angles.Y = -90;
+  dc = object_component_get(dragger, "dragger");
+  dc->ori = quat_angles_deg(-90, 0,0);
   v->draggers = eina_list_append(v->draggers, dragger);
 
   dragger = dfn(
@@ -913,6 +924,8 @@ _view_draggers_create(View* v, dragger_create_fn dfn, bool create_plane )
         green,
         true);
   dragger->angles.Z = 90;
+  dc = object_component_get(dragger, "dragger");
+  dc->ori = quat_angles_deg(0, 0,90);
   v->draggers = eina_list_append(v->draggers, dragger);
 }
 
@@ -1327,6 +1340,7 @@ view_draw(View* v)
   //Render lines only selected
   gl->glClear(GL_DEPTH_BUFFER_BIT);
   Vec3 repere_position = vec3_zero();
+  Quat repere_ori = quat_identity();
   EINA_LIST_FOREACH(cxol, l, o) {
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
@@ -1336,6 +1350,7 @@ view_draw(View* v)
       object_draw_edit_component(o, cam_mat_inv, cc->projection , id4, "line");
     }
     repere_position = vec3_add(repere_position, object_world_position_get(o));
+    repere_ori = quat_mul(repere_ori, object_world_orientation_get(o));
   }
 
   int cxol_size = eina_list_count(cxol);
@@ -1369,7 +1384,13 @@ view_draw(View* v)
     gl->glClear(GL_DEPTH_BUFFER_BIT);
     EINA_LIST_FOREACH(v->draggers, l, dragger){
       dragger->Position = repere_position;
+      //dragger->Orientation = repere_ori;
       Dragger* d = object_component_get(dragger, "dragger");
+      if (d) {
+        dragger->Orientation = quat_mul(repere_ori, d->ori);
+        //dragger->Orientation = d->ori;
+        dragger->orientation_type = ORIENTATION_QUAT;
+      }
       if (d && d->type == DRAGGER_ROTATE) {
         _object_camera_face(dragger, c);
       }
