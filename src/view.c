@@ -1379,12 +1379,12 @@ view_draw(View* v)
     gl->glClear(GL_DEPTH_BUFFER_BIT);
     EINA_LIST_FOREACH(v->draggers, l, dragger){
       dragger->Position = repere_position;
-      //dragger->Orientation = repere_ori;
       Dragger* d = object_component_get(dragger, "dragger");
       if (d) {
-        dragger->Orientation = quat_mul(repere_ori, d->ori);
-        //dragger->Orientation = d->ori;
-        dragger->orientation_type = ORIENTATION_QUAT;
+        if (v->control->dragger_is_local) {
+          dragger->Orientation = quat_mul(repere_ori, d->ori);
+          dragger->orientation_type = ORIENTATION_QUAT;
+        }
       }
       if (d && d->type == DRAGGER_ROTATE) {
         _object_camera_face(dragger, c);

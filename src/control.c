@@ -14,6 +14,7 @@ create_control(View* v)
   c->view = v;
   c->redo = NULL;
   //c->shader_simple = create_shader("simple","shader/simple.vert", "shader/simple.frag");
+  c->dragger_is_local = true;
   return c;
 }
 
@@ -268,6 +269,46 @@ _translate_moving_local_axis(Control* c, Evas_Event_Mouse_Move* e, Vec3 axis)
   }
 }
 
+static void
+_translate_moving_plane(Control* c, Evas_Event_Mouse_Move* e, Vec3 normal)
+{
+  View* v = c->view;
+
+  Eina_List* objects = context_objects_get(v->context);
+  Plane p = { c->start, normal };
+
+  Ray rstart = ray_from_screen(v->camera, c->mouse_start.X, c->mouse_start.Y, 1);
+
+  float x = e->cur.canvas.x;
+  float y = e->cur.canvas.y;
+  Ray r = ray_from_screen(v->camera, x, y, 1);
+
+  IntersectionRay ir =  intersection_ray_plane(r, p);
+  IntersectionRay irstart =  intersection_ray_plane(rstart, p);
+
+  if (ir.hit && irstart.hit) {
+    Vec3 translation = vec3_sub(ir.position, irstart.position);
+    Eina_List *l;
+    Object *o;
+    int i = 0;
+    Vec3 center = vec3_zero();
+    EINA_LIST_FOREACH(objects, l, o) {
+      Vec3* origin = (Vec3*) eina_inarray_nth(c->positions, i);
+      Vec3 wordpos = vec3_add(*origin, translation);
+      object_world_position_set(o, wordpos);
+      ++i;
+      center = vec3_add(center, o->Position);
+    }
+
+    if (i>0) center = vec3_mul(center, 1.0f/ (float) i);
+    v->context->mos.center =  center;
+
+    if (i == 1)
+    control_property_transform_update(c);
+  }
+}
+
+
 
 static void
 _scale_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
@@ -487,11 +528,28 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
   }
   else if (c->state == CONTROL_DRAGGER_TRANSLATE) {
     Dragger* d = object_component_get(c->dragger_clicked, "dragger");
-    Vec3 constraint = d->constraint;
-    _translate_moving(c,e, constraint);
-    //_translate_moving_local_axis(c,e, 
-    //      quat_rotate_vec3(c->dragger_clicked->Orientation, vec3(0,0,1)));
-    //
+    //printf("constraint is %f, %f, %f \n", d->constraint.X, d->constraint.Y, d->constraint.Z);
+    if (c->dragger_is_local) {
+      /*
+      Vec3 normal;
+      if (vec3_equal(d->constraint, vec3(0,1,1)))
+      normal = quat_rotate_vec3(c->dragger_clicked->Orientation, vec3(1,0,0));
+      else if (vec3_equal(d->constraint, vec3(1,0,1)))
+      normal = quat_rotate_vec3(c->dragger_clicked->Orientation, vec3(0,1,0));
+      else if (vec3_equal(d->constraint, vec3(1,1,0)))
+      normal = quat_rotate_vec3(c->dragger_clicked->Orientation, vec3(0,0,1));
+
+      _translate_moving_plane(c,e, 
+            quat_rotate_vec3(c->dragger_clicked->Orientation, normal));
+            */
+      _translate_moving_local_axis(c,e, 
+            quat_rotate_vec3(c->dragger_clicked->Orientation, vec3(0,0,1)));
+    }
+    else {
+      Vec3 constraint = d->constraint;
+      _translate_moving(c,e, constraint);
+    }
+    
   }
   else if (c->state == CONTROL_DRAGGER_SCALE) {
     Dragger* d = object_component_get(c->dragger_clicked, "dragger");
