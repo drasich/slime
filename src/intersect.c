@@ -388,8 +388,7 @@ intersection_ray_object(Ray ray, Object* o)
 
   MeshComponent* mc = object_component_get(o,"mesh");
   if (!mc) {
-    printf("no mesh component %s \n", o->name);
-  return out;
+    return out;
   }
   Mesh* m = mc->mesh;
   if (!m) {

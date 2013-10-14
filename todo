@@ -8,6 +8,7 @@ CLEAN
 - clean the scene when?
 
 ISSUES (must be done)
+- changes quat_angles_dev to quat_yaw_pitch_roll()
 - use id instead of comparing string strcmp(component->name,"mesh") ?
 - save the component functions in the component manager
 - change properties in ComponentDesc so there is only one to be created and I

@@ -326,7 +326,6 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   if (ev->button != 1){
     return;
   }
-  else printf("click \n");
 
   Ray r = ray_from_screen(v->camera, ev->canvas.x, ev->canvas.y, 1000);
 
@@ -502,7 +501,8 @@ _dragger_rotate_create(Vec3 constraint, Vec4 color, bool plane)
   mesh_component_shader_set(mc, "shader/dragger.shader");
 
   //mc->mesh_name = "model/dragger_rotate_half.mesh";
-  mc->mesh_name = "model/dragger_rotate_test.mesh";
+  //mc->mesh_name = "model/dragger_rotate_test.mesh";
+  mc->mesh_name = "model/dragger_rotate_quarter.mesh";
   mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
 
   Vec4* v = calloc(1, sizeof *v);
@@ -518,7 +518,8 @@ _dragger_rotate_create(Vec3 constraint, Vec4 color, bool plane)
   d->constraint = constraint;
   d->color_idle = color;
   d->type = DRAGGER_ROTATE;
-  d->collider = resource_mesh_get(s_rm, "model/dragger_rotate_collider.mesh");
+  //d->collider = resource_mesh_get(s_rm, "model/dragger_rotate_collider.mesh");
+  d->collider = resource_mesh_get(s_rm, "model/dragger_rotate_collider_quarter.mesh");
   dragger_state_set(d, DRAGGER_IDLE);
 
   return o;
@@ -855,7 +856,7 @@ _add_buttons(View* v, Evas_Object* win)
 }
 
 static Eina_List*
-_view_draggers_create(dragger_create_fn dfn, bool create_plane )
+_view_draggers_create(dragger_create_fn dfn, bool create_plane, Quat q1, Quat q2, Quat q3 )
 {
   Eina_List* draggers = NULL;
 
@@ -869,19 +870,17 @@ _view_draggers_create(dragger_create_fn dfn, bool create_plane )
         vec3(1,0,0),
         red,
         false);
-  dragger->angles.Y = -90;
   //must be the component
   Dragger* dc = object_component_get(dragger, "dragger");
-  dc->ori = quat_angles_deg(-90,0,0);
+  dc->ori = q1;
   draggers = eina_list_append(draggers, dragger);
 
   dragger = dfn(
         vec3(0,1,0),
         green,
         false);
-  dragger->angles.X = 90;
   dc = object_component_get(dragger, "dragger");
-  dc->ori = quat_angles_deg(0, 90,0);
+  dc->ori = q2;
   draggers = eina_list_append(draggers, dragger);
 
   dragger = dfn(
@@ -892,7 +891,7 @@ _view_draggers_create(dragger_create_fn dfn, bool create_plane )
   dc->ori = quat_identity();
   draggers = eina_list_append(draggers, dragger);
 
-  if (!create_plane) return;
+  if (!create_plane) return draggers;
 
   red.W = 0.1f;
   green.W = 0.1f;
@@ -910,7 +909,6 @@ _view_draggers_create(dragger_create_fn dfn, bool create_plane )
         vec3(1,1,0),
         red,
         true);
-  dragger->angles.Y = -90;
   dc = object_component_get(dragger, "dragger");
   dc->ori = quat_angles_deg(-90, 0,0);
   draggers = eina_list_append(draggers, dragger);
@@ -919,7 +917,6 @@ _view_draggers_create(dragger_create_fn dfn, bool create_plane )
         vec3(1,0,1),
         green,
         true);
-  dragger->angles.Z = 90;
   dc = object_component_get(dragger, "dragger");
   dc->ori = quat_angles_deg(0, 0,90);
   draggers = eina_list_append(draggers, dragger);
@@ -941,10 +938,18 @@ _create_view_objects(View* v)
   Line* l = object_component_get(v->repere, "line");
   if (l) line_set_size_fixed(l, true);
 
-  v->dragger_translate = _view_draggers_create(_dragger_translate_create, true);
-  v->dragger_scale = _view_draggers_create(_dragger_scale_create, true);
-  //v->dragger_rotate = _view_draggers_create(_dragger_rotate_create, false);
+  Quat q1 = quat_angles_deg(-90,0,0);
+  Quat q2 = quat_angles_deg(0, 90,0);
+  Quat qi = quat_identity();
 
+  v->dragger_translate = _view_draggers_create(_dragger_translate_create, true, q1,q2,qi);
+  v->dragger_scale = _view_draggers_create(_dragger_scale_create, true, q1,q2,qi);
+
+  Quat q3 = quat_angles_deg(90,0,0);
+  Quat q4 = quat_angles_deg(0, -90,0);
+  v->dragger_rotate = _view_draggers_create(_dragger_rotate_create, false, q3, q4, qi);
+
+  /*
   Object* dragger;
 
   dragger = _dragger_rotate_create(
@@ -952,6 +957,7 @@ _create_view_objects(View* v)
         vec4(0,0,1,1),
         false);
   v->dragger_rotate = eina_list_append(v->dragger_rotate, dragger);
+  */
   v->draggers = v->dragger_translate;
 
 
@@ -1199,29 +1205,40 @@ create_render()
 }
 
 static void
-_object_camera_face(Object* o, ViewCamera* c)
+_object_camera_face(Quat qo, Object* o, ViewCamera* c)
 {
-  /*
-  Quat q = quat_lookat(o->Position, c->object->Position, vec3(0,1,0));
-  Vec3 a = quat_to_euler(q);
-  a = vec3_mul(a, 180.0f/3.141519f);
-  //o->angles = a;
-  //o->Orientation = q;
-  //printf("angles : %f, %f, %f\n", a.X, a.Y,a.Z);
-  */
-
   Vec3 diff = vec3_sub(o->Position, c->object->Position);
+  printf("diff : %f, %f ,%f\n", diff.X, diff.Y, diff.Z);
   double dot = vec3_dot(diff, vec3(1,0,0));
+  o->angles.X = 0;
+  o->angles.Y = 0;
+  o->angles.Z = 0;
+  /*
+  Vec3 camx = quat_rotate_vec3(c->object->Orientation, vec3(1,0,0));
+  printf("camx : %f, %f ,%f\n", camx.X, camx.Y, camx.Z);
+  Vec3 obx = quat_rotate_vec3(qo, vec3(1,0,0));
+  double dot = vec3_dot(obx, camx);
+  */
+  printf("dot : %f\n", dot);
   if (dot > 0)
-  o->angles.Y = 90;
+  o->angles.Y = -90;
   else
   o->angles.Y = 0;
 
+  /*
   dot = vec3_dot(diff, vec3(0,1,0));
   if (dot > 0)
   o->angles.X = -90;
   else
   o->angles.X = 0;
+  */
+
+  Quat q = quat_angles_deg(o->angles.X, o->angles.Y, o->angles.Z);
+
+  Dragger* d = object_component_get(o, "dragger");
+  o->Orientation = quat_mul(q, d->ori);
+  //o->Orientation = quat_mul(d->ori,q);
+  o->orientation_type = ORIENTATION_QUAT;
 
 }
 
@@ -1384,10 +1401,17 @@ view_draw(View* v)
         if (v->control->dragger_is_local) {
           dragger->Orientation = quat_mul(repere_ori, d->ori);
           dragger->orientation_type = ORIENTATION_QUAT;
+          if (d && d->type == DRAGGER_ROTATE) {
+            _object_camera_face(repere_ori, dragger, c);
+          }
         }
-      }
-      if (d && d->type == DRAGGER_ROTATE) {
-        _object_camera_face(dragger, c);
+        else {
+          dragger->Orientation = d->ori;
+          dragger->orientation_type = ORIENTATION_QUAT;
+          if (d && d->type == DRAGGER_ROTATE) {
+            _object_camera_face(quat_identity(), dragger, c);
+          }
+        }
       }
       object_draw_edit(dragger, cam_mat_inv, cc->projection, id4);
     }
