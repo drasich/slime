@@ -47,6 +47,9 @@ struct _View
   Evas_Object* menu;
 
   Eina_List* draggers;
+  Eina_List* dragger_translate;
+  Eina_List* dragger_rotate;
+  Eina_List* dragger_scale;
 };
 
 View* create_view(Evas_Object *win);

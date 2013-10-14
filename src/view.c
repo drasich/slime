@@ -406,10 +406,10 @@ _create_repere(float u, Camera* camera)
 
 #include "resource.h"
 #include "component/dragger.h"
-typedef Object* (*dragger_create_fn)(Camera* camera, Vec3 constraint, Vec4 color, bool plane);
+typedef Object* (*dragger_create_fn)(Vec3 constraint, Vec4 color, bool plane);
 
 static Object* 
-_dragger_translate_create(Camera* camera, Vec3 constraint, Vec4 color, bool plane)
+_dragger_translate_create(Vec3 constraint, Vec4 color, bool plane)
 {
   Object* o = create_object();
   Component* comp = create_component(&mesh_desc);
@@ -457,7 +457,7 @@ _dragger_translate_create(Camera* camera, Vec3 constraint, Vec4 color, bool plan
 }
 
 static Object* 
-_dragger_scale_create(Camera* c, Vec3 constraint, Vec4 color, bool plane)
+_dragger_scale_create(Vec3 constraint, Vec4 color, bool plane)
 {
   Object* o = create_object();
   Component* comp = create_component(&mesh_desc);
@@ -493,7 +493,7 @@ _dragger_scale_create(Camera* c, Vec3 constraint, Vec4 color, bool plane)
 }
 
 static Object* 
-_dragger_rotate_create(Camera* c, Vec3 constraint, Vec4 color, bool plane)
+_dragger_rotate_create(Vec3 constraint, Vec4 color, bool plane)
 {
   Object* o = create_object();
   Component* comp = create_component(&mesh_desc);
@@ -854,9 +854,11 @@ _add_buttons(View* v, Evas_Object* win)
 
 }
 
-static void
-_view_draggers_create(View* v, dragger_create_fn dfn, bool create_plane )
+static Eina_List*
+_view_draggers_create(dragger_create_fn dfn, bool create_plane )
 {
+  Eina_List* draggers = NULL;
+
   Vec4 red = vec4(1.0,0.247,0.188,1);
   Vec4 green = vec4(0.2117,0.949,0.4156,1);
   Vec4 blue = vec4(0,0.4745,1,1);
@@ -864,7 +866,6 @@ _view_draggers_create(View* v, dragger_create_fn dfn, bool create_plane )
   Object* dragger;
 
   dragger = dfn(
-        v->camera->camera_component,
         vec3(1,0,0),
         red,
         false);
@@ -872,26 +873,24 @@ _view_draggers_create(View* v, dragger_create_fn dfn, bool create_plane )
   //must be the component
   Dragger* dc = object_component_get(dragger, "dragger");
   dc->ori = quat_angles_deg(-90,0,0);
-  v->draggers = eina_list_append(v->draggers, dragger);
+  draggers = eina_list_append(draggers, dragger);
 
   dragger = dfn(
-        v->camera->camera_component,
         vec3(0,1,0),
         green,
         false);
   dragger->angles.X = 90;
   dc = object_component_get(dragger, "dragger");
   dc->ori = quat_angles_deg(0, 90,0);
-  v->draggers = eina_list_append(v->draggers, dragger);
+  draggers = eina_list_append(draggers, dragger);
 
   dragger = dfn(
-        v->camera->camera_component,
         vec3(0,0,1),
         blue,
         false);
   dc = object_component_get(dragger, "dragger");
   dc->ori = quat_identity();
-  v->draggers = eina_list_append(v->draggers, dragger);
+  draggers = eina_list_append(draggers, dragger);
 
   if (!create_plane) return;
 
@@ -900,33 +899,31 @@ _view_draggers_create(View* v, dragger_create_fn dfn, bool create_plane )
   blue.W = 0.1f;
 
   dragger = dfn(
-        v->camera->camera_component,
         vec3(0,1,1),
         blue,
         true);
   dc = object_component_get(dragger, "dragger");
   dc->ori = quat_identity();
-  v->draggers = eina_list_append(v->draggers, dragger);
+  draggers = eina_list_append(draggers, dragger);
 
   dragger = dfn(
-        v->camera->camera_component,
         vec3(1,1,0),
         red,
         true);
   dragger->angles.Y = -90;
   dc = object_component_get(dragger, "dragger");
   dc->ori = quat_angles_deg(-90, 0,0);
-  v->draggers = eina_list_append(v->draggers, dragger);
+  draggers = eina_list_append(draggers, dragger);
 
   dragger = dfn(
-        v->camera->camera_component,
         vec3(1,0,1),
         green,
         true);
   dragger->angles.Z = 90;
   dc = object_component_get(dragger, "dragger");
   dc->ori = quat_angles_deg(0, 0,90);
-  v->draggers = eina_list_append(v->draggers, dragger);
+  draggers = eina_list_append(draggers, dragger);
+  return draggers;
 }
 
 static void
@@ -944,20 +941,18 @@ _create_view_objects(View* v)
   Line* l = object_component_get(v->repere, "line");
   if (l) line_set_size_fixed(l, true);
 
-  _view_draggers_create(v, _dragger_translate_create, true);
-  //_view_draggers_create(v, _dragger_scale_create, true);
-  //_view_draggers_create(v, _dragger_rotate_create, false);
+  v->dragger_translate = _view_draggers_create(_dragger_translate_create, true);
+  v->dragger_scale = _view_draggers_create(_dragger_scale_create, true);
+  //v->dragger_rotate = _view_draggers_create(_dragger_rotate_create, false);
 
-  /*
   Object* dragger;
 
   dragger = _dragger_rotate_create(
-        v->camera->camera_component,
         vec3(1,0,0),
         vec4(0,0,1,1),
         false);
-  v->draggers = eina_list_append(v->draggers, dragger);
-  */
+  v->dragger_rotate = eina_list_append(v->dragger_rotate, dragger);
+  v->draggers = v->dragger_translate;
 
 
   v->camera_repere = _create_repere(40, v->camera->camera_component);

@@ -25,14 +25,14 @@ struct _Control{
   Vec3 start;
   Vec2 mouse_start;
   Vec3 mouse_current;
-  Vec3 constraint;
-  Eina_Inarray* positions;
   Eina_List* undo;
   Eina_List* redo;
 
+  Eina_Inarray* positions;
   Eina_Inarray* scales;
   Eina_Inarray* rotates;
   Vec3 scale_factor;
+  Object* dragger_clicked;
 };
 
 

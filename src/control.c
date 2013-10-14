@@ -211,8 +211,6 @@ _translate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
       Vec3* origin = (Vec3*) eina_inarray_nth(c->positions, i);
       Vec3 wordpos = vec3_add(*origin, translation);
       object_world_position_set(o, wordpos);
-      //o->Position = vec3_add(*origin, translation);
-      //o->Position = vec3_add(*origin, translation);
       ++i;
       center = vec3_add(center, o->Position);
     }
@@ -224,6 +222,52 @@ _translate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
     control_property_transform_update(c);
   }
 }
+
+static void
+_translate_moving_local_axis(Control* c, Evas_Event_Mouse_Move* e, Vec3 axis)
+{
+  View* v = c->view;
+
+  Eina_List* objects = context_objects_get(v->context);
+  Vec3 cam_up = quat_rotate_vec3(v->camera->object->Orientation, vec3(0,1,0));
+  axis = vec3_normalized(axis);
+  Vec3 pn = vec3_cross(axis, cam_up);
+  pn = vec3_normalized(pn);
+  Plane p = { c->start, pn };
+
+  Ray rstart = ray_from_screen(v->camera, c->mouse_start.X, c->mouse_start.Y, 1);
+
+  float x = e->cur.canvas.x;
+  float y = e->cur.canvas.y;
+  Ray r = ray_from_screen(v->camera, x, y, 1);
+
+  IntersectionRay ir =  intersection_ray_plane(r, p);
+  IntersectionRay irstart =  intersection_ray_plane(rstart, p);
+
+  if (ir.hit && irstart.hit) {
+    Vec3 translation = vec3_sub(ir.position, irstart.position);
+    double dot = vec3_dot(axis, translation);
+    translation = vec3_mul(axis, dot);
+    Eina_List *l;
+    Object *o;
+    int i = 0;
+    Vec3 center = vec3_zero();
+    EINA_LIST_FOREACH(objects, l, o) {
+      Vec3* origin = (Vec3*) eina_inarray_nth(c->positions, i);
+      Vec3 wordpos = vec3_add(*origin, translation);
+      object_world_position_set(o, wordpos);
+      ++i;
+      center = vec3_add(center, o->Position);
+    }
+
+    if (i>0) center = vec3_mul(center, 1.0f/ (float) i);
+    v->context->mos.center =  center;
+
+    if (i == 1)
+    control_property_transform_update(c);
+  }
+}
+
 
 static void
 _scale_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
@@ -381,11 +425,13 @@ _draggers_click_check(Control* c, Evas_Event_Mouse_Down* e)
         if (vec3_length2(new) < vec3_length2(old)) {
           ir = irtest;
           drag_hit = d;
+          c->dragger_clicked =  dragger;
         }
       }
       else {
         ir = irtest;
         drag_hit = d;
+        c->dragger_clicked =  dragger;
       }
     }
   }
@@ -404,7 +450,6 @@ _draggers_click_check(Control* c, Evas_Event_Mouse_Down* e)
         _control_rotate(c);
         c->state = CONTROL_DRAGGER_ROTATE;
       }
-      c->constraint = drag_hit->constraint;
       return true;
   }
 
@@ -441,13 +486,22 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
     _scale_moving(c,e, vec3(1,1,1));
   }
   else if (c->state == CONTROL_DRAGGER_TRANSLATE) {
-    _translate_moving(c,e, c->constraint);
+    Dragger* d = object_component_get(c->dragger_clicked, "dragger");
+    Vec3 constraint = d->constraint;
+    _translate_moving(c,e, constraint);
+    //_translate_moving_local_axis(c,e, 
+    //      quat_rotate_vec3(c->dragger_clicked->Orientation, vec3(0,0,1)));
+    //
   }
   else if (c->state == CONTROL_DRAGGER_SCALE) {
-    _scale_moving(c,e, c->constraint);
+    Dragger* d = object_component_get(c->dragger_clicked, "dragger");
+    Vec3 constraint = d->constraint;
+    _scale_moving(c,e, constraint);
   }
   else if (c->state == CONTROL_DRAGGER_ROTATE) {
-    _rotate_moving(c,e, c->constraint);
+    Dragger* d = object_component_get(c->dragger_clicked, "dragger");
+    Vec3 constraint = d->constraint;
+    _rotate_moving(c,e, constraint);
   }
 
 }
@@ -725,6 +779,13 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
       }
     } else if (!strcmp(e->keyname, "a")) {
       context_objects_clean(v->context);
+    } else if (!strcmp(e->keyname, "space")) {
+      if (c->view->draggers == c->view->dragger_translate)
+        c->view->draggers = c->view->dragger_rotate;
+      else if (c->view->draggers == c->view->dragger_rotate)
+        c->view->draggers = c->view->dragger_scale;
+      else if (c->view->draggers == c->view->dragger_scale)
+        c->view->draggers = c->view->dragger_translate;
     }
 
   } else if (c->state == CONTROL_MOVE) {
