@@ -98,7 +98,7 @@ _control_rotate_prepare(Control* c, Eina_List* objects)
   Object *o;
   EINA_LIST_FOREACH(objects, l, o) {
     eina_inarray_push(c->rotates, &o->angles);
-    eina_inarray_push(c->quats, &o->Orientation);
+    eina_inarray_push(c->quats, &o->orientation);
   }
 
   c->state = CONTROL_ROTATE;
@@ -133,7 +133,7 @@ _control_center_camera(Control* c)
   if (o != NULL && c->state == CONTROL_IDLE) {
     //TODO get the distance from the size of the object on the screen
     Vec3 v = vec3(0,0,30);
-    v = quat_rotate_vec3(cam->object->Orientation, v);
+    v = quat_rotate_vec3(cam->object->orientation, v);
     v = vec3_add(v, o->position);
 
     //TODO write a camera_set_position function
@@ -180,7 +180,7 @@ _translate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
   View* v = c->view;
 
   Eina_List* objects = context_objects_get(v->context);
-  Plane p = { c->start, quat_rotate_vec3(v->camera->object->Orientation, vec3(0,0,-1)) };
+  Plane p = { c->start, quat_rotate_vec3(v->camera->object->orientation, vec3(0,0,-1)) };
 
   if (constraint.Z == 1) {
     p.Normal.Z = 0;
@@ -232,7 +232,7 @@ _translate_moving_local_axis(Control* c, Evas_Event_Mouse_Move* e, Vec3 axis)
   View* v = c->view;
 
   Eina_List* objects = context_objects_get(v->context);
-  Vec3 cam_up = quat_rotate_vec3(v->camera->object->Orientation, vec3(0,1,0));
+  Vec3 cam_up = quat_rotate_vec3(v->camera->object->orientation, vec3(0,1,0));
   axis = vec3_normalized(axis);
   Vec3 pn = vec3_cross(axis, cam_up);
   pn = vec3_normalized(pn);
@@ -405,10 +405,10 @@ _draggers_highlight_check(Control* c, Evas_Coord x, Evas_Coord y)
       irtest = intersection_ray_mesh(
             r, d->collider,
             dragger->position,
-            dragger->Orientation, vec3(d->scale,d->scale,d->scale));
+            dragger->orientation, vec3(d->scale,d->scale,d->scale));
     }
     else
-    irtest = intersection_ray_box(r, bb, dragger->position, dragger->Orientation, vec3(1,1,1));
+    irtest = intersection_ray_box(r, bb, dragger->position, dragger->orientation, vec3(1,1,1));
     if (irtest.hit) {
       if (ir.hit) {
         Vec3 old = vec3_sub(ir.position, r.Start);
@@ -456,10 +456,10 @@ _draggers_click_check(Control* c, Evas_Event_Mouse_Down* e)
       irtest = intersection_ray_mesh(
             r, d->collider,
             dragger->position,
-            dragger->Orientation, vec3(d->scale,d->scale,d->scale));
+            dragger->orientation, vec3(d->scale,d->scale,d->scale));
     }
     else
-    irtest = intersection_ray_box(r, bb, dragger->position, dragger->Orientation, vec3(1,1,1));
+    irtest = intersection_ray_box(r, bb, dragger->position, dragger->orientation, vec3(1,1,1));
 
     if (irtest.hit) {
       if (ir.hit) {
@@ -535,17 +535,17 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
       /*
       Vec3 normal;
       if (vec3_equal(d->constraint, vec3(0,1,1)))
-      normal = quat_rotate_vec3(c->dragger_clicked->Orientation, vec3(1,0,0));
+      normal = quat_rotate_vec3(c->dragger_clicked->orientation, vec3(1,0,0));
       else if (vec3_equal(d->constraint, vec3(1,0,1)))
-      normal = quat_rotate_vec3(c->dragger_clicked->Orientation, vec3(0,1,0));
+      normal = quat_rotate_vec3(c->dragger_clicked->orientation, vec3(0,1,0));
       else if (vec3_equal(d->constraint, vec3(1,1,0)))
-      normal = quat_rotate_vec3(c->dragger_clicked->Orientation, vec3(0,0,1));
+      normal = quat_rotate_vec3(c->dragger_clicked->orientation, vec3(0,0,1));
 
       _translate_moving_plane(c,e, 
-            quat_rotate_vec3(c->dragger_clicked->Orientation, normal));
+            quat_rotate_vec3(c->dragger_clicked->orientation, normal));
             */
       _translate_moving_local_axis(c,e, 
-            quat_rotate_vec3(c->dragger_clicked->Orientation, vec3(0,0,1)));
+            quat_rotate_vec3(c->dragger_clicked->orientation, vec3(0,0,1)));
     }
     else {
       Vec3 constraint = d->constraint;

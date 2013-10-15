@@ -400,13 +400,13 @@ intersection_ray_object(Ray ray, Object* o)
   Quat wq = object_world_orientation_get(o);
   Vec3 ws = object_world_scale_get(o);
 
-  //IntersectionRay ir_box = intersection_ray_box(ray, m->box, o->position, o->Orientation, o->scale);
+  //IntersectionRay ir_box = intersection_ray_box(ray, m->box, o->position, o->orientation, o->scale);
   IntersectionRay ir_box = intersection_ray_box(ray, m->box, wp, wq, ws);
   if (!ir_box.hit) {
     return out;
   }
 
-  //return intersection_ray_mesh(ray, m, o->position, o->Orientation, o->scale);
+  //return intersection_ray_mesh(ray, m, o->position, o->orientation, o->scale);
   return intersection_ray_mesh(ray, m, wp, wq, ws);
 
   //TODO perf: we compute the repere 2 times in box and then mesh.
@@ -540,13 +540,13 @@ planes_is_in_object(const Plane* planes, int nb_planes, const Object* o)
 
   //first test the box and then test the object/mesh
   OBox b;
-  aabox_to_obox(m->box, b, o->position, o->Orientation, o->scale);
+  aabox_to_obox(m->box, b, o->position, o->orientation, o->scale);
   if (!planes_is_box_in_allow_false_positives(planes, 6, b)) return false;
 
   Plane p[nb_planes];
   memcpy (p, planes, nb_planes*sizeof *p);
 
-  Repere r = {o->position, o->Orientation};
+  Repere r = {o->position, o->orientation};
   Quat iq = quat_conj(r.rotation);
 
   int i;

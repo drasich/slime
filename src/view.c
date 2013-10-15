@@ -127,8 +127,8 @@ static void frustum_from_rect(
       float width,
       float height)
 {
-  Vec3 camdir = quat_rotate_vec3(c->object.Orientation, vec3(0,0,-1));
-  Vec3 camup = quat_rotate_vec3(c->object.Orientation, vec3(0,1,0));
+  Vec3 camdir = quat_rotate_vec3(c->object.orientation, vec3(0,0,-1));
+  Vec3 camup = quat_rotate_vec3(c->object.orientation, vec3(0,1,0));
   Vec3 camright = vec3_cross(camdir, camup);
   double cam_height = tan(c->fovy/2.0)*c->near*2.0f;
   double cam_width = cam_height* c->aspect;
@@ -148,15 +148,15 @@ static void frustum_from_rect(
   Vec3 dir = vec3_sub(center, c->object.position);
   dir = vec3_normalized(dir);
   Quat qq = quat_between_vec(ccenter, center);
-  qq = quat_mul(c->object.Orientation, qq);
+  qq = quat_mul(c->object.orientation, qq);
 
   frustum_set(
         f,
         c->near, 
         c->far,
         c->object.position, 
-        quat_rotate_vec3(c->object.Orientation, vec3(0,0,-1)),
-        quat_rotate_vec3(c->object.Orientation, vec3(0,1,0)),
+        quat_rotate_vec3(c->object.orientation, vec3(0,0,-1)),
+        quat_rotate_vec3(c->object.orientation, vec3(0,1,0)),
         c->fovy,
         c->aspect);
 
@@ -565,7 +565,7 @@ _file_chosen(void *data, Evas_Object *obj __UNUSED__, void *event_info)
     yep->mesh->shader = v->control->shader_simple;
 
     Vec3 cp = v->camera->object->position;
-    Vec3 direction = quat_rotate_vec3(v->camera->object->Orientation, vec3(0,0,-1));
+    Vec3 direction = quat_rotate_vec3(v->camera->object->orientation, vec3(0,0,-1));
     cp = vec3_add(
           cp,
           vec3_mul(direction, 30));
@@ -590,7 +590,7 @@ _new_empty(void *data,
   View* v = (View*) data;
 
   Vec3 cp = v->camera->object->position;
-  Vec3 direction = quat_rotate_vec3(v->camera->object->Orientation, vec3(0,0,-1));
+  Vec3 direction = quat_rotate_vec3(v->camera->object->orientation, vec3(0,0,-1));
   cp = vec3_add(
         cp,
         vec3_mul(direction, 30));
@@ -1080,7 +1080,7 @@ _render_objects_add(View* v, Matrix4 root, Plane* planes, Eina_List* objects)
     }
 
     OBox b;
-    aabox_to_obox(m->box, b, o->position, o->Orientation, o->scale);
+    aabox_to_obox(m->box, b, o->position, o->orientation, o->scale);
 
     if (planes_is_box_in_allow_false_positives(planes, 6, b)) {
     //if (planes_is_in(planes, 6, o->position)) {
@@ -1131,7 +1131,7 @@ view_update(View* v, double dt)
     }
 
     OBox b;
-    aabox_to_obox(m->box, b, o->position, o->Orientation, o->scale);
+    aabox_to_obox(m->box, b, o->position, o->orientation, o->scale);
 
     if (planes_is_box_in_allow_false_positives(planes, 6, b)) {
     //if (planes_is_in(planes, 6, o->position)) {
@@ -1218,7 +1218,7 @@ _object_camera_face(Quat qo, Object* o, ViewCamera* c)
   o->angles.Y = 0;
   o->angles.Z = 0;
   /*
-  Vec3 camx = quat_rotate_vec3(c->object->Orientation, vec3(1,0,0));
+  Vec3 camx = quat_rotate_vec3(c->object->orientation, vec3(1,0,0));
   printf("camx : %f, %f ,%f\n", camx.X, camx.Y, camx.Z);
   Vec3 obx = quat_rotate_vec3(qo, vec3(1,0,0));
   double dot = vec3_dot(obx, camx);
@@ -1260,9 +1260,9 @@ _object_camera_face(Quat qo, Object* o, ViewCamera* c)
 
   Quat q = quat_yaw_pitch_roll_deg(0,0, angle);
 
-  //o->Orientation = quat_mul(q, d->ori);
-  o->Orientation = quat_mul(d->ori,q);
-  o->Orientation = quat_mul(qo, o->Orientation);
+  //o->orientation = quat_mul(q, d->ori);
+  o->orientation = quat_mul(d->ori,q);
+  o->orientation = quat_mul(qo, o->orientation);
   o->orientation_type = ORIENTATION_QUAT;
 
 }
@@ -1424,14 +1424,14 @@ view_draw(View* v)
       Dragger* d = object_component_get(dragger, "dragger");
       if (d) {
         if (v->control->dragger_is_local) {
-          dragger->Orientation = quat_mul(repere_ori, d->ori);
+          dragger->orientation = quat_mul(repere_ori, d->ori);
           dragger->orientation_type = ORIENTATION_QUAT;
           if (d && d->type == DRAGGER_ROTATE) {
             _object_camera_face(repere_ori, dragger, c);
           }
         }
         else {
-          dragger->Orientation = d->ori;
+          dragger->orientation = d->ori;
           dragger->orientation_type = ORIENTATION_QUAT;
           if (d && d->type == DRAGGER_ROTATE) {
             _object_camera_face(quat_identity(), dragger, c);
@@ -1450,7 +1450,7 @@ view_draw(View* v)
   mat4_set_identity(id);
   mat4_inverse(id, cam_mat_inv);
   v->camera_repere->position = vec3(-cc->width/2.0 +m, -cc->height/2.0 + m, -10);
-  v->camera_repere->Orientation = quat_inverse(co->Orientation);
+  v->camera_repere->orientation = quat_inverse(co->orientation);
   object_compute_matrix_with_quat(v->camera_repere, mo);
   Line* line = object_component_get(v->camera_repere, "line");
   if (line) line->id_texture = r->fbo_all->texture_depth_stencil_id;

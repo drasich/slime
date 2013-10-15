@@ -28,8 +28,8 @@ camera_lookat(ViewCamera* cam, Vec3 at)
   //TODO angles
   o->angles.X = c->pitch/M_PI*180.0;
   o->angles.Y = c->yaw/M_PI*180.0;
-  o->Orientation = quat_yaw_pitch_roll_deg(o->angles.Y, o->angles.X, o->angles.Z);
-  //o->Orientation = quat_mul(qy, qp);
+  o->orientation = quat_yaw_pitch_roll_deg(o->angles.Y, o->angles.X, o->angles.Z);
+  //o->orientation = quat_mul(qy, qp);
 
   c->center = at;
   camera_recalculate_origin(cam);
@@ -53,7 +53,7 @@ camera_pan(ViewCamera* cam, Vec3 t)
   Camera* c = cam->camera_component;
 
   c->local_offset = vec3_add(c->local_offset, t);
-  t = quat_rotate_vec3(o->Orientation, t);
+  t = quat_rotate_vec3(o->orientation, t);
   o->position = vec3_add(o->position, t);
 }
 
@@ -64,8 +64,8 @@ ray_from_screen(ViewCamera* cam, double x, double y, float length)
   Camera* c = cam->camera_component;
 
   double near = c->near;
-  Vec3 camz = quat_rotate_vec3(o->Orientation, vec3(0,0,-1));
-  Vec3 up = quat_rotate_vec3(o->Orientation, vec3(0,1,0));
+  Vec3 camz = quat_rotate_vec3(o->orientation, vec3(0,0,-1));
+  Vec3 up = quat_rotate_vec3(o->orientation, vec3(0,1,0));
   Vec3 h = vec3_cross(camz, up);
   h = vec3_normalized(h);
   double l = vec3_length(h);
@@ -107,9 +107,9 @@ camera_recalculate_origin(ViewCamera* cam)
   Object* o = cam->object;
   Camera* c = cam->camera_component;
 
-  Vec3 offset = quat_rotate_vec3(o->Orientation, c->local_offset);
+  Vec3 offset = quat_rotate_vec3(o->orientation, c->local_offset);
   Vec3 origin = vec3_sub(o->position, offset);
-  c->origin = quat_rotate_around(quat_inverse(o->Orientation), c->center, origin);
+  c->origin = quat_rotate_around(quat_inverse(o->orientation), c->center, origin);
 }
 
 void
@@ -120,9 +120,9 @@ camera_get_frustum(ViewCamera* cam, Frustum* out)
 
   out->near = c->near;
   out->far = c->far;
-  out->direction = quat_rotate_vec3(o->Orientation, vec3(0,0,-1));
+  out->direction = quat_rotate_vec3(o->orientation, vec3(0,0,-1));
   out->start = o->position;
-  out->up = quat_rotate_vec3(o->Orientation, vec3(0,1,0));
+  out->up = quat_rotate_vec3(o->orientation, vec3(0,1,0));
   out->fovy = c->fovy;
   out->aspect = c->aspect;
 }
@@ -134,9 +134,9 @@ camera_get_frustum_planes(ViewCamera* cam, Plane* p)
   Camera* c = cam->camera_component;
 
   //near plane
-  Vec3 direction = quat_rotate_vec3(o->Orientation, vec3(0,0,-1));
-  Vec3 right = quat_rotate_vec3(o->Orientation, vec3(1,0,0));
-  Vec3 up = quat_rotate_vec3(o->Orientation, vec3(0,1,0));
+  Vec3 direction = quat_rotate_vec3(o->orientation, vec3(0,0,-1));
+  Vec3 right = quat_rotate_vec3(o->orientation, vec3(1,0,0));
+  Vec3 up = quat_rotate_vec3(o->orientation, vec3(0,1,0));
 
   p[0].Point = vec3_add(o->position, vec3_mul(direction, c->near));
   p[0].Normal = direction;
@@ -201,9 +201,9 @@ camera_get_frustum_planes_rect(
   Object* o = cam->object;
   Camera* c = cam->camera_component;
 
-  Vec3 direction = quat_rotate_vec3(o->Orientation, vec3(0,0,-1));
-  Vec3 right = quat_rotate_vec3(o->Orientation, vec3(1,0,0));
-  Vec3 up = quat_rotate_vec3(o->Orientation, vec3(0,1,0));
+  Vec3 direction = quat_rotate_vec3(o->orientation, vec3(0,0,-1));
+  Vec3 right = quat_rotate_vec3(o->orientation, vec3(1,0,0));
+  Vec3 up = quat_rotate_vec3(o->orientation, vec3(0,1,0));
 
   //plane order:
   //near, far, up, down, right, left

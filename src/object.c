@@ -6,7 +6,7 @@
 void
 object_init(Object* o)
 {
-  quat_set_identity(&o->Orientation);
+  quat_set_identity(&o->orientation);
   o->scale.X = 1;
   o->scale.Y = 1;
   o->scale.Z = 1;
@@ -166,12 +166,12 @@ void
 object_compute_matrix(Object* o, Matrix4 mat)
 {
   if (o->orientation_type == ORIENTATION_EULER)
-  o->Orientation = quat_angles_deg(o->angles);
+  o->orientation = quat_angles_deg(o->angles);
 
   Matrix4 mt, mr, ms;
   mat4_set_scale(ms, o->scale);
   mat4_set_translation(mt, o->position);
-  mat4_set_rotation_quat(mr, o->Orientation);
+  mat4_set_rotation_quat(mr, o->orientation);
 
   mat4_multiply(mr, ms, mat);
   mat4_multiply(mt, mat, mat);
@@ -184,7 +184,7 @@ object_compute_matrix_with_quat(Object* o, Matrix4 mat)
 {
   Matrix4 mt, mr;
   mat4_set_translation(mt, o->position);
-  mat4_set_rotation_quat(mr, o->Orientation);
+  mat4_set_rotation_quat(mr, o->orientation);
   mat4_multiply(mt, mr, mat);
 }
 
@@ -223,9 +223,9 @@ _animation_update(Object* o, float dt)
 void
 object_update(Object* o)
 {
-  //o->Orientation = quat_angles_deg(o->angles);
-  o->Orientation = quat_yaw_pitch_roll_deg(o->angles.Y, o->angles.X, o->angles.Z);
-  mat4_pos_ori(o->position, o->Orientation, o->matrix);
+  //o->orientation = quat_angles_deg(o->angles);
+  o->orientation = quat_yaw_pitch_roll_deg(o->angles.Y, o->angles.X, o->angles.Z);
+  mat4_pos_ori(o->position, o->orientation, o->matrix);
 
   if (o->animation != NULL) {
     _animation_update(o, 0.007f);
@@ -334,7 +334,7 @@ void
 object_set_orientation(Object* o, Quat q)
 {
   printf("remove this function for now!!!!!!!!!!!!\n");
-  o->Orientation = q;
+  o->orientation = q;
 }
 
 void
@@ -536,9 +536,9 @@ Vec3 object_world_position_get(Object* o)
 Quat object_world_orientation_get(Object* o)
 {
   if (o->parent)
-  return quat_mul(object_world_orientation_get(o->parent), o->Orientation);
+  return quat_mul(object_world_orientation_get(o->parent), o->orientation);
   else
-  return o->Orientation;
+  return o->orientation;
 }
 
 Vec3 object_world_scale_get(Object* o)
