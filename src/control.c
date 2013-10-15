@@ -356,13 +356,6 @@ _rotate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
 
   Vec2 d = vec2(x - c->mouse_start.x, y - c->mouse_start.y);
   double s = vec2_length(d);
-  /*
-  c->scale_factor = vec3(s,s,s);
-  if (constraint.x == 0) c->scale_factor.x = 0;
-  if (constraint.y == 0) c->scale_factor.y = 0;
-  if (constraint.z == 0) c->scale_factor.z = 0;
-  */
-  c->scale_factor = vec3_mul(constraint,s);
   Quat qrot = quat_angle_axis(s/100, constraint);
 
   Eina_List *l;
@@ -371,7 +364,6 @@ _rotate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
   EINA_LIST_FOREACH(objects, l, o) {
     Vec3* angles_origin = (Vec3*) eina_inarray_nth(c->rotates, i);
     Quat* q_origin = (Quat*) eina_inarray_nth(c->quats, i);
-    //o->scale = vec3_mul(*scale_origin, c->scale_factor);
     o->angles = vec3_add(*angles_origin, c->scale_factor);
     o->orientation = quat_mul(*q_origin, qrot); //local
     //o->orientation = quat_mul(qrot, *q_origin); // global
