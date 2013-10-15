@@ -8,8 +8,10 @@ typedef Vec4 Quat;
 Quat quat_identity();
 Quat quat_angle_axis(double angle, Vec3 axis);
 void quat_set_identity(Quat* q);
-Quat quat_angles_rad(double yaw, double pitch, double roll);
+Quat quat_yaw_pitch_roll_rad(double yaw, double pitch, double roll);
 Quat quat_yaw_pitch_roll_deg(double yaw, double pitch, double roll);
+Quat quat_angles_deg(Vec3 angles);
+Quat quat_angles_rad(Vec3 angles);
 
 double quat_length2(Quat v);
 Quat quat_mul(Quat ql,Quat qr);

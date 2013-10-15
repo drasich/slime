@@ -328,25 +328,15 @@ Vec3
 quat_to_euler(Quat q)
 {
   Vec3 v = {
-    atan2(2*(q.W*q.X + q.Y*q.Z), 1- (q.X*q.X + q.Y*q.Y)),
+    atan2(2*(q.W*q.X + q.Y*q.Z), 1 - 2*(q.X*q.X + q.Y*q.Y)),
     asin(2*(q.W*q.Y - q.Z*q.X)),
-    atan2(2*(q.W*q.Z + q.X*q.Y), 1- (q.Y*q.Y + q.Z*q.Z))
+    atan2(2*(q.W*q.Z + q.X*q.Y), 1- 2*(q.Y*q.Y + q.Z*q.Z))
   };
-  /*
-  Vec3 v = {
-    asin(2*(q.X*q.Y + q.Z*q.W)),
-    atan2(2*(q.Y*q.W - q.X*q.Z), 1- 2*(q.Y*q.Y + q.Z*q.Z)),
-    atan2(2*(q.X*q.W - q.Y*q.Z), 1- 2*(q.X*q.X + q.Z*q.Z))
-  };
-  //heading = atan2(2*qy*qw-2*qx*qz , 1 - 2*qy2 - 2*qz2) = yaw = y
-  //attitude = asin(2*qx*qy + 2*qz*qw) = pitch = x
-  //bank = atan2(2*qx*qw-2*qy*qz , 1 - 2*qx2 - 2*qz2) = roll = z
-*/
   return v;
 }
 
 Quat
-quat_angles_rad(double yaw, double pitch, double roll)
+quat_yaw_pitch_roll_rad(double yaw, double pitch, double roll)
 {
   Quat qy = quat_angle_axis(yaw, vec3(0,1,0));
   Quat qp = quat_angle_axis(pitch, vec3(1,0,0));
@@ -361,9 +351,25 @@ quat_yaw_pitch_roll_deg(double yaw, double pitch, double roll)
 {
   double r = M_PI/180.0;
 
-  return quat_angles_rad(
+  return quat_yaw_pitch_roll_rad(
         yaw*r,
         pitch*r,
         roll*r);
 }
 
+Quat quat_angles_rad(Vec3 angles)
+{
+  Quat qx = quat_angle_axis(angles.X, vec3(1,0,0));
+  Quat qy = quat_angle_axis(angles.Y, vec3(0,1,0));
+  Quat qz = quat_angle_axis(angles.Z, vec3(0,0,1));
+
+  Quat q1 =  quat_mul(qx, qy);
+  return quat_mul(q1, qz);
+}
+
+Quat quat_angles_deg(Vec3 angles)
+{
+  double r = M_PI/180.0;
+
+  return quat_angles_rad(vec3_mul(angles, r));
+}
