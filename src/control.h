@@ -34,6 +34,7 @@ struct _Control{
   Eina_Inarray* quats;
   Vec3 scale_factor;
   Object* dragger_clicked;
+  Quat dragger_ori;
   bool dragger_is_local;
 };
 

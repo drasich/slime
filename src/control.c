@@ -117,6 +117,7 @@ _control_rotate(Control* c)
   Object* o = context_object_get(v->context);
   if (o != NULL && c->state != CONTROL_ROTATE) {
     _control_rotate_prepare(c, context_objects_get(v->context));
+    c->start = o->position; //TODO
     c->mouse_start = mousepos;
   }
 
@@ -351,12 +352,50 @@ _rotate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
 
   Eina_List* objects = context_objects_get(v->context);
 
+  Ray rstart = ray_from_screen(v->camera, c->mouse_start.x, c->mouse_start.y, 1);
   float x = e->cur.canvas.x;
   float y = e->cur.canvas.y;
+  Ray r = ray_from_screen(v->camera, x, y, 1);
+
+  //Vec3 normal = constraint;
+  Vec3 normal = quat_rotate_vec3(c->view->camera->object->orientation, vec3(0,0,1));
+  Plane p = { c->start, normal };
+  printf("normal : %f, %f, %f \n", normal.x, normal.y, normal.z);
+
+  IntersectionRay irstart =  intersection_ray_plane(rstart, p);
+  IntersectionRay ir =  intersection_ray_plane(r, p);
+
+  Vec3 yos = vec3_normalized(vec3_sub(irstart.position, c->start));
+  Vec3 yoe = vec3_normalized(vec3_sub(ir.position, c->start));
+  printf("start : %f, %f, %f \n", irstart.position.x, irstart.position.y, irstart.position.z);
+  printf("col : %f, %f, %f \n", ir.position.x, ir.position.y, ir.position.z);
+
+
+  double mdot = vec3_dot(yos, yoe);
+  //printf("DOT %f \n", mdot);
+
+  Vec3 cross = vec3_cross(yos,yoe);
+  printf("cross : %f, %f, %f \n", cross.x, cross.y, cross.z);
+  double sign = vec3_dot(normal, cross);
+  double angle = acos(mdot);
+  if (sign > 0) angle *= -1;
+  printf("angle %f \n", angle);
+
+  if (ir.hit && irstart.hit) {
+    Vec3 translation = vec3_sub(ir.position, irstart.position);
+  }
+  else printf("no collision \n");
+
+
+
+
+  Vec3 camx = quat_rotate_vec3(c->view->camera->object->orientation, vec3(1,0,0));
+  Vec3 dxy = quat_rotate_vec3(c->dragger_ori, vec3(1,1,0));
+  double dot = vec3_dot(camx, dxy);
 
   Vec2 d = vec2(x - c->mouse_start.x, y - c->mouse_start.y);
   double s = vec2_length(d);
-  Quat qrot = quat_angle_axis(s/100, constraint);
+  Quat qrot = quat_angle_axis(angle, constraint);
 
   Eina_List *l;
   Object *o;
@@ -465,12 +504,14 @@ _draggers_click_check(Control* c, Evas_Event_Mouse_Down* e)
           ir = irtest;
           drag_hit = d;
           c->dragger_clicked =  dragger;
+          c->dragger_ori = dragger->orientation;
         }
       }
       else {
         ir = irtest;
         drag_hit = d;
         c->dragger_clicked =  dragger;
+        c->dragger_ori = dragger->orientation;
       }
     }
   }
