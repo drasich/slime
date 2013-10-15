@@ -1207,9 +1207,13 @@ create_render()
 static void
 _object_camera_face(Quat qo, Object* o, ViewCamera* c)
 {
+  Dragger* d = object_component_get(o, "dragger");
+
   Vec3 diff = vec3_sub(o->Position, c->object->Position);
-  printf("diff : %f, %f ,%f\n", diff.X, diff.Y, diff.Z);
-  double dot = vec3_dot(diff, vec3(1,0,0));
+  double dotx = vec3_dot(diff, quat_rotate_vec3(qo, vec3(1,0,0)));
+  double doty = vec3_dot(diff, quat_rotate_vec3(qo, vec3(0,1,0)));
+  double dotz = vec3_dot(diff, quat_rotate_vec3(qo, vec3(0,0,1)));
+  float angle = 0;
   o->angles.X = 0;
   o->angles.Y = 0;
   o->angles.Z = 0;
@@ -1219,25 +1223,46 @@ _object_camera_face(Quat qo, Object* o, ViewCamera* c)
   Vec3 obx = quat_rotate_vec3(qo, vec3(1,0,0));
   double dot = vec3_dot(obx, camx);
   */
-  printf("dot : %f\n", dot);
-  if (dot > 0)
-  o->angles.Y = -90;
-  else
-  o->angles.Y = 0;
 
-  /*
-  dot = vec3_dot(diff, vec3(0,1,0));
-  if (dot > 0)
-  o->angles.X = -90;
-  else
-  o->angles.X = 0;
-  */
+  if ( vec3_equal(d->constraint, vec3(0,0,1))) {
+    if (dotx >0) {
+      if (doty >0)
+      angle = -180;
+      else
+      angle = -90;
+    }
+    else if (doty >0)
+      angle = 90;
+  }
 
-  Quat q = quat_angles_deg(o->angles.X, o->angles.Y, o->angles.Z);
+  if ( vec3_equal(d->constraint, vec3(0,1,0))) {
+    if (dotx >0) {
+      if (dotz >0)
+      angle = -180;
+      else
+      angle = -90;
+    }
+    else if (dotz >0)
+      angle = 90;
+  }
 
-  Dragger* d = object_component_get(o, "dragger");
-  o->Orientation = quat_mul(q, d->ori);
-  //o->Orientation = quat_mul(d->ori,q);
+  if ( vec3_equal(d->constraint, vec3(1,0,0))) {
+    if (doty >0) {
+      if (dotz >0)
+      angle = 180;
+      else
+      angle = 90;
+    }
+    else if (dotz >0)
+      angle = -90;
+  }
+
+
+  Quat q = quat_angles_deg(0,0, angle);
+
+  //o->Orientation = quat_mul(q, d->ori);
+  o->Orientation = quat_mul(d->ori,q);
+  o->Orientation = quat_mul(qo, o->Orientation);
   o->orientation_type = ORIENTATION_QUAT;
 
 }

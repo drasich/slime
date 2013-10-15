@@ -21,6 +21,17 @@ typedef enum {
   DRAGGER_ROTATE,
 } DraggerType;
 
+typedef enum {
+  DRAGGER_AXE_X = 1,
+  DRAGGER_AXE_Y,
+  DRAGGER_AXE_Z,
+  DRAGGER_PLANE_XY,
+  DRAGGER_PLANE_XZ,
+  DRAGGER_PLANE_YZ,
+  DRAGGER_XYZ
+} DraggerConstraint;
+
+
 
 typedef struct _Dragger Dragger;
 

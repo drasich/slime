@@ -14,7 +14,7 @@ create_control(View* v)
   c->view = v;
   c->redo = NULL;
   //c->shader_simple = create_shader("simple","shader/simple.vert", "shader/simple.frag");
-  //c->dragger_is_local = true;
+  c->dragger_is_local = true;
   return c;
 }
 
