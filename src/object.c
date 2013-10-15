@@ -165,8 +165,8 @@ object_draw_edit_component(
 void
 object_compute_matrix(Object* o, Matrix4 mat)
 {
-  if (o->orientation_type == ORIENTATION_EULER)
-  o->orientation = quat_angles_deg(o->angles);
+  //if (o->orientation_type == ORIENTATION_EULER)
+  //o->orientation = quat_angles_deg(o->angles);
 
   Matrix4 mt, mr, ms;
   mat4_set_scale(ms, o->scale);

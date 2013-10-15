@@ -14,7 +14,7 @@ create_control(View* v)
   c->view = v;
   c->redo = NULL;
   //c->shader_simple = create_shader("simple","shader/simple.vert", "shader/simple.frag");
-  //c->dragger_is_local = true;
+  c->dragger_is_local = true;
   return c;
 }
 
@@ -363,14 +363,18 @@ _rotate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
   if (constraint.z == 0) c->scale_factor.z = 0;
   */
   c->scale_factor = vec3_mul(constraint,s);
+  Quat qrot = quat_angle_axis(s/100, constraint);
 
   Eina_List *l;
   Object *o;
   int i = 0;
   EINA_LIST_FOREACH(objects, l, o) {
     Vec3* angles_origin = (Vec3*) eina_inarray_nth(c->rotates, i);
+    Quat* q_origin = (Quat*) eina_inarray_nth(c->quats, i);
     //o->scale = vec3_mul(*scale_origin, c->scale_factor);
     o->angles = vec3_add(*angles_origin, c->scale_factor);
+    o->orientation = quat_mul(*q_origin, qrot); //local
+    //o->orientation = quat_mul(qrot, *q_origin); // global
     ++i;
   }
 
