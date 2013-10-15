@@ -252,7 +252,7 @@ elm_main(int argc, char **argv)
   create_window();
 
   build_scene();
-  Quat qa = quat_angles_deg(10, 20, 30);
+  Quat qa = quat_yaw_pitch_roll_deg(10, 20, 30);
   Vec3 angles = quat_to_euler(qa);
   angles = vec3_mul(angles, 180.0f/3.1415f);
    printf("AAAAAAAAAAAAAAAAAAA %f, %f, %f \n", angles.X, angles.Y, angles.Z);

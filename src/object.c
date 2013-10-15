@@ -166,7 +166,7 @@ void
 object_compute_matrix(Object* o, Matrix4 mat)
 {
   if (o->orientation_type == ORIENTATION_EULER)
-  o->Orientation = quat_angles_deg(o->angles.Y, o->angles.X, o->angles.Z);
+  o->Orientation = quat_yaw_pitch_roll_deg(o->angles.Y, o->angles.X, o->angles.Z);
 
   Matrix4 mt, mr, ms;
   mat4_set_scale(ms, o->scale);
@@ -182,7 +182,7 @@ object_compute_matrix(Object* o, Matrix4 mat)
 void
 object_compute_matrix_with_angles(Object* o, Matrix4 mat)
 {
-  o->Orientation = quat_angles_deg(o->angles.Y, o->angles.X, o->angles.Z);
+  o->Orientation = quat_yaw_pitch_roll_deg(o->angles.Y, o->angles.X, o->angles.Z);
   object_compute_matrix_with_quat(o, mat);
    /*
   Matrix4 mt, mr;
@@ -237,7 +237,7 @@ _animation_update(Object* o, float dt)
 void
 object_update(Object* o)
 {
-  o->Orientation = quat_angles_deg(o->angles.Y, o->angles.X, o->angles.Z);
+  o->Orientation = quat_yaw_pitch_roll_deg(o->angles.Y, o->angles.X, o->angles.Z);
   mat4_pos_ori(o->Position, o->Orientation, o->matrix);
 
   if (o->animation != NULL) {

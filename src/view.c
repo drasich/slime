@@ -910,7 +910,7 @@ _view_draggers_create(dragger_create_fn dfn, bool create_plane, Quat q1, Quat q2
         red,
         true);
   dc = object_component_get(dragger, "dragger");
-  dc->ori = quat_angles_deg(-90, 0,0);
+  dc->ori = quat_yaw_pitch_roll_deg(-90, 0,0);
   draggers = eina_list_append(draggers, dragger);
 
   dragger = dfn(
@@ -918,7 +918,7 @@ _view_draggers_create(dragger_create_fn dfn, bool create_plane, Quat q1, Quat q2
         green,
         true);
   dc = object_component_get(dragger, "dragger");
-  dc->ori = quat_angles_deg(0, 0,90);
+  dc->ori = quat_yaw_pitch_roll_deg(0, 0,90);
   draggers = eina_list_append(draggers, dragger);
   return draggers;
 }
@@ -938,15 +938,15 @@ _create_view_objects(View* v)
   Line* l = object_component_get(v->repere, "line");
   if (l) line_set_size_fixed(l, true);
 
-  Quat q1 = quat_angles_deg(-90,0,0);
-  Quat q2 = quat_angles_deg(0, 90,0);
+  Quat q1 = quat_yaw_pitch_roll_deg(-90,0,0);
+  Quat q2 = quat_yaw_pitch_roll_deg(0, 90,0);
   Quat qi = quat_identity();
 
   v->dragger_translate = _view_draggers_create(_dragger_translate_create, true, q1,q2,qi);
   v->dragger_scale = _view_draggers_create(_dragger_scale_create, true, q1,q2,qi);
 
-  Quat q3 = quat_angles_deg(90,0,0);
-  Quat q4 = quat_angles_deg(0, -90,0);
+  Quat q3 = quat_yaw_pitch_roll_deg(90,0,0);
+  Quat q4 = quat_yaw_pitch_roll_deg(0, -90,0);
   v->dragger_rotate = _view_draggers_create(_dragger_rotate_create, false, q3, q4, qi);
 
   /*
@@ -1258,7 +1258,7 @@ _object_camera_face(Quat qo, Object* o, ViewCamera* c)
   }
 
 
-  Quat q = quat_angles_deg(0,0, angle);
+  Quat q = quat_yaw_pitch_roll_deg(0,0, angle);
 
   //o->Orientation = quat_mul(q, d->ori);
   o->Orientation = quat_mul(d->ori,q);

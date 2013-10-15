@@ -357,7 +357,7 @@ quat_angles_rad(double yaw, double pitch, double roll)
 }
 
 Quat
-quat_angles_deg(double yaw, double pitch, double roll)
+quat_yaw_pitch_roll_deg(double yaw, double pitch, double roll)
 {
   double r = M_PI/180.0;
 

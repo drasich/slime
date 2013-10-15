@@ -30,7 +30,7 @@ camera_lookat(ViewCamera* cam, Vec3 at)
   o->angles.Y = c->yaw/M_PI*180.0;
   o->Orientation = quat_angles_rad(c->pitch, c->yaw,0);
   // can also use this 
-  o->Orientation = quat_angles_deg(o->angles.Y, o->angles.X, o->angles.Z);
+  o->Orientation = quat_yaw_pitch_roll_deg(o->angles.Y, o->angles.X, o->angles.Z);
   //o->Orientation = quat_mul(qy, qp);
 
   c->center = at;
