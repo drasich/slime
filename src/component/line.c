@@ -65,18 +65,18 @@ void
 line_add(Line* l, Vec3 p1, Vec3 p2)
 {
   GLfloat f;
-  f = p1.X;
+  f = p1.x;
   eina_inarray_push(l->vertices, &f);
-  f = p1.Y;
+  f = p1.y;
   eina_inarray_push(l->vertices, &f);
-  f = p1.Z;
+  f = p1.z;
   eina_inarray_push(l->vertices, &f);
 
-  f = p2.X;
+  f = p2.x;
   eina_inarray_push(l->vertices, &f);
-  f = p2.Y;
+  f = p2.y;
   eina_inarray_push(l->vertices, &f);
-  f = p2.Z;
+  f = p2.z;
   eina_inarray_push(l->vertices, &f); 
 
   f = 1.0f;
@@ -92,29 +92,29 @@ void
 line_add_color(Line* l, Vec3 p1, Vec3 p2, Vec4 color)
 {
   GLfloat f;
-  f = p1.X;
+  f = p1.x;
   eina_inarray_push(l->vertices, &f);
-  f = p1.Y;
+  f = p1.y;
   eina_inarray_push(l->vertices, &f);
-  f = p1.Z;
+  f = p1.z;
   eina_inarray_push(l->vertices, &f);
 
-  f = p2.X;
+  f = p2.x;
   eina_inarray_push(l->vertices, &f);
-  f = p2.Y;
+  f = p2.y;
   eina_inarray_push(l->vertices, &f);
-  f = p2.Z;
+  f = p2.z;
   eina_inarray_push(l->vertices, &f); 
 
   int i;
   for (i = 0; i < 2; ++i) { 
-    f = color.X;
+    f = color.x;
     eina_inarray_push(l->colors, &f);
-    f = color.Y;
+    f = color.y;
     eina_inarray_push(l->colors, &f);
-    f = color.Z;
+    f = color.z;
     eina_inarray_push(l->colors, &f);
-    f = color.W;
+    f = color.w;
     eina_inarray_push(l->colors, &f);
   }
 
@@ -132,56 +132,56 @@ line_add_box(Line* l, AABox box, Vec4 color)
 
   Vec3 p1, p2;
   
-  p1 = vec3(min.X, min.Y, max.Z);
-  p2 = vec3(max.X, min.Y, max.Z);
+  p1 = vec3(min.x, min.y, max.z);
+  p2 = vec3(max.x, min.y, max.z);
   line_add_color(l, p1, p2, color);
 
-  p1 = vec3(min.X, max.Y, max.Z);
-  p2 = vec3(max.X, max.Y, max.Z);
+  p1 = vec3(min.x, max.y, max.z);
+  p2 = vec3(max.x, max.y, max.z);
   line_add_color(l, p1, p2, color);
 
-  p1 = vec3(min.X, min.Y, max.Z);
-  p2 = vec3(min.X, max.Y, max.Z);
+  p1 = vec3(min.x, min.y, max.z);
+  p2 = vec3(min.x, max.y, max.z);
   line_add_color(l, p1, p2, color);
 
-  p1 = vec3(max.X, min.Y, max.Z);
-  p2 = vec3(max.X, max.Y, max.Z);
+  p1 = vec3(max.x, min.y, max.z);
+  p2 = vec3(max.x, max.y, max.z);
   line_add_color(l, p1, p2, color);
 
   ////////////////
 
-  p1 = vec3(min.X, min.Y, min.Z);
-  p2 = vec3(max.X, min.Y, min.Z);
+  p1 = vec3(min.x, min.y, min.z);
+  p2 = vec3(max.x, min.y, min.z);
   line_add_color(l, p1, p2, color);
 
-  p1 = vec3(min.X, max.Y, min.Z);
-  p2 = vec3(max.X, max.Y, min.Z);
+  p1 = vec3(min.x, max.y, min.z);
+  p2 = vec3(max.x, max.y, min.z);
   line_add_color(l, p1, p2, color);
 
-  p1 = vec3(min.X, min.Y, min.Z);
-  p2 = vec3(min.X, max.Y, min.Z);
+  p1 = vec3(min.x, min.y, min.z);
+  p2 = vec3(min.x, max.y, min.z);
   line_add_color(l, p1, p2, color);
 
-  p1 = vec3(max.X, min.Y, min.Z);
-  p2 = vec3(max.X, max.Y, min.Z);
+  p1 = vec3(max.x, min.y, min.z);
+  p2 = vec3(max.x, max.y, min.z);
   line_add_color(l, p1, p2, color);
 
   /////////////////////////
 
-  p1 = vec3(min.X, min.Y, min.Z);
-  p2 = vec3(min.X, min.Y, max.Z);
+  p1 = vec3(min.x, min.y, min.z);
+  p2 = vec3(min.x, min.y, max.z);
   line_add_color(l, p1, p2, color);
 
-  p1 = vec3(min.X, max.Y, min.Z);
-  p2 = vec3(min.X, max.Y, max.Z);
+  p1 = vec3(min.x, max.y, min.z);
+  p2 = vec3(min.x, max.y, max.z);
   line_add_color(l, p1, p2, color);
 
-  p1 = vec3(max.X, min.Y, min.Z);
-  p2 = vec3(max.X, min.Y, max.Z);
+  p1 = vec3(max.x, min.y, min.z);
+  p2 = vec3(max.x, min.y, max.z);
   line_add_color(l, p1, p2, color);
 
-  p1 = vec3(max.X, max.Y, min.Z);
-  p2 = vec3(max.X, max.Y, max.Z);
+  p1 = vec3(max.x, max.y, min.z);
+  p2 = vec3(max.x, max.y, max.z);
   line_add_color(l, p1, p2, color);
 
   printf("finish addbox : %d \n", l->vertices->len);
@@ -304,7 +304,7 @@ line_prepare_draw(Line* l, Matrix4 world, const Matrix4 projection)
   if (l->fixed) {
     Vec4 zero = vec4(0,0,0,1);
     Vec4 vw = mat4_vec4_mul(tm, zero);
-    double w = vw.W * 0.01;
+    double w = vw.w * 0.01;
     line_clear(l);
     AABox bb = l->boxtest;
     bb.Max = vec3_mul(bb.Max, w);

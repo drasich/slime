@@ -19,16 +19,16 @@ camera_lookat(ViewCamera* cam, Vec3 at)
 
   Vec3 d = vec3_sub(at, o->position);
 
-  c->yaw = atan2(d.X,-d.Z);
-  c->pitch = atan2(-d.Y,-d.Z);
+  c->yaw = atan2(d.x,-d.z);
+  c->pitch = atan2(-d.y,-d.z);
  
   //Quat qy = quat_angle_axis(c->yaw, vec3(0,1,0));
   //Quat qp = quat_angle_axis(c->pitch, vec3(1,0,0));
   
   //TODO angles
-  o->angles.X = c->pitch/M_PI*180.0;
-  o->angles.Y = c->yaw/M_PI*180.0;
-  o->orientation = quat_yaw_pitch_roll_deg(o->angles.Y, o->angles.X, o->angles.Z);
+  o->angles.x = c->pitch/M_PI*180.0;
+  o->angles.y = c->yaw/M_PI*180.0;
+  o->orientation = quat_yaw_pitch_roll_deg(o->angles.y, o->angles.x, o->angles.z);
   //o->orientation = quat_mul(qy, qp);
 
   c->center = at;
@@ -156,9 +156,9 @@ camera_get_frustum_planes(ViewCamera* cam, Plane* p)
   p[2].Normal = vec3_mul(nn, -1);
 
   /*
-  printf(" upd : %f, %f, %f \n", upd.X, upd.Y, upd.Z);
-  printf(" up : %f, %f, %f \n", up.X, up.Y, up.Z);
-  printf(" up plane normal : %f, %f, %f \n", nn.X, nn.Y, nn.Z);
+  printf(" upd : %f, %f, %f \n", upd.x, upd.y, upd.z);
+  printf(" up : %f, %f, %f \n", up.x, up.y, up.z);
+  printf(" up plane normal : %f, %f, %f \n", nn.x, nn.y, nn.z);
   */
 
   //down plane
@@ -265,9 +265,9 @@ camera_get_frustum_planes_rect(
   p[5].Normal = vec3_mul(nn, -1);
 
   /*
-  printf(" leftd : %f, %f, %f \n", leftd.X, leftd.Y, leftd.Z);
-  printf(" up : %f, %f, %f \n", up.X, up.Y, up.Z);
-  printf(" up plane normal : %f, %f, %f \n", nn.X, nn.Y, nn.Z);
+  printf(" leftd : %f, %f, %f \n", leftd.x, leftd.y, leftd.z);
+  printf(" up : %f, %f, %f \n", up.x, up.y, up.z);
+  printf(" up plane normal : %f, %f, %f \n", nn.x, nn.y, nn.z);
   */
 }
 

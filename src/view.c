@@ -893,9 +893,9 @@ _view_draggers_create(dragger_create_fn dfn, bool create_plane, Quat q1, Quat q2
 
   if (!create_plane) return draggers;
 
-  red.W = 0.1f;
-  green.W = 0.1f;
-  blue.W = 0.1f;
+  red.w = 0.1f;
+  green.w = 0.1f;
+  blue.w = 0.1f;
 
   dragger = dfn(
         vec3(0,1,1),
@@ -1214,12 +1214,12 @@ _object_camera_face(Quat qo, Object* o, ViewCamera* c)
   double doty = vec3_dot(diff, quat_rotate_vec3(qo, vec3(0,1,0)));
   double dotz = vec3_dot(diff, quat_rotate_vec3(qo, vec3(0,0,1)));
   float angle = 0;
-  o->angles.X = 0;
-  o->angles.Y = 0;
-  o->angles.Z = 0;
+  o->angles.x = 0;
+  o->angles.y = 0;
+  o->angles.z = 0;
   /*
   Vec3 camx = quat_rotate_vec3(c->object->orientation, vec3(1,0,0));
-  printf("camx : %f, %f ,%f\n", camx.X, camx.Y, camx.Z);
+  printf("camx : %f, %f ,%f\n", camx.x, camx.y, camx.z);
   Vec3 obx = quat_rotate_vec3(qo, vec3(1,0,0));
   double dot = vec3_dot(obx, camx);
   */

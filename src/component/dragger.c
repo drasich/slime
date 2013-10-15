@@ -27,7 +27,7 @@ static double _resize_to_cam(Matrix4 world, const Matrix4 projection, double fac
 
   Vec4 zero = vec4(0,0,0,1);
   Vec4 vw = mat4_vec4_mul(tm, zero);
-  double w = vw.W * factor;
+  double w = vw.w * factor;
   return w;
 }
 
@@ -111,7 +111,7 @@ dragger_state_set(Dragger* d, DraggerState state)
   *v = vec4(1,1,1,1);
   else if (state == DRAGGER_HIDE) {
     *v = d->color_idle;
-    v->W = 0.05f;
+    v->w = 0.05f;
   }
 
   d->state = state;

@@ -234,9 +234,9 @@ void
 mat4_set_translation(Matrix4 m, Vec3 t)
 {
   m[0] = m[5] = m[10] = m[15] = 1;
-  m[3] = t.X;
-  m[7] = t.Y;
-  m[11] = t.Z;
+  m[3] = t.x;
+  m[7] = t.y;
+  m[11] = t.z;
 
   m[1] = m[2] = m[4] = 0;
   m[6] = m[8] = m[9] = 0;
@@ -272,21 +272,21 @@ mat4_set_rotation_quat(Matrix4 m, Quat q)
 
   double x2, y2, z2, xx, xy, xz, yy, yz, zz, wx, wy, wz;
 
-  x2 = rlength2*q.X;
-  y2 = rlength2*q.Y;
-  z2 = rlength2*q.Z;
+  x2 = rlength2*q.x;
+  y2 = rlength2*q.y;
+  z2 = rlength2*q.z;
 
-  xx = q.X * x2;
-  xy = q.X * y2;
-  xz = q.X * z2;
+  xx = q.x * x2;
+  xy = q.x * y2;
+  xz = q.x * z2;
 
-  yy = q.Y * y2;
-  yz = q.Y * z2;
-  zz = q.Z * z2;
+  yy = q.y * y2;
+  yz = q.y * z2;
+  zz = q.z * z2;
 
-  wx = q.W * x2;
-  wy = q.W * y2;
-  wz = q.W * z2;
+  wx = q.w * x2;
+  wy = q.w * y2;
+  wz = q.w * z2;
 
   m[3] = m[7] = m[11] = m[12] = m[13] = m[14] = 0;
 
@@ -418,9 +418,9 @@ Vec3
 mat4_mul(const Matrix4 m, Vec3 v)
 {
   return vec3(
-        m[0]*v.X + m[1]*v.Y + m[2]*v.Z,
-        m[4]*v.X + m[5]*v.Y + m[6]*v.Z,
-        m[8]*v.X + m[9]*v.Y + m[10]*v.Z
+        m[0]*v.x + m[1]*v.y + m[2]*v.z,
+        m[4]*v.x + m[5]*v.y + m[6]*v.z,
+        m[8]*v.x + m[9]*v.y + m[10]*v.z
         );
 }
 
@@ -428,10 +428,10 @@ Vec4
 mat4_vec4_mul(const Matrix4 m, Vec4 v)
 {
   return vec4(
-        m[0]*v.X + m[1]*v.Y + m[2]*v.Z + m[3]*v.W,
-        m[4]*v.X + m[5]*v.Y + m[6]*v.Z + m[7]*v.W,
-        m[8]*v.X + m[9]*v.Y + m[10]*v.Z + m[11]*v.W,
-        m[12]*v.X + m[13]*v.Y + m[14]*v.Z + m[15]*v.W
+        m[0]*v.x + m[1]*v.y + m[2]*v.z + m[3]*v.w,
+        m[4]*v.x + m[5]*v.y + m[6]*v.z + m[7]*v.w,
+        m[8]*v.x + m[9]*v.y + m[10]*v.z + m[11]*v.w,
+        m[12]*v.x + m[13]*v.y + m[14]*v.z + m[15]*v.w
         );
 }
 
@@ -440,19 +440,19 @@ Vec3
 mat4_premul(const Matrix4 m, Vec3 v)
 {
   return vec3(
-        v.X*m[0] + v.Y*m[4] + v.Z*m[8],
-        v.X*m[1] + v.Y*m[5] + v.Z*m[9],
-        v.X*m[2] + v.Y*m[6] + v.Z*m[10]);
+        v.x*m[0] + v.y*m[4] + v.z*m[8],
+        v.x*m[1] + v.y*m[5] + v.z*m[9],
+        v.x*m[2] + v.y*m[6] + v.z*m[10]);
 }
 
 Vec4
 mat4_vec4_premul(const Matrix4 m, Vec4 v)
 {
   return vec4(
-        v.X*m[0] + v.Y*m[4] + v.Z*m[8] + v.W*m[12],
-        v.X*m[1] + v.Y*m[5] + v.Z*m[9] + v.W*m[13],
-        v.X*m[2] + v.Y*m[6] + v.Z*m[10] + v.W*m[14],
-        v.X*m[3] + v.Y*m[7] + v.Z*m[11] + v.W*m[15]
+        v.x*m[0] + v.y*m[4] + v.z*m[8] + v.w*m[12],
+        v.x*m[1] + v.y*m[5] + v.z*m[9] + v.w*m[13],
+        v.x*m[2] + v.y*m[6] + v.z*m[10] + v.w*m[14],
+        v.x*m[3] + v.y*m[7] + v.z*m[11] + v.w*m[15]
         );
 }
 
@@ -476,19 +476,19 @@ mat4_lookat(Matrix4 m, Vec3 position, Vec3 at, Vec3 up)
   Vec3 u = vec3_cross(s, d);
   u = vec3_normalized(u);
 
-  m[0] = s.X;
-  m[1] = u.X;
-  m[2] = -d.X;
+  m[0] = s.x;
+  m[1] = u.x;
+  m[2] = -d.x;
   m[3] = 0.0;
 
-  m[4] = s.Y;
-  m[5] = u.Y;
-  m[6] = -d.Y;
+  m[4] = s.y;
+  m[5] = u.y;
+  m[6] = -d.y;
   m[7] = 0.0;
 
-  m[8] = s.Z;
-  m[9] = u.Z;
-  m[10] = -d.Z;
+  m[8] = s.z;
+  m[9] = u.z;
+  m[10] = -d.z;
   m[11] = 0.0;
 
   m[12] = 0.0;
@@ -502,7 +502,7 @@ mat4_lookat(Matrix4 m, Vec3 position, Vec3 at, Vec3 up)
 void 
 mat4_pre_translate(Matrix4 m, Vec3 v)
 {
-  double tmp = v.X;
+  double tmp = v.x;
   if (tmp != 0) {
     m[12] += tmp*m[0];
     m[13] += tmp*m[1];
@@ -510,7 +510,7 @@ mat4_pre_translate(Matrix4 m, Vec3 v)
     m[15] += tmp*m[3];
   }
 
-  tmp = v.Y;
+  tmp = v.y;
   if (tmp != 0) {
     m[12] += tmp*m[4];
     m[13] += tmp*m[5];
@@ -518,7 +518,7 @@ mat4_pre_translate(Matrix4 m, Vec3 v)
     m[15] += tmp*m[7];
   }
 
-  tmp = v.Z;
+  tmp = v.z;
   if (tmp != 0) {
     m[12] += tmp*m[8];
     m[13] += tmp*m[9];
@@ -578,32 +578,32 @@ mat4_get_quat_sav(Matrix4 m)
   }
 
   if (j == 0) {
-    q.W = tq[0];
-    q.X = m[6] - m[9];
-    q.Y = m[8] - m[2];
-    q.Z = m[1] - m[4];
+    q.w = tq[0];
+    q.x = m[6] - m[9];
+    q.y = m[8] - m[2];
+    q.z = m[1] - m[4];
   } else if (j == 1) {
-    q.W = m[6] - m[9];
-    q.X = tq[1];
-    q.Y = m[1] + m[4];
-    q.Z = m[8] + m[2];
+    q.w = m[6] - m[9];
+    q.x = tq[1];
+    q.y = m[1] + m[4];
+    q.z = m[8] + m[2];
   } else if (j == 2) {
-    q.W = m[8] - m[2];
-    q.X = m[1] + m[4];
-    q.Y = tq[2];
-    q.Z = m[6] + m[9];
+    q.w = m[8] - m[2];
+    q.x = m[1] + m[4];
+    q.y = tq[2];
+    q.z = m[6] + m[9];
   } else {
-    q.W = m[1] - m[4];
-    q.X = m[8] + m[2];
-    q.Y = m[6] + m[9];
-    q.Z = tq[3];
+    q.w = m[1] - m[4];
+    q.x = m[8] + m[2];
+    q.y = m[6] + m[9];
+    q.z = tq[3];
   }
 
   s = sqrt(0.25/tq[j]);
-  q.W *= s;
-  q.X *= s;
-  q.Y *= s;
-  q.Z *= s;
+  q.w *= s;
+  q.x *= s;
+  q.y *= s;
+  q.z *= s;
 
   return q;
 
@@ -620,31 +620,31 @@ mat4_get_quat(Matrix4 m)
 
    if (t > 0.00000001) {
      s = sqrt(t) * 2;
-     q.X = ( m[9] - m[6] ) / s;
-     q.Y = ( m[2] - m[8] ) / s;
-     q.Z = ( m[4] - m[1] ) / s;
-     q.W = 0.25 * s;
+     q.x = ( m[9] - m[6] ) / s;
+     q.y = ( m[2] - m[8] ) / s;
+     q.z = ( m[4] - m[1] ) / s;
+     q.w = 0.25 * s;
   } else if (t < 0) {
     printf("c'est plus petit que 0 \n");
   } else {
     if ( m[0] > m[5] && m[0] > m[10] )  {	// Column 0: 
       s  = sqrt( 1.0 + m[0] - m[5] - m[10] ) * 2;
-      q.X = 0.25 * s;
-      q.Y = (m[4] + m[1] ) / s;
-      q.Z = (m[2] + m[8] ) / s;
-      q.W = (m[9] - m[6] ) / s;
+      q.x = 0.25 * s;
+      q.y = (m[4] + m[1] ) / s;
+      q.z = (m[2] + m[8] ) / s;
+      q.w = (m[9] - m[6] ) / s;
     } else if ( m[5] > m[10] ) {			// Column 1: 
       s  = sqrt( 1.0 + m[5] - m[0] - m[10] ) * 2;
-      q.X = (m[4] + m[1] ) / s;
-      q.Y = 0.25 * s;
-      q.Z = (m[9] + m[6] ) / s;
-      q.W = (m[2] - m[8] ) / s;
+      q.x = (m[4] + m[1] ) / s;
+      q.y = 0.25 * s;
+      q.z = (m[9] + m[6] ) / s;
+      q.w = (m[2] - m[8] ) / s;
     } else {						// Column 2:
       s  = sqrt( 1.0 + m[10] - m[0] - m[5] ) * 2;
-      q.X = (m[2] + m[8] ) / s;
-      q.Y = (m[9] + m[6] ) / s;
-      q.Z = 0.25 * s;
-      q.W = (m[4] - m[1] ) / s;
+      q.x = (m[2] + m[8] ) / s;
+      q.y = (m[9] + m[6] ) / s;
+      q.z = 0.25 * s;
+      q.w = (m[4] - m[1] ) / s;
     }
   }
 
@@ -654,9 +654,9 @@ mat4_get_quat(Matrix4 m)
 void
 mat4_set_scale(Matrix4 m, const Vec3 v)
 {
-  m[0] = v.X;
-  m[5] = v.Y;
-  m[10] = v.Z;
+  m[0] = v.x;
+  m[5] = v.y;
+  m[10] = v.z;
   m[15] = 1;
 
   m[1] = m[2] = m[3] = m[4] = 0;

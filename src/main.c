@@ -255,7 +255,7 @@ elm_main(int argc, char **argv)
   Quat qa = quat_angles_deg(vec3(110.0f,150,10));
   Vec3 angles = quat_to_euler(qa);
   angles = vec3_mul(angles, 180.0f/M_PI);
-  printf("AAAAAAAAAAAAAAAAAAA %f, %f, %f \n", angles.X, angles.Y, angles.Z);
+  printf("AAAAAAAAAAAAAAAAAAA %f, %f, %f \n", angles.x, angles.y, angles.z);
   //gameviewtest();
 
   elm_run();

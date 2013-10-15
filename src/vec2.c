@@ -5,8 +5,8 @@ Vec2
 vec2(double x, double y)
 {
   Vec2 v = {
-    .X = x,
-    .Y = y
+    .x = x,
+    .y = y
   };
 
   return v;
@@ -15,21 +15,21 @@ vec2(double x, double y)
 double
 vec2_length(Vec2 v)
 {
-  return sqrt(v.X*v.X + v.Y*v.Y);
+  return sqrt(v.x*v.x + v.y*v.y);
 }
 
 double
 vec2_length2(Vec2 v)
 {
-  return v.X*v.X + v.Y*v.Y;
+  return v.x*v.x + v.y*v.y;
 }
 
 Vec2
 vec2_add(Vec2 v1, Vec2 v2)
 {
   Vec2 v;
-  v.X = v1.X + v2.X;
-  v.Y = v1.Y + v2.Y;
+  v.x = v1.x + v2.x;
+  v.y = v1.y + v2.y;
   return v;
 }
 
@@ -37,8 +37,8 @@ Vec2
 vec2_sub(Vec2 v1, Vec2 v2)
 {
   Vec2 v;
-  v.X = v1.X - v2.X;
-  v.Y = v1.Y - v2.Y;
+  v.x = v1.x - v2.x;
+  v.y = v1.y - v2.y;
   return v;
 }
 
@@ -46,8 +46,8 @@ Vec2
 vec2_mul(Vec2 v1, double s)
 {
   Vec2 v;
-  v.X = v1.X*s;
-  v.Y = v1.Y*s;
+  v.x = v1.x*s;
+  v.y = v1.y*s;
   return v;
 }
 

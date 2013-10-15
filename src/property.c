@@ -35,9 +35,9 @@ property_set_vec3()
   PROPERTY_SET_TYPE(ps, Vec3);
   ps->hint = HORIZONTAL;
 
-  ADD_PROP_NAME(ps, Vec3, X, EET_T_DOUBLE, "x");
-  ADD_PROP_NAME(ps, Vec3, Y, EET_T_DOUBLE, "y");
-  ADD_PROP_NAME(ps, Vec3, Z, EET_T_DOUBLE, "z");
+  ADD_PROP_NAME(ps, Vec3, x, EET_T_DOUBLE, "x");
+  ADD_PROP_NAME(ps, Vec3, y, EET_T_DOUBLE, "y");
+  ADD_PROP_NAME(ps, Vec3, z, EET_T_DOUBLE, "z");
 
   return ps;
 }

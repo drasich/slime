@@ -113,12 +113,12 @@ _multiple_objects_init_array_properties()
 {
   PropertySet* ps = create_property_set();
 
-  ADD_PROP(ps, Multiple_Objects_Selection, center.X, EET_T_DOUBLE);
-  ADD_PROP(ps, Multiple_Objects_Selection, center.Y, EET_T_DOUBLE);
-  ADD_PROP(ps, Multiple_Objects_Selection, center.Z, EET_T_DOUBLE);
-  ADD_PROP(ps, Multiple_Objects_Selection, rotation.X, EET_T_DOUBLE);
-  ADD_PROP(ps, Multiple_Objects_Selection, rotation.Y, EET_T_DOUBLE);
-  ADD_PROP(ps, Multiple_Objects_Selection, rotation.Z, EET_T_DOUBLE);
+  ADD_PROP(ps, Multiple_Objects_Selection, center.x, EET_T_DOUBLE);
+  ADD_PROP(ps, Multiple_Objects_Selection, center.y, EET_T_DOUBLE);
+  ADD_PROP(ps, Multiple_Objects_Selection, center.z, EET_T_DOUBLE);
+  ADD_PROP(ps, Multiple_Objects_Selection, rotation.x, EET_T_DOUBLE);
+  ADD_PROP(ps, Multiple_Objects_Selection, rotation.y, EET_T_DOUBLE);
+  ADD_PROP(ps, Multiple_Objects_Selection, rotation.z, EET_T_DOUBLE);
 
   return ps;
 }

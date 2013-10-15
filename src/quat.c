@@ -5,7 +5,7 @@
 double
 quat_length2(Quat v)
 {
-  return v.X*v.X + v.Y*v.Y + v.Z*v.Z + v.W*v.W;
+  return v.x*v.x + v.y*v.y + v.z*v.z + v.w*v.w;
 }
 
 const double epsilon = 0.0000001;
@@ -13,15 +13,15 @@ const double epsilon = 0.0000001;
 Quat
 quat_identity()
 {
-  Quat q = { .X = 0, .Y = 0, .Z = 0, .W = 1 };
+  Quat q = { .x = 0, .y = 0, .z = 0, .w = 1 };
   return q;
 }
 
 void
 quat_set_identity(Quat* q)
 {
-  q->X = q->Y = q->Z = 0;
-  q->W = 1;
+  q->x = q->y = q->z = 0;
+  q->w = 1;
 }
 
 
@@ -38,10 +38,10 @@ quat_angle_axis(double angle, Vec3 axis)
   double sin_half_angle = sin(0.5f*angle);
 
   Quat q = { 
-    .X = axis.X * sin_half_angle * inverse_norm,
-    .Y = axis.Y * sin_half_angle * inverse_norm,
-    .Z = axis.Z * sin_half_angle * inverse_norm,
-    .W = cos_half_angle};
+    .x = axis.x * sin_half_angle * inverse_norm,
+    .y = axis.y * sin_half_angle * inverse_norm,
+    .z = axis.z * sin_half_angle * inverse_norm,
+    .w = cos_half_angle};
 
   return q;
 }
@@ -50,10 +50,10 @@ Quat
 quat_mul(Quat ql, Quat qr)
 {
   Quat q = { 
-    .X = qr.W*ql.X + qr.X*ql.W + qr.Y*ql.Z - qr.Z*ql.Y,
-    .Y = qr.W*ql.Y - qr.X*ql.Z + qr.Y*ql.W + qr.Z*ql.X,
-    .Z = qr.W*ql.Z + qr.X*ql.Y - qr.Y*ql.X + qr.Z*ql.W,
-    .W = qr.W*ql.W - qr.X*ql.X - qr.Y*ql.Y - qr.Z*ql.Z
+    .x = qr.w*ql.x + qr.x*ql.w + qr.y*ql.z - qr.z*ql.y,
+    .y = qr.w*ql.y - qr.x*ql.z + qr.y*ql.w + qr.z*ql.x,
+    .z = qr.w*ql.z + qr.x*ql.y - qr.y*ql.x + qr.z*ql.w,
+    .w = qr.w*ql.w - qr.x*ql.x - qr.y*ql.y - qr.z*ql.z
   };
   return q;
 }
@@ -62,10 +62,10 @@ Quat
 quat_add(Quat ql, Quat qr)
 {
   Quat q = { 
-    .X = ql.X+qr.X,
-    .Y = ql.Y+qr.Y,
-    .Z = ql.Z+qr.Z,
-    .W = ql.W+qr.W,
+    .x = ql.x+qr.x,
+    .y = ql.y+qr.y,
+    .z = ql.z+qr.z,
+    .w = ql.w+qr.w,
   };
 
   return q;
@@ -76,10 +76,10 @@ Vec3
 quat_rotate_vec3(Quat q, Vec3 v)
 {
   Vec3 uv, uuv;
-  Vec3 qvec = {.X = q.X, .Y = q.Y, .Z = q.Z} ;
+  Vec3 qvec = {.x = q.x, .y = q.y, .z = q.z} ;
   uv = vec3_cross(qvec, v);
   uuv = vec3_cross(qvec, uv);
-  uv = vec3_mul(uv, -2.0f*q.W);
+  uv = vec3_mul(uv, -2.0f*q.w);
   uuv = vec3_mul(uuv, 2.0f);
   return vec3_add(v, vec3_add(uv, uuv));
 }
@@ -89,10 +89,10 @@ Quat
 quat_conj(Quat q)
 {
   Quat r = {
-    .X = -q.X, 
-    .Y = -q.Y,
-    .Z = -q.Z,
-    .W = q.W
+    .x = -q.x, 
+    .y = -q.y,
+    .z = -q.z,
+    .w = q.w
   };
 
   return r;
@@ -103,10 +103,10 @@ quat_inverse(Quat q)
 {
   float l = quat_length2(q);
   Quat r = {
-    .X = -q.X/l, 
-    .Y = -q.Y/l,
-    .Z = -q.Z/l,
-    .W = q.W/l
+    .x = -q.x/l, 
+    .y = -q.y/l,
+    .z = -q.z/l,
+    .w = q.w/l
   };
 
   return r;
@@ -125,10 +125,10 @@ Quat
 quat_mul_scalar(Quat q, float s)
 {
   Quat r = {
-    .X = q.X*s, 
-    .Y = q.Y*s,
-    .Z = q.Z*s,
-    .W = q.W*s
+    .x = q.x*s, 
+    .y = q.y*s,
+    .z = q.z*s,
+    .w = q.w*s
   };
 
   return r;
@@ -141,7 +141,7 @@ quat_slerp(Quat from, Quat to, float t)
   double omega, cosomega, sinomega, scale_from, scale_to ;
 
   Quat quatTo = to;
-  //printf("  quatto : %f, %f, %f, %f\n", quatTo.X, quatTo.Y, quatTo.Z, quatTo.W);
+  //printf("  quatto : %f, %f, %f, %f\n", quatTo.x, quatTo.y, quatTo.z, quatTo.w);
   cosomega = vec4_dot(from, to);
 
   if ( cosomega <0.0 ) { 
@@ -178,20 +178,20 @@ Vec4
 quat_to_axis_angle(Quat q)
 {
   Vec4 r;
-  float sinhalfangle = sqrt( q.X*q.X + q.Y*q.Y + q.Z*q.Z );
+  float sinhalfangle = sqrt( q.x*q.x + q.y*q.y + q.z*q.z );
 
-  r.W = 2.0 * atan2( sinhalfangle, q.W );
+  r.w = 2.0 * atan2( sinhalfangle, q.w );
   if(sinhalfangle)
    {
-    r.X = q.X / sinhalfangle;
-    r.Y = q.Y / sinhalfangle;
-    r.Z = q.Z / sinhalfangle;
+    r.x = q.x / sinhalfangle;
+    r.y = q.y / sinhalfangle;
+    r.z = q.z / sinhalfangle;
    }
   else
    {
-    r.X = 0.0;
-    r.Y = 0.0;
-    r.Z = 1.0;
+    r.x = 0.0;
+    r.y = 0.0;
+    r.z = 1.0;
    }
 
   return r;
@@ -238,25 +238,25 @@ quat_between_vec(Vec3 from, Vec3 to)
     // in a plane with maximum vector coordinates.
     // Then use it as quaternion axis with pi angle
     // Trick is to realize one value at least is >0.6 for a normalized vector.
-    if (fabs(sourceVector.X) < 0.6) {
+    if (fabs(sourceVector.x) < 0.6) {
       //const double norm = sqrt(1.0 - sourceVector.x() * sourceVector.x());
-      const double norm = sqrt(1.0 - sourceVector.X * sourceVector.X);
-      q.X = 0.0; 
-      q.Y = sourceVector.Z / norm;
-      q.Z = -sourceVector.Y / norm;
-      q.W = 0.0;
-    } else if (fabs(sourceVector.Y) < 0.6) {
-      const double norm = sqrt(1.0 - sourceVector.Y * sourceVector.Y);
-      q.X = -sourceVector.Z / norm;
-      q.Y = 0.0;
-      q.Z = sourceVector.X / norm;
-      q.W = 0.0;
+      const double norm = sqrt(1.0 - sourceVector.x * sourceVector.x);
+      q.x = 0.0; 
+      q.y = sourceVector.z / norm;
+      q.z = -sourceVector.y / norm;
+      q.w = 0.0;
+    } else if (fabs(sourceVector.y) < 0.6) {
+      const double norm = sqrt(1.0 - sourceVector.y * sourceVector.y);
+      q.x = -sourceVector.z / norm;
+      q.y = 0.0;
+      q.z = sourceVector.x / norm;
+      q.w = 0.0;
     } else {
-      const double norm = sqrt(1.0 - sourceVector.Z * sourceVector.Z);
-      q.X = sourceVector.Y / norm;
-      q.Y = -sourceVector.X / norm;
-      q.Z = 0.0;
-      q.W = 0.0;
+      const double norm = sqrt(1.0 - sourceVector.z * sourceVector.z);
+      q.x = sourceVector.y / norm;
+      q.y = -sourceVector.x / norm;
+      q.z = 0.0;
+      q.w = 0.0;
     }
   }
   else {
@@ -265,10 +265,10 @@ quat_between_vec(Vec3 from, Vec3 to)
     const double s = sqrt(0.5 * dotProdPlus1);
     //const Vec3d tmp = sourceVector ^ targetVector / (2.0*s);
     const Vec3 tmp = vec3_mul(vec3_cross(sourceVector, targetVector), 1.0 / (2.0*s));
-    q.X = tmp.X;
-    q.Y = tmp.Y;
-    q.Z = tmp.Z;
-    q.W = s;
+    q.x = tmp.x;
+    q.y = tmp.y;
+    q.z = tmp.z;
+    q.w = s;
   }
 
 
@@ -328,9 +328,9 @@ Vec3
 quat_to_euler(Quat q)
 {
   Vec3 v = {
-    atan2(2*(q.W*q.X + q.Y*q.Z), 1 - 2*(q.X*q.X + q.Y*q.Y)),
-    asin(2*(q.W*q.Y - q.Z*q.X)),
-    atan2(2*(q.W*q.Z + q.X*q.Y), 1- 2*(q.Y*q.Y + q.Z*q.Z))
+    atan2(2*(q.w*q.x + q.y*q.z), 1 - 2*(q.x*q.x + q.y*q.y)),
+    asin(2*(q.w*q.y - q.z*q.x)),
+    atan2(2*(q.w*q.z + q.x*q.y), 1- 2*(q.y*q.y + q.z*q.z))
   };
   return v;
 }
@@ -359,9 +359,9 @@ quat_yaw_pitch_roll_deg(double yaw, double pitch, double roll)
 
 Quat quat_angles_rad(Vec3 angles)
 {
-  Quat qx = quat_angle_axis(angles.X, vec3(1,0,0));
-  Quat qy = quat_angle_axis(angles.Y, vec3(0,1,0));
-  Quat qz = quat_angle_axis(angles.Z, vec3(0,0,1));
+  Quat qx = quat_angle_axis(angles.x, vec3(1,0,0));
+  Quat qy = quat_angle_axis(angles.y, vec3(0,1,0));
+  Quat qz = quat_angle_axis(angles.z, vec3(0,0,1));
 
   Quat q1 =  quat_mul(qx, qy);
   return quat_mul(q1, qz);

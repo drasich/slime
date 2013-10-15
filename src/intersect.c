@@ -50,22 +50,22 @@ intersection_ray_aabox(Ray ray, AABox box)
   IntersectionRay out = { .hit = false, .inside = true};
   double xt, xn;
 
-  if (ray.Start.X < box.Min.X) {
-    xt = box.Min.X - ray.Start.X;
-    if (xt > ray.Direction.X) {
+  if (ray.Start.x < box.Min.x) {
+    xt = box.Min.x - ray.Start.x;
+    if (xt > ray.Direction.x) {
       out.inside = false;
       return out;
     }
-    xt /= ray.Direction.X;
+    xt /= ray.Direction.x;
     out.inside = false;
     xn = -1;
-  } else if (ray.Start.X > box.Max.X) {
-    xt = box.Max.X - ray.Start.X;
-    if (xt < ray.Direction.X) {
+  } else if (ray.Start.x > box.Max.x) {
+    xt = box.Max.x - ray.Start.x;
+    if (xt < ray.Direction.x) {
       out.inside = false;
       return out;
     }
-    xt /= ray.Direction.X;
+    xt /= ray.Direction.x;
     out.inside = false;
     xn = 1;
   } else {
@@ -73,22 +73,22 @@ intersection_ray_aabox(Ray ray, AABox box)
   }
 
   double yt, yn;
-  if (ray.Start.Y < box.Min.Y) {
-    yt = box.Min.Y - ray.Start.Y;
-    if (yt > ray.Direction.Y) {
+  if (ray.Start.y < box.Min.y) {
+    yt = box.Min.y - ray.Start.y;
+    if (yt > ray.Direction.y) {
       out.inside = false;
       return out;
     }
-    yt /= ray.Direction.Y;
+    yt /= ray.Direction.y;
     out.inside = false;
     yn = -1;
-  } else if (ray.Start.Y > box.Max.Y) {
-    yt = box.Max.Y - ray.Start.Y;
-    if (yt < ray.Direction.Y) {
+  } else if (ray.Start.y > box.Max.y) {
+    yt = box.Max.y - ray.Start.y;
+    if (yt < ray.Direction.y) {
       out.inside = false;
       return out;
     }
-    yt /= ray.Direction.Y;
+    yt /= ray.Direction.y;
     out.inside = false;
     yn = 1;
   } else {
@@ -96,22 +96,22 @@ intersection_ray_aabox(Ray ray, AABox box)
   }
 
   double zt, zn;
-  if (ray.Start.Z < box.Min.Z) {
-    zt = box.Min.Z - ray.Start.Z;
-    if (zt > ray.Direction.Z) {
+  if (ray.Start.z < box.Min.z) {
+    zt = box.Min.z - ray.Start.z;
+    if (zt > ray.Direction.z) {
       out.inside = false;
       return out;
     }
-    zt /= ray.Direction.Z;
+    zt /= ray.Direction.z;
     out.inside = false;
     zn = -1;
-  } else if (ray.Start.Z > box.Max.Z) {
-    zt = box.Max.Z - ray.Start.Z;
-    if (zt < ray.Direction.Z) {
+  } else if (ray.Start.z > box.Max.z) {
+    zt = box.Max.z - ray.Start.z;
+    if (zt < ray.Direction.z) {
       out.inside = false;
       return out;
     }
-    zt /= ray.Direction.Z;
+    zt /= ray.Direction.z;
     out.inside = false;
     zn = 1;
   } else {
@@ -134,38 +134,38 @@ intersection_ray_aabox(Ray ray, AABox box)
     t = zt;
   }
 
-  //printf("position %f, %f, %f \n", ir.position.X, ir.position.Y, ir.position.Z);
+  //printf("position %f, %f, %f \n", ir.position.x, ir.position.y, ir.position.z);
 
   double x, y, z;
 
   switch (which) {
     case 0: // yz plane
-      y = ray.Start.Y + ray.Direction.Y*t;
-      if (y < box.Min.Y - FLT_EPSILON || y > box.Max.Y + FLT_EPSILON) { 
+      y = ray.Start.y + ray.Direction.y*t;
+      if (y < box.Min.y - FLT_EPSILON || y > box.Max.y + FLT_EPSILON) { 
         out.inside = false; return out; }
-      z = ray.Start.Z + ray.Direction.Z*t;
-      if (z < box.Min.Z - FLT_EPSILON || z > box.Max.Z + FLT_EPSILON) {
+      z = ray.Start.z + ray.Direction.z*t;
+      if (z < box.Min.z - FLT_EPSILON || z > box.Max.z + FLT_EPSILON) {
         out.inside = false; return out; }
 
-    out.normal.X = xn;
+    out.normal.x = xn;
   case 1: //xz plane
-    x = ray.Start.X + ray.Direction.X*t;
-    if (x < box.Min.X - FLT_EPSILON || x > box.Max.X + FLT_EPSILON) { 
+    x = ray.Start.x + ray.Direction.x*t;
+    if (x < box.Min.x - FLT_EPSILON || x > box.Max.x + FLT_EPSILON) { 
       out.inside = false; return out; }
-    z = ray.Start.Z + ray.Direction.Z*t;
-    if (z < box.Min.Z - FLT_EPSILON || z > box.Max.Z + FLT_EPSILON) {
+    z = ray.Start.z + ray.Direction.z*t;
+    if (z < box.Min.z - FLT_EPSILON || z > box.Max.z + FLT_EPSILON) {
       out.inside = false; return out; }
 
-    out.normal.Y = yn;
+    out.normal.y = yn;
   case 2:
-    x = ray.Start.X + ray.Direction.X*t;
-    if (x < box.Min.X - FLT_EPSILON || x > box.Max.X + FLT_EPSILON) {
+    x = ray.Start.x + ray.Direction.x*t;
+    if (x < box.Min.x - FLT_EPSILON || x > box.Max.x + FLT_EPSILON) {
       out.inside = false; return out; }
-    y = ray.Start.Y + ray.Direction.Y*t;
-    if (y < box.Min.Y - FLT_EPSILON || y > box.Max.Y + FLT_EPSILON) { 
+    y = ray.Start.y + ray.Direction.y*t;
+    if (y < box.Min.y - FLT_EPSILON || y > box.Max.y + FLT_EPSILON) { 
       out.inside = false; return out; }
 
-    out.normal.Y = zn;
+    out.normal.y = zn;
   }
 
   out.position = vec3_add(ray.Start, vec3_mul(ray.Direction,t));
@@ -229,7 +229,7 @@ intersection_ray_triangle(Ray r, Triangle t, double min)
 
   /*
   if (!(dot < 0.0)) {
-    printf("normal : %f %f %f\n", n.X, n.Y, n.Z);
+    printf("normal : %f %f %f\n", n.x, n.y, n.z);
     printf("return dot < 0 : %f\n", dot);
     return out;
   }
@@ -260,41 +260,41 @@ intersection_ray_triangle(Ray r, Triangle t, double min)
 
   double a0, a1, a2;
   double b0, b1, b2;
-  if ( fabs(n.X) > fabs(n.Y)) {
-    if (fabs(n.X) > fabs(n.Z)) {
-      a0 = p.Y - t.v0.Y;
-      a1 = t.v1.Y - t.v0.Y;
-      a2 = t.v2.Y - t.v0.Y;
+  if ( fabs(n.x) > fabs(n.y)) {
+    if (fabs(n.x) > fabs(n.z)) {
+      a0 = p.y - t.v0.y;
+      a1 = t.v1.y - t.v0.y;
+      a2 = t.v2.y - t.v0.y;
 
-      b0 = p.Z - t.v0.Z;
-      b1 = t.v1.Z - t.v0.Z;
-      b2 = t.v2.Z - t.v0.Z;
+      b0 = p.z - t.v0.z;
+      b1 = t.v1.z - t.v0.z;
+      b2 = t.v2.z - t.v0.z;
     } else {
-      a0 = p.X - t.v0.X;
-      a1 = t.v1.X - t.v0.X;
-      a2 = t.v2.X - t.v0.X;
+      a0 = p.x - t.v0.x;
+      a1 = t.v1.x - t.v0.x;
+      a2 = t.v2.x - t.v0.x;
 
-      b0 = p.Y - t.v0.Y;
-      b1 = t.v1.Y - t.v0.Y;
-      b2 = t.v2.Y - t.v0.Y;
+      b0 = p.y - t.v0.y;
+      b1 = t.v1.y - t.v0.y;
+      b2 = t.v2.y - t.v0.y;
     }
   } else {
-    if (fabs(n.Y) > fabs(n.Z)) {
-      a0 = p.X - t.v0.X;
-      a1 = t.v1.X - t.v0.X;
-      a2 = t.v2.X - t.v0.X;
+    if (fabs(n.y) > fabs(n.z)) {
+      a0 = p.x - t.v0.x;
+      a1 = t.v1.x - t.v0.x;
+      a2 = t.v2.x - t.v0.x;
 
-      b0 = p.Z - t.v0.Z;
-      b1 = t.v1.Z - t.v0.Z;
-      b2 = t.v2.Z - t.v0.Z;
+      b0 = p.z - t.v0.z;
+      b1 = t.v1.z - t.v0.z;
+      b2 = t.v2.z - t.v0.z;
     } else {
-      a0 = p.X - t.v0.X;
-      a1 = t.v1.X - t.v0.X;
-      a2 = t.v2.X - t.v0.X;
+      a0 = p.x - t.v0.x;
+      a1 = t.v1.x - t.v0.x;
+      a2 = t.v2.x - t.v0.x;
 
-      b0 = p.Y - t.v0.Y;
-      b1 = t.v1.Y - t.v0.Y;
-      b2 = t.v2.Y - t.v0.Y;
+      b0 = p.y - t.v0.y;
+      b1 = t.v1.y - t.v0.y;
+      b2 = t.v2.y - t.v0.y;
     }
   }
 
@@ -459,12 +459,12 @@ plane_is_in(Plane p, Vec3 v)
 {
   /*
   printf("testing plane \n");
-  printf(" point : %f, %f, %f\n", p.Point.X, p.Point.Y, p.Point.Z);
-  printf(" normal : %f, %f, %f\n", p.Normal.X, p.Normal.Y, p.Normal.Z);
-  printf(" with v : %f, %f, %f\n", v.X, v.Y, v.Z);
+  printf(" point : %f, %f, %f\n", p.Point.x, p.Point.y, p.Point.z);
+  printf(" normal : %f, %f, %f\n", p.Normal.x, p.Normal.y, p.Normal.z);
+  printf(" with v : %f, %f, %f\n", v.x, v.y, v.z);
   */
   Vec3 pos = vec3_sub(v, p.Point);
-  //printf(" pos is : %f, %f, %f\n", pos.X, pos.Y, pos.Z);
+  //printf(" pos is : %f, %f, %f\n", pos.x, pos.y, pos.z);
   float dot = vec3_dot(pos, p.Normal);
   //printf("dot is : %f \n", dot);
   return dot >= 0;

@@ -24,21 +24,21 @@ void mesh_read_file_no_indices(Mesh* mesh, FILE* f)
     fread(&x, 4,1,f);
     vert_tmp[i] = x;
     if (i % 3 == 0) {
-      if (x > mesh->box.Max.X) mesh->box.Max.X = x;
-      if (x < mesh->box.Min.X) mesh->box.Min.X = x;
+      if (x > mesh->box.Max.x) mesh->box.Max.x = x;
+      if (x < mesh->box.Min.x) mesh->box.Min.x = x;
     }
     else if (i % 3 == 1) {
-      if (x > mesh->box.Max.Y) mesh->box.Max.Y = x;
-      if (x < mesh->box.Min.Y) mesh->box.Min.Y = x;
+      if (x > mesh->box.Max.y) mesh->box.Max.y = x;
+      if (x < mesh->box.Min.y) mesh->box.Min.y = x;
     }
     else if (i % 3 == 2) {
-      if (x > mesh->box.Max.Z) mesh->box.Max.Z = x;
-      if (x < mesh->box.Min.Z) mesh->box.Min.Z = x;
+      if (x > mesh->box.Max.z) mesh->box.Max.z = x;
+      if (x < mesh->box.Min.z) mesh->box.Min.z = x;
     }
   }
 
-  //printf("bounds min : %f %f %f\n", mesh->box.Min.X,mesh->box.Min.Y,mesh->box.Min.Z);
-  //printf("bounds max : %4.16f %4.16f %4.16f\n", mesh->box.Max.X,mesh->box.Max.Y,mesh->box.Max.Z);
+  //printf("bounds min : %f %f %f\n", mesh->box.Min.x,mesh->box.Min.y,mesh->box.Min.z);
+  //printf("bounds max : %4.16f %4.16f %4.16f\n", mesh->box.Max.x,mesh->box.Max.y,mesh->box.Max.z);
 
   fread(&count, sizeof(count),1,f);
   printf("faces size: %d\n", count);
@@ -84,11 +84,11 @@ void mesh_read_file_no_indices(Mesh* mesh, FILE* f)
   VertexInfo vi;
   for (index = 0; index < indices_len; ++index){
     mesh->vertices[index*3] = vert_tmp[indices_tmp[index]*3];
-    vi.position.X = vert_tmp[indices_tmp[index]*3];
+    vi.position.x = vert_tmp[indices_tmp[index]*3];
     mesh->vertices[index*3+1] = vert_tmp[indices_tmp[index]*3+1];
-    vi.position.Y = vert_tmp[indices_tmp[index]*3+1];
+    vi.position.y = vert_tmp[indices_tmp[index]*3+1];
     mesh->vertices[index*3+2] = vert_tmp[indices_tmp[index]*3+2];
-    vi.position.Z = vert_tmp[indices_tmp[index]*3+2];
+    vi.position.z = vert_tmp[indices_tmp[index]*3+2];
     eina_inarray_push(mesh->vertices_base, &vi);
 
     //we are only setting 1 because the rest is already 0 with calloc

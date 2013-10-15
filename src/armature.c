@@ -23,7 +23,7 @@ bone_create(FILE* f)
   bone->position_base = read_vec3(f);
   bone->rotation_base = read_vec4(f);
   Quat q = bone->rotation_base;
-  printf("  bone rotation : %f, %f, %f, %f\n", q.X, q.Y, q.Z, q.W);
+  printf("  bone rotation : %f, %f, %f, %f\n", q.x, q.y, q.z, q.w);
   bone->position = bone->position_base;
   bone->rotation = bone->rotation_base;
 
@@ -267,13 +267,13 @@ armature_set_pose(Armature* armature, char* action_name, float time)
     } else if (curve->type == EULER) {
       /*
       Vec3 euler = f->vec3;
-      printf("euler %f %f %f\n", euler.X, euler.Y, euler.Z);
+      printf("euler %f %f %f\n", euler.x, euler.y, euler.z);
       Vec3 axisz = {0,0,1};
-      Quat qz = quat_angle_axis(euler.Z, axisz);
+      Quat qz = quat_angle_axis(euler.z, axisz);
       Vec3 axisy = {0,1,0};
-      Quat qy = quat_angle_axis(euler.Y, axisy);
+      Quat qy = quat_angle_axis(euler.y, axisy);
       Vec3 axisx = {1,0,0};
-      Quat qx = quat_angle_axis(euler.X, axisx);
+      Quat qx = quat_angle_axis(euler.x, axisx);
       Quat q = quat_mul( quat_mul (qz, qy), qx);
       //Quat q = quat_mul( quat_mul (qx, qy), qz);
 

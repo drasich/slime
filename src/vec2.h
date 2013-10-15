@@ -5,8 +5,8 @@
 typedef struct _Vec2 Vec2;
 
 struct _Vec2 {
-  double X;
-  double Y;
+  double x;
+  double y;
 };
 
 Vec2 vec2(double x, double y);

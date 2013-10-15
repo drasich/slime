@@ -33,21 +33,21 @@ aabox_to_obox(AABox a, OBox o, Vec3 p, Quat q, Vec3 scale)
 
   o[0] = vec3_add(
             vec3_add(
-              vec3_mul(x, a.Min.X), 
-              vec3_mul(y, a.Min.Y)),
-            vec3_mul(z, a.Min.Z));
-  o[1] = vec3_add(o[0], vec3_mul(x, a.Max.X - a.Min.X));
-  o[2] = vec3_add(o[0], vec3_mul(y, a.Max.Y - a.Min.Y));
-  o[3] = vec3_add(o[0], vec3_mul(z, a.Max.Z - a.Min.Z));
+              vec3_mul(x, a.Min.x), 
+              vec3_mul(y, a.Min.y)),
+            vec3_mul(z, a.Min.z));
+  o[1] = vec3_add(o[0], vec3_mul(x, a.Max.x - a.Min.x));
+  o[2] = vec3_add(o[0], vec3_mul(y, a.Max.y - a.Min.y));
+  o[3] = vec3_add(o[0], vec3_mul(z, a.Max.z - a.Min.z));
 
   o[4] = vec3_add(
             vec3_add(
-              vec3_mul(x, a.Max.X), 
-              vec3_mul(y, a.Max.Y)),
-            vec3_mul(z, a.Max.Z));
-  o[5] = vec3_add(o[4], vec3_mul(x, a.Min.X - a.Max.X));
-  o[6] = vec3_add(o[4], vec3_mul(y, a.Min.Y - a.Max.Y));
-  o[7] = vec3_add(o[4], vec3_mul(z, a.Min.Z - a.Max.Z));
+              vec3_mul(x, a.Max.x), 
+              vec3_mul(y, a.Max.y)),
+            vec3_mul(z, a.Max.z));
+  o[5] = vec3_add(o[4], vec3_mul(x, a.Min.x - a.Max.x));
+  o[6] = vec3_add(o[4], vec3_mul(y, a.Min.y - a.Max.y));
+  o[7] = vec3_add(o[4], vec3_mul(z, a.Min.z - a.Max.z));
 
   int i = 0;
   for (i = 0; i<8; ++i) {

@@ -7,9 +7,9 @@ void
 object_init(Object* o)
 {
   quat_set_identity(&o->orientation);
-  o->scale.X = 1;
-  o->scale.Y = 1;
-  o->scale.Z = 1;
+  o->scale.x = 1;
+  o->scale.y = 1;
+  o->scale.z = 1;
   //o->name = eina_stringshare_add("dance");
 }
 
@@ -224,7 +224,7 @@ void
 object_update(Object* o)
 {
   //o->orientation = quat_angles_deg(o->angles);
-  o->orientation = quat_yaw_pitch_roll_deg(o->angles.Y, o->angles.X, o->angles.Z);
+  o->orientation = quat_yaw_pitch_roll_deg(o->angles.y, o->angles.x, o->angles.z);
   mat4_pos_ori(o->position, o->orientation, o->matrix);
 
   if (o->animation != NULL) {
@@ -374,13 +374,13 @@ _object_update_mesh_vertex(Object* o)
     Vec3 newpos = vec3_add(vi->position,translation);
     Vec3 newnor = quat_rotate_vec3(rotation, vi->normal);
 
-    mesh->vertices[i*3] = newpos.X;
-    mesh->vertices[i*3+1] = newpos.Y;
-    mesh->vertices[i*3+2] = newpos.Z;
+    mesh->vertices[i*3] = newpos.x;
+    mesh->vertices[i*3+1] = newpos.y;
+    mesh->vertices[i*3+2] = newpos.z;
 
-    mesh->normals[i*3] = newnor.X;
-    mesh->normals[i*3+1] = newnor.Y;
-    mesh->normals[i*3+2] = newnor.Z;
+    mesh->normals[i*3] = newnor.x;
+    mesh->normals[i*3+1] = newnor.y;
+    mesh->normals[i*3+2] = newnor.z;
     ++i;
   }
 

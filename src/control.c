@@ -49,7 +49,7 @@ _control_move(Control* c)
   //evas_pointer_output_xy_get(evas_object_evas_get(v->glview), &x, &y);
   evas_pointer_canvas_xy_get(evas_object_evas_get(v->glview), &x, &y);
   Vec2 mousepos = vec2(x,y);
-  //printf("mouse pos : %f, %f \n", mousepos.X, mousepos.Y);
+  //printf("mouse pos : %f, %f \n", mousepos.x, mousepos.y);
   c->start = _objects_center(c, context_objects_get(v->context));
   c->mouse_start = mousepos;
 
@@ -79,7 +79,7 @@ _control_scale(Control* c)
   //evas_pointer_output_xy_get(evas_object_evas_get(v->glview), &x, &y);
   evas_pointer_canvas_xy_get(evas_object_evas_get(v->glview), &x, &y);
   Vec2 mousepos = vec2(x,y);
-  //printf("mouse pos : %f, %f \n", mousepos.X, mousepos.Y);
+  //printf("mouse pos : %f, %f \n", mousepos.x, mousepos.y);
   Object* o = context_object_get(v->context);
   if (o != NULL && c->state != CONTROL_SCALE) {
     _control_scale_prepare(c, context_objects_get(v->context));
@@ -113,7 +113,7 @@ _control_rotate(Control* c)
   //evas_pointer_output_xy_get(evas_object_evas_get(v->glview), &x, &y);
   evas_pointer_canvas_xy_get(evas_object_evas_get(v->glview), &x, &y);
   Vec2 mousepos = vec2(x,y);
-  //printf("mouse pos : %f, %f \n", mousepos.X, mousepos.Y);
+  //printf("mouse pos : %f, %f \n", mousepos.x, mousepos.y);
   Object* o = context_object_get(v->context);
   if (o != NULL && c->state != CONTROL_ROTATE) {
     _control_rotate_prepare(c, context_objects_get(v->context));
@@ -159,8 +159,8 @@ _rotate_camera(View* v, float x, float y)
   Quat qp = quat_angle_axis(cam->pitch, vec3(1,0,0));
   Quat result = quat_mul(qy, qp);
 
-  c->angles.X = cam->pitch/M_PI*180.0;
-  c->angles.Y = cam->yaw/M_PI*180.0;
+  c->angles.x = cam->pitch/M_PI*180.0;
+  c->angles.y = cam->yaw/M_PI*180.0;
 
   Object* o = context_object_get(v->context);
 
@@ -182,19 +182,19 @@ _translate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
   Eina_List* objects = context_objects_get(v->context);
   Plane p = { c->start, quat_rotate_vec3(v->camera->object->orientation, vec3(0,0,-1)) };
 
-  if (constraint.Z == 1) {
-    p.Normal.Z = 0;
+  if (constraint.z == 1) {
+    p.Normal.z = 0;
   }
-  else if (constraint.Y == 1) {
-    p.Normal.Y = 0;
+  else if (constraint.y == 1) {
+    p.Normal.y = 0;
   }
-  else if (constraint.X == 1) {
-    p.Normal.X = 0;
+  else if (constraint.x == 1) {
+    p.Normal.x = 0;
   }
 
   p.Normal = vec3_normalized(p.Normal);
 
-  Ray rstart = ray_from_screen(v->camera, c->mouse_start.X, c->mouse_start.Y, 1);
+  Ray rstart = ray_from_screen(v->camera, c->mouse_start.x, c->mouse_start.y, 1);
 
   float x = e->cur.canvas.x;
   float y = e->cur.canvas.y;
@@ -238,7 +238,7 @@ _translate_moving_local_axis(Control* c, Evas_Event_Mouse_Move* e, Vec3 axis)
   pn = vec3_normalized(pn);
   Plane p = { c->start, pn };
 
-  Ray rstart = ray_from_screen(v->camera, c->mouse_start.X, c->mouse_start.Y, 1);
+  Ray rstart = ray_from_screen(v->camera, c->mouse_start.x, c->mouse_start.y, 1);
 
   float x = e->cur.canvas.x;
   float y = e->cur.canvas.y;
@@ -279,7 +279,7 @@ _translate_moving_plane(Control* c, Evas_Event_Mouse_Move* e, Vec3 normal)
   Eina_List* objects = context_objects_get(v->context);
   Plane p = { c->start, normal };
 
-  Ray rstart = ray_from_screen(v->camera, c->mouse_start.X, c->mouse_start.Y, 1);
+  Ray rstart = ray_from_screen(v->camera, c->mouse_start.x, c->mouse_start.y, 1);
 
   float x = e->cur.canvas.x;
   float y = e->cur.canvas.y;
@@ -323,12 +323,12 @@ _scale_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
   float y = e->cur.canvas.y;
 
   //TODO scale better (don't start from 0)
-  Vec2 d = vec2(x - c->mouse_start.X, y - c->mouse_start.Y);
+  Vec2 d = vec2(x - c->mouse_start.x, y - c->mouse_start.y);
   double s = vec2_length(d) * 0.1f;
   c->scale_factor = vec3(s,s,s);
-  if (constraint.X == 0) c->scale_factor.X = 1;
-  if (constraint.Y == 0) c->scale_factor.Y = 1;
-  if (constraint.Z == 0) c->scale_factor.Z = 1;
+  if (constraint.x == 0) c->scale_factor.x = 1;
+  if (constraint.y == 0) c->scale_factor.y = 1;
+  if (constraint.z == 0) c->scale_factor.z = 1;
 
   Eina_List *l;
   Object *o;
@@ -354,13 +354,13 @@ _rotate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
   float x = e->cur.canvas.x;
   float y = e->cur.canvas.y;
 
-  Vec2 d = vec2(x - c->mouse_start.X, y - c->mouse_start.Y);
+  Vec2 d = vec2(x - c->mouse_start.x, y - c->mouse_start.y);
   double s = vec2_length(d);
   /*
   c->scale_factor = vec3(s,s,s);
-  if (constraint.X == 0) c->scale_factor.X = 0;
-  if (constraint.Y == 0) c->scale_factor.Y = 0;
-  if (constraint.Z == 0) c->scale_factor.Z = 0;
+  if (constraint.x == 0) c->scale_factor.x = 0;
+  if (constraint.y == 0) c->scale_factor.y = 0;
+  if (constraint.z == 0) c->scale_factor.z = 0;
   */
   c->scale_factor = vec3_mul(constraint,s);
 
@@ -503,8 +503,8 @@ _draggers_click_check(Control* c, Evas_Event_Mouse_Down* e)
 void
 control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
 {
-  c->mouse_current.X = e->cur.canvas.x;
-  c->mouse_current.Y = e->cur.canvas.y;
+  c->mouse_current.x = e->cur.canvas.x;
+  c->mouse_current.y = e->cur.canvas.y;
 
   View* v = c->view;
   if (c->state == CONTROL_IDLE) {
@@ -530,7 +530,7 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
   }
   else if (c->state == CONTROL_DRAGGER_TRANSLATE) {
     Dragger* d = object_component_get(c->dragger_clicked, "dragger");
-    //printf("constraint is %f, %f, %f \n", d->constraint.X, d->constraint.Y, d->constraint.Z);
+    //printf("constraint is %f, %f, %f \n", d->constraint.x, d->constraint.y, d->constraint.z);
     if (c->dragger_is_local) {
       /*
       Vec3 normal;

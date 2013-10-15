@@ -7,18 +7,18 @@
 typedef struct _Vec3 Vec3;
 
 struct _Vec3 {
-  double X;
-  double Y;
-  double Z;
+  double x;
+  double y;
+  double z;
 };
 
 typedef struct _Vec4 Vec4;
 
 struct _Vec4 {
-  double X;
-  double Y;
-  double Z;
-  double W;
+  double x;
+  double y;
+  double z;
+  double w;
 };
 
 Vec3 vec3_zero();

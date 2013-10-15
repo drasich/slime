@@ -28,19 +28,19 @@ void mesh_read_file(Mesh* mesh, FILE* f)
     fread(&x, 4,1,f);
     mesh->vertices[i] = x;
     if (i % 3 == 0) {
-      vi.position.X = x;
-      if (x > mesh->box.Max.X) mesh->box.Max.X = x;
-      if (x < mesh->box.Min.X) mesh->box.Min.X = x;
+      vi.position.x = x;
+      if (x > mesh->box.Max.x) mesh->box.Max.x = x;
+      if (x < mesh->box.Min.x) mesh->box.Min.x = x;
     }
     else if (i % 3 == 1) {
-      vi.position.Y = x;
-      if (x > mesh->box.Max.Y) mesh->box.Max.Y = x;
-      if (x < mesh->box.Min.Y) mesh->box.Min.Y = x;
+      vi.position.y = x;
+      if (x > mesh->box.Max.y) mesh->box.Max.y = x;
+      if (x < mesh->box.Min.y) mesh->box.Min.y = x;
     }
     else if (i % 3 == 2) {
-      vi.position.Z = x;
-      if (x > mesh->box.Max.Z) mesh->box.Max.Z = x;
-      if (x < mesh->box.Min.Z) mesh->box.Min.Z = x;
+      vi.position.z = x;
+      if (x > mesh->box.Max.z) mesh->box.Max.z = x;
+      if (x < mesh->box.Min.z) mesh->box.Min.z = x;
       eina_inarray_push(mesh->vertices_base, &vi);
     }
   }
@@ -52,8 +52,8 @@ void mesh_read_file(Mesh* mesh, FILE* f)
         mesh->vertices,
         mesh->vertices_len* sizeof(GLfloat));
 
-  //printf("bounds min : %f %f %f\n", mesh->box.Min.X,mesh->box.Min.Y,mesh->box.Min.Z);
-  //printf("bounds max : %4.16f %4.16f %4.16f\n", mesh->box.Max.X,mesh->box.Max.Y,mesh->box.Max.Z);
+  //printf("bounds min : %f %f %f\n", mesh->box.Min.x,mesh->box.Min.y,mesh->box.Min.z);
+  //printf("bounds max : %4.16f %4.16f %4.16f\n", mesh->box.Max.x,mesh->box.Max.y,mesh->box.Max.z);
 
   fread(&count, sizeof(count),1,f);
   printf("faces size: %d\n", count);
@@ -84,9 +84,9 @@ void mesh_read_file(Mesh* mesh, FILE* f)
     fread(&x, 4,1,f);
     mesh->normals[i] = x;
     VertexInfo* vi = eina_inarray_nth(mesh->vertices_base, i / 3);
-    if (i % 3 == 0) vi->normal.X = x;
-    else if (i % 3 == 1) vi->normal.Y = x;
-    else if (i % 3 == 2) vi->normal.Z = x;
+    if (i % 3 == 0) vi->normal.x = x;
+    else if (i % 3 == 1) vi->normal.y = x;
+    else if (i % 3 == 2) vi->normal.z = x;
   }
 
   if (mesh->normals_len > 0) {
@@ -371,7 +371,7 @@ static Eina_Bool uniform_send(
   //TODO data
   if (uni->type == UNIFORM_VEC4) {
     Vec4* v = data;
-    gl->glUniform4f(uniloc, v->X,v->Y,v->Z,v->W);
+    gl->glUniform4f(uniloc, v->x,v->y,v->z,v->w);
   }
 
   return EINA_TRUE;

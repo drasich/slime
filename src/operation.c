@@ -195,9 +195,9 @@ operation_scale_object_undo(Control* c, void* data)
     o->scale = vec3_vec3_mul(
           o->scale,
           vec3(
-            1.0f/od->scale.X,
-            1.0f/od->scale.Y,
-            1.0f/od->scale.Z
+            1.0f/od->scale.x,
+            1.0f/od->scale.y,
+            1.0f/od->scale.z
             )
           );
   }

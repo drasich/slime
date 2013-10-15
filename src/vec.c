@@ -5,9 +5,9 @@ Vec3
 vec3_zero()
 {
   Vec3 v = {
-    .X = 0,
-    .Y = 0,
-    .Z = 0
+    .x = 0,
+    .y = 0,
+    .z = 0
   };
 
   return v;
@@ -17,9 +17,9 @@ Vec3
 vec3(double x, double y, double z)
 {
   Vec3 v = {
-    .X = x,
-    .Y = y,
-    .Z = z
+    .x = x,
+    .y = y,
+    .z = z
   };
 
   return v;
@@ -29,10 +29,10 @@ Vec4
 vec4(double x, double y, double z, double w)
 {
   Vec4 v = {
-    .X = x,
-    .Y = y,
-    .Z = z,
-    .W = w
+    .x = x,
+    .y = y,
+    .z = z,
+    .w = w
   };
 
   return v;
@@ -41,34 +41,34 @@ vec4(double x, double y, double z, double w)
 double
 vec3_length(Vec3 v)
 {
-  return sqrt(v.X*v.X + v.Y*v.Y + v.Z*v.Z);
+  return sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
 }
 
 double
 vec3_length2(Vec3 v)
 {
-  return v.X*v.X + v.Y*v.Y + v.Z*v.Z;
+  return v.x*v.x + v.y*v.y + v.z*v.z;
 }
 
 double
 vec4_length(Vec4 v)
 {
-  return sqrt(v.X*v.X + v.Y*v.Y + v.Z*v.Z + v.W*v.W);
+  return sqrt(v.x*v.x + v.y*v.y + v.z*v.z + v.w*v.w);
 }
 
 double
 vec4_length2(Vec4 v)
 {
-  return v.X*v.X + v.Y*v.Y + v.Z*v.Z + v.W*v.W;
+  return v.x*v.x + v.y*v.y + v.z*v.z + v.w*v.w;
 }
 
 Vec3
 vec3_add(Vec3 v1, Vec3 v2)
 {
   Vec3 v;
-  v.X = v1.X + v2.X;
-  v.Y = v1.Y + v2.Y;
-  v.Z = v1.Z + v2.Z;
+  v.x = v1.x + v2.x;
+  v.y = v1.y + v2.y;
+  v.z = v1.z + v2.z;
   return v;
 }
 
@@ -76,9 +76,9 @@ Vec3
 vec3_sub(Vec3 v1, Vec3 v2)
 {
   Vec3 v;
-  v.X = v1.X - v2.X;
-  v.Y = v1.Y - v2.Y;
-  v.Z = v1.Z - v2.Z;
+  v.x = v1.x - v2.x;
+  v.y = v1.y - v2.y;
+  v.z = v1.z - v2.z;
   return v;
 }
 
@@ -86,9 +86,9 @@ Vec3
 vec3_mul(Vec3 v1, double s)
 {
   Vec3 v;
-  v.X = v1.X*s;
-  v.Y = v1.Y*s;
-  v.Z = v1.Z*s;
+  v.x = v1.x*s;
+  v.y = v1.y*s;
+  v.z = v1.z*s;
   return v;
 }
 
@@ -96,9 +96,9 @@ Vec3
 vec3_cross(Vec3 v1, Vec3 v2)
 {
   Vec3 v = {
-    .X = v1.Y * v2.Z - v1.Z*v2.Y,
-    .Y = v1.Z * v2.X - v1.X*v2.Z,
-    .Z = v1.X * v2.Y - v1.Y*v2.X
+    .x = v1.y * v2.z - v1.z*v2.y,
+    .y = v1.z * v2.x - v1.x*v2.z,
+    .z = v1.x * v2.y - v1.y*v2.x
   };
 
   return v;
@@ -107,7 +107,7 @@ vec3_cross(Vec3 v1, Vec3 v2)
 double
 vec3_dot(Vec3 v1, Vec3 v2)
 {
-  return v1.X*v2.X + v1.Y*v2.Y + v1.Z*v2.Z;
+  return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
 }
 
 Vec3
@@ -121,34 +121,34 @@ vec3_normalized(Vec3 v)
 double
 vec4_dot(Vec4 v1, Vec4 v2)
 {
-  return v1.X*v2.X + v1.Y*v2.Y + v1.Z*v2.Z + v1.W*v2.W;
+  return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z + v1.w*v2.w;
 }
 
 
 bool
 vec3_equal(Vec3 v1, Vec3 v2)
 {
-  return v1.X == v2.X &&
-   v1.Y == v2.Y &&
-   v1.Z == v2.Z;
+  return v1.x == v2.x &&
+   v1.y == v2.y &&
+   v1.z == v2.z;
 }
 
 Vec3
 vec3_vec3_mul(Vec3 v1, Vec3 v2)
 {
   Vec3 r;
-  r.X = v1.X * v2.X;
-  r.Y = v1.Y * v2.Y;
-  r.Z = v1.Z * v2.Z;
+  r.x = v1.x * v2.x;
+  r.y = v1.y * v2.y;
+  r.z = v1.z * v2.z;
   return r;
 }
 
 bool
 vec4_equal(Vec4 v1, Vec4 v2)
 {
-  return v1.X == v2.X &&
-   v1.Y == v2.Y &&
-   v1.Z == v2.Z &&
-   v1.W == v1.W;
+  return v1.x == v2.x &&
+   v1.y == v2.y &&
+   v1.z == v2.z &&
+   v1.w == v1.w;
 }
 
