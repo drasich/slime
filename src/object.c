@@ -166,11 +166,11 @@ void
 object_compute_matrix(Object* o, Matrix4 mat)
 {
   if (o->orientation_type == ORIENTATION_EULER)
-  o->Orientation = quat_yaw_pitch_roll_deg(o->angles.Y, o->angles.X, o->angles.Z);
+  o->Orientation = quat_angles_deg(o->angles);
 
   Matrix4 mt, mr, ms;
   mat4_set_scale(ms, o->scale);
-  mat4_set_translation(mt, o->Position);
+  mat4_set_translation(mt, o->position);
   mat4_set_rotation_quat(mr, o->Orientation);
 
   mat4_multiply(mr, ms, mat);
@@ -180,24 +180,10 @@ object_compute_matrix(Object* o, Matrix4 mat)
 }
 
 void
-object_compute_matrix_with_angles(Object* o, Matrix4 mat)
-{
-  o->Orientation = quat_yaw_pitch_roll_deg(o->angles.Y, o->angles.X, o->angles.Z);
-  object_compute_matrix_with_quat(o, mat);
-   /*
-  Matrix4 mt, mr;
-  mat4_set_translation(mt, o->Position);
-  mat4_set_rotation_quat(mr, o->Orientation);
-  mat4_multiply(mt, mr, mat);
-  */
-}
-
-
-void
 object_compute_matrix_with_quat(Object* o, Matrix4 mat)
 {
   Matrix4 mt, mr;
-  mat4_set_translation(mt, o->Position);
+  mat4_set_translation(mt, o->position);
   mat4_set_rotation_quat(mr, o->Orientation);
   mat4_multiply(mt, mr, mat);
 }
@@ -237,8 +223,9 @@ _animation_update(Object* o, float dt)
 void
 object_update(Object* o)
 {
+  //o->Orientation = quat_angles_deg(o->angles);
   o->Orientation = quat_yaw_pitch_roll_deg(o->angles.Y, o->angles.X, o->angles.Z);
-  mat4_pos_ori(o->Position, o->Orientation, o->matrix);
+  mat4_pos_ori(o->position, o->Orientation, o->matrix);
 
   if (o->animation != NULL) {
     _animation_update(o, 0.007f);
@@ -340,7 +327,7 @@ Object* create_object_file(const char* path)
 void
 object_set_position(Object* o, Vec3 v)
 {
-  o->Position = v;
+  o->position = v;
 }
 
 void 
@@ -465,7 +452,7 @@ property_set_object()
 
   //TODO clean the property sets
   PropertySet *vec3 = property_set_vec3();
-  ADD_PROP_STRUCT_NESTED(ps, Object, Position, vec3);
+  ADD_PROP_STRUCT_NESTED(ps, Object, position, vec3);
 
   PropertySet *an = property_set_vec3();
   ADD_PROP_STRUCT_NESTED(ps, Object, angles, an);
@@ -538,12 +525,12 @@ Vec3 object_world_position_get(Object* o)
 {
   if (o->parent) {
     Quat wo = object_world_orientation_get(o->parent);
-    Vec3 p = quat_rotate_vec3(wo, o->Position);
-    //return vec3_add(o->Position, object_world_position_get(o->parent));
+    Vec3 p = quat_rotate_vec3(wo, o->position);
+    //return vec3_add(o->position, object_world_position_get(o->parent));
     return vec3_add(p, object_world_position_get(o->parent));
   }
   else
-  return o->Position;
+  return o->position;
 }
 
 Quat object_world_orientation_get(Object* o)
@@ -569,8 +556,8 @@ object_world_position_set(Object* o, Vec3 worldpos)
     Vec3 parentworld = object_world_position_get(o->parent);
     Quat wo = object_world_orientation_get(o->parent);
     Vec3 diff = vec3_sub(worldpos, parentworld);
-    o->Position = quat_rotate_vec3(quat_inverse(wo), diff);
+    o->position = quat_rotate_vec3(quat_inverse(wo), diff);
   }
   else
-  o->Position = worldpos;
+  o->position = worldpos;
 }

@@ -17,7 +17,7 @@ camera_lookat(ViewCamera* cam, Vec3 at)
   Object* o = cam->object;
   Camera* c = cam->camera_component;
 
-  Vec3 d = vec3_sub(at, o->Position);
+  Vec3 d = vec3_sub(at, o->position);
 
   c->yaw = atan2(d.X,-d.Z);
   c->pitch = atan2(-d.Y,-d.Z);
@@ -43,7 +43,7 @@ camera_rotate_around(ViewCamera* cam, Quat q, Vec3 pivot)
 
   Vec3 def = quat_rotate_around(q, pivot, c->origin);
   Vec3 doff = quat_rotate_vec3(q, c->local_offset);
-  o->Position = vec3_add(def, doff);
+  o->position = vec3_add(def, doff);
 }
 
 void
@@ -54,7 +54,7 @@ camera_pan(ViewCamera* cam, Vec3 t)
 
   c->local_offset = vec3_add(c->local_offset, t);
   t = quat_rotate_vec3(o->Orientation, t);
-  o->Position = vec3_add(o->Position, t);
+  o->position = vec3_add(o->position, t);
 }
 
 Ray
@@ -86,14 +86,14 @@ ray_from_screen(ViewCamera* cam, double x, double y, float length)
   x /= (double)width / 2.0;
 
   Vec3 pos = vec3_add(
-        o->Position, 
+        o->position, 
         vec3_add(
           vec3_mul(camz,near),
           vec3_add(vec3_mul(h,x), vec3_mul(up,-y))
           )
         );
 
-  Vec3 dir = vec3_sub(pos, o->Position);
+  Vec3 dir = vec3_sub(pos, o->position);
   dir = vec3_normalized(dir);
   dir = vec3_mul(dir, length);
 
@@ -108,7 +108,7 @@ camera_recalculate_origin(ViewCamera* cam)
   Camera* c = cam->camera_component;
 
   Vec3 offset = quat_rotate_vec3(o->Orientation, c->local_offset);
-  Vec3 origin = vec3_sub(o->Position, offset);
+  Vec3 origin = vec3_sub(o->position, offset);
   c->origin = quat_rotate_around(quat_inverse(o->Orientation), c->center, origin);
 }
 
@@ -121,7 +121,7 @@ camera_get_frustum(ViewCamera* cam, Frustum* out)
   out->near = c->near;
   out->far = c->far;
   out->direction = quat_rotate_vec3(o->Orientation, vec3(0,0,-1));
-  out->start = o->Position;
+  out->start = o->position;
   out->up = quat_rotate_vec3(o->Orientation, vec3(0,1,0));
   out->fovy = c->fovy;
   out->aspect = c->aspect;
@@ -138,11 +138,11 @@ camera_get_frustum_planes(ViewCamera* cam, Plane* p)
   Vec3 right = quat_rotate_vec3(o->Orientation, vec3(1,0,0));
   Vec3 up = quat_rotate_vec3(o->Orientation, vec3(0,1,0));
 
-  p[0].Point = vec3_add(o->Position, vec3_mul(direction, c->near));
+  p[0].Point = vec3_add(o->position, vec3_mul(direction, c->near));
   p[0].Normal = direction;
 
   //far plane
-  p[1].Point = vec3_add(o->Position, vec3_mul(direction, c->far));
+  p[1].Point = vec3_add(o->position, vec3_mul(direction, c->far));
   p[1].Normal = vec3_mul(direction, -1);
 
   //up plane
@@ -151,7 +151,7 @@ camera_get_frustum_planes(ViewCamera* cam, Plane* p)
         vec3_mul(direction, c->near),
         vec3_mul(up, hh));
 
-  p[2].Point = o->Position;
+  p[2].Point = o->position;
   Vec3 nn = vec3_normalized(vec3_cross(right, upd));
   p[2].Normal = vec3_mul(nn, -1);
 
@@ -162,7 +162,7 @@ camera_get_frustum_planes(ViewCamera* cam, Plane* p)
   */
 
   //down plane
-  p[3].Point = o->Position;
+  p[3].Point = o->position;
   Vec3 downd = vec3_add(
         vec3_mul(direction, c->near),
         vec3_mul(up, -hh));
@@ -173,7 +173,7 @@ camera_get_frustum_planes(ViewCamera* cam, Plane* p)
 
   //right plane
   float hw = hh * c->aspect;
-  p[4].Point = o->Position;
+  p[4].Point = o->position;
   Vec3 rightd = vec3_add(
         vec3_mul(direction, c->near),
         vec3_mul(right, hw));
@@ -182,7 +182,7 @@ camera_get_frustum_planes(ViewCamera* cam, Plane* p)
   p[4].Normal = nn;
 
   //left plane
-  p[5].Point = o->Position;
+  p[5].Point = o->position;
   Vec3 leftd = vec3_add(
         vec3_mul(direction, c->near),
         vec3_mul(right, -hw));
@@ -209,11 +209,11 @@ camera_get_frustum_planes_rect(
   //near, far, up, down, right, left
 
   //near plane
-  p[0].Point = vec3_add(o->Position, vec3_mul(direction, c->near));
+  p[0].Point = vec3_add(o->position, vec3_mul(direction, c->near));
   p[0].Normal = direction;
 
   //far plane
-  p[1].Point = vec3_add(o->Position, vec3_mul(direction, c->far));
+  p[1].Point = vec3_add(o->position, vec3_mul(direction, c->far));
   p[1].Normal = vec3_mul(direction, -1);
 
   //up plane
@@ -226,13 +226,13 @@ camera_get_frustum_planes_rect(
         vec3_mul(direction, c->near),
         vec3_mul(up, th));
 
-  p[2].Point = o->Position;
+  p[2].Point = o->position;
   Vec3 nn = vec3_normalized(vec3_cross(right, upd));
   p[2].Normal = vec3_mul(nn, -1);
 
   //down plane
   float bh = hh - (top + height);
-  p[3].Point = o->Position;
+  p[3].Point = o->position;
   Vec3 downd = vec3_add(
         vec3_mul(direction, c->near),
         vec3_mul(up, bh));
@@ -247,7 +247,7 @@ camera_get_frustum_planes_rect(
   width = width * hw / (c->width/2.0f);
 
   float rw = -hw + (left + width);
-  p[4].Point = o->Position;
+  p[4].Point = o->position;
   Vec3 rightd = vec3_add(
         vec3_mul(direction, c->near),
         vec3_mul(right, rw));
@@ -257,7 +257,7 @@ camera_get_frustum_planes_rect(
 
   //left plane
   float lw = -hw + left;
-  p[5].Point = o->Position;
+  p[5].Point = o->position;
   Vec3 leftd = vec3_add(
         vec3_mul(direction, c->near),
         vec3_mul(right, lw));

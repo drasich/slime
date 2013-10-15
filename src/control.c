@@ -31,8 +31,8 @@ _objects_center(Control* c, Eina_List* objects)
     v = vec3_add(v, wp);
     eina_inarray_push(c->positions, &wp);
     /*
-    v = vec3_add(v, o->Position);
-    eina_inarray_push(c->positions, &o->Position);
+    v = vec3_add(v, o->position);
+    eina_inarray_push(c->positions, &o->position);
     */
   }
 
@@ -92,11 +92,13 @@ _control_rotate_prepare(Control* c, Eina_List* objects)
 {
   int size = eina_list_count(objects);
   c->rotates = eina_inarray_new (sizeof(Vec3), size);
+  c->quats = eina_inarray_new (sizeof(Quat), size);
 
   Eina_List *l;
   Object *o;
   EINA_LIST_FOREACH(objects, l, o) {
     eina_inarray_push(c->rotates, &o->angles);
+    eina_inarray_push(c->quats, &o->Orientation);
   }
 
   c->state = CONTROL_ROTATE;
@@ -132,10 +134,10 @@ _control_center_camera(Control* c)
     //TODO get the distance from the size of the object on the screen
     Vec3 v = vec3(0,0,30);
     v = quat_rotate_vec3(cam->object->Orientation, v);
-    v = vec3_add(v, o->Position);
+    v = vec3_add(v, o->position);
 
     //TODO write a camera_set_position function
-    cam->object->Position = v;
+    cam->object->position = v;
     camera_recalculate_origin(cam);
 
   }
@@ -163,8 +165,8 @@ _rotate_camera(View* v, float x, float y)
   Object* o = context_object_get(v->context);
 
   if (o != NULL) {
-    if (!vec3_equal(o->Position, cam->center)) {
-      cam->center = o->Position;
+    if (!vec3_equal(o->position, cam->center)) {
+      cam->center = o->position;
       camera_recalculate_origin(v->camera);
     }
   }
@@ -213,7 +215,7 @@ _translate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
       Vec3 wordpos = vec3_add(*origin, translation);
       object_world_position_set(o, wordpos);
       ++i;
-      center = vec3_add(center, o->Position);
+      center = vec3_add(center, o->position);
     }
 
     if (i>0) center = vec3_mul(center, 1.0f/ (float) i);
@@ -258,7 +260,7 @@ _translate_moving_local_axis(Control* c, Evas_Event_Mouse_Move* e, Vec3 axis)
       Vec3 wordpos = vec3_add(*origin, translation);
       object_world_position_set(o, wordpos);
       ++i;
-      center = vec3_add(center, o->Position);
+      center = vec3_add(center, o->position);
     }
 
     if (i>0) center = vec3_mul(center, 1.0f/ (float) i);
@@ -297,7 +299,7 @@ _translate_moving_plane(Control* c, Evas_Event_Mouse_Move* e, Vec3 normal)
       Vec3 wordpos = vec3_add(*origin, translation);
       object_world_position_set(o, wordpos);
       ++i;
-      center = vec3_add(center, o->Position);
+      center = vec3_add(center, o->position);
     }
 
     if (i>0) center = vec3_mul(center, 1.0f/ (float) i);
@@ -402,11 +404,11 @@ _draggers_highlight_check(Control* c, Evas_Coord x, Evas_Coord y)
       if (d->collider)
       irtest = intersection_ray_mesh(
             r, d->collider,
-            dragger->Position,
+            dragger->position,
             dragger->Orientation, vec3(d->scale,d->scale,d->scale));
     }
     else
-    irtest = intersection_ray_box(r, bb, dragger->Position, dragger->Orientation, vec3(1,1,1));
+    irtest = intersection_ray_box(r, bb, dragger->position, dragger->Orientation, vec3(1,1,1));
     if (irtest.hit) {
       if (ir.hit) {
         Vec3 old = vec3_sub(ir.position, r.Start);
@@ -453,11 +455,11 @@ _draggers_click_check(Control* c, Evas_Event_Mouse_Down* e)
       if (d->collider)
       irtest = intersection_ray_mesh(
             r, d->collider,
-            dragger->Position,
+            dragger->position,
             dragger->Orientation, vec3(d->scale,d->scale,d->scale));
     }
     else
-    irtest = intersection_ray_box(r, bb, dragger->Position, dragger->Orientation, vec3(1,1,1));
+    irtest = intersection_ray_box(r, bb, dragger->position, dragger->Orientation, vec3(1,1,1));
 
     if (irtest.hit) {
       if (ir.hit) {
@@ -856,7 +858,7 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
       int i = 0;
       EINA_LIST_FOREACH(objects, l, o) {
         Vec3* origin = (Vec3*) eina_inarray_nth(c->positions, i);
-        o->Position = *origin;
+        o->position = *origin;
         i++;
       }
 

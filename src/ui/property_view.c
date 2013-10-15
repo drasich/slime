@@ -38,7 +38,7 @@ property_update(PropertyView* pw, Eina_List* objects)
   Vec3 v = vec3_zero();
 
   EINA_LIST_FOREACH(objects, l, o) {
-    v = vec3_add(v, o->Position);
+    v = vec3_add(v, o->position);
     last = o;
     i++;
   }

@@ -10,7 +10,7 @@ operation_move_object_do(Control* c, void* data)
   Eina_List *l;
   Object *o;
   EINA_LIST_FOREACH(od->objects, l, o) {
-    o->Position = vec3_add(o->Position, od->translation);
+    o->position = vec3_add(o->position, od->translation);
   }
 
 }
@@ -23,7 +23,7 @@ operation_move_object_undo(Control* c, void* data)
   Eina_List *l;
   Object *o;
   EINA_LIST_FOREACH(od->objects, l, o) {
-    o->Position = vec3_sub(o->Position, od->translation);
+    o->position = vec3_sub(o->position, od->translation);
   }
 }
 

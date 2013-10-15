@@ -153,7 +153,7 @@ populate_scene(Control* c, Scene* s)
     Object* cam = create_object();
     cam->name = eina_stringshare_add("cameratest");
     Vec3 campos = {0,0,20};
-    cam->Position = campos;
+    cam->position = campos;
     Component* compcam = create_component(&camera_desc);
     object_add_component(cam, compcam);
 
@@ -173,7 +173,7 @@ populate_scene(Control* c, Scene* s)
     mc->mesh_name = "model/smallchar.mesh";
     mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
     object_add_component(empty, meshcomp);
-    empty->Position = vec3(6,0,0);
+    empty->position = vec3(6,0,0);
 
     //control_object_add(c,s,empty);
     object_child_add(parent, empty);

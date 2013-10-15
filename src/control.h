@@ -31,6 +31,7 @@ struct _Control{
   Eina_Inarray* positions;
   Eina_Inarray* scales;
   Eina_Inarray* rotates;
+  Eina_Inarray* quats;
   Vec3 scale_factor;
   Object* dragger_clicked;
   bool dragger_is_local;

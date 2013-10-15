@@ -14,8 +14,8 @@ player_update(Component* c, double dt)
   Player* p = c->data;
   c->object->angles.X += p->rotation_speed*dt;
   if (p->target) {
-    Vec3 pt = vec3_add(p->target->Position, vec3(5,0,0));
-    c->object->Position = pt;
+    Vec3 pt = vec3_add(p->target->position, vec3(5,0,0));
+    c->object->position = pt;
   }
 }
 

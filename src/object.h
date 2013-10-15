@@ -18,7 +18,7 @@ typedef struct _Object Object;
 
 struct _Object {
   Transform transform;
-  Vec3 Position;
+  Vec3 position;
   Quat Orientation;
   OrientationType orientation_type;
   Vec3 scale;

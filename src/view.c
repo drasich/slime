@@ -141,11 +141,11 @@ static void frustum_from_rect(
   double cy = c->height - top - height/2.0f;
   cy *= height_ratio;
 
-  Vec3 ccenter = vec3_add(c->object.Position, vec3_mul(camdir, c->near));
+  Vec3 ccenter = vec3_add(c->object.position, vec3_mul(camdir, c->near));
   Vec3 center = vec3_add(ccenter, vec3_mul(camright, cx));
   center = vec3_add(center, vec3_mul(camup, cy));
   
-  Vec3 dir = vec3_sub(center, c->object.Position);
+  Vec3 dir = vec3_sub(center, c->object.position);
   dir = vec3_normalized(dir);
   Quat qq = quat_between_vec(ccenter, center);
   qq = quat_mul(c->object.Orientation, qq);
@@ -154,7 +154,7 @@ static void frustum_from_rect(
         f,
         c->near, 
         c->far,
-        c->object.Position, 
+        c->object.position, 
         quat_rotate_vec3(c->object.Orientation, vec3(0,0,-1)),
         quat_rotate_vec3(c->object.Orientation, vec3(0,1,0)),
         c->fovy,
@@ -205,7 +205,7 @@ static void _handle_rect_select(View* v, Evas_Event_Mouse_Move* ev)
 
   context_objects_set(v->context, newlist);
   /*
-  bool b = frustum_is_in(&f, o->Position);
+  bool b = frustum_is_in(&f, o->position);
   if (!b) continue;
       */
 }
@@ -342,7 +342,7 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
     IntersectionRay ir = intersection_ray_object(r, ro->object);
     
     if (ir.hit) {
-      double diff = vec3_length2(vec3_sub(ir.position, v->camera->object->Position));
+      double diff = vec3_length2(vec3_sub(ir.position, v->camera->object->position));
       if ( (found && diff < d) || !found) {
         found = true;
         d = diff;
@@ -564,7 +564,7 @@ _file_chosen(void *data, Evas_Object *obj __UNUSED__, void *event_info)
 
     yep->mesh->shader = v->control->shader_simple;
 
-    Vec3 cp = v->camera->object->Position;
+    Vec3 cp = v->camera->object->position;
     Vec3 direction = quat_rotate_vec3(v->camera->object->Orientation, vec3(0,0,-1));
     cp = vec3_add(
           cp,
@@ -589,7 +589,7 @@ _new_empty(void *data,
   yep->name = eina_stringshare_add("empty");
   View* v = (View*) data;
 
-  Vec3 cp = v->camera->object->Position;
+  Vec3 cp = v->camera->object->position;
   Vec3 direction = quat_rotate_vec3(v->camera->object->Orientation, vec3(0,0,-1));
   cp = vec3_add(
         cp,
@@ -929,7 +929,7 @@ _create_view_objects(View* v)
   v->camera = view_camera_new();
   Vec3 p = {20,5,20};
   //v->camera->origin = p;
-  //v->camera->object.Position = p;
+  //v->camera->object.position = p;
   camera_pan(v->camera, p);
   Vec3 at = {0,0,0};
   camera_lookat(v->camera, at);
@@ -962,7 +962,7 @@ _create_view_objects(View* v)
 
 
   v->camera_repere = _create_repere(40, v->camera->camera_component);
-  v->camera_repere->Position = vec3(10,10, -10);
+  v->camera_repere->position = vec3(10,10, -10);
   v->camera_repere->orientation_type = ORIENTATION_QUAT;
 
   v->grid = _create_grid(v->camera->camera_component);
@@ -1080,10 +1080,10 @@ _render_objects_add(View* v, Matrix4 root, Plane* planes, Eina_List* objects)
     }
 
     OBox b;
-    aabox_to_obox(m->box, b, o->Position, o->Orientation, o->scale);
+    aabox_to_obox(m->box, b, o->position, o->Orientation, o->scale);
 
     if (planes_is_box_in_allow_false_positives(planes, 6, b)) {
-    //if (planes_is_in(planes, 6, o->Position)) {
+    //if (planes_is_in(planes, 6, o->position)) {
       _render_object_add(v, o, root);
     }
 
@@ -1131,10 +1131,10 @@ view_update(View* v, double dt)
     }
 
     OBox b;
-    aabox_to_obox(m->box, b, o->Position, o->Orientation, o->scale);
+    aabox_to_obox(m->box, b, o->position, o->Orientation, o->scale);
 
     if (planes_is_box_in_allow_false_positives(planes, 6, b)) {
-    //if (planes_is_in(planes, 6, o->Position)) {
+    //if (planes_is_in(planes, 6, o->position)) {
       r->objects = eina_list_append(r->objects, o);
     }
   }
@@ -1209,7 +1209,7 @@ _object_camera_face(Quat qo, Object* o, ViewCamera* c)
 {
   Dragger* d = object_component_get(o, "dragger");
 
-  Vec3 diff = vec3_sub(o->Position, c->object->Position);
+  Vec3 diff = vec3_sub(o->position, c->object->position);
   double dotx = vec3_dot(diff, quat_rotate_vec3(qo, vec3(1,0,0)));
   double doty = vec3_dot(diff, quat_rotate_vec3(qo, vec3(0,1,0)));
   double dotz = vec3_dot(diff, quat_rotate_vec3(qo, vec3(0,0,1)));
@@ -1362,7 +1362,7 @@ view_draw(View* v)
   EINA_LIST_FOREACH(r->objects, l, o) {
     //Frustum f;
     //camera_get_frustum(v->camera, &f);
-    //bool b = frustum_is_in(&f, o->Position);
+    //bool b = frustum_is_in(&f, o->position);
     //if (!b) continue;
     object_draw_edit(o, cam_mat_inv, cc->projection, id4);
   }
@@ -1406,7 +1406,7 @@ view_draw(View* v)
   /*
   if (last_obj) {
     gl->glClear(GL_DEPTH_BUFFER_BIT);
-    v->repere->Position = repere_position;
+    v->repere->position = repere_position;
     v->repere->angles = last_obj->angles;
     object_compute_matrix(v->repere, mo);
     line = object_component_get(v->repere, "line");
@@ -1420,7 +1420,7 @@ view_draw(View* v)
     Eina_List* l;
     gl->glClear(GL_DEPTH_BUFFER_BIT);
     EINA_LIST_FOREACH(v->draggers, l, dragger){
-      dragger->Position = repere_position;
+      dragger->position = repere_position;
       Dragger* d = object_component_get(dragger, "dragger");
       if (d) {
         if (v->control->dragger_is_local) {
@@ -1449,7 +1449,7 @@ view_draw(View* v)
   Matrix4 id;
   mat4_set_identity(id);
   mat4_inverse(id, cam_mat_inv);
-  v->camera_repere->Position = vec3(-cc->width/2.0 +m, -cc->height/2.0 + m, -10);
+  v->camera_repere->position = vec3(-cc->width/2.0 +m, -cc->height/2.0 + m, -10);
   v->camera_repere->Orientation = quat_inverse(co->Orientation);
   object_compute_matrix_with_quat(v->camera_repere, mo);
   Line* line = object_component_get(v->camera_repere, "line");
