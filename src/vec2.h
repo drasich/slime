@@ -18,5 +18,6 @@ Vec2 vec2_add(Vec2 v1, Vec2 v2);
 Vec2 vec2_sub(Vec2 v1, Vec2 v2);
 Vec2 vec2_mul(Vec2 v1, double s);
 Vec2 vec2_normalized(Vec2 v);
+double vec2_dot(Vec2 v1, Vec2 v2);
 
 #endif

@@ -51,4 +51,16 @@ vec2_mul(Vec2 v1, double s)
   return v;
 }
 
+Vec2
+vec2_normalized(Vec2 v)
+{
+  Vec2 r = vec2_mul(v, 1.0f/vec2_length(v));
+  return r;
+}
+
+double
+vec2_dot(Vec2 v1, Vec2 v2)
+{
+  return v1.x*v2.x + v1.y*v2.y;
+}
 

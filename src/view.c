@@ -239,6 +239,7 @@ _mouse_in(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event
 static void
 _view_select_object(View *v, Object *o)
 {
+  camera_world_to_screen(v->camera, object_world_position_get(o));
   context_objects_clean(v->context);
   context_object_add(v->context, o);
 }
@@ -328,6 +329,7 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   }
 
   Ray r = ray_from_screen(v->camera, ev->canvas.x, ev->canvas.y, 1000);
+  printf("click : %d, %d \n", ev->canvas.x, ev->canvas.y);
 
   bool found = false;
   double d;

@@ -28,13 +28,21 @@ struct _Control{
   Eina_List* undo;
   Eina_List* redo;
 
+  //used by draggers
+  Object* dragger_clicked;
+
+  //used for translation mode
   Eina_Inarray* positions;
+
+  //used for scale mode
+  Vec3 scale_factor;
   Eina_Inarray* scales;
+
+  //used for rotation
+  Quat dragger_ori;
   Eina_Inarray* rotates;
   Eina_Inarray* quats;
-  Vec3 scale_factor;
-  Object* dragger_clicked;
-  Quat dragger_ori;
+
   bool dragger_is_local;
 };
 

@@ -1,6 +1,6 @@
 LATELY
 - finish rotate dragger, and cycle between draggers
-- texture manager
+- also fix the scale (start from last scale)
 
 CLEAN
 - TODO in the code.
@@ -8,7 +8,6 @@ CLEAN
 - clean the scene when?
 
 ISSUES (must be done)
-- changes quat_angles_dev to quat_yaw_pitch_roll()
 - use id instead of comparing string strcmp(component->name,"mesh") ?
 - save the component functions in the component manager
 - change properties in ComponentDesc so there is only one to be created and I
@@ -48,6 +47,7 @@ VIEW
 - remove the animator for view?
 
 ARCHITECTURE
+- texture manager
 - make the mesh/resource manager. just input the name and it loads in
   the background
 - child and parent

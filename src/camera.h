@@ -34,6 +34,7 @@ void camera_pan(ViewCamera* c, Vec3 t);
 void camera_recalculate_origin(ViewCamera* c);
 
 Ray ray_from_screen(ViewCamera* c, double x, double y, float length);
+Vec2 camera_world_to_screen(ViewCamera* vc, Vec3 world);
 
 void camera_get_frustum(ViewCamera* c, Frustum* out);
 

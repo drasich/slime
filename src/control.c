@@ -94,11 +94,14 @@ _control_rotate_prepare(Control* c, Eina_List* objects)
   c->rotates = eina_inarray_new (sizeof(Vec3), size);
   c->quats = eina_inarray_new (sizeof(Quat), size);
 
+  c->dragger_ori = quat_identity();
+
   Eina_List *l;
   Object *o;
   EINA_LIST_FOREACH(objects, l, o) {
     eina_inarray_push(c->rotates, &o->angles);
     eina_inarray_push(c->quats, &o->orientation);
+    c->dragger_ori = quat_mul(c->dragger_ori, object_world_orientation_get(o));
   }
 
   c->state = CONTROL_ROTATE;
@@ -360,7 +363,7 @@ _rotate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
   //Vec3 normal = constraint;
   Vec3 normal = quat_rotate_vec3(c->view->camera->object->orientation, vec3(0,0,1));
   Plane p = { c->start, normal };
-  printf("normal : %f, %f, %f \n", normal.x, normal.y, normal.z);
+  //printf("normal : %f, %f, %f \n", normal.x, normal.y, normal.z);
 
   IntersectionRay irstart =  intersection_ray_plane(rstart, p);
   IntersectionRay ir =  intersection_ray_plane(r, p);
@@ -380,20 +383,22 @@ _rotate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
   double angle = acos(mdot);
 
   Vec3 diff = vec3_sub(c->start, c->view->camera->object->position);
-  double dotori = vec3_dot(diff, quat_rotate_vec3(c->dragger_ori, constraint));
+  printf("diff %f, %f, %f \n", diff.x, diff.y, diff.z);
+  Vec3 cons = quat_rotate_vec3(c->dragger_ori, constraint);
+  printf("constraint %f, %f, %f \n", constraint.x, constraint.y, constraint.z);
+  printf("cons %f, %f, %f \n", cons.x, cons.y, cons.z);
+  double dotori = vec3_dot(diff, cons);
 
+  printf("angle before %f \n", angle);
+  printf("sign is %f \n", sign);
   if (dotori <0) {
     if (sign > 0) angle *= -1;
   }
   else {
     if (sign < 0) angle *= -1;
   }
-  //printf("dotori %f \n", dotori);
-  //printf("angle %f \n", angle);
-
-  if (ir.hit && irstart.hit) {
-    Vec3 translation = vec3_sub(ir.position, irstart.position);
-  }
+  printf("dotori %f \n", dotori);
+  printf("angle after %f \n", angle);
 
 
   Vec3 camx = quat_rotate_vec3(c->view->camera->object->orientation, vec3(1,0,0));
@@ -403,6 +408,56 @@ _rotate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
   Vec2 d = vec2(x - c->mouse_start.x, y - c->mouse_start.y);
   double s = vec2_length(d);
   Quat qrot = quat_angle_axis(angle, constraint);
+
+  Eina_List *l;
+  Object *o;
+  int i = 0;
+  EINA_LIST_FOREACH(objects, l, o) {
+    Vec3* angles_origin = (Vec3*) eina_inarray_nth(c->rotates, i);
+    Quat* q_origin = (Quat*) eina_inarray_nth(c->quats, i);
+    o->angles = vec3_add(*angles_origin, c->scale_factor);
+    o->orientation = quat_mul(*q_origin, qrot); //local
+    //o->orientation = quat_mul(qrot, *q_origin); // global
+    ++i;
+  }
+
+  if (i == 1)
+  control_property_transform_update(c);
+}
+
+
+//Test by rotating according to the axe
+static void
+_rotate_moving_test(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
+{
+  View* v = c->view;
+
+  float x = e->cur.canvas.x;
+  float y = e->cur.canvas.y;
+
+  Eina_List* objects = context_objects_get(v->context);
+
+  if (!vec3_equal(constraint, vec3(0,0,1)))
+    return;
+  Vec3 p1 = vec3_add(
+        c->dragger_clicked->position,
+        //quat_rotate_vec3(c->dragger_ori,vec3(1,0,0)));
+        vec3(1,0,0));
+  Vec3 p2 = vec3_add(
+        c->dragger_clicked->position,
+        //quat_rotate_vec3(c->dragger_ori,vec3(0,1,0)));
+        vec3(0,1,0));
+
+  Vec2 pp1 = camera_world_to_screen(c->view->camera, p1);
+  Vec2 pp2 = camera_world_to_screen(c->view->camera, p2);
+  Vec2 diff = vec2_sub(pp1, pp2);
+  diff = vec2_normalized(diff);
+  printf("diff %f, %f\n", diff.x, diff.y);
+
+  Vec2 d = vec2(x - c->mouse_start.x, y - c->mouse_start.y);
+  double dot = vec2_dot(diff, d);
+  //printf("dot %f \n", dot);
+  Quat qrot = quat_angle_axis(dot/100, constraint);
 
   Eina_List *l;
   Object *o;
@@ -511,16 +566,12 @@ _draggers_click_check(Control* c, Evas_Event_Mouse_Down* e)
           ir = irtest;
           drag_hit = d;
           c->dragger_clicked =  dragger;
-          //c->dragger_ori = dragger->orientation;
-          c->dragger_ori = c->view->context->object->orientation;
         }
       }
       else {
         ir = irtest;
         drag_hit = d;
         c->dragger_clicked =  dragger;
-        //c->dragger_ori = dragger->orientation;
-        c->dragger_ori = c->view->context->object->orientation;
       }
     }
   }
@@ -608,6 +659,7 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
     Dragger* d = object_component_get(c->dragger_clicked, "dragger");
     Vec3 constraint = d->constraint;
     _rotate_moving(c,e, constraint);
+    //_rotate_moving_test(c,e, constraint);
   }
 
 }

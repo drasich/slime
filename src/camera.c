@@ -271,3 +271,26 @@ camera_get_frustum_planes_rect(
   */
 }
 
+Vec2
+camera_world_to_screen(ViewCamera* vc, Vec3 p)
+{
+  Matrix4 cam_inv;
+  mat4_inverse(vc->object->matrix, cam_inv);
+  Matrix4* projection = &vc->camera_component->projection;
+
+  Matrix4 tm;
+  mat4_multiply(*projection, cam_inv, tm);
+
+  Vec4 p4 = vec4(p.x, p.y, p.z, 1.0);
+  Vec4 sp = mat4_vec4_mul(tm, p4);
+
+  Vec3 n = vec3(sp.x/sp.w,sp.y/sp.w, sp.z/sp.w);
+
+  Vec2 screen =  vec2(
+        (n.x+1.0)* vc->camera_component->width/2.0,
+        -(n.y-1.0)* vc->camera_component->height/2.0);
+
+  //printf("screen : %f, %f \n", screen.x, screen.y);
+
+  return screen;
+}
