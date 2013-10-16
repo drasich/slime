@@ -63,9 +63,17 @@ _control_scale_prepare(Control* c, Eina_List* objects)
 
   Eina_List *l;
   Object *o;
+  c->start = vec3_zero();
+  int i =0;
   EINA_LIST_FOREACH(objects, l, o) {
     eina_inarray_push(c->scales, &o->scale);
+    c->start = vec3_add(c->start, object_world_position_get(o));
+    ++i;
   }
+
+  c->start = vec3_mul(c->start, 1.0/ (double)i);
+
+  c->scale_start = vec3(1,1,1);
 
   c->state = CONTROL_SCALE;
 }
@@ -326,10 +334,17 @@ _scale_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
   float x = e->cur.canvas.x;
   float y = e->cur.canvas.y;
 
-  //TODO scale better (don't start from 0)
-  Vec2 d = vec2(x - c->mouse_start.x, y - c->mouse_start.y);
-  double s = vec2_length(d) * 0.1f;
-  c->scale_factor = vec3(s,s,s);
+  Vec2 ss = camera_world_to_screen(c->view->camera, c->start);
+  Vec2 sss = vec2_sub(c->mouse_start, ss);
+  double l1 = vec2_length2(sss);
+  Vec2 sd = vec2(x,y); sd = vec2_sub(sd, ss);
+  double l2 = vec2_length2(sd);
+
+  double fac = l2/l1;
+  double dot = vec2_dot(sss, sd);
+  if (dot < 0) fac *= -1;
+
+  c->scale_factor = vec3(fac,fac,fac);
   if (constraint.x == 0) c->scale_factor.x = 1;
   if (constraint.y == 0) c->scale_factor.y = 1;
   if (constraint.z == 0) c->scale_factor.z = 1;

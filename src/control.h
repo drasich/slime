@@ -22,7 +22,6 @@ enum {
 struct _Control{
   struct _View* view;
   int state;
-  Vec3 start;
   Vec2 mouse_start;
   Vec3 mouse_current;
   Eina_List* undo;
@@ -30,12 +29,14 @@ struct _Control{
 
   //used by draggers
   Object* dragger_clicked;
+  Vec3 start;
 
   //used for translation mode
   Eina_Inarray* positions;
 
   //used for scale mode
   Vec3 scale_factor;
+  Vec3 scale_start;
   Eina_Inarray* scales;
 
   //used for rotation
