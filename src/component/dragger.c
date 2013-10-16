@@ -109,9 +109,13 @@ dragger_state_set(Dragger* d, DraggerState state)
   *v = d->color_idle;
   else if (state == DRAGGER_SELECTED)
   *v = vec4(1,1,1,1);
-  else if (state == DRAGGER_HIDE) {
+  else if (state == DRAGGER_LOWLIGHT) {
     *v = d->color_idle;
     v->w = 0.05f;
+  }
+  else if (state == DRAGGER_HIDE) {
+    *v = d->color_idle;
+    v->w = 0.0f;
   }
 
   d->state = state;

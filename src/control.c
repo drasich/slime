@@ -555,7 +555,10 @@ _draggers_click_check(Control* c, Evas_Event_Mouse_Down* e)
   EINA_LIST_FOREACH(v->draggers, l, dragger) {
     Dragger* d = object_component_get(dragger, "dragger");
     if (!d) continue;
+    if (d->type == DRAGGER_ROTATE)
     dragger_state_set(d, DRAGGER_HIDE);
+    else
+    dragger_state_set(d, DRAGGER_LOWLIGHT);
 
     Ray r = ray_from_screen(v->camera, e->canvas.x, e->canvas.y, 1000);
     AABox bb = d->box;
@@ -592,7 +595,9 @@ _draggers_click_check(Control* c, Evas_Event_Mouse_Down* e)
   }
   
   if (ir.hit && drag_hit) {
+    if (drag_hit->type != DRAGGER_ROTATE)
       dragger_state_set(drag_hit, DRAGGER_SELECTED);
+
       if (drag_hit->type == DRAGGER_TRANSLATE) {
         _control_move(c);
         c->state = CONTROL_DRAGGER_TRANSLATE;
