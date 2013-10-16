@@ -1,6 +1,8 @@
 LATELY
-- finish rotate dragger, and cycle between draggers
+- rotate dragger : hide the dragger and display a disk
+- make the rotation again in the spinner
 - also fix the scale (start from last scale)
+- need global/local button
 
 CLEAN
 - TODO in the code.
