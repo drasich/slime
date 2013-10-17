@@ -2,6 +2,7 @@
 #include "property.h"
 #include "component.h"
 #include "object.h"
+#include "resource.h"
 
 static void*
 _dragger_create()
@@ -113,12 +114,150 @@ dragger_state_set(Dragger* d, DraggerState state)
     *v = d->color_idle;
     v->w = 0.05f;
   }
-  else if (state == DRAGGER_HIDE) {
-    *v = d->color_idle;
-    v->w = 0.0f;
+
+  d->mc->hide = state == DRAGGER_HIDE || state == DRAGGER_SHOW_SECOND;
+
+  if (d->mc_second) {
+    v = shader_instance_uniform_data_get(d->mc_second->shader_instance, "color");
+    if (state == DRAGGER_SHOW_SECOND) {
+      *v = vec4(1,1,1,0.05);
+      d->mc_second->hide = false;
+    }
+    else
+      d->mc_second->hide = true;
   }
 
   d->state = state;
 }
 
+
+Object* 
+_dragger_rotate_create(Vec3 constraint, Vec4 color, bool plane)
+{
+  Object* o = create_object();
+  ///////////
+  Component* comp = create_component(&mesh_desc);
+  object_add_component(o, comp);
+  MeshComponent* mc = comp->data;
+  mesh_component_shader_set(mc, "shader/dragger.shader");
+
+  //mc->mesh_name = "model/dragger_rotate_half.mesh";
+  //mc->mesh_name = "model/dragger_rotate_test.mesh";
+  mc->mesh_name = "model/dragger_rotate_quarter.mesh";
+  mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
+
+  Vec4* v = calloc(1, sizeof *v);
+  shader_instance_uniform_data_set(mc->shader_instance, "color", v);
+
+  /////////
+
+  comp = create_component(&mesh_desc);
+  object_add_component(o, comp);
+  MeshComponent* mcs = comp->data;
+  mesh_component_shader_set(mcs, "shader/dragger.shader");
+
+  mcs->mesh_name = "model/dragger_rotate_circle.mesh";
+  mcs->mesh = resource_mesh_get(s_rm, mcs->mesh_name);
+
+  v = calloc(1, sizeof *v);
+  shader_instance_uniform_data_set(mcs->shader_instance, "color", v);
+
+  ////////////////
+  comp = create_component(dragger_desc());
+  object_add_component(o,comp);
+  Dragger* d = comp->data;
+  d->box = mc->mesh->box;
+  d->mc = mc;
+  d->mc_second = mcs;
+  d->constraint = constraint;
+  d->color_idle = color;
+  d->type = DRAGGER_ROTATE;
+  //d->collider = resource_mesh_get(s_rm, "model/dragger_rotate_collider.mesh");
+  d->collider = resource_mesh_get(s_rm, "model/dragger_rotate_collider_quarter.mesh");
+  dragger_state_set(d, DRAGGER_IDLE);
+
+  return o;
+}
+
+
+Object* 
+_dragger_scale_create(Vec3 constraint, Vec4 color, bool plane)
+{
+  Object* o = create_object();
+  Component* comp = create_component(&mesh_desc);
+  object_add_component(o, comp);
+  MeshComponent* mc = comp->data;
+  mesh_component_shader_set(mc, "shader/dragger.shader");
+
+  if (plane) {
+    mc->mesh_name = "model/dragger_plane.mesh";
+    mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
+  }
+  else {
+    mc->mesh_name = "model/dragger_scale.mesh";
+    mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
+  }
+
+  Vec4* v = calloc(1, sizeof *v);
+  shader_instance_uniform_data_set(mc->shader_instance, "color", v);
+
+
+  comp = create_component(dragger_desc());
+  object_add_component(o,comp);
+  Dragger* d = comp->data;
+  d->box = mc->mesh->box;
+  d->mc = mc;
+  d->constraint = constraint;
+  d->color_idle = color;
+  d->type = DRAGGER_SCALE;
+  dragger_state_set(d, DRAGGER_IDLE);
+
+  return o;
+}
+
+Object* 
+_dragger_translate_create(Vec3 constraint, Vec4 color, bool plane)
+{
+  Object* o = create_object();
+  Component* comp = create_component(&mesh_desc);
+  object_add_component(o, comp);
+  MeshComponent* mc = comp->data;
+  mesh_component_shader_set(mc, "shader/dragger.shader");
+
+  if (plane) {
+    mc->mesh_name = "model/dragger_plane.mesh";
+    mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
+  }
+  else {
+    mc->mesh_name = "model/dragger_arrow.mesh";
+    mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
+  }
+
+  Vec4* v = calloc(1, sizeof *v);
+  shader_instance_uniform_data_set(mc->shader_instance, "color", v);
+
+  /*
+  comp = create_component(&line_desc);
+  object_add_component(o,comp);
+  Line* l = comp->data;
+  l->camera = camera;
+  AABox b = mc->mesh->box;
+  line_add_box(l, b, vec4(0,1,0,1));
+  line_set_use_depth(l, false);
+  line_set_size_fixed(l, true);
+  */
+
+  comp = create_component(dragger_desc());
+  object_add_component(o,comp);
+  Dragger* d = comp->data;
+  //d->line->camera = camera;
+  d->box = mc->mesh->box;
+  d->mc = mc;
+  d->constraint = constraint;
+  d->color_idle = color;
+  d->type = DRAGGER_TRANSLATE;
+  dragger_state_set(d, DRAGGER_IDLE);
+
+  return o;
+}
 

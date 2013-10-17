@@ -3,6 +3,7 @@ LATELY
 - make the rotation again in the spinner
 - also fix the scale (start from last scale)
 - need global/local button
+- update the tree with children etc
 
 CLEAN
 - TODO in the code.

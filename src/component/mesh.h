@@ -89,6 +89,7 @@ struct _MeshComponent
   Shader* shader;
   Eina_Hash* textures;
   ShaderInstance* shader_instance;
+  bool hide;
 };
 
 ComponentDesc mesh_desc;

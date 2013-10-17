@@ -381,8 +381,9 @@ static void
 _mesh_component_draw(Component* c, Matrix4 world, const Matrix4 projection)
 {
   MeshComponent* mc = c->data;
-  if (!mc)
-  return;
+  if (!mc) return;
+
+  if (mc->hide) return;
 
   Mesh* m = mc->mesh;
   if (!m) {

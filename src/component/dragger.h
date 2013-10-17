@@ -13,7 +13,8 @@ typedef enum {
   DRAGGER_HIGHLIGHT,
   DRAGGER_SELECTED,
   DRAGGER_LOWLIGHT,
-  DRAGGER_HIDE
+  DRAGGER_HIDE,
+  DRAGGER_SHOW_SECOND
 } DraggerState;
 
 typedef enum {
@@ -32,6 +33,7 @@ struct _Dragger
   //Line* line;
   Vec4 color_idle;
   MeshComponent* mc;
+  MeshComponent* mc_second;
   DraggerState state;
   Vec3 constraint;
   DraggerType type;
@@ -43,5 +45,11 @@ ComponentDesc* dragger_desc();
 
 void dragger_highlight_set(Dragger* d, bool highlight);
 void dragger_state_set(Dragger* d, DraggerState state);
+
+typedef Object* (*dragger_create_fn)(Vec3 constraint, Vec4 color, bool plane);
+Object* _dragger_rotate_create(Vec3 constraint, Vec4 color, bool plane);
+Object* _dragger_scale_create(Vec3 constraint, Vec4 color, bool plane);
+Object* _dragger_translate_create(Vec3 constraint, Vec4 color, bool plane);
+
 
 #endif

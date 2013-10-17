@@ -595,7 +595,9 @@ _draggers_click_check(Control* c, Evas_Event_Mouse_Down* e)
   }
   
   if (ir.hit && drag_hit) {
-    if (drag_hit->type != DRAGGER_ROTATE)
+    if (drag_hit->type == DRAGGER_ROTATE)
+      dragger_state_set(drag_hit, DRAGGER_SHOW_SECOND);
+    else
       dragger_state_set(drag_hit, DRAGGER_SELECTED);
 
       if (drag_hit->type == DRAGGER_TRANSLATE) {

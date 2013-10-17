@@ -31,6 +31,7 @@ struct _Component {
   const PropertySet* properties;
   struct _Object* object;
   const char* name;
+  bool disabled;
 };
 
 Component* create_component(ComponentDesc *f); 
