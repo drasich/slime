@@ -6,6 +6,21 @@
 #include "resource.h"
 
 static void
+_entry_orientation_changed_cb(void *data, Evas_Object *obj, void *event)
+{
+  ComponentProperties* cp = data;
+  void* cd = cp->component->data;
+
+  if (cd == NULL) return;
+
+  Property* p = evas_object_data_get(obj, "property");
+  const char* name = evas_object_data_get(obj, "property_name");
+
+  double v =  elm_spinner_value_get(obj);
+  //printf("angle varation %s : %f\n", name, v);
+}
+
+static void
 _entry_changed_cb(void *data, Evas_Object *obj, void *event)
 {
   //printf ("todo : at %s, line %d\n",__FILE__, __LINE__);
@@ -418,6 +433,30 @@ _property_add_fileselect(ComponentProperties* cp, Property* p)
 
 
 static void
+_component_property_orientation_update(ComponentProperties* cp, void* data, Property* p)
+{
+  Quat q;
+  memcpy(&q, (void*)data + p->offset, sizeof q);
+  Vec3 deg = quat_to_euler_deg(q);
+  //printf("deg : %f, %f, %f \n", deg.x, deg.y, deg.z);
+  Eina_List* widgets = eina_hash_find(cp->properties, &p);
+
+  Eina_List* l;
+  Evas_Object* o;
+  int i = 0;
+  EINA_LIST_FOREACH(widgets, l, o) {
+    if (i==0)
+    elm_spinner_value_set(o, deg.x );
+    else if (i==1)
+    elm_spinner_value_set(o, deg.y );
+    else if (i==2)
+    elm_spinner_value_set(o, deg.z );
+    ++i;
+  }
+  
+}
+
+static void
 _component_property_update_data_recur(ComponentProperties* cp, void* data, const PropertySet* ps)
 {
   Property *p;
@@ -448,7 +487,11 @@ _component_property_update_data_recur(ComponentProperties* cp, void* data, const
          }
         break;
      case PROPERTY_STRUCT:
-         _component_property_update_data_recur(cp, data, p->array);
+        if  (!strcmp(p->name, "orientation")) {
+          _component_property_orientation_update(cp, data, p);
+        }
+        else
+        _component_property_update_data_recur(cp, data, p->array);
          break;
      case PROPERTY_POINTER:
           {
@@ -498,6 +541,65 @@ _remove_component(
   control_component_remove(cp->control, cp->pw->context->object, cp->component);
 }
 
+static Evas_Object* 
+_property_add_spinner_angle(
+      ComponentProperties* cp,
+      Property* p,
+      Evas_Object* box,
+      const char* name)
+{
+  Evas_Object *en, *label;
+
+  en = elm_spinner_add(cp->win);
+  evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
+  //elm_spinner_value_set(en, atof(value));
+  evas_object_show(en);
+  //elm_box_pack_end(cp->box, en);
+  elm_box_pack_end(box, en);
+
+  evas_object_name_set(en, p->name);
+  
+  elm_spinner_step_set(en, 0.1);
+  elm_spinner_min_max_set(en, -DBL_MAX, DBL_MAX);
+  elm_object_style_set (en, "vertical");
+  elm_spinner_editable_set(en, EINA_TRUE);
+
+  char s[50];
+  sprintf(s, "%s : %s", name, "%.4f");
+
+  elm_spinner_label_format_set(en, s);
+
+  evas_object_name_set(en, name);
+
+  evas_object_smart_callback_add(en, "changed", _entry_orientation_changed_cb, cp);
+
+  evas_object_data_set(en, "property", p);
+  evas_object_data_set(en, "property_name", name);
+
+  return en;
+}
+
+
+static void
+_add_orientation_properties(ComponentProperties* cp, Property* p, Evas_Object* box)
+{
+  Eina_List* l = NULL;
+
+  l = eina_list_append(l,
+  _property_add_spinner_angle(cp, p, box, "x"));
+  l = eina_list_append(l,
+  _property_add_spinner_angle(cp, p, box, "y"));
+  l = eina_list_append(l,
+  _property_add_spinner_angle(cp, p, box, "z"));
+
+  eina_hash_add(
+        cp->properties,
+        &p,
+        l);
+
+}
+
 
 static void
 _add_properties(ComponentProperties* cp, const PropertySet* ps, Evas_Object* box)
@@ -536,7 +638,12 @@ _add_properties(ComponentProperties* cp, const PropertySet* ps, Evas_Object* box
            evas_object_show(label);
            elm_box_pack_end(hbox, label);
 
+           if (!strcmp(p->name, "orientation")) {
+             _add_orientation_properties(cp, p, hbox);
+           }
+           else
            _add_properties(cp, p->array, hbox);
+
          }
          else
          _add_properties(cp, p->array, cp->box);

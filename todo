@@ -1,9 +1,11 @@
 LATELY
-- rotate dragger : hide the dragger and display a disk
+- rotate dragger : display a better disk
 - make the rotation again in the spinner
 - also fix the scale (start from last scale)
 - need global/local button
 - update the tree with children etc
+- display info on rotation, scale, translation
+- translation with local plane 
 
 CLEAN
 - TODO in the code.

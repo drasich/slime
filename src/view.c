@@ -629,16 +629,26 @@ _addcomponent(void *data,
   elm_menu_move(menu, x, y);
 }
 
+static void
+_dragger_global_local_changed_cb(void *data, Evas_Object *obj, void *event_info)
+{
+  printf("changed\n");
+  View* v = data;
+  v->control->dragger_is_local = !v->control->dragger_is_local;
+}
+
 
 static void
 _add_buttons(View* v, Evas_Object* win)
 {
   Evas_Object* fs_bt, *ic, *bt;
+  int r,g,b,a;
 
   ic = elm_icon_add(win);
   elm_icon_standard_set(ic, "file");
   evas_object_size_hint_aspect_set(ic, EVAS_ASPECT_CONTROL_VERTICAL, 1, 1);
 
+  /*
   fs_bt = elm_fileselector_button_add(win);
   elm_object_focus_allow_set(fs_bt, 0);
   elm_fileselector_button_path_set(fs_bt, "/home/chris/code/slime/model");
@@ -653,7 +663,6 @@ _add_buttons(View* v, Evas_Object* win)
   evas_object_show(fs_bt);
   evas_object_show(ic);
 
-  int r,g,b,a;
   evas_object_color_get(fs_bt, &r,&g,&b,&a);
   a = 150;
   evas_object_color_set(fs_bt, r,g,b,a);
@@ -662,6 +671,7 @@ _add_buttons(View* v, Evas_Object* win)
   evas_object_move(fs_bt, 15, 15);
 
   evas_object_smart_callback_add(fs_bt, "file,chosen", _file_chosen, v);
+  */
 
 
   bt = elm_button_add(win);
@@ -670,9 +680,12 @@ _add_buttons(View* v, Evas_Object* win)
   elm_object_text_set(bt, "Add empty");
   evas_object_show(bt);
 
+  evas_object_color_get(bt, &r,&g,&b,&a);
+  a = 150;
+
   evas_object_color_set(bt, r,g,b,a);
   evas_object_resize(bt, 100, 25);
-  evas_object_move(bt, 15, 45);
+  evas_object_move(bt, 15, 15);
   evas_object_data_set(bt, "view", v);
   evas_object_smart_callback_add(bt, "clicked", _new_empty, v);
   //view->addObjectToHide(bt);
@@ -730,6 +743,21 @@ _add_buttons(View* v, Evas_Object* win)
   evas_object_move(bt, 405, 15);
   evas_object_data_set(bt, "view", v);
   evas_object_smart_callback_add(bt, "clicked", _reload, v);
+
+
+  Evas_Object* tg = elm_check_add(win);
+  evas_object_color_set(tg, r,g,b,a);
+  evas_object_move(tg, 15, 45);
+  evas_object_resize(tg, 200, 25);
+  elm_object_style_set(tg, "toggle");
+  elm_object_text_set(tg, "Dragger");
+  elm_object_part_text_set(tg, "on", "Local");
+  elm_object_part_text_set(tg, "off", "Global");
+  //elm_box_pack_end(bx, tg);
+  evas_object_show(tg);
+  evas_object_smart_callback_add(tg, "changed", _dragger_global_local_changed_cb, v);
+
+
 
 }
 
@@ -1301,19 +1329,19 @@ view_draw(View* v)
       dragger->position = repere_position;
       Dragger* d = object_component_get(dragger, "dragger");
       if (d) {
-        if (v->control->dragger_is_local) {
+        dragger->orientation_type = ORIENTATION_QUAT;
+        if (d->type == DRAGGER_SCALE || v->control->dragger_is_local) {
           dragger->orientation = quat_mul(repere_ori, d->ori);
-          dragger->orientation_type = ORIENTATION_QUAT;
-          if (d && d->type == DRAGGER_ROTATE) {
-            _object_camera_face(repere_ori, dragger, c);
-          }
         }
         else {
           dragger->orientation = d->ori;
-          dragger->orientation_type = ORIENTATION_QUAT;
-          if (d && d->type == DRAGGER_ROTATE) {
-            _object_camera_face(quat_identity(), dragger, c);
-          }
+        }
+
+        if (d->type == DRAGGER_ROTATE) {
+          if (v->control->dragger_is_local)
+          _object_camera_face(repere_ori, dragger, c);
+          else
+          _object_camera_face(quat_identity(), dragger, c);
         }
       }
       object_draw_edit(dragger, cam_mat_inv, cc->projection, id4);

@@ -86,6 +86,8 @@ enum {
  } while(0)
 
 PropertySet* property_set_vec3();
+PropertySet* property_set_vec4();
+PropertySet* property_set_quat();
 
 #define ADD_RESOURCE(ps, struct_type, member, resource_type) \
  do {                                                   \

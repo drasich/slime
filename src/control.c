@@ -14,7 +14,6 @@ create_control(View* v)
   c->view = v;
   c->redo = NULL;
   //c->shader_simple = create_shader("simple","shader/simple.vert", "shader/simple.frag");
-  c->dragger_is_local = true;
   return c;
 }
 
@@ -378,50 +377,34 @@ _rotate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
   //Vec3 normal = constraint;
   Vec3 normal = quat_rotate_vec3(c->view->camera->object->orientation, vec3(0,0,1));
   Plane p = { c->start, normal };
-  //printf("normal : %f, %f, %f \n", normal.x, normal.y, normal.z);
 
   IntersectionRay irstart =  intersection_ray_plane(rstart, p);
   IntersectionRay ir =  intersection_ray_plane(r, p);
 
   Vec3 yos = vec3_normalized(vec3_sub(irstart.position, c->start));
   Vec3 yoe = vec3_normalized(vec3_sub(ir.position, c->start));
-  printf("start : %f, %f, %f \n", irstart.position.x, irstart.position.y, irstart.position.z);
-  printf("col : %f, %f, %f \n", ir.position.x, ir.position.y, ir.position.z);
-
 
   double mdot = vec3_dot(yos, yoe);
-  //printf("DOT %f \n", mdot);
 
   Vec3 cross = vec3_cross(yos,yoe);
-  printf("cross : %f, %f, %f \n", cross.x, cross.y, cross.z);
   double sign = vec3_dot(normal, cross);
   double angle = acos(mdot);
 
   Vec3 diff = vec3_sub(c->start, c->view->camera->object->position);
-  printf("diff %f, %f, %f \n", diff.x, diff.y, diff.z);
-  Vec3 cons = quat_rotate_vec3(c->dragger_ori, constraint);
-  printf("constraint %f, %f, %f \n", constraint.x, constraint.y, constraint.z);
-  printf("cons %f, %f, %f \n", cons.x, cons.y, cons.z);
+  Vec3 cons;
+  if (c->dragger_is_local)
+  cons = quat_rotate_vec3(c->dragger_ori, constraint);
+  else
+  cons = constraint;
   double dotori = vec3_dot(diff, cons);
 
-  printf("angle before %f \n", angle);
-  printf("sign is %f \n", sign);
   if (dotori <0) {
     if (sign > 0) angle *= -1;
   }
   else {
     if (sign < 0) angle *= -1;
   }
-  printf("dotori %f \n", dotori);
-  printf("angle after %f \n", angle);
 
-
-  Vec3 camx = quat_rotate_vec3(c->view->camera->object->orientation, vec3(1,0,0));
-  Vec3 dxy = quat_rotate_vec3(c->dragger_ori, vec3(1,1,0));
-  double dot = vec3_dot(camx, dxy);
-
-  Vec2 d = vec2(x - c->mouse_start.x, y - c->mouse_start.y);
-  double s = vec2_length(d);
   Quat qrot = quat_angle_axis(angle, constraint);
 
   Eina_List *l;
@@ -430,9 +413,11 @@ _rotate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
   EINA_LIST_FOREACH(objects, l, o) {
     Vec3* angles_origin = (Vec3*) eina_inarray_nth(c->rotates, i);
     Quat* q_origin = (Quat*) eina_inarray_nth(c->quats, i);
-    o->angles = vec3_add(*angles_origin, c->scale_factor);
-    o->orientation = quat_mul(*q_origin, qrot); //local
-    //o->orientation = quat_mul(qrot, *q_origin); // global
+    //o->angles = vec3_add(*angles_origin, c->scale_factor);
+    if (c->dragger_is_local)
+    o->orientation = quat_mul(*q_origin, qrot);
+    else
+    o->orientation = quat_mul(qrot, *q_origin);
     ++i;
   }
 

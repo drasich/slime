@@ -1,6 +1,7 @@
 #include <Eina.h>
 #include "property.h"
 #include "vec.h"
+#include "quat.h"
 
 PropertySet* create_property_set()
 {
@@ -41,4 +42,36 @@ property_set_vec3()
 
   return ps;
 }
+
+PropertySet*
+property_set_vec4()
+{
+  PropertySet* ps = create_property_set();
+  PROPERTY_SET_TYPE(ps, Vec4);
+  ps->hint = HORIZONTAL;
+
+  ADD_PROP_NAME(ps, Vec4, x, EET_T_DOUBLE, "x");
+  ADD_PROP_NAME(ps, Vec4, y, EET_T_DOUBLE, "y");
+  ADD_PROP_NAME(ps, Vec4, z, EET_T_DOUBLE, "z");
+  ADD_PROP_NAME(ps, Vec4, w, EET_T_DOUBLE, "w");
+
+  return ps;
+}
+
+PropertySet*
+property_set_quat()
+{
+  PropertySet* ps = create_property_set();
+  PROPERTY_SET_TYPE(ps, Quat);
+  ps->hint = HORIZONTAL;
+
+  ADD_PROP_NAME(ps, Quat, x, EET_T_DOUBLE, "x");
+  ADD_PROP_NAME(ps, Quat, y, EET_T_DOUBLE, "y");
+  ADD_PROP_NAME(ps, Quat, z, EET_T_DOUBLE, "z");
+  ADD_PROP_NAME(ps, Quat, w, EET_T_DOUBLE, "w");
+
+  return ps;
+}
+
+
 

@@ -35,5 +35,6 @@ Vec3 quat_rotate_around(Quat q, Vec3 pivot, Vec3 mypoint);
 Quat quat_lookat(Vec3 from, Vec3 to, Vec3 up);
 
 Vec3 quat_to_euler(Quat q);
+Vec3 quat_to_euler_deg(Quat q);
 
 #endif

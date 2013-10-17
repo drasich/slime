@@ -454,8 +454,13 @@ property_set_object()
   PropertySet *vec3 = property_set_vec3();
   ADD_PROP_STRUCT_NESTED(ps, Object, position, vec3);
 
+  /*
   PropertySet *an = property_set_vec3();
   ADD_PROP_STRUCT_NESTED(ps, Object, angles, an);
+  */
+
+  PropertySet *q = property_set_quat();
+  ADD_PROP_STRUCT_NESTED(ps, Object, orientation, q);
 
   PropertySet *scale = property_set_vec3();
   ADD_PROP_STRUCT_NESTED(ps, Object, scale, scale);

@@ -335,6 +335,14 @@ quat_to_euler(Quat q)
   return v;
 }
 
+Vec3
+quat_to_euler_deg(Quat q)
+{
+  Vec3 v = quat_to_euler(q);
+  v = vec3_mul(v, 180.0/M_PI);
+  return v;
+}
+
 Quat
 quat_yaw_pitch_roll_rad(double yaw, double pitch, double roll)
 {
