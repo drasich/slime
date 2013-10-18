@@ -334,6 +334,31 @@ tree_objects_select(Tree* t, Eina_List* objects)
 
   eina_list_free(items);
 
+  o = eina_list_nth(objects, 0);
+
+  Elm_Object_Item* item = elm_genlist_first_item_get(t->gl);
+  if (!item) {
+    printf("..........chris item is null \n");
+    return;
+  }
+  Object* eo = (Object*) elm_object_item_data_get(item);
+
+  while (eo != o && item) {
+    item = elm_genlist_item_next_get(item);
+    if (item)
+    eo = (Object*) elm_object_item_data_get(item);
+  }
+
+  if (o == eo) {
+    //Elm_Object_Item* parent = elm_genlist_item_parent_get(i);
+    printf("tu viens la\n");
+    //if (parent)
+    //elm_genlist_item_expanded_set(parent, EINA_TRUE);
+    elm_genlist_item_show(i, ELM_GENLIST_ITEM_SCROLLTO_MIDDLE);
+    elm_genlist_item_bring_in(i, ELM_GENLIST_ITEM_SCROLLTO_MIDDLE);
+  }
+
+
   /*
   EINA_LIST_FOREACH(objects, l, o) {
     Elm_Object_Item* item = _tree_get_item(t, o);
