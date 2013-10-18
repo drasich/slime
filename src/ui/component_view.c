@@ -17,7 +17,22 @@ _entry_orientation_changed_cb(void *data, Evas_Object *obj, void *event)
   const char* name = evas_object_data_get(obj, "property_name");
 
   double v =  elm_spinner_value_get(obj);
-  //printf("angle varation %s : %f\n", name, v);
+  double saved;
+  eina_value_get(&cp->saved, &saved);
+  saved = v - saved;
+  Quat q = quat_identity();
+  if (!strcmp(name, "x")) {
+    q = quat_angles_deg(vec3(saved,0,0));
+  }
+  else if (!strcmp(name, "y")) {
+    q = quat_angles_deg(vec3(0,saved,0));
+  }
+  else if (!strcmp(name, "z")) {
+    q = quat_angles_deg(vec3(0,0,saved));
+  }
+
+  q = quat_mul(cp->quat_saved, q);
+  memcpy(cd + p->offset, &q, sizeof q);
 }
 
 static void
@@ -206,9 +221,38 @@ _entry_focused_cb(void *data, Evas_Object *obj, void *event)
   const char* s = elm_object_text_get(obj);
   const char* str = eina_stringshare_add(s);
   //TODO don't forget to eina_stringshare_del
+  //
+  double v =  elm_spinner_value_get(obj);
+  printf("double get : %f \n", v);
   printf("TODO stringshare del\n");
   cp->value_saved = str;
 }
+
+static void
+_spinner_drag_start_cb(void *data, Evas_Object *obj, void *event)
+{
+  ComponentProperties* cp = data;
+  double v =  elm_spinner_value_get(obj);
+  eina_value_setup(&cp->saved, EINA_VALUE_TYPE_DOUBLE);
+  eina_value_set(&cp->saved, v);
+
+  //TODO I have to know the original quaternion
+  Property* p = evas_object_data_get(obj, "property");
+  void* cd = cp->component->data;
+
+  Quat q;
+  memcpy(&q, (void*)cd + p->offset, sizeof q);
+  cp->quat_saved = q;
+}
+
+static void
+_spinner_drag_stop_cb(void *data, Evas_Object *obj, void *event)
+{
+  ComponentProperties* cp = data;
+  double v =  elm_spinner_value_get(obj);
+}
+
+
 
 static void
 _entry_clicked_cb(void *data, Evas_Object *obj, void *event)
@@ -339,6 +383,7 @@ _property_add_spinner(ComponentProperties* cp, Property* p, Evas_Object* box)
         en);
 
   evas_object_smart_callback_add(en, "changed", _entry_changed_cb, cp);
+  evas_object_smart_callback_add(en, "focused", _entry_focused_cb, cp);
 
   evas_object_data_set(en, "property", p);
 
@@ -573,6 +618,8 @@ _property_add_spinner_angle(
   evas_object_name_set(en, name);
 
   evas_object_smart_callback_add(en, "changed", _entry_orientation_changed_cb, cp);
+  evas_object_smart_callback_add(en, "drag,start", _spinner_drag_start_cb, cp);
+  evas_object_smart_callback_add(en, "drag,stop", _spinner_drag_stop_cb, cp);
 
   evas_object_data_set(en, "property", p);
   evas_object_data_set(en, "property_name", name);
