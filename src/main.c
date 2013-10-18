@@ -204,9 +204,9 @@ build_scene()
   Scene* s = create_scene();
   //Scene* s = scene_read("scene/scene.eet");
   //scene_post_read(s);
-  //tree_scene_set(view->tree, s);
   view->context->scene = s;
   populate_scene(view->control, s);
+  tree_scene_set(view->tree, s);
 
   printf("scene ORIGINAL\n");
   scene_print(s);
@@ -247,8 +247,8 @@ elm_main(int argc, char **argv)
   resource_texture_create(s_rm);
 
   elm_config_preferred_engine_set("opengl_x11");
-  elm_config_focus_highlight_animate_set(EINA_TRUE);
-  elm_config_focus_highlight_enabled_set(EINA_TRUE);
+  //elm_config_focus_highlight_animate_set(EINA_TRUE);
+  //elm_config_focus_highlight_enabled_set(EINA_TRUE);
   create_window();
 
   build_scene();

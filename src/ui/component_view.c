@@ -618,8 +618,8 @@ _property_add_spinner_angle(
   evas_object_name_set(en, name);
 
   evas_object_smart_callback_add(en, "changed", _entry_orientation_changed_cb, cp);
-  evas_object_smart_callback_add(en, "drag,start", _spinner_drag_start_cb, cp);
-  evas_object_smart_callback_add(en, "drag,stop", _spinner_drag_stop_cb, cp);
+  evas_object_smart_callback_add(en, "spinner,drag,start", _spinner_drag_start_cb, cp);
+  evas_object_smart_callback_add(en, "spinner,drag,stop", _spinner_drag_stop_cb, cp);
 
   evas_object_data_set(en, "property", p);
   evas_object_data_set(en, "property_name", name);

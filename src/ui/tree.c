@@ -58,6 +58,7 @@ gl4_sel(void *data, Evas_Object *obj __UNUSED__, void *event_info)
    //int depth = elm_genlist_item_expanded_depth_get(glit);
    //printf("expanded depth for selected item is %d", depth);
 
+   printf("sel data is %p \n", data);
    View* v = data;
    if (v) { 
      Context* context = v->context;
@@ -68,24 +69,40 @@ gl4_sel(void *data, Evas_Object *obj __UNUSED__, void *event_info)
 
 
 static void
-gl4_exp(void *data __UNUSED__, Evas_Object *obj __UNUSED__, void *event_info)
+gl4_exp(void *data, Evas_Object *obj __UNUSED__, void *event_info)
 {
   //TODO expand children
-  return;
    Elm_Object_Item *glit = event_info;
    Evas_Object *gl = elm_object_item_widget_get(glit);
-   int val = (int)(long) elm_object_item_data_get(glit);
-   int i = 0;
+   Object* o = elm_object_item_data_get(glit);
 
-   val *= 10;
-   for (i = 0; i < 10; i++)
-     {
-        elm_genlist_item_append(gl, itc4,
-                                (void *)(long) (val + i)/* item data */,
-                                glit/* parent */,
-                                ELM_GENLIST_ITEM_TREE, gl4_sel/* func */,
-                                NULL/* func data */);
+   Eina_List*l;
+   Object* child;
+   EINA_LIST_FOREACH(o->children, l, child) {
+     if (eina_list_count(child->children) > 0) {
+
+       elm_genlist_item_append(
+             gl,
+             itc4,
+             child,
+             glit,// parent
+             ELM_GENLIST_ITEM_TREE,
+             gl4_sel,
+             data);
      }
+     else {
+       elm_genlist_item_append(
+             gl,
+             itc1,
+             child,
+             glit,
+             ELM_GENLIST_ITEM_NONE,
+             gl4_sel,
+             data);
+
+     }
+
+   }
 }
 
 static void
@@ -193,22 +210,20 @@ tree_widget_new(Evas_Object* win, struct _View* v)
   itc1->func.state_get = gl4_state_get;
   itc1->func.del       = gl4_del;
 
-  //elm_genlist_item_append(gli, itc1,
-        //(void *)1/* item data */, NULL/* parent */, ELM_GENLIST_ITEM_NONE, gl4_sel/* func */,
-        //NULL/* func data */);
-  //elm_genlist_item_append(gli, itc1,
-        //(void *)2/* item data */, NULL/* parent */, ELM_GENLIST_ITEM_NONE, gl4_sel/* func */,
-        //NULL/* func data */);
-  //elm_genlist_item_append(gli, itc1,
-        //(void *)3/* item data */, NULL/* parent */, ELM_GENLIST_ITEM_NONE, gl4_sel/* func */,
-        //NULL/* func data */);
+  itc4 = elm_genlist_item_class_new();
+  itc4->item_style = "tree_effect";
+  itc4->func.text_get = gl4_text_get;
+  itc4->func.content_get = gl4_content_get;
+  itc4->func.state_get = gl4_state_get;
+  itc4->func.del = gl4_del;
+
 
   elm_genlist_item_class_ref(itc1);
   elm_genlist_item_class_free(itc1);
 
   evas_object_smart_callback_add(gli, "expand,request", gl4_exp_req, gli);
   evas_object_smart_callback_add(gli, "contract,request", gl4_con_req, gli);
-  evas_object_smart_callback_add(gli, "expanded", gl4_exp, gli);
+  evas_object_smart_callback_add(gli, "expanded", gl4_exp, v);
   evas_object_smart_callback_add(gli, "contracted", gl4_con, gli);
   evas_object_smart_callback_add(gli, "unselected", gl4_unselect, v);
 
@@ -218,46 +233,6 @@ tree_widget_new(Evas_Object* win, struct _View* v)
   //evas_object_smart_callback_add(rd2, "changed", _tree_effect_disable_cb, gli);
 
   return t;
-}
-
-
-void
-tree_object_add(Tree* t,  Object* o)
-{
-  //elm_genlist_item_append(t->gl, itc4,
-        //(void *)1/* item data */, NULL/* parent */, ELM_GENLIST_ITEM_TREE, gl4_sel/* func */,
-        //NULL/* func data */);
-
-   if (!itc1) itc1 = elm_genlist_item_class_new();
-   itc1->item_style = "default";
-   itc1->func.text_get = gl4_text_get;
-   itc1->func.content_get = gl4_content_get;
-   itc1->func.state_get = gl4_state_get;
-   itc1->func.del = gl4_del;
-
-   elm_genlist_item_append(t->gl, itc1,
-                                  o,//(void *)(long)55/* item data */,
-                                  NULL, //elm_genlist_item_parent_get(gli_selected),
-                                  ELM_GENLIST_ITEM_NONE,
-                                  //NULL/* func */, NULL/* func data */);
-                                  gl4_sel, t->view);
-
-  return;
-
-  Elm_Object_Item* item = elm_genlist_item_append(t->gl, itc1,
-        //(void *)1/* item data */, NULL/* parent */, ELM_GENLIST_ITEM_TREE, gl17_sel/* func */,
-        //o, NULL/* parent */, ELM_GENLIST_ITEM_TREE, gl4_sel/* func */,
-        o, NULL/* parent */, ELM_GENLIST_ITEM_TREE, gl4_sel/* func */,
-        //NULL/* func data */);
-   t->context);
-
-
-
-  // if it was a NONE then go into TREE (if you add children)
-  //elm_genlist_item_item_class_update (item, itc4);
-  //elm_genlist_item_type_set(item, ELM_GENLIST_ITEM_TREE);
-
-
 }
 
 static Elm_Object_Item*
@@ -281,6 +256,38 @@ _tree_get_item(Tree* t, Object* o)
   return NULL;
 }
 
+void
+tree_object_add(Tree* t,  Object* o)
+{
+  static Elm_Object_Item* parent = NULL;
+  if (o->parent)
+  parent = _tree_get_item(t, o);
+
+  if (eina_list_count(o->children) > 0) {
+    elm_genlist_item_append(
+          t->gl,
+          itc4,
+          o,
+          parent,
+          ELM_GENLIST_ITEM_TREE,
+          gl4_sel/* func */,
+          t->view);
+
+    return;
+  }
+  else {
+
+    elm_genlist_item_append(
+          t->gl,
+          itc1,
+          o,
+          parent,
+          ELM_GENLIST_ITEM_NONE,
+          gl4_sel,
+          t->view);
+  }
+
+}
 
 void
 tree_object_select(Tree* t, Object* o)
@@ -343,6 +350,12 @@ tree_object_update(Tree* t, Object* o)
 { 
   Elm_Object_Item* item = _tree_get_item(t, o);
 
+  //TODO change leaf to tree if you add a child etc
+  //or change tree to leaf
+  // if it was a NONE then go into TREE (if you add children)
+  //elm_genlist_item_item_class_update (item, itc4);
+  //elm_genlist_item_type_set(item, ELM_GENLIST_ITEM_TREE);
+
   if (item)
     elm_genlist_item_update(item);
 }
@@ -370,6 +383,8 @@ tree_object_remove(Tree* t,  Object* o)
 
 void tree_scene_set(Tree* t, struct _Scene* s)
 {
+  elm_genlist_clear(t->gl);
+
   Eina_List* l;
   Object* o;
 
