@@ -566,3 +566,26 @@ object_world_position_set(Object* o, Vec3 worldpos)
   else
   o->position = worldpos;
 }
+
+static Eina_List*
+_object_parents_path_get(Object* o, Eina_List* l)
+{
+  if (o->parent) {
+    printf("object %s has parent : %s \n", o->name, o->parent->name);
+    l = eina_list_prepend(l, o->parent);
+    printf("size of l : %d\n", eina_list_count(l));
+    l = _object_parents_path_get(o->parent, l);
+    printf("size of l after : %d\n", eina_list_count(l));
+  }
+
+  return l;
+}
+
+Eina_List*
+object_parents_path_get(Object* o)
+{
+  Eina_List* l = NULL;
+  l = _object_parents_path_get(o, l);
+  printf("size of l end : %d\n", eina_list_count(l));
+  return l;
+}

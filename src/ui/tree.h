@@ -15,6 +15,8 @@ struct _Tree
   Context* context;
   View* view;
   Control* control;
+
+  Eina_Hash* objects;
 };
 
 Tree* tree_widget_new(Evas_Object* win, View* view);

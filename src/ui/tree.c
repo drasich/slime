@@ -75,13 +75,14 @@ gl4_exp(void *data, Evas_Object *obj __UNUSED__, void *event_info)
    Elm_Object_Item *glit = event_info;
    Evas_Object *gl = elm_object_item_widget_get(glit);
    Object* o = elm_object_item_data_get(glit);
+   View* v = data;
 
    Eina_List*l;
    Object* child;
    EINA_LIST_FOREACH(o->children, l, child) {
      if (eina_list_count(child->children) > 0) {
 
-       elm_genlist_item_append(
+       Elm_Object_Item* eoi = elm_genlist_item_append(
              gl,
              itc4,
              child,
@@ -89,9 +90,11 @@ gl4_exp(void *data, Evas_Object *obj __UNUSED__, void *event_info)
              ELM_GENLIST_ITEM_TREE,
              gl4_sel,
              data);
+
+       eina_hash_add(v->tree->objects, &child, eoi);
      }
      else {
-       elm_genlist_item_append(
+       Elm_Object_Item* eoi = elm_genlist_item_append(
              gl,
              itc1,
              child,
@@ -99,6 +102,7 @@ gl4_exp(void *data, Evas_Object *obj __UNUSED__, void *event_info)
              ELM_GENLIST_ITEM_NONE,
              gl4_sel,
              data);
+       eina_hash_add(v->tree->objects, &child, eoi);
 
      }
 
@@ -106,10 +110,19 @@ gl4_exp(void *data, Evas_Object *obj __UNUSED__, void *event_info)
 }
 
 static void
-gl4_con(void *data __UNUSED__, Evas_Object *obj __UNUSED__, void *event_info)
+gl4_con(void *data, Evas_Object *obj __UNUSED__, void *event_info)
 {
-   Elm_Object_Item *glit = event_info;
-   elm_genlist_item_subitems_clear(glit);
+  View* v = data;
+  Elm_Object_Item *glit = event_info;
+  Object* o = elm_object_item_data_get(glit);
+
+  Eina_List* l;
+  Object* child;
+  EINA_LIST_FOREACH(o->children, l, child) {
+    eina_hash_del_by_key(v->tree->objects, &child);
+  }
+
+  elm_genlist_item_subitems_clear(glit);
 }
 
 static void
@@ -224,13 +237,15 @@ tree_widget_new(Evas_Object* win, struct _View* v)
   evas_object_smart_callback_add(gli, "expand,request", gl4_exp_req, gli);
   evas_object_smart_callback_add(gli, "contract,request", gl4_con_req, gli);
   evas_object_smart_callback_add(gli, "expanded", gl4_exp, v);
-  evas_object_smart_callback_add(gli, "contracted", gl4_con, gli);
+  evas_object_smart_callback_add(gli, "contracted", gl4_con, v);
   evas_object_smart_callback_add(gli, "unselected", gl4_unselect, v);
 
   elm_box_pack_end(bx, gli);
 
   //evas_object_smart_callback_add(rd1, "changed", _tree_effect_enable_cb, gli);
   //evas_object_smart_callback_add(rd2, "changed", _tree_effect_disable_cb, gli);
+
+  t->objects = eina_hash_pointer_new(NULL);
 
   return t;
 }
@@ -264,7 +279,7 @@ tree_object_add(Tree* t,  Object* o)
   parent = _tree_get_item(t, o);
 
   if (eina_list_count(o->children) > 0) {
-    elm_genlist_item_append(
+    Elm_Object_Item* eoi = elm_genlist_item_append(
           t->gl,
           itc4,
           o,
@@ -273,11 +288,14 @@ tree_object_add(Tree* t,  Object* o)
           gl4_sel/* func */,
           t->view);
 
+    printf("I add parent %p \n", eoi);
+    eina_hash_add(t->objects, &o, eoi);
+
     return;
   }
   else {
 
-    elm_genlist_item_append(
+    Elm_Object_Item* eoi = elm_genlist_item_append(
           t->gl,
           itc1,
           o,
@@ -285,6 +303,9 @@ tree_object_add(Tree* t,  Object* o)
           ELM_GENLIST_ITEM_NONE,
           gl4_sel,
           t->view);
+
+    printf("I add leaf %p \n", eoi);
+    eina_hash_add(t->objects, &o, eoi);
   }
 
 }
@@ -334,30 +355,29 @@ tree_objects_select(Tree* t, Eina_List* objects)
 
   eina_list_free(items);
 
-  o = eina_list_nth(objects, 0);
+  EINA_LIST_FOREACH(objects, l, o) {
 
-  Elm_Object_Item* item = elm_genlist_first_item_get(t->gl);
-  if (!item) {
-    printf("..........chris item is null \n");
-    return;
+    Elm_Object_Item* eoi = eina_hash_find(t->objects, &o);
+    if (eoi) {
+      elm_genlist_item_selected_set(eoi, EINA_TRUE);
+    }
+    else {
+      Eina_List* path = object_parents_path_get(o);
+      Eina_List* pl;
+      Object* po;
+      EINA_LIST_FOREACH(path, pl, po) {
+        eoi = eina_hash_find(t->objects, &po);
+        if (eoi) {
+          elm_genlist_item_expanded_set(eoi, EINA_TRUE);
+        }
+      }
+      eoi = eina_hash_find(t->objects, &o);
+      if (eoi) {
+        elm_genlist_item_show(eoi, ELM_GENLIST_ITEM_SCROLLTO_MIDDLE);
+        elm_genlist_item_selected_set(eoi, EINA_TRUE);
+      }
+    }
   }
-  Object* eo = (Object*) elm_object_item_data_get(item);
-
-  while (eo != o && item) {
-    item = elm_genlist_item_next_get(item);
-    if (item)
-    eo = (Object*) elm_object_item_data_get(item);
-  }
-
-  if (o == eo) {
-    //Elm_Object_Item* parent = elm_genlist_item_parent_get(i);
-    printf("tu viens la\n");
-    //if (parent)
-    //elm_genlist_item_expanded_set(parent, EINA_TRUE);
-    elm_genlist_item_show(i, ELM_GENLIST_ITEM_SCROLLTO_MIDDLE);
-    elm_genlist_item_bring_in(i, ELM_GENLIST_ITEM_SCROLLTO_MIDDLE);
-  }
-
 
   /*
   EINA_LIST_FOREACH(objects, l, o) {
@@ -409,6 +429,8 @@ tree_object_remove(Tree* t,  Object* o)
 void tree_scene_set(Tree* t, struct _Scene* s)
 {
   elm_genlist_clear(t->gl);
+  eina_hash_free(t->objects);
+  t->objects = eina_hash_pointer_new(NULL);
 
   Eina_List* l;
   Object* o;

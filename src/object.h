@@ -120,4 +120,6 @@ Vec3 object_world_scale_get(Object* o);
 
 void object_world_position_set(Object* o, Vec3 worldpos);
 
+Eina_List* object_parents_path_get(Object* o);
+
 #endif
