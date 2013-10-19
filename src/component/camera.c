@@ -125,8 +125,8 @@ _create_camera()
 {
   Camera* c = calloc(1, sizeof *c);
 
-  c->fovy = M_PI/4.0;
-  c->fovy_base = M_PI/4.0;
+  c->fovy = M_PI/8.0;
+  c->fovy_base = M_PI/8.0;
   c->height_base = 400;
   c->near = 1.0f;
   c->far = 1000.0f;

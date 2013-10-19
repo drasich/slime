@@ -44,7 +44,7 @@ _dragger_draw_edit(Component* comp, Matrix4 world, const Matrix4 projection)
   line_clear(l);
   */
   AABox bb = d->box;
-  double w = _resize_to_cam(world, projection, 0.1);
+  double w = _resize_to_cam(world, projection, 0.05);
   bb.Max = vec3_mul(bb.Max, w);
   bb.Min = vec3_mul(bb.Min, w);
   d->scale = w;

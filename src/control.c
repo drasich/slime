@@ -102,6 +102,7 @@ _control_rotate_prepare(Control* c, Eina_List* objects)
   c->quats = eina_inarray_new (sizeof(Quat), size);
 
   c->dragger_ori = quat_identity();
+  c->start = vec3_zero();
 
   Eina_List *l;
   Object *o;
@@ -109,7 +110,10 @@ _control_rotate_prepare(Control* c, Eina_List* objects)
     eina_inarray_push(c->rotates, &o->angles);
     eina_inarray_push(c->quats, &o->orientation);
     c->dragger_ori = quat_mul(c->dragger_ori, object_world_orientation_get(o));
+    c->start = vec3_add(c->start, object_world_position_get(o));
   }
+
+  c->start = vec3_mul(c->start, 1.0/ eina_list_count(objects));
 
   c->state = CONTROL_ROTATE;
 }
@@ -127,7 +131,6 @@ _control_rotate(Control* c)
   Object* o = context_object_get(v->context);
   if (o != NULL && c->state != CONTROL_ROTATE) {
     _control_rotate_prepare(c, context_objects_get(v->context));
-    c->start = o->position; //TODO
     c->mouse_start = mousepos;
   }
 
@@ -414,6 +417,7 @@ _rotate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
     Vec3* angles_origin = (Vec3*) eina_inarray_nth(c->rotates, i);
     Quat* q_origin = (Quat*) eina_inarray_nth(c->quats, i);
     //o->angles = vec3_add(*angles_origin, c->scale_factor);
+    
     if (c->dragger_is_local)
     o->orientation = quat_mul(*q_origin, qrot);
     else
