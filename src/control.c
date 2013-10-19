@@ -256,8 +256,14 @@ _translate_moving_local_axis(Control* c, Evas_Event_Mouse_Move* e, Vec3 constrai
   Vec3 camup = quat_rotate_vec3(v->camera->object->orientation, vec3(0,1,0));
   //printf("dragger ori : %f, %f, %f %f \n ", c->dragger_ori.x, c->dragger_ori.y, c->dragger_ori.z, c->dragger_ori.w);
   Vec3 ca = quat_rotate_vec3(c->dragger_ori, constraint);
+  Vec3 cax = quat_rotate_vec3(c->dragger_ori, vec3(constraint.x,0,0));
+  Vec3 cay = quat_rotate_vec3(c->dragger_ori, vec3(0,constraint.y,0));
+  Vec3 caz = quat_rotate_vec3(c->dragger_ori, vec3(0,0,constraint.z));
   //printf("ca %f, %f, %f \n", ca.x, ca.y, ca.z);
   Vec3 n = vec3_cross(camup, ca);
+  if (vec3_equal(constraint, vec3(1,1,0))) n = quat_rotate_vec3(c->dragger_ori, vec3(0,0,1));
+  else if (vec3_equal(constraint, vec3(1,0,1))) n = quat_rotate_vec3(c->dragger_ori, vec3(0,1,0));
+  else if (vec3_equal(constraint, vec3(0,1,1))) n = quat_rotate_vec3(c->dragger_ori, vec3(1,0,0));
   n = vec3_normalized(n);
   Plane p = { c->start, n };
   //printf("n %f, %f, %f \n", n.x, n.y, n.z);
@@ -279,8 +285,12 @@ _translate_moving_local_axis(Control* c, Evas_Event_Mouse_Move* e, Vec3 constrai
   if (ir.hit && irstart.hit) {
     Vec3 translation = vec3_sub(ir.position, irstart.position);
     //printf("translation %f, %f, %f \n", translation.x, translation.y, translation.z);
-    double dot = vec3_dot(ca, translation);
-    translation = vec3_mul(ca, dot);
+    if (vec3_equal(constraint, vec3(1,0,0)) ||
+          vec3_equal(constraint, vec3(0,1,0)) ||
+          vec3_equal(constraint, vec3(0,0,1))) {
+      double dot = vec3_dot(ca, translation);
+      translation = vec3_mul(ca, dot);
+    }
 
     Eina_List *l;
     Object *o;
