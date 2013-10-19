@@ -25,10 +25,12 @@ _objects_center(Control* c, Eina_List* objects)
   Eina_List *l;
   Object *o;
   Vec3 v = vec3_zero();
+  c->dragger_ori = quat_identity();
   EINA_LIST_FOREACH(objects, l, o) {
     Vec3 wp = object_world_position_get(o);
     v = vec3_add(v, wp);
     eina_inarray_push(c->positions, &wp);
+    c->dragger_ori = quat_mul(c->dragger_ori, object_world_orientation_get(o));
     /*
     v = vec3_add(v, o->position);
     eina_inarray_push(c->positions, &o->position);
@@ -203,10 +205,10 @@ _translate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
   if (constraint.z == 1) {
     p.Normal.z = 0;
   }
-  else if (constraint.y == 1) {
+  if (constraint.y == 1) {
     p.Normal.y = 0;
   }
-  else if (constraint.x == 1) {
+  if (constraint.x == 1) {
     p.Normal.x = 0;
   }
 
@@ -245,16 +247,25 @@ _translate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
 }
 
 static void
-_translate_moving_local_axis(Control* c, Evas_Event_Mouse_Move* e, Vec3 axis)
+//_translate_moving_local_axis(Control* c, Evas_Event_Mouse_Move* e, Vec3 axis)
+_translate_moving_local_axis(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
 {
   View* v = c->view;
 
   Eina_List* objects = context_objects_get(v->context);
-  Vec3 cam_up = quat_rotate_vec3(v->camera->object->orientation, vec3(0,1,0));
-  axis = vec3_normalized(axis);
-  Vec3 pn = vec3_cross(axis, cam_up);
-  pn = vec3_normalized(pn);
-  Plane p = { c->start, pn };
+  Vec3 camup = quat_rotate_vec3(v->camera->object->orientation, vec3(0,1,0));
+  //printf("dragger ori : %f, %f, %f %f \n ", c->dragger_ori.x, c->dragger_ori.y, c->dragger_ori.z, c->dragger_ori.w);
+  Vec3 ca = quat_rotate_vec3(c->dragger_ori, constraint);
+  //printf("ca %f, %f, %f \n", ca.x, ca.y, ca.z);
+  Vec3 n = vec3_cross(camup, ca);
+  n = vec3_normalized(n);
+  Plane p = { c->start, n };
+  //printf("n %f, %f, %f \n", n.x, n.y, n.z);
+
+  if (vec3_equal(constraint, vec3(0,1,0))) {//TODO change this by checking the angle between camup and ca
+    Vec3 camright = quat_rotate_vec3(v->camera->object->orientation, vec3(1,0,0));
+    p.Normal = vec3_cross(camright, ca);
+  }
 
   Ray rstart = ray_from_screen(v->camera, c->mouse_start.x, c->mouse_start.y, 1);
 
@@ -267,8 +278,10 @@ _translate_moving_local_axis(Control* c, Evas_Event_Mouse_Move* e, Vec3 axis)
 
   if (ir.hit && irstart.hit) {
     Vec3 translation = vec3_sub(ir.position, irstart.position);
-    double dot = vec3_dot(axis, translation);
-    translation = vec3_mul(axis, dot);
+    //printf("translation %f, %f, %f \n", translation.x, translation.y, translation.z);
+    double dot = vec3_dot(ca, translation);
+    translation = vec3_mul(ca, dot);
+
     Eina_List *l;
     Object *o;
     int i = 0;
@@ -657,7 +670,9 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
             quat_rotate_vec3(c->dragger_clicked->orientation, normal));
             */
       _translate_moving_local_axis(c,e, 
-            quat_rotate_vec3(c->dragger_clicked->orientation, vec3(0,0,1)));
+            //quat_rotate_vec3(c->dragger_ori, d->constraint));
+            d->constraint);
+            //vec3(0,1,0));
     }
     else {
       Vec3 constraint = d->constraint;
