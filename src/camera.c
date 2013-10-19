@@ -20,16 +20,12 @@ camera_lookat(ViewCamera* cam, Vec3 at)
   Vec3 d = vec3_sub(at, o->position);
 
   c->yaw = atan2(d.x,-d.z);
-  c->pitch = atan2(-d.y,-d.z);
- 
-  //Quat qy = quat_angle_axis(c->yaw, vec3(0,1,0));
-  //Quat qp = quat_angle_axis(c->pitch, vec3(1,0,0));
-  
-  //TODO angles
+  float r = sqrt( d.x*d.x + d.z*d.z );
+  c->pitch = atan2(-d.y,r);
+
   o->angles.x = c->pitch/M_PI*180.0;
   o->angles.y = c->yaw/M_PI*180.0;
   o->orientation = quat_yaw_pitch_roll_deg(o->angles.y, o->angles.x, o->angles.z);
-  //o->orientation = quat_mul(qy, qp);
 
   c->center = at;
   camera_recalculate_origin(cam);

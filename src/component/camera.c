@@ -132,6 +132,7 @@ _create_camera()
   c->far = 1000.0f;
   c->width = 800;
   c->height = c->height_base;
+  c->local_offset = vec3_zero();
 
   c->line = create_line();
   ccamera_update_projection(c);
@@ -144,6 +145,12 @@ static void
 _camera_init(Component* component)
 {
   Camera* c = component->data;
+  camera_init(c);
+}
+
+void
+camera_init(Camera* c)
+{
   c->fovy = c->fovy_base;
   c->height_base = c->height;
   ccamera_update_projection(c);

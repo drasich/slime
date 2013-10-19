@@ -46,5 +46,6 @@ ComponentDesc camera_desc;
 void ccamera_recalculate_origin(Component* comp);
 void ccamera_set_resolution(Camera* c, int w, int h);
 void ccamera_update_projection(Camera* c);
+void camera_init(Camera* c);
 
 #endif

@@ -50,7 +50,6 @@ _view_resize_gl(Evas_Object *obj)
   View* v = evas_object_data_get(obj, "view");
   ccamera_set_resolution(v->camera->camera_component, w, h);
 
-
   //quad_resize(v->render->quad_outline->mesh, w, h);
   //quad_resize(v->render->quad_color->mesh, w, h);
   
@@ -833,7 +832,8 @@ static void
 _create_view_objects(View* v)
 {
   v->camera = view_camera_new();
-  Vec3 p = {20,5,20};
+  Vec3 p = {50,100,50};
+  //Vec3 p = {20,5,20};
   //v->camera->origin = p;
   //v->camera->object.position = p;
   camera_pan(v->camera, p);

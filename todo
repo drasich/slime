@@ -7,6 +7,7 @@ LATELY
 - display info on rotation, scale, translation
 - translation with local plane 
 - add an entry to tree to search for object name
+- select child with ctrl 
 
 CLEAN
 - TODO in the code.

@@ -223,7 +223,6 @@ _animation_update(Object* o, float dt)
 void
 object_update(Object* o)
 {
-  //o->orientation = quat_angles_deg(o->angles);
   o->orientation = quat_yaw_pitch_roll_deg(o->angles.y, o->angles.x, o->angles.z);
   mat4_pos_ori(o->position, o->orientation, o->matrix);
 
@@ -259,8 +258,8 @@ Object* create_object()
   Object* o = calloc(1, sizeof(Object));
   o->name = eina_stringshare_add("empty");
   object_init(o);
-  eina_value_setup(&o->data_position, EINA_VALUE_TYPE_DOUBLE);
-  eina_value_set(&o->data_position, 777);
+  //eina_value_setup(&o->data_position, EINA_VALUE_TYPE_DOUBLE);
+  //eina_value_set(&o->data_position, 777);
 
   //TODO put in a transform component or don't add in the list...
   /*
@@ -571,11 +570,8 @@ static Eina_List*
 _object_parents_path_get(Object* o, Eina_List* l)
 {
   if (o->parent) {
-    printf("object %s has parent : %s \n", o->name, o->parent->name);
     l = eina_list_prepend(l, o->parent);
-    printf("size of l : %d\n", eina_list_count(l));
     l = _object_parents_path_get(o->parent, l);
-    printf("size of l after : %d\n", eina_list_count(l));
   }
 
   return l;
@@ -586,6 +582,5 @@ object_parents_path_get(Object* o)
 {
   Eina_List* l = NULL;
   l = _object_parents_path_get(o, l);
-  printf("size of l end : %d\n", eina_list_count(l));
   return l;
 }

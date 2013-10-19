@@ -200,10 +200,12 @@ quat_to_axis_angle(Quat q)
 Quat
 quat_between_vec(Vec3 from, Vec3 to)
 {
+  //TODO looks like from and to are switched...
+  printf("TODO --warning-- check this function 'quat_between_vec', looks like from and to are switched\n");
   Vec3 sourceVector = from;
   Vec3 targetVector = to;
 
-  double fromLen2 = vec3_length2(from);
+  double fromLen2 = vec3_length2(sourceVector);
   double fromLen;
   // normalize only when necessary, epsilon test
   if ((fromLen2 < 1.0-1e-7) || (fromLen2 > 1.0+1e-7)) {
@@ -309,6 +311,7 @@ quat_rotate_around_angles(Vec3 pivot, Vec3 mypoint, float yaw, float pitch)
 Quat 
 quat_lookat(Vec3 from, Vec3 to, Vec3 up)
 {
+  printf("TODO --warning-- check this function 'quat_lookat', looks wrong\n");
   Matrix4 la;
   mat4_lookat(la, from, to, up);
   return mat4_get_quat(la);
