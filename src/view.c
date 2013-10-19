@@ -196,8 +196,9 @@ static void _handle_rect_select(View* v, Evas_Event_Mouse_Move* ev)
 
   Eina_List* newlist = NULL;
   Eina_List *l;
-  Object *o;
-  EINA_LIST_FOREACH(r->objects, l, o) {
+  RenderObject *ro;
+  EINA_LIST_FOREACH(r->render_objects, l, ro) {
+    Object* o = ro->object;
     if (planes_is_in_object(planes, 6, o)) {
       newlist = eina_list_append(newlist, o);
     }
@@ -832,8 +833,7 @@ static void
 _create_view_objects(View* v)
 {
   v->camera = view_camera_new();
-  Vec3 p = {50,100,50};
-  //Vec3 p = {20,5,20};
+  Vec3 p = {50,20,50};
   //v->camera->origin = p;
   //v->camera->object.position = p;
   camera_pan(v->camera, p);
@@ -986,10 +986,13 @@ _render_objects_add(View* v, Matrix4 root, Plane* planes, Eina_List* objects)
     }
 
     OBox b;
-    aabox_to_obox(m->box, b, o->position, o->orientation, o->scale);
+    Vec3 pos = object_world_position_get(o);
+    Quat ori = object_world_orientation_get(o);
+    Vec3 sca = object_world_scale_get(o);
+    aabox_to_obox(m->box, b, pos, ori, sca);
 
     if (planes_is_box_in_allow_false_positives(planes, 6, b)) {
-    //if (planes_is_in(planes, 6, o->position)) {
+      //if (planes_is_in(planes, 6, o->position)) {
       _render_object_add(v, o, root);
     }
 
@@ -1020,31 +1023,6 @@ view_update(View* v, double dt)
   v->render->render_objects = eina_list_free(v->render->render_objects);
   v->render->render_objects_selected = eina_list_free(v->render->render_objects_selected);
   _render_objects_add(v, id4, planes, s->objects);
-  r->objects = eina_list_free(r->objects);
-
-  EINA_LIST_FOREACH(s->objects, l, o) {
-    MeshComponent* mc = object_component_get(o, "mesh");
-    if (!mc ) {
-      //TODO
-      r->objects = eina_list_append(r->objects, o);
-      continue;
-    }
-
-    Mesh* m = mc->mesh;
-    if (!m) {
-      r->objects = eina_list_append(r->objects, o);
-      continue;
-    }
-
-    OBox b;
-    aabox_to_obox(m->box, b, o->position, o->orientation, o->scale);
-
-    if (planes_is_box_in_allow_false_positives(planes, 6, b)) {
-    //if (planes_is_in(planes, 6, o->position)) {
-      r->objects = eina_list_append(r->objects, o);
-    }
-  }
-  
 }
 
 #include "resource.h"

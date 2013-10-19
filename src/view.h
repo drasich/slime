@@ -22,7 +22,6 @@ struct _Render
   Fbo* fbo_selected;
   Fbo* fbo_all;
 
-  Eina_List* objects;
   Eina_List* render_objects;
   Eina_List* render_objects_selected;
 };
