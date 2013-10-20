@@ -1,4 +1,6 @@
 LATELY
+- show textures and uniforms in meshcomponent/shaderinstance
+  - first textures, component_view _component_property_add_hash
 - rotate dragger : display a better disk
 - undo/redo with spinners, orientation and generic stuff
 - patch elementary genlist tree for :

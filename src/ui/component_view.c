@@ -513,6 +513,28 @@ _component_property_update_hash(
   return EINA_TRUE;
 }
 
+struct _ComponentPropertyCouple
+{
+  ComponentProperties* cp;
+  Property* p;
+};
+
+static Eina_Bool 
+_component_property_add_hash(
+      const Eina_Hash *hash,
+      const void *key,
+      void *data,
+      void *fdata)
+{
+  printf("the key is %s \n", key);
+  struct _ComponentPropertyCouple* cpp = fdata;
+  //TODO chris
+  _property_add_entry(cpp->cp, cpp->p);
+
+  return EINA_TRUE;
+}
+
+
 
 static void
 _component_property_update_data_recur(ComponentProperties* cp, void* data, const PropertySet* ps)
@@ -675,7 +697,7 @@ _add_orientation_properties(ComponentProperties* cp, Property* p, Evas_Object* b
 
 
 static void
-_add_properties(ComponentProperties* cp, const PropertySet* ps, Evas_Object* box)
+_add_properties(ComponentProperties* cp, const PropertySet* ps, Evas_Object* box, void* data)
 {
   Property *p;
   EINA_INARRAY_FOREACH(ps->array, p) {
@@ -692,6 +714,12 @@ _add_properties(ComponentProperties* cp, const PropertySet* ps, Evas_Object* box
          break;
      case PROPERTY_FILENAME:
          _property_add_fileselect(cp, p);
+         break;
+     case PROPERTY_STRUCT:
+          {
+           void** datastruct = (void*)data + p->offset;
+           _add_properties(cp, p->array, cp->box, *datastruct);
+          }
          break;
      case PROPERTY_STRUCT_NESTED:
          if (p->array->hint == HORIZONTAL) {
@@ -715,11 +743,20 @@ _add_properties(ComponentProperties* cp, const PropertySet* ps, Evas_Object* box
              _add_orientation_properties(cp, p, hbox);
            }
            else
-           _add_properties(cp, p->array, hbox);
+           _add_properties(cp, p->array, hbox, data);
 
          }
          else
-         _add_properties(cp, p->array, cp->box);
+         _add_properties(cp, p->array, cp->box, data);
+         break;
+     case EET_G_HASH:
+          {
+           printf("add properties we have a hash\n");
+           const void** ptr = (void*)data + p->offset;
+           const Eina_Hash* hash = *ptr;
+           struct _ComponentPropertyCouple cpp = {cp, p};
+           eina_hash_foreach(hash, _component_property_add_hash, &cpp);
+          }
          break;
      case PROPERTY_POINTER:
          _property_add_entry(cp, p);
@@ -780,7 +817,7 @@ create_my_prop(Component* c, Evas_Object* win, Control* control, bool can_remove
   elm_box_pack_end(cp->box, label);
   */
 
-  _add_properties(cp, c->properties, cp->box);
+  _add_properties(cp, c->properties, cp->box, c->data);
 
   return cp;
 }
