@@ -203,16 +203,16 @@ _translate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
   Plane p = { c->start, quat_rotate_vec3(v->camera->object->orientation, vec3(0,0,-1)) };
 
   if (constraint.z == 1) {
-    p.Normal.z = 0;
+    p.normal.z = 0;
   }
   if (constraint.y == 1) {
-    p.Normal.y = 0;
+    p.normal.y = 0;
   }
   if (constraint.x == 1) {
-    p.Normal.x = 0;
+    p.normal.x = 0;
   }
 
-  p.Normal = vec3_normalized(p.Normal);
+  p.normal = vec3_normalized(p.normal);
 
   Ray rstart = ray_from_screen(v->camera, c->mouse_start.x, c->mouse_start.y, 1);
 
@@ -270,7 +270,7 @@ _translate_moving_local_axis(Control* c, Evas_Event_Mouse_Move* e, Vec3 constrai
 
   if (vec3_equal(constraint, vec3(0,1,0))) {//TODO change this by checking the angle between camup and ca
     Vec3 camright = quat_rotate_vec3(v->camera->object->orientation, vec3(1,0,0));
-    p.Normal = vec3_cross(camright, ca);
+    p.normal = vec3_cross(camright, ca);
   }
 
   Ray rstart = ray_from_screen(v->camera, c->mouse_start.x, c->mouse_start.y, 1);
@@ -539,8 +539,8 @@ _draggers_highlight_check(Control* c, Evas_Coord x, Evas_Coord y)
     irtest = intersection_ray_box(r, bb, dragger->position, dragger->orientation, vec3(1,1,1));
     if (irtest.hit) {
       if (ir.hit) {
-        Vec3 old = vec3_sub(ir.position, r.Start);
-        Vec3 new = vec3_sub(irtest.position, r.Start);
+        Vec3 old = vec3_sub(ir.position, r.start);
+        Vec3 new = vec3_sub(irtest.position, r.start);
         if (vec3_length2(new) < vec3_length2(old)) {
           ir = irtest;
           drag_hit = d;
@@ -594,8 +594,8 @@ _draggers_click_check(Control* c, Evas_Event_Mouse_Down* e)
 
     if (irtest.hit) {
       if (ir.hit) {
-        Vec3 old = vec3_sub(ir.position, r.Start);
-        Vec3 new = vec3_sub(irtest.position, r.Start);
+        Vec3 old = vec3_sub(ir.position, r.start);
+        Vec3 new = vec3_sub(irtest.position, r.start);
         if (vec3_length2(new) < vec3_length2(old)) {
           ir = irtest;
           drag_hit = d;

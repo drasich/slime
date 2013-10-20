@@ -58,7 +58,6 @@ gl4_sel(void *data, Evas_Object *obj __UNUSED__, void *event_info)
    //int depth = elm_genlist_item_expanded_depth_get(glit);
    //printf("expanded depth for selected item is %d", depth);
 
-   printf("sel data is %p \n", data);
    View* v = data;
    if (v) { 
      Context* context = v->context;

@@ -134,12 +134,12 @@ camera_get_frustum_planes(ViewCamera* cam, Plane* p)
   Vec3 right = quat_rotate_vec3(o->orientation, vec3(1,0,0));
   Vec3 up = quat_rotate_vec3(o->orientation, vec3(0,1,0));
 
-  p[0].Point = vec3_add(o->position, vec3_mul(direction, c->near));
-  p[0].Normal = direction;
+  p[0].point = vec3_add(o->position, vec3_mul(direction, c->near));
+  p[0].normal = direction;
 
   //far plane
-  p[1].Point = vec3_add(o->position, vec3_mul(direction, c->far));
-  p[1].Normal = vec3_mul(direction, -1);
+  p[1].point = vec3_add(o->position, vec3_mul(direction, c->far));
+  p[1].normal = vec3_mul(direction, -1);
 
   //up plane
   float hh = tan(c->fovy/2)* c->near;
@@ -147,9 +147,9 @@ camera_get_frustum_planes(ViewCamera* cam, Plane* p)
         vec3_mul(direction, c->near),
         vec3_mul(up, hh));
 
-  p[2].Point = o->position;
+  p[2].point = o->position;
   Vec3 nn = vec3_normalized(vec3_cross(right, upd));
-  p[2].Normal = vec3_mul(nn, -1);
+  p[2].normal = vec3_mul(nn, -1);
 
   /*
   printf(" upd : %f, %f, %f \n", upd.x, upd.y, upd.z);
@@ -158,32 +158,32 @@ camera_get_frustum_planes(ViewCamera* cam, Plane* p)
   */
 
   //down plane
-  p[3].Point = o->position;
+  p[3].point = o->position;
   Vec3 downd = vec3_add(
         vec3_mul(direction, c->near),
         vec3_mul(up, -hh));
   nn = vec3_normalized(vec3_cross(right, downd));
-  //p[3].Normal = vec3_mul(nn, -1);
-  p[3].Normal = nn;
+  //p[3].normal = vec3_mul(nn, -1);
+  p[3].normal = nn;
 
 
   //right plane
   float hw = hh * c->aspect;
-  p[4].Point = o->position;
+  p[4].point = o->position;
   Vec3 rightd = vec3_add(
         vec3_mul(direction, c->near),
         vec3_mul(right, hw));
   nn = vec3_normalized(vec3_cross(up, rightd));
-  //p[4].Normal = vec3_mul(nn, -1);
-  p[4].Normal = nn;
+  //p[4].normal = vec3_mul(nn, -1);
+  p[4].normal = nn;
 
   //left plane
-  p[5].Point = o->position;
+  p[5].point = o->position;
   Vec3 leftd = vec3_add(
         vec3_mul(direction, c->near),
         vec3_mul(right, -hw));
   nn = vec3_normalized(vec3_cross(up, leftd));
-  p[5].Normal = vec3_mul(nn, -1);
+  p[5].normal = vec3_mul(nn, -1);
 
 }
 
@@ -205,12 +205,12 @@ camera_get_frustum_planes_rect(
   //near, far, up, down, right, left
 
   //near plane
-  p[0].Point = vec3_add(o->position, vec3_mul(direction, c->near));
-  p[0].Normal = direction;
+  p[0].point = vec3_add(o->position, vec3_mul(direction, c->near));
+  p[0].normal = direction;
 
   //far plane
-  p[1].Point = vec3_add(o->position, vec3_mul(direction, c->far));
-  p[1].Normal = vec3_mul(direction, -1);
+  p[1].point = vec3_add(o->position, vec3_mul(direction, c->far));
+  p[1].normal = vec3_mul(direction, -1);
 
   //up plane
   float hh = tan(c->fovy/2)* c->near;
@@ -222,19 +222,19 @@ camera_get_frustum_planes_rect(
         vec3_mul(direction, c->near),
         vec3_mul(up, th));
 
-  p[2].Point = o->position;
+  p[2].point = o->position;
   Vec3 nn = vec3_normalized(vec3_cross(right, upd));
-  p[2].Normal = vec3_mul(nn, -1);
+  p[2].normal = vec3_mul(nn, -1);
 
   //down plane
   float bh = hh - (top + height);
-  p[3].Point = o->position;
+  p[3].point = o->position;
   Vec3 downd = vec3_add(
         vec3_mul(direction, c->near),
         vec3_mul(up, bh));
   nn = vec3_normalized(vec3_cross(right, downd));
-  //p[3].Normal = vec3_mul(nn, -1);
-  p[3].Normal = nn;
+  //p[3].normal = vec3_mul(nn, -1);
+  p[3].normal = nn;
 
 
   //right plane
@@ -243,22 +243,22 @@ camera_get_frustum_planes_rect(
   width = width * hw / (c->width/2.0f);
 
   float rw = -hw + (left + width);
-  p[4].Point = o->position;
+  p[4].point = o->position;
   Vec3 rightd = vec3_add(
         vec3_mul(direction, c->near),
         vec3_mul(right, rw));
   nn = vec3_normalized(vec3_cross(up, rightd));
-  //p[4].Normal = vec3_mul(nn, -1);
-  p[4].Normal = nn;
+  //p[4].normal = vec3_mul(nn, -1);
+  p[4].normal = nn;
 
   //left plane
   float lw = -hw + left;
-  p[5].Point = o->position;
+  p[5].point = o->position;
   Vec3 leftd = vec3_add(
         vec3_mul(direction, c->near),
         vec3_mul(right, lw));
   nn = vec3_normalized(vec3_cross(up, leftd));
-  p[5].Normal = vec3_mul(nn, -1);
+  p[5].normal = vec3_mul(nn, -1);
 
   /*
   printf(" leftd : %f, %f, %f \n", leftd.x, leftd.y, leftd.z);

@@ -8,14 +8,14 @@
 
 typedef struct _Ray Ray;
 struct _Ray {
-  Vec3 Start;
-  Vec3 Direction;
+  Vec3 start;
+  Vec3 direction;
 };
 
 typedef struct _Plane Plane;
 struct _Plane {
-  Vec3 Point;
-  Vec3 Normal;
+  Vec3 point;
+  Vec3 normal;
 };
 
 typedef struct _Sphere Sphere;

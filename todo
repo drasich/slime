@@ -1,13 +1,12 @@
 LATELY
 - rotate dragger : display a better disk
 - undo/redo with spinners, orientation and generic stuff
-- also fix the scale (start from last scale)
-- need global/local button
-- update the tree with children etc
+- patch elementary genlist tree for :
+  - multi select with pressing crtl
+  - drag something just click and move, no long press
+  - can move something to children (might be quite difficult)
 - display info on rotation, scale, translation
-- translation with local plane 
 - add an entry to tree to search for object name
-- select child with ctrl 
 
 CLEAN
 - TODO in the code.

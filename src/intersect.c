@@ -7,15 +7,15 @@
 IntersectionRay
 intersection_ray_plane(Ray ray, Plane plane)
 {
-  double dn = vec3_dot(ray.Direction, plane.Normal);
+  double dn = vec3_dot(ray.direction, plane.normal);
   IntersectionRay out = { .hit = false};
 
   if (dn != 0) {
-    double d = vec3_dot(plane.Normal, plane.Point);
-    double p0n = vec3_dot(ray.Start, plane.Normal);
+    double d = vec3_dot(plane.normal, plane.point);
+    double p0n = vec3_dot(ray.start, plane.normal);
     double t = (d - p0n) / dn;
     out.hit = true;
-    out.position = vec3_add(ray.Start, vec3_mul(ray.Direction, t));
+    out.position = vec3_add(ray.start, vec3_mul(ray.direction, t));
   }
 
   return out;
@@ -26,15 +26,15 @@ intersection_ray_sphere(Ray ray, Sphere sphere)
 {
   IntersectionRay out = { .hit = false};
 
-  Vec3 e = vec3_sub(sphere.center, ray.Start);
-  float a = vec3_dot(e,ray.Direction);
+  Vec3 e = vec3_sub(sphere.center, ray.start);
+  float a = vec3_dot(e,ray.direction);
   float radius = sphere.radius;
   float f2 = radius*radius - vec3_length2(e) + a*a;
   if ( f2 >= 0) {
     float t = a - sqrt(f2);
     if (t > 0) {
       out.hit = true;
-      out.position = vec3_add(ray.Start, vec3_mul(ray.Direction, t));
+      out.position = vec3_add(ray.start, vec3_mul(ray.direction, t));
     }
     //else {
       //printf("negative\n");
@@ -50,22 +50,22 @@ intersection_ray_aabox(Ray ray, AABox box)
   IntersectionRay out = { .hit = false, .inside = true};
   double xt, xn;
 
-  if (ray.Start.x < box.Min.x) {
-    xt = box.Min.x - ray.Start.x;
-    if (xt > ray.Direction.x) {
+  if (ray.start.x < box.Min.x) {
+    xt = box.Min.x - ray.start.x;
+    if (xt > ray.direction.x) {
       out.inside = false;
       return out;
     }
-    xt /= ray.Direction.x;
+    xt /= ray.direction.x;
     out.inside = false;
     xn = -1;
-  } else if (ray.Start.x > box.Max.x) {
-    xt = box.Max.x - ray.Start.x;
-    if (xt < ray.Direction.x) {
+  } else if (ray.start.x > box.Max.x) {
+    xt = box.Max.x - ray.start.x;
+    if (xt < ray.direction.x) {
       out.inside = false;
       return out;
     }
-    xt /= ray.Direction.x;
+    xt /= ray.direction.x;
     out.inside = false;
     xn = 1;
   } else {
@@ -73,22 +73,22 @@ intersection_ray_aabox(Ray ray, AABox box)
   }
 
   double yt, yn;
-  if (ray.Start.y < box.Min.y) {
-    yt = box.Min.y - ray.Start.y;
-    if (yt > ray.Direction.y) {
+  if (ray.start.y < box.Min.y) {
+    yt = box.Min.y - ray.start.y;
+    if (yt > ray.direction.y) {
       out.inside = false;
       return out;
     }
-    yt /= ray.Direction.y;
+    yt /= ray.direction.y;
     out.inside = false;
     yn = -1;
-  } else if (ray.Start.y > box.Max.y) {
-    yt = box.Max.y - ray.Start.y;
-    if (yt < ray.Direction.y) {
+  } else if (ray.start.y > box.Max.y) {
+    yt = box.Max.y - ray.start.y;
+    if (yt < ray.direction.y) {
       out.inside = false;
       return out;
     }
-    yt /= ray.Direction.y;
+    yt /= ray.direction.y;
     out.inside = false;
     yn = 1;
   } else {
@@ -96,22 +96,22 @@ intersection_ray_aabox(Ray ray, AABox box)
   }
 
   double zt, zn;
-  if (ray.Start.z < box.Min.z) {
-    zt = box.Min.z - ray.Start.z;
-    if (zt > ray.Direction.z) {
+  if (ray.start.z < box.Min.z) {
+    zt = box.Min.z - ray.start.z;
+    if (zt > ray.direction.z) {
       out.inside = false;
       return out;
     }
-    zt /= ray.Direction.z;
+    zt /= ray.direction.z;
     out.inside = false;
     zn = -1;
-  } else if (ray.Start.z > box.Max.z) {
-    zt = box.Max.z - ray.Start.z;
-    if (zt < ray.Direction.z) {
+  } else if (ray.start.z > box.Max.z) {
+    zt = box.Max.z - ray.start.z;
+    if (zt < ray.direction.z) {
       out.inside = false;
       return out;
     }
-    zt /= ray.Direction.z;
+    zt /= ray.direction.z;
     out.inside = false;
     zn = 1;
   } else {
@@ -140,35 +140,35 @@ intersection_ray_aabox(Ray ray, AABox box)
 
   switch (which) {
     case 0: // yz plane
-      y = ray.Start.y + ray.Direction.y*t;
+      y = ray.start.y + ray.direction.y*t;
       if (y < box.Min.y - FLT_EPSILON || y > box.Max.y + FLT_EPSILON) { 
         out.inside = false; return out; }
-      z = ray.Start.z + ray.Direction.z*t;
+      z = ray.start.z + ray.direction.z*t;
       if (z < box.Min.z - FLT_EPSILON || z > box.Max.z + FLT_EPSILON) {
         out.inside = false; return out; }
 
     out.normal.x = xn;
   case 1: //xz plane
-    x = ray.Start.x + ray.Direction.x*t;
+    x = ray.start.x + ray.direction.x*t;
     if (x < box.Min.x - FLT_EPSILON || x > box.Max.x + FLT_EPSILON) { 
       out.inside = false; return out; }
-    z = ray.Start.z + ray.Direction.z*t;
+    z = ray.start.z + ray.direction.z*t;
     if (z < box.Min.z - FLT_EPSILON || z > box.Max.z + FLT_EPSILON) {
       out.inside = false; return out; }
 
     out.normal.y = yn;
   case 2:
-    x = ray.Start.x + ray.Direction.x*t;
+    x = ray.start.x + ray.direction.x*t;
     if (x < box.Min.x - FLT_EPSILON || x > box.Max.x + FLT_EPSILON) {
       out.inside = false; return out; }
-    y = ray.Start.y + ray.Direction.y*t;
+    y = ray.start.y + ray.direction.y*t;
     if (y < box.Min.y - FLT_EPSILON || y > box.Max.y + FLT_EPSILON) { 
       out.inside = false; return out; }
 
     out.normal.y = zn;
   }
 
-  out.position = vec3_add(ray.Start, vec3_mul(ray.Direction,t));
+  out.position = vec3_add(ray.start, vec3_mul(ray.direction,t));
   out.hit = true;
  
   return out;
@@ -180,9 +180,9 @@ intersection_ray_box(Ray ray, AABox box, Vec3 position, Quat rotation, Vec3 scal
   Repere r = {position, rotation};
   //transform the ray in box/object coord
   Ray newray;
-  newray.Start = world_to_local(r, ray.Start);
-  newray.Direction = world_to_local(r, vec3_add(ray.Direction, ray.Start));
-  newray.Direction = vec3_sub(newray.Direction, newray.Start);
+  newray.start = world_to_local(r, ray.start);
+  newray.direction = world_to_local(r, vec3_add(ray.direction, ray.start));
+  newray.direction = vec3_sub(newray.direction, newray.start);
 
   box.Min = vec3_vec3_mul(box.Min, scale);
   box.Max = vec3_vec3_mul(box.Max, scale);
@@ -225,7 +225,7 @@ intersection_ray_triangle(Ray r, Triangle t, double min)
 
   Vec3 n = vec3_cross(e1,e2);
 
-  double dot = vec3_dot(n, r.Direction);
+  double dot = vec3_dot(n, r.direction);
 
   /*
   if (!(dot < 0.0)) {
@@ -237,7 +237,7 @@ intersection_ray_triangle(Ray r, Triangle t, double min)
 
   double d = vec3_dot(n, t.v0);
 
-  double tt = d - vec3_dot(n, r.Start);
+  double tt = d - vec3_dot(n, r.start);
 
   /*
   if (!(tt<= 0.0)) {
@@ -256,7 +256,7 @@ intersection_ray_triangle(Ray r, Triangle t, double min)
   //assert(tt >= 0.0);
   //assert(tt <= min);
 
-  Vec3 p = vec3_add(r.Start, vec3_mul(r.Direction, tt));
+  Vec3 p = vec3_add(r.start, vec3_mul(r.direction, tt));
 
   double a0, a1, a2;
   double b0, b1, b2;
@@ -338,9 +338,9 @@ intersection_ray_mesh(Ray ray, Mesh* m, Vec3 position, Quat rotation, Vec3 scale
 
   Repere r = {position, rotation};
   Ray newray;
-  newray.Start = world_to_local(r, ray.Start);
-  newray.Direction = world_to_local(r, vec3_add(ray.Direction, ray.Start));
-  newray.Direction = vec3_sub(newray.Direction, newray.Start);
+  newray.start = world_to_local(r, ray.start);
+  newray.direction = world_to_local(r, vec3_add(ray.direction, ray.start));
+  newray.direction = vec3_sub(newray.direction, newray.start);
 
   int i;
   for (i = 0; i < m->indices_len; i+=3) {
@@ -459,13 +459,13 @@ plane_is_in(Plane p, Vec3 v)
 {
   /*
   printf("testing plane \n");
-  printf(" point : %f, %f, %f\n", p.Point.x, p.Point.y, p.Point.z);
-  printf(" normal : %f, %f, %f\n", p.Normal.x, p.Normal.y, p.Normal.z);
+  printf(" point : %f, %f, %f\n", p.point.x, p.point.y, p.point.z);
+  printf(" normal : %f, %f, %f\n", p.normal.x, p.normal.y, p.normal.z);
   printf(" with v : %f, %f, %f\n", v.x, v.y, v.z);
   */
-  Vec3 pos = vec3_sub(v, p.Point);
+  Vec3 pos = vec3_sub(v, p.point);
   //printf(" pos is : %f, %f, %f\n", pos.x, pos.y, pos.z);
-  float dot = vec3_dot(pos, p.Normal);
+  float dot = vec3_dot(pos, p.normal);
   //printf("dot is : %f \n", dot);
   return dot >= 0;
 }
@@ -551,14 +551,14 @@ planes_is_in_object(const Plane* planes, int nb_planes, const Object* o)
 
   int i;
   for (i = 0; i< nb_planes; i++) {
-    Vec3 point = p[i].Point;
-    p[i].Point =  world_to_local(r, point);
-    //p[i].Normal = quat_rotate_vec3(iq,p[i].Normal);
-    p[i].Normal = world_to_local(r, vec3_add(p[i].Normal, point));
-    p[i].Normal = vec3_sub(p[i].Normal, p[i].Point);
+    Vec3 point = p[i].point;
+    p[i].point =  world_to_local(r, point);
+    //p[i].normal = quat_rotate_vec3(iq,p[i].normal);
+    p[i].normal = world_to_local(r, vec3_add(p[i].normal, point));
+    p[i].normal = vec3_sub(p[i].normal, p[i].point);
 
-    //newray.Direction = world_to_local(r, vec3_add(ray.Direction, ray.Start));
-    //newray.Direction = vec3_sub(newray.Direction, newray.Start);
+    //newray.direction = world_to_local(r, vec3_add(ray.direction, ray.start));
+    //newray.direction = vec3_sub(newray.direction, newray.start);
   }
 
   for (i = 0; i < m->indices_len; i+=3) {
@@ -608,26 +608,26 @@ _intersection_plane_triangle(Plane p, Triangle t)
     ipt.intersect = true;
     if (b0 != b2) {
       //bo is alone
-      r0.Start = t.v0;
-      r0.Direction = vec3_sub(t.v1, t.v0);
-      r1.Start = t.v0;
-      r1.Direction = vec3_sub(t.v2, t.v0);
+      r0.start = t.v0;
+      r0.direction = vec3_sub(t.v1, t.v0);
+      r1.start = t.v0;
+      r1.direction = vec3_sub(t.v2, t.v0);
     }
     else {
       //b1 is alone
-      r0.Start = t.v1;
-      r0.Direction = vec3_sub(t.v0, t.v1);
-      r1.Start = t.v1;
-      r1.Direction = vec3_sub(t.v2, t.v1);
+      r0.start = t.v1;
+      r0.direction = vec3_sub(t.v0, t.v1);
+      r1.start = t.v1;
+      r1.direction = vec3_sub(t.v2, t.v1);
     }
   }
   else if ( b0 != b2){
     ipt.intersect = true;
     //b2 is alone
-    r0.Start = t.v2;
-    r0.Direction = vec3_sub(t.v0, t.v2);
-    r1.Start = t.v2;
-    r1.Direction = vec3_sub(t.v1, t.v2);
+    r0.start = t.v2;
+    r0.direction = vec3_sub(t.v0, t.v2);
+    r1.start = t.v2;
+    r1.direction = vec3_sub(t.v1, t.v2);
   }
 
   if (ipt.intersect) {
@@ -648,9 +648,9 @@ _check_inter(Plane* p, int nb_planes, int notthisplane, int notthisplaneeither, 
     if (i == notthisplane || i == notthisplaneeither)
     continue;
 
-    double planedot = vec3_dot(p[i].Normal, p[i].Point);
-    double s0dot = vec3_dot(p[i].Normal, s.p0);
-    double s1dot = vec3_dot(p[i].Normal, s.p1);
+    double planedot = vec3_dot(p[i].normal, p[i].point);
+    double s0dot = vec3_dot(p[i].normal, s.p0);
+    double s1dot = vec3_dot(p[i].normal, s.p1);
 
     if (s0dot >= planedot || s1dot >= planedot)
       continue;
