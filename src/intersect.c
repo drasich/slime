@@ -50,8 +50,8 @@ intersection_ray_aabox(Ray ray, AABox box)
   IntersectionRay out = { .hit = false, .inside = true};
   double xt, xn;
 
-  if (ray.start.x < box.Min.x) {
-    xt = box.Min.x - ray.start.x;
+  if (ray.start.x < box.min.x) {
+    xt = box.min.x - ray.start.x;
     if (xt > ray.direction.x) {
       out.inside = false;
       return out;
@@ -59,8 +59,8 @@ intersection_ray_aabox(Ray ray, AABox box)
     xt /= ray.direction.x;
     out.inside = false;
     xn = -1;
-  } else if (ray.start.x > box.Max.x) {
-    xt = box.Max.x - ray.start.x;
+  } else if (ray.start.x > box.max.x) {
+    xt = box.max.x - ray.start.x;
     if (xt < ray.direction.x) {
       out.inside = false;
       return out;
@@ -73,8 +73,8 @@ intersection_ray_aabox(Ray ray, AABox box)
   }
 
   double yt, yn;
-  if (ray.start.y < box.Min.y) {
-    yt = box.Min.y - ray.start.y;
+  if (ray.start.y < box.min.y) {
+    yt = box.min.y - ray.start.y;
     if (yt > ray.direction.y) {
       out.inside = false;
       return out;
@@ -82,8 +82,8 @@ intersection_ray_aabox(Ray ray, AABox box)
     yt /= ray.direction.y;
     out.inside = false;
     yn = -1;
-  } else if (ray.start.y > box.Max.y) {
-    yt = box.Max.y - ray.start.y;
+  } else if (ray.start.y > box.max.y) {
+    yt = box.max.y - ray.start.y;
     if (yt < ray.direction.y) {
       out.inside = false;
       return out;
@@ -96,8 +96,8 @@ intersection_ray_aabox(Ray ray, AABox box)
   }
 
   double zt, zn;
-  if (ray.start.z < box.Min.z) {
-    zt = box.Min.z - ray.start.z;
+  if (ray.start.z < box.min.z) {
+    zt = box.min.z - ray.start.z;
     if (zt > ray.direction.z) {
       out.inside = false;
       return out;
@@ -105,8 +105,8 @@ intersection_ray_aabox(Ray ray, AABox box)
     zt /= ray.direction.z;
     out.inside = false;
     zn = -1;
-  } else if (ray.start.z > box.Max.z) {
-    zt = box.Max.z - ray.start.z;
+  } else if (ray.start.z > box.max.z) {
+    zt = box.max.z - ray.start.z;
     if (zt < ray.direction.z) {
       out.inside = false;
       return out;
@@ -141,28 +141,28 @@ intersection_ray_aabox(Ray ray, AABox box)
   switch (which) {
     case 0: // yz plane
       y = ray.start.y + ray.direction.y*t;
-      if (y < box.Min.y - FLT_EPSILON || y > box.Max.y + FLT_EPSILON) { 
+      if (y < box.min.y - FLT_EPSILON || y > box.max.y + FLT_EPSILON) { 
         out.inside = false; return out; }
       z = ray.start.z + ray.direction.z*t;
-      if (z < box.Min.z - FLT_EPSILON || z > box.Max.z + FLT_EPSILON) {
+      if (z < box.min.z - FLT_EPSILON || z > box.max.z + FLT_EPSILON) {
         out.inside = false; return out; }
 
     out.normal.x = xn;
   case 1: //xz plane
     x = ray.start.x + ray.direction.x*t;
-    if (x < box.Min.x - FLT_EPSILON || x > box.Max.x + FLT_EPSILON) { 
+    if (x < box.min.x - FLT_EPSILON || x > box.max.x + FLT_EPSILON) { 
       out.inside = false; return out; }
     z = ray.start.z + ray.direction.z*t;
-    if (z < box.Min.z - FLT_EPSILON || z > box.Max.z + FLT_EPSILON) {
+    if (z < box.min.z - FLT_EPSILON || z > box.max.z + FLT_EPSILON) {
       out.inside = false; return out; }
 
     out.normal.y = yn;
   case 2:
     x = ray.start.x + ray.direction.x*t;
-    if (x < box.Min.x - FLT_EPSILON || x > box.Max.x + FLT_EPSILON) {
+    if (x < box.min.x - FLT_EPSILON || x > box.max.x + FLT_EPSILON) {
       out.inside = false; return out; }
     y = ray.start.y + ray.direction.y*t;
-    if (y < box.Min.y - FLT_EPSILON || y > box.Max.y + FLT_EPSILON) { 
+    if (y < box.min.y - FLT_EPSILON || y > box.max.y + FLT_EPSILON) { 
       out.inside = false; return out; }
 
     out.normal.y = zn;
@@ -184,8 +184,8 @@ intersection_ray_box(Ray ray, AABox box, Vec3 position, Quat rotation, Vec3 scal
   newray.direction = world_to_local(r, vec3_add(ray.direction, ray.start));
   newray.direction = vec3_sub(newray.direction, newray.start);
 
-  box.Min = vec3_vec3_mul(box.Min, scale);
-  box.Max = vec3_vec3_mul(box.Max, scale);
+  box.min = vec3_vec3_mul(box.min, scale);
+  box.max = vec3_vec3_mul(box.max, scale);
 
   IntersectionRay ir = intersection_ray_aabox(newray, box);
 

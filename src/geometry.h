@@ -61,8 +61,8 @@ void frustum_set(
 
 typedef struct _AABox AABox;
 struct _AABox {
-  Vec3 Min;
-  Vec3 Max;
+  Vec3 min;
+  Vec3 max;
 };
 
 

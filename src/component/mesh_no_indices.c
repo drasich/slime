@@ -24,21 +24,21 @@ void mesh_read_file_no_indices(Mesh* mesh, FILE* f)
     fread(&x, 4,1,f);
     vert_tmp[i] = x;
     if (i % 3 == 0) {
-      if (x > mesh->box.Max.x) mesh->box.Max.x = x;
-      if (x < mesh->box.Min.x) mesh->box.Min.x = x;
+      if (x > mesh->box.max.x) mesh->box.max.x = x;
+      if (x < mesh->box.min.x) mesh->box.min.x = x;
     }
     else if (i % 3 == 1) {
-      if (x > mesh->box.Max.y) mesh->box.Max.y = x;
-      if (x < mesh->box.Min.y) mesh->box.Min.y = x;
+      if (x > mesh->box.max.y) mesh->box.max.y = x;
+      if (x < mesh->box.min.y) mesh->box.min.y = x;
     }
     else if (i % 3 == 2) {
-      if (x > mesh->box.Max.z) mesh->box.Max.z = x;
-      if (x < mesh->box.Min.z) mesh->box.Min.z = x;
+      if (x > mesh->box.max.z) mesh->box.max.z = x;
+      if (x < mesh->box.min.z) mesh->box.min.z = x;
     }
   }
 
-  //printf("bounds min : %f %f %f\n", mesh->box.Min.x,mesh->box.Min.y,mesh->box.Min.z);
-  //printf("bounds max : %4.16f %4.16f %4.16f\n", mesh->box.Max.x,mesh->box.Max.y,mesh->box.Max.z);
+  //printf("bounds min : %f %f %f\n", mesh->box.min.x,mesh->box.min.y,mesh->box.min.z);
+  //printf("bounds max : %4.16f %4.16f %4.16f\n", mesh->box.max.x,mesh->box.max.y,mesh->box.max.z);
 
   fread(&count, sizeof(count),1,f);
   printf("faces size: %d\n", count);
@@ -198,8 +198,8 @@ create_mesh_quad(Mesh* m, int w, int h)
 
   uint8_t index;
   float hw = w*0.5f, hh = h*0.5f;
-  m->box.Max = vec3(hw, hh, 0);
-  m->box.Min = vec3(-hw, -hh, 0);
+  m->box.max = vec3(hw, hh, 0);
+  m->box.min = vec3(-hw, -hh, 0);
 
   m->vertices[0] = -hw;
   m->vertices[1] = hh;

@@ -127,8 +127,8 @@ line_add_box(Line* l, AABox box, Vec4 color)
   printf("begin addbox : %d \n", l->vertices->len);
 
   //TODO
-  Vec3 min = box.Min;
-  Vec3 max = box.Max;
+  Vec3 min = box.min;
+  Vec3 max = box.max;
 
   Vec3 p1, p2;
   
@@ -307,8 +307,8 @@ line_prepare_draw(Line* l, Matrix4 world, const Matrix4 projection)
     double w = vw.w * 0.01;
     line_clear(l);
     AABox bb = l->boxtest;
-    bb.Max = vec3_mul(bb.Max, w);
-    bb.Min = vec3_mul(bb.Min, w);
+    bb.max = vec3_mul(bb.max, w);
+    bb.min = vec3_mul(bb.min, w);
     line_add_box(l, bb, vec4(0,0,1,0.2));
     line_resend(l);
   }

@@ -524,8 +524,8 @@ _draggers_highlight_check(Control* c, Evas_Coord x, Evas_Coord y)
 
     Ray r = ray_from_screen(v->camera, x, y, 1000);
     AABox bb = d->box;
-    bb.Min = vec3_mul(bb.Min, d->scale);
-    bb.Max = vec3_mul(bb.Max, d->scale);
+    bb.min = vec3_mul(bb.min, d->scale);
+    bb.max = vec3_mul(bb.max, d->scale);
 
     IntersectionRay irtest = { .hit = false };
     if (d->type == DRAGGER_ROTATE) {
@@ -578,8 +578,8 @@ _draggers_click_check(Control* c, Evas_Event_Mouse_Down* e)
 
     Ray r = ray_from_screen(v->camera, e->canvas.x, e->canvas.y, 1000);
     AABox bb = d->box;
-    bb.Min = vec3_mul(bb.Min, d->scale);
-    bb.Max = vec3_mul(bb.Max, d->scale);
+    bb.min = vec3_mul(bb.min, d->scale);
+    bb.max = vec3_mul(bb.max, d->scale);
 
     IntersectionRay irtest = { .hit = false };
     if (d->type == DRAGGER_ROTATE) {
