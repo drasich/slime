@@ -9,6 +9,7 @@ LATELY
 - add an entry to tree to search for object name
 - use hoversel
 - fix the warnings (eina_hash) and the output
+- save children in the scene
 
 CLEAN
 - TODO in the code.

@@ -501,6 +501,19 @@ _component_property_orientation_update(ComponentProperties* cp, void* data, Prop
   
 }
 
+static Eina_Bool 
+_component_property_update_hash(
+      const Eina_Hash *hash,
+      const void *key,
+      void *data,
+      void *fdata)
+{
+  printf("the key is %s \n", key);
+
+  return EINA_TRUE;
+}
+
+
 static void
 _component_property_update_data_recur(ComponentProperties* cp, void* data, const PropertySet* ps)
 {
@@ -532,11 +545,24 @@ _component_property_update_data_recur(ComponentProperties* cp, void* data, const
          }
         break;
      case PROPERTY_STRUCT:
+         {
+          void** structdata = (void*)data + p->offset;
+          _component_property_update_data_recur(cp, *structdata, p->array);
+         }
+         break;
+     case PROPERTY_STRUCT_NESTED:
         if  (!strcmp(p->name, "orientation")) {
           _component_property_orientation_update(cp, data, p);
         }
         else
         _component_property_update_data_recur(cp, data, p->array);
+         break;
+      case EET_G_HASH:
+           printf("we have a hash\n");
+           //Eina_Hash* hash = (void*)data + p->offset;
+           const void** ptr = (void*)data + p->offset;
+           const Eina_Hash* hash = *ptr;
+           eina_hash_foreach(hash, _component_property_update_hash, NULL);
          break;
      case PROPERTY_POINTER:
           {
@@ -667,7 +693,7 @@ _add_properties(ComponentProperties* cp, const PropertySet* ps, Evas_Object* box
      case PROPERTY_FILENAME:
          _property_add_fileselect(cp, p);
          break;
-     case PROPERTY_STRUCT:
+     case PROPERTY_STRUCT_NESTED:
          if (p->array->hint == HORIZONTAL) {
            Evas_Object* hbox = elm_box_add(cp->win);
            elm_box_horizontal_set(hbox, EINA_TRUE);

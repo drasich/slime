@@ -313,11 +313,10 @@ shader_mesh_draw(Shader* s, MeshComponent* mc)
       //GLint uni_tex = shader_uniform_location_get(s, uniname);
       GLint uni_tex = uni->location;
       GLint tex_id = -1;
-      if (mc->shader_instance) {
-        Texture* t = shader_instance_texture_data_get(mc->shader_instance, uniname);
-        if (t) {
-          tex_id = texture_id_get(t);
-        }
+      Texture* t = shader_instance_texture_data_get(mc->shader_instance, uniname);
+      if (t) {
+        texture_init(t);
+        tex_id = texture_id_get(t);
       }
 
       if (uni_tex >= 0 && tex_id >= 0) {
@@ -449,6 +448,7 @@ shader_instance_create(Shader* s)
   si->textures = eina_hash_string_superfast_new(NULL);
   si->uniforms = eina_hash_string_superfast_new(NULL);
 
+  /*
   Uniform* uni;
   EINA_INARRAY_FOREACH(s->uniforms, uni) {
     printf("shader instance create %s, uniname %s \n", s->name, uni->name);
@@ -459,6 +459,7 @@ shader_instance_create(Shader* s)
       eina_hash_add(si->uniforms, uni->name, NULL);
     }
   }
+  */
 
   return si;
 }
@@ -467,7 +468,7 @@ void
 shader_instance_uniform_data_set(ShaderInstance* si, const char* name, void* data)
 {
   void* old = eina_hash_set(si->uniforms, name, data);
-  if (!old) printf("--warning, %s: there was no such key '%s' \n", __FUNCTION__, name);
+  //if (!old) printf("--warning, %s: there was no such key '%s' \n", __FUNCTION__, name);
 }
 
 void*
@@ -480,7 +481,7 @@ void
 shader_instance_texture_data_set(ShaderInstance* si, const char* name, void* data)
 {
   void* old = eina_hash_set(si->textures, name, data);
-  if (!old) printf("--warning, %s: there was no such key '%s' \n", __FUNCTION__, name);
+  //if (!old) printf("--warning, %s: there was no such key '%s' \n", __FUNCTION__, name);
 }
 
 void*
@@ -489,3 +490,18 @@ shader_instance_texture_data_get(ShaderInstance* si, const char* name)
   return eina_hash_find(si->textures, name);
 }
 
+PropertySet*
+property_set_shader_instance()
+{
+  PropertySet* ps = create_property_set();
+  PROPERTY_SET_TYPE(ps, ShaderInstance);
+
+  PropertySet* ps_tex = property_set_texture();
+
+  ADD_PROP_HASH(ps, ShaderInstance, textures, ps_tex);
+  /*
+  ADD_PROP_NAME(ps, Vec3, y, EET_T_DOUBLE, "y");
+  ADD_PROP_NAME(ps, Vec3, z, EET_T_DOUBLE, "z");
+  */
+  return ps;
+}

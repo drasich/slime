@@ -348,6 +348,9 @@ _mesh_component_properties()
   ADD_RESOURCE(ps, MeshComponent, mesh_name, "mesh");
   ADD_RESOURCE(ps, MeshComponent, shader_name, "shader");
   //ADD_PROP(ps, MeshComponent, name, PROPERTY_FILENAME);
+  
+  PropertySet *shader_instance_property_set = property_set_shader_instance();
+  ADD_PROP_STRUCT(ps, MeshComponent, shader_instance, shader_instance_property_set);
 
   return ps;
 }

@@ -1,6 +1,5 @@
 #include "resource.h"
 #include "Ecore.h"
-#include "texture.h"
 
 Mesh*
 resource_mesh_get(ResourceManager* rm, const char* name)
@@ -21,6 +20,17 @@ resource_shader_get(ResourceManager* rm, const char* name)
 
   return s;
 }
+
+Texture*
+resource_texture_get(ResourceManager* rm, const char* name)
+{
+  Texture* t = eina_hash_find(rm->textures, name);
+  if (!t)
+  printf("Cannot find texture %s \n", name);
+
+  return t;
+}
+
 
 Eina_Hash*
 resource_meshes_get(ResourceManager* rm)
@@ -153,5 +163,7 @@ resource_texture_create(ResourceManager* rm)
   //rm->textures_to_load = eina_list_append(rm->textures_to_load, eina_stringshare_add(filetex));
   Texture* tex = texture_new();
   tex->filename = filetex;
+  texture_png_read(tex);
+  eina_hash_add(rm->textures, filetex, tex);
 }
 

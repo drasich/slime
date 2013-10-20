@@ -3,6 +3,7 @@
 #include "Eina.h"
 #include "component/mesh.h"
 #include "shader.h"
+#include "texture.h"
 
 typedef struct _ResourceManager ResourceManager;
 
@@ -16,6 +17,7 @@ struct _ResourceManager {
 
 Mesh* resource_mesh_get(ResourceManager* rm, const char* name);
 Shader* resource_shader_get(ResourceManager* rm, const char* name);
+Texture* resource_texture_get(ResourceManager* rm, const char* name);
 
 //TODO do something like:?
 void* resource_get(ResourceManager* rm, const char* group, const char* name);

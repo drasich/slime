@@ -5,6 +5,7 @@
 #include "scene.h"
 #include "control.h"
 #include "resource.h"
+#include "texture.h"
 #define __UNUSED__
 
 //TODO put these in application
@@ -114,9 +115,11 @@ _object_mesh_create(const char* file)
   Object* o = create_object();
   Component* meshcomp = create_component(&mesh_desc);
   MeshComponent* mc = meshcomp->data;
-  mc->shader = resource_shader_get(s_rm, "shader/simple.shader");
-  //mc->shader = resource_shader_get(s_rm, "shader/dragger.shader");
-  mc->shader_name = mc->shader->name;
+  mesh_component_shader_set_by_name(mc,"shader/simple.shader");
+
+  Texture* t = resource_texture_get(s_rm, "model/ceil.png");
+  shader_instance_texture_data_set(mc->shader_instance, "texture", t);
+
   mc->mesh_name = file;
   mc->mesh = resource_mesh_get(s_rm, file);
 
@@ -168,8 +171,8 @@ populate_scene(Control* c, Scene* s)
 
     Component* meshcomp = create_component(&mesh_desc);
     MeshComponent* mc = meshcomp->data;
-    mc->shader = resource_shader_get(s_rm, "shader/simple.shader");
-    //mc->shader = resource_shader_get(s_rm, "shader/dragger.shader");
+    mesh_component_shader_set_by_name(mc,"shader/simple.shader");
+
     mc->mesh_name = "model/smallchar.mesh";
     mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
     object_add_component(empty, meshcomp);

@@ -40,6 +40,7 @@ int property_type_check(int type);
 enum {
   PROPERTY_FILENAME = EET_I_LIMIT,
   PROPERTY_STRUCT,
+  PROPERTY_STRUCT_NESTED,
   PROPERTY_POINTER,
   TEST1,
   TEST2
@@ -70,11 +71,25 @@ enum {
 #define ADD_PROP(ps, struct_type, member, member_type) \
  ADD_PROP_NAME(ps, struct_type, member, member_type, # member)
 
+#define ADD_PROP_STRUCT(ps, struct_type, member, sub) \
+ do {                                                                      \
+   struct_type ___ett;                                                  \
+   Property p = { # member, PROPERTY_STRUCT, \
+     (char *)(& (___ett.member)) -        \
+     (char *)(& (___ett)),                \
+     sizeof ___ett.member, \
+     sub};                \
+   eina_inarray_push(ps->array, &p); \
+   PROPERTY_SET_TYPE(ps, struct_type); \
+   EET_DATA_DESCRIPTOR_ADD_SUB(ps->descriptor, struct_type, # member, member, sub->descriptor); \
+ } while(0)
+
+
 
 #define ADD_PROP_STRUCT_NESTED(ps, struct_type, member, sub) \
  do {                                                                      \
    struct_type ___ett;                                                  \
-   Property p = { # member, PROPERTY_STRUCT, \
+   Property p = { # member, PROPERTY_STRUCT_NESTED, \
      (char *)(& (___ett.member)) -        \
      (char *)(& (___ett)),                \
      sizeof ___ett.member, \
@@ -106,5 +121,20 @@ PropertySet* property_set_quat();
    EET_DATA_DESCRIPTOR_ADD_BASIC(ps->descriptor, struct_type, # member, member, EET_T_STRING);\
  } while(0)
 
+#define ADD_PROP_HASH(ps, struct_type, member, psdata) \
+ do {                                                                      \
+   struct_type ___ett;                                                  \
+   Property p = { # member, EET_G_HASH, \
+     (char *)(& (___ett.member)) -        \
+     (char *)(& (___ett)),                \
+     sizeof ___ett.member, \
+     psdata, \
+   };                \
+   eina_inarray_push(ps->array, &p); \
+   \
+   int mt = property_type_check(EET_G_HASH);\
+   PROPERTY_SET_TYPE(ps, struct_type); \
+   EET_DATA_DESCRIPTOR_ADD_HASH(ps->descriptor, struct_type, # member, member, psdata->descriptor);\
+ } while(0)
 
 #endif

@@ -279,8 +279,10 @@ texture_init(Texture* tex)
 {
   if (tex->is_init) return;
 
+  /*
   if (texture_png_read(tex))
   return;
+  */
 
   GLuint idtex;
   gl->glGenTextures(1, &idtex);
@@ -304,7 +306,6 @@ texture_init(Texture* tex)
         tex->data);
 
   free(tex->data);
-  free(tex);
   tex->is_init = true;
 }
 
@@ -475,3 +476,16 @@ GLuint texture_id_get(Texture* t)
   if (t->is_fbo) return *t->fbo_id;
   else return t->id;
 }
+
+PropertySet*
+property_set_texture()
+{
+  PropertySet* ps = create_property_set();
+  PROPERTY_SET_TYPE(ps, Texture);
+
+  ADD_PROP_NAME(ps, Texture, filename, EET_T_STRING, "filename");
+  //ADD_PROP_NAME(ps, Vec3, z, EET_T_DOUBLE, "z");
+
+  return ps;
+}
+
