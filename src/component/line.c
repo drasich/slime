@@ -429,15 +429,15 @@ void
 line_add_grid(Line* l, int num, int space)
 {
   Vec4 color = vec4(1,1,1,0.1);
-  Vec4 xc = vec4(0,1,0,0.4);
-  Vec4 zc = vec4(1,0,0,0.4);
+  Vec4 xc = vec4(1.0,0.247,0.188,0.4);
+  Vec4 zc = vec4(0,0.4745,1,0.4);
 
   int i;
   for ( i = -num; i <= num; ++i) {
     Vec3 p1 = vec3(i*space, 0, -space*num);
     Vec3 p2 = vec3(i*space, 0, space*num);
     if (i == 0)
-    line_add_color(l, p1, p2, xc);
+    line_add_color(l, p1, p2, zc);
     else
     line_add_color(l, p1, p2, color);
   }
@@ -446,7 +446,7 @@ line_add_grid(Line* l, int num, int space)
     Vec3 p1 = vec3(-space*num, 0, i*space);
     Vec3 p2 = vec3(space*num, 0, i*space);
     if (i == 0)
-    line_add_color(l, p1, p2, zc);
+    line_add_color(l, p1, p2, xc);
     else
     line_add_color(l, p1, p2,color);
   }

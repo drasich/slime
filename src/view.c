@@ -17,6 +17,10 @@
 
 static bool s_view_destroyed = false;
 
+static const Vec4 RED = {1.0,0.247,0.188,1};
+static const Vec4 GREEN = {0.2117,0.949,0.4156,1};
+static const Vec4 BLUE = {0,0.4745,1,1};
+
 // Callbacks
 static void
 _view_init_gl(Evas_Object *obj)
@@ -399,9 +403,9 @@ _create_repere(float u, Camera* camera)
   object_add_component(o,comp);
   Line* l = comp->data;
   l->camera = camera;
-  line_add_color(l, vec3(0,0,0), vec3(u,0,0), vec4(1,0,0,1));
-  line_add_color(l, vec3(0,0,0), vec3(0,u,0), vec4(0,1,0,1));
-  line_add_color(l, vec3(0,0,0), vec3(0,0,u), vec4(0,0,1,1));
+  line_add_color(l, vec3(0,0,0), vec3(u,0,0), RED);
+  line_add_color(l, vec3(0,0,0), vec3(0,u,0), GREEN);
+  line_add_color(l, vec3(0,0,0), vec3(0,0,u), BLUE);
   line_set_use_depth(l, false);
   return o;
 }
@@ -766,9 +770,9 @@ _view_draggers_create(dragger_create_fn dfn, bool create_plane, Quat q1, Quat q2
 {
   Eina_List* draggers = NULL;
 
-  Vec4 red = vec4(1.0,0.247,0.188,1);
-  Vec4 green = vec4(0.2117,0.949,0.4156,1);
-  Vec4 blue = vec4(0,0.4745,1,1);
+  Vec4 red = RED;
+  Vec4 green = GREEN;
+  Vec4 blue = BLUE;
 
   Object* dragger;
 
