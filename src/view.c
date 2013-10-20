@@ -1051,18 +1051,20 @@ create_render()
 
   Texture* tsel = texture_new();
   Texture* tall = texture_new();
-  eina_hash_add(mc->textures, "texture", tsel);
-  eina_hash_add(mc->textures, "texture_all", tall);
-  
   texture_fbo_link(tsel, &r->fbo_selected->texture_depth_stencil_id);
   texture_fbo_link(tall, &r->fbo_all->texture_depth_stencil_id);
 
-  mc->shader = create_shader("stencil", "shader/stencil.vert", "shader/stencil.frag");
-  shader_attribute_add(mc->shader, "vertex", 3, GL_FLOAT);
-  shader_uniform_add(mc->shader, "matrix");
-  shader_uniform_add(mc->shader, "resolution");
-  shader_uniform_type_add(mc->shader, "texture", UNIFORM_TEXTURE);
-  shader_uniform_type_add(mc->shader, "texture_all", UNIFORM_TEXTURE);
+  Shader* s = create_shader("stencil", "shader/stencil.vert", "shader/stencil.frag");
+  shader_attribute_add(s, "vertex", 3, GL_FLOAT);
+  shader_uniform_add(s, "matrix");
+  shader_uniform_add(s, "resolution");
+  shader_uniform_type_add(s, "texture", UNIFORM_TEXTURE);
+  shader_uniform_type_add(s, "texture_all", UNIFORM_TEXTURE);
+
+  mesh_component_shader_set(mc, s);
+
+  shader_instance_texture_data_set(mc->shader_instance, "texture", tsel);
+  shader_instance_texture_data_set(mc->shader_instance, "texture_all", tall);
 
 
   /*

@@ -87,7 +87,6 @@ struct _MeshComponent
   const char* shader_name;
   Mesh* mesh;
   Shader* shader;
-  Eina_Hash* textures;
   ShaderInstance* shader_instance;
   bool hide;
 };
@@ -126,12 +125,12 @@ void mesh_show_wireframe(Mesh* m, bool b);
 void create_mesh_quad(Mesh* m, int w, int h);
 void quad_resize(Mesh* m, int w, int h);
 
-GLint mesh_component_texture_id_get(MeshComponent* mc, const char* mame);
 Buffer* mesh_buffer_get(Mesh* m, const char* name);
 
 void mesh_buffer_add(Mesh* m, const char* name, GLenum target, const void* data, int size);
 
-void mesh_component_shader_set(MeshComponent* mc, const char* name);
+void mesh_component_shader_set(MeshComponent* mc, Shader* s);
+void mesh_component_shader_set_by_name(MeshComponent* mc, const char* name);
 
 
 #endif

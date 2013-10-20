@@ -326,7 +326,6 @@ static void*
 _mesh_component_create()
 {
   MeshComponent* m = calloc(1,sizeof *m);
-  m->textures = eina_hash_string_superfast_new(NULL);
   return m;
 }
 
@@ -450,21 +449,6 @@ ComponentDesc mesh_desc = {
   NULL,
 };
 
-GLint
-mesh_component_texture_id_get(MeshComponent* mc, const char* name)
-{
-  Texture* t = eina_hash_find(mc->textures, name);
-  
-  if (!t) return -1;
-
-  if (t->is_fbo && t->fbo_id) {
-    return *(t->fbo_id);
-  }
-
-  return -1;
-
-}
-
 Buffer*
 mesh_buffer_get(Mesh* m, const char* name)
 {
@@ -500,10 +484,8 @@ mesh_buffer_add(Mesh* m, const char* name, GLenum target, const void* data, int 
 }
 
 void
-mesh_component_shader_set(MeshComponent* mc, const char* name)
+mesh_component_shader_set_by_name(MeshComponent* mc, const char* name)
 {
-  mc->shader_name = name;
-  //TODO load in the background
   Shader* s = resource_shader_get(s_rm, name);
 
   if (!s) {
@@ -511,6 +493,13 @@ mesh_component_shader_set(MeshComponent* mc, const char* name)
     return;
   }
 
+  mesh_component_shader_set(mc, s);
+}
+
+void
+mesh_component_shader_set(MeshComponent* mc, Shader* s)
+{
+  mc->shader_name = s->name;
   mc->shader = s;
 
   if (mc->shader_instance) {
@@ -526,3 +515,5 @@ mesh_component_shader_set(MeshComponent* mc, const char* name)
 
   mc->shader_instance = shader_instance_create(s);
 }
+
+

@@ -470,3 +470,8 @@ texture_fbo_link(Texture* t, GLuint* id)
   t->is_init = true;
 }
 
+GLuint texture_id_get(Texture* t)
+{
+  if (t->is_fbo) return *t->fbo_id;
+  else return t->id;
+}

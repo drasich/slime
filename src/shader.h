@@ -89,6 +89,8 @@ struct _ShaderInstance
 ShaderInstance* shader_instance_create(Shader* s);
 void shader_instance_uniform_data_set(ShaderInstance* si, const char* name, void* data);
 void* shader_instance_uniform_data_get(ShaderInstance* si, const char* name);
+void shader_instance_texture_data_set(ShaderInstance* si, const char* name, void* data);
+void* shader_instance_texture_data_get(ShaderInstance* si, const char* name);
 
 
 #endif

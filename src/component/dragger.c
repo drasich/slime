@@ -139,7 +139,7 @@ _dragger_rotate_create(Vec3 constraint, Vec4 color, bool plane)
   Component* comp = create_component(&mesh_desc);
   object_add_component(o, comp);
   MeshComponent* mc = comp->data;
-  mesh_component_shader_set(mc, "shader/dragger.shader");
+  mesh_component_shader_set_by_name(mc, "shader/dragger.shader");
 
   //mc->mesh_name = "model/dragger_rotate_half.mesh";
   //mc->mesh_name = "model/dragger_rotate_test.mesh";
@@ -154,7 +154,7 @@ _dragger_rotate_create(Vec3 constraint, Vec4 color, bool plane)
   comp = create_component(&mesh_desc);
   object_add_component(o, comp);
   MeshComponent* mcs = comp->data;
-  mesh_component_shader_set(mcs, "shader/dragger.shader");
+  mesh_component_shader_set_by_name(mcs, "shader/dragger.shader");
 
   mcs->mesh_name = "model/dragger_rotate_circle.mesh";
   mcs->mesh = resource_mesh_get(s_rm, mcs->mesh_name);
@@ -187,7 +187,7 @@ _dragger_scale_create(Vec3 constraint, Vec4 color, bool plane)
   Component* comp = create_component(&mesh_desc);
   object_add_component(o, comp);
   MeshComponent* mc = comp->data;
-  mesh_component_shader_set(mc, "shader/dragger.shader");
+  mesh_component_shader_set_by_name(mc, "shader/dragger.shader");
 
   if (plane) {
     mc->mesh_name = "model/dragger_plane.mesh";
@@ -222,7 +222,7 @@ _dragger_translate_create(Vec3 constraint, Vec4 color, bool plane)
   Component* comp = create_component(&mesh_desc);
   object_add_component(o, comp);
   MeshComponent* mc = comp->data;
-  mesh_component_shader_set(mc, "shader/dragger.shader");
+  mesh_component_shader_set_by_name(mc, "shader/dragger.shader");
 
   if (plane) {
     mc->mesh_name = "model/dragger_plane.mesh";

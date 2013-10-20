@@ -35,8 +35,8 @@ def configure(conf):
   # set some debug relevant config values
   #if Options.options.debug:
   conf.define ('DEBUG', 1)
-  conf.env['CXXFLAGS'] = ['-O0', '-g3']
-  conf.env.CFLAGS = ['-g'] 
+  conf.env['CXXFLAGS'] = ['-O0', '-g3', '-Werror']
+  conf.env.CFLAGS = ['-g', '-Werror'] 
 
 def post(ctx):
   if ctx.options.exe:

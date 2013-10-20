@@ -41,5 +41,6 @@ void save_png(GLuint* pix, int width, int height);
 void texture_init(Texture* t);
 
 void texture_fbo_link(Texture* t, GLuint* id);
+GLuint texture_id_get(Texture* t);
 
 #endif

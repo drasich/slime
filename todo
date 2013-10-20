@@ -8,6 +8,7 @@ LATELY
 - display info on rotation, scale, translation
 - add an entry to tree to search for object name
 - use hoversel
+- fix the warnings (eina_hash) and the output
 
 CLEAN
 - TODO in the code.

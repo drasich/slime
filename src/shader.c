@@ -298,6 +298,7 @@ shader_read(const char* filename)
   return s;  
 }
 
+#include "texture.h"
 void 
 shader_mesh_draw(Shader* s, MeshComponent* mc)
 {
@@ -311,7 +312,13 @@ shader_mesh_draw(Shader* s, MeshComponent* mc)
 
       //GLint uni_tex = shader_uniform_location_get(s, uniname);
       GLint uni_tex = uni->location;
-      GLint tex_id = mesh_component_texture_id_get(mc, uniname);
+      GLint tex_id = -1;
+      if (mc->shader_instance) {
+        Texture* t = shader_instance_texture_data_get(mc->shader_instance, uniname);
+        if (t) {
+          tex_id = texture_id_get(t);
+        }
+      }
 
       if (uni_tex >= 0 && tex_id >= 0) {
         gl->glUniform1i(uni_tex, i);
@@ -444,6 +451,7 @@ shader_instance_create(Shader* s)
 
   Uniform* uni;
   EINA_INARRAY_FOREACH(s->uniforms, uni) {
+    printf("shader instance create %s, uniname %s \n", s->name, uni->name);
     if (uni->type == UNIFORM_TEXTURE) {
       eina_hash_add(si->textures, uni->name, NULL);
     }
@@ -458,12 +466,26 @@ shader_instance_create(Shader* s)
 void
 shader_instance_uniform_data_set(ShaderInstance* si, const char* name, void* data)
 {
-  eina_hash_set(si->uniforms, name, data);
+  void* old = eina_hash_set(si->uniforms, name, data);
+  if (!old) printf("--warning, %s: there was no such key '%s' \n", __FUNCTION__, name);
 }
 
 void*
 shader_instance_uniform_data_get(ShaderInstance* si, const char* name)
 {
   return eina_hash_find(si->uniforms, name);
+}
+
+void
+shader_instance_texture_data_set(ShaderInstance* si, const char* name, void* data)
+{
+  void* old = eina_hash_set(si->textures, name, data);
+  if (!old) printf("--warning, %s: there was no such key '%s' \n", __FUNCTION__, name);
+}
+
+void*
+shader_instance_texture_data_get(ShaderInstance* si, const char* name)
+{
+  return eina_hash_find(si->textures, name);
 }
 
