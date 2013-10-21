@@ -9,16 +9,16 @@ _create_transform()
   return t;
 }
 
-static PropertySet* 
+static Property* 
 _transform_properties()
 {
-  PropertySet* ps = create_property_set();
+  Property* ps = create_property_set();
 
   //TODO clean the property sets
-  PropertySet *vec3 = property_set_vec3();
-  ADD_PROP_STRUCT_NESTED(ps, Transform, position, vec3);
-  PropertySet *an = property_set_vec3();
-  ADD_PROP_STRUCT_NESTED(ps, Transform, angles, an);
+  Property *vec3 = property_set_vec3();
+  PROPERTY_SUB_NESTED_ADD(ps, Transform, position, vec3);
+  Property *an = property_set_vec3();
+  PROPERTY_SUB_NESTED_ADD(ps, Transform, angles, an);
 
   return ps;
 }

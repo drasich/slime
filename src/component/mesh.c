@@ -329,28 +329,16 @@ _mesh_component_create()
   return m;
 }
 
-static PropertySet* 
-_mesh_properties()
-{
-  PropertySet* ps = create_property_set();
-
-  //ADD_PROP(ps, Mesh, name, EET_T_STRING);
-  ADD_PROP(ps, Mesh, name, PROPERTY_FILENAME);
-
-  return ps;
-}
-
-static PropertySet* 
+static Property* 
 _mesh_component_properties()
 {
-  PropertySet* ps = create_property_set();
+  Property* ps = create_property_set();
 
-  ADD_RESOURCE(ps, MeshComponent, mesh_name, "mesh");
-  ADD_RESOURCE(ps, MeshComponent, shader_name, "shader");
-  //ADD_PROP(ps, MeshComponent, name, PROPERTY_FILENAME);
+  PROPERTY_RESOURCE_ADD(ps, MeshComponent, mesh_name, "mesh");
+  PROPERTY_RESOURCE_ADD(ps, MeshComponent, shader_name, "shader");
   
-  PropertySet *shader_instance_property_set = property_set_shader_instance();
-  ADD_PROP_STRUCT(ps, MeshComponent, shader_instance, shader_instance_property_set);
+  Property *shader_instance_property_set = property_set_shader_instance();
+  PROPERTY_SUB_ADD(ps, MeshComponent, shader_instance, shader_instance_property_set);
 
   return ps;
 }

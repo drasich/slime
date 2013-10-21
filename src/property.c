@@ -3,22 +3,19 @@
 #include "vec.h"
 #include "quat.h"
 
-PropertySet* create_property_set()
+Property* create_property_set()
 {
-  PropertySet *ps = calloc(1, sizeof *ps);
-
-  ps->array = eina_inarray_new(sizeof(Property), 0);
+  Property *ps = calloc(1, sizeof *ps);
   return ps;
 }
 
-void add_offset(PropertySet* ps, int offset)
+int
+property_offset_get(const Property* p)
 {
-  Property *p;
-  EINA_INARRAY_FOREACH(ps->array, p) {
-    p->offset += offset;
-    if (p->array) add_offset(p->array, offset);
+  if (p->parent && p->parent->type != PROPERTY_STRUCT) {
+    return p->offset + property_offset_get(p->parent);
   }
-
+  else return p->offset;
 }
 
 int property_type_check(int type)
@@ -29,46 +26,49 @@ int property_type_check(int type)
   return type;
 }
 
-PropertySet*
+Property*
 property_set_vec3()
 {
-  PropertySet* ps = create_property_set();
+  Property* ps = create_property_set();
   PROPERTY_SET_TYPE(ps, Vec3);
   ps->hint = HORIZONTAL;
+  ps->name = "vec3";
 
-  ADD_PROP_NAME(ps, Vec3, x, EET_T_DOUBLE, "x");
-  ADD_PROP_NAME(ps, Vec3, y, EET_T_DOUBLE, "y");
-  ADD_PROP_NAME(ps, Vec3, z, EET_T_DOUBLE, "z");
+  PROPERTY_BASIC_ADD(ps, Vec3, x, EET_T_DOUBLE);
+  PROPERTY_BASIC_ADD(ps, Vec3, y, EET_T_DOUBLE);
+  PROPERTY_BASIC_ADD(ps, Vec3, z, EET_T_DOUBLE);
 
   return ps;
 }
 
-PropertySet*
+Property*
 property_set_vec4()
 {
-  PropertySet* ps = create_property_set();
+  Property* ps = create_property_set();
   PROPERTY_SET_TYPE(ps, Vec4);
   ps->hint = HORIZONTAL;
+  ps->name = "vec4";
 
-  ADD_PROP_NAME(ps, Vec4, x, EET_T_DOUBLE, "x");
-  ADD_PROP_NAME(ps, Vec4, y, EET_T_DOUBLE, "y");
-  ADD_PROP_NAME(ps, Vec4, z, EET_T_DOUBLE, "z");
-  ADD_PROP_NAME(ps, Vec4, w, EET_T_DOUBLE, "w");
+  PROPERTY_BASIC_ADD(ps, Vec4, x, EET_T_DOUBLE);
+  PROPERTY_BASIC_ADD(ps, Vec4, y, EET_T_DOUBLE);
+  PROPERTY_BASIC_ADD(ps, Vec4, z, EET_T_DOUBLE);
+  PROPERTY_BASIC_ADD(ps, Vec4, w, EET_T_DOUBLE);
 
   return ps;
 }
 
-PropertySet*
+Property*
 property_set_quat()
 {
-  PropertySet* ps = create_property_set();
+  Property* ps = create_property_set();
   PROPERTY_SET_TYPE(ps, Quat);
   ps->hint = HORIZONTAL;
+  ps->name = "quat";
 
-  ADD_PROP_NAME(ps, Quat, x, EET_T_DOUBLE, "x");
-  ADD_PROP_NAME(ps, Quat, y, EET_T_DOUBLE, "y");
-  ADD_PROP_NAME(ps, Quat, z, EET_T_DOUBLE, "z");
-  ADD_PROP_NAME(ps, Quat, w, EET_T_DOUBLE, "w");
+  PROPERTY_BASIC_ADD(ps, Quat, x, EET_T_DOUBLE);
+  PROPERTY_BASIC_ADD(ps, Quat, y, EET_T_DOUBLE);
+  PROPERTY_BASIC_ADD(ps, Quat, z, EET_T_DOUBLE);
+  PROPERTY_BASIC_ADD(ps, Quat, w, EET_T_DOUBLE);
 
   return ps;
 }

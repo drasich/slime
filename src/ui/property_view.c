@@ -108,17 +108,19 @@ property_set(PropertyView* pw, ComponentProperties* cp)
   }
 }
 
-static PropertySet* 
+static Property* 
 _multiple_objects_init_array_properties()
 {
-  PropertySet* ps = create_property_set();
+  Property* ps = create_property_set();
 
+  /*
   ADD_PROP(ps, Multiple_Objects_Selection, center.x, EET_T_DOUBLE);
   ADD_PROP(ps, Multiple_Objects_Selection, center.y, EET_T_DOUBLE);
   ADD_PROP(ps, Multiple_Objects_Selection, center.z, EET_T_DOUBLE);
   ADD_PROP(ps, Multiple_Objects_Selection, rotation.x, EET_T_DOUBLE);
   ADD_PROP(ps, Multiple_Objects_Selection, rotation.y, EET_T_DOUBLE);
   ADD_PROP(ps, Multiple_Objects_Selection, rotation.z, EET_T_DOUBLE);
+  */
 
   return ps;
 }

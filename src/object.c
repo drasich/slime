@@ -435,34 +435,35 @@ object_component_get(const Object* o, const char* name)
 
 }
 
-static PropertySet* s_ps_obj = NULL; //TODO put the property set in component manager
+static Property* s_ps_obj = NULL; //TODO put the property set in component manager
 
-PropertySet* 
+Property* 
 property_set_object()
 {
   if (s_ps_obj) return s_ps_obj;
 
   s_ps_obj = create_property_set();
-  PropertySet* ps = s_ps_obj;
+  Property* ps = s_ps_obj;
+  ps->name = "objectblablabla";
   PROPERTY_SET_TYPE(ps, Object);
 
 
-  ADD_PROP(ps, Object, name, EET_T_STRING);
+  PROPERTY_BASIC_ADD(ps, Object, name, EET_T_STRING);
 
   //TODO clean the property sets
-  PropertySet *vec3 = property_set_vec3();
-  ADD_PROP_STRUCT_NESTED(ps, Object, position, vec3);
+  Property *vec3 = property_set_vec3();
+  PROPERTY_SUB_NESTED_ADD(ps, Object, position, vec3);
 
   /*
-  PropertySet *an = property_set_vec3();
+  Property *an = property_set_vec3();
   ADD_PROP_STRUCT_NESTED(ps, Object, angles, an);
   */
 
-  PropertySet *q = property_set_quat();
-  ADD_PROP_STRUCT_NESTED(ps, Object, orientation, q);
+  Property *q = property_set_quat();
+  PROPERTY_SUB_NESTED_ADD(ps, Object, orientation, q);
 
-  PropertySet *scale = property_set_vec3();
-  ADD_PROP_STRUCT_NESTED(ps, Object, scale, scale);
+  Property *scale = property_set_vec3();
+  PROPERTY_SUB_NESTED_ADD(ps, Object, scale, scale);
 
   // other components
   Eet_Data_Descriptor *ob_descriptor = ps->descriptor;

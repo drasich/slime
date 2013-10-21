@@ -490,18 +490,14 @@ shader_instance_texture_data_get(ShaderInstance* si, const char* name)
   return eina_hash_find(si->textures, name);
 }
 
-PropertySet*
+Property*
 property_set_shader_instance()
 {
-  PropertySet* ps = create_property_set();
+  Property* ps = create_property_set();
   PROPERTY_SET_TYPE(ps, ShaderInstance);
 
-  PropertySet* ps_tex = property_set_texture();
+  Property* ps_tex = property_set_texture();
 
-  ADD_PROP_HASH(ps, ShaderInstance, textures, ps_tex);
-  /*
-  ADD_PROP_NAME(ps, Vec3, y, EET_T_DOUBLE, "y");
-  ADD_PROP_NAME(ps, Vec3, z, EET_T_DOUBLE, "z");
-  */
+  PROPERTY_HASH_ADD(ps, ShaderInstance, textures, ps_tex);
   return ps;
 }

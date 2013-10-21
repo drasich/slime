@@ -156,16 +156,16 @@ camera_init(Camera* c)
   ccamera_update_projection(c);
 }
 
-static PropertySet* 
+static Property* 
 _camera_properties()
 {
-  PropertySet* ps = create_property_set();
+  Property* ps = create_property_set();
 
-  ADD_PROP(ps, Camera, width, EET_T_DOUBLE);
-  ADD_PROP(ps, Camera, height, EET_T_DOUBLE);
-  ADD_PROP(ps, Camera, fovy_base, EET_T_DOUBLE);
-  ADD_PROP(ps, Camera, near, EET_T_DOUBLE);
-  ADD_PROP(ps, Camera, far, EET_T_DOUBLE);
+  PROPERTY_BASIC_ADD(ps, Camera, width, EET_T_DOUBLE);
+  PROPERTY_BASIC_ADD(ps, Camera, height, EET_T_DOUBLE);
+  PROPERTY_BASIC_ADD(ps, Camera, fovy_base, EET_T_DOUBLE);
+  PROPERTY_BASIC_ADD(ps, Camera, near, EET_T_DOUBLE);
+  PROPERTY_BASIC_ADD(ps, Camera, far, EET_T_DOUBLE);
 
   return ps;
 }

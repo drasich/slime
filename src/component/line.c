@@ -20,11 +20,10 @@ _create_line()
   return create_line();
 }
 
-static PropertySet* 
+static Property* 
 _line_properties()
 {
-  PropertySet* ps = create_property_set();
-  Eina_Inarray * iarr = ps->array;
+  Property* ps = create_property_set();
 
   return ps;
 }

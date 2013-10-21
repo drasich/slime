@@ -19,15 +19,15 @@ player_update(Component* c, double dt)
   }
 }
 
-PropertySet* 
+Property* 
 _player_properties(ComponentDesc* desc)
 {
-  PropertySet *ps = create_property_set();
+  Property *ps = create_property_set();
 
-  ADD_PROP(ps, Player, name, EET_T_STRING);
-  ADD_PROP(ps, Player, rotation_speed, EET_T_DOUBLE);
-  ADD_PROP(ps, Player, target, PROPERTY_POINTER );
-  ADD_PROP(ps, Player, my_test, EET_T_DOUBLE );
+  PROPERTY_BASIC_ADD(ps, Player, name, EET_T_STRING);
+  PROPERTY_BASIC_ADD(ps, Player, rotation_speed, EET_T_DOUBLE);
+  PROPERTY_BASIC_ADD(ps, Player, target, PROPERTY_POINTER );
+  PROPERTY_BASIC_ADD(ps, Player, my_test, EET_T_DOUBLE );
 
   return ps;
 }

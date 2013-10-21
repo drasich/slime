@@ -14,7 +14,7 @@ struct _Camera;
 struct _ComponentDesc {
   const char* name;
   void* (*create)(); 
-  PropertySet* (*properties)();
+  Property* (*properties)();
   void (*init)(Component* c); 
   void (*update)(Component* c, double dt); 
   void (*draw)(Component* c, Matrix4 world, const Matrix4 projection); 
@@ -28,7 +28,7 @@ typedef Eina_List* (*create_components_function)();
 struct _Component {
   void* data;
   const ComponentDesc *funcs;
-  const PropertySet* properties;
+  const Property* properties;
   struct _Object* object;
   const char* name;
   bool disabled;

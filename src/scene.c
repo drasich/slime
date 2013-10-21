@@ -93,7 +93,7 @@ scene_object_get(Scene* s, const char* name)
 
 
 static Eet_Data_Descriptor *_scene_descriptor;
-static PropertySet* _object_ps;
+static Property* _object_ps;
 
 void
 scene_descriptor_init(void)

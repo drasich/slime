@@ -5,19 +5,6 @@
 #include "stdbool.h"
 
 typedef struct _Property Property;
-typedef struct _PropertySet PropertySet;
-
-struct _Property
-{
-  const char* name;
-  int type;
-  int offset;
-  size_t size;
-  PropertySet* array;
-
-  bool is_resource;
-  const char* resource_type;
-};
 
 typedef enum _Hint Hint;
 enum _Hint{
@@ -25,16 +12,29 @@ enum _Hint{
   HORIZONTAL
 };
 
-struct _PropertySet
+
+struct _Property
 {
-  Eina_Inarray* array;
+  const char* name;
+  int type;
+  int offset;
+  size_t size;
+  Property* sub;
+
+  bool is_resource;
+  const char* resource_type;
+  int type_group;
+
+  Eina_List* list;
   Hint hint;
   Eet_Data_Descriptor *descriptor;
+  Property* parent;
+  //Evas_Object* eo;
 };
 
-void add_offset(PropertySet* ps, int offset);
+int property_offset_get(const Property* p);
 
-PropertySet* create_property_set();
+Property* create_property_set();
 int property_type_check(int type);
 
 enum {
@@ -53,88 +53,89 @@ enum {
    ps->descriptor = eet_data_descriptor_stream_new(&eddc); \
  }
 
-
-#define ADD_PROP_NAME(ps, struct_type, member, member_type, name) \
- do {                                                                      \
-   struct_type ___ett;                                                  \
-   Property p = { name, member_type, \
-     (char *)(& (___ett.member)) -        \
-     (char *)(& (___ett)),                \
-     sizeof ___ett.member};                \
-   eina_inarray_push(ps->array, &p); \
+//TODO chris
+#define PROPERTY_NEW(p, struct_type, member, member_type) \
+ do { \
+   struct_type ___ett; \
+   p = calloc(1, sizeof *p); \
+   p->name = # member; \
+   p->type = member_type; \
+   p->offset = (char *)(& (___ett.member)) - (char *)(& (___ett)); \
+   p->size = sizeof ___ett.member; \
    \
-   int mt = property_type_check(member_type);\
-   PROPERTY_SET_TYPE(ps, struct_type); \
-   EET_DATA_DESCRIPTOR_ADD_BASIC(ps->descriptor, struct_type, name, member, mt);\
- } while(0)
-
-#define ADD_PROP(ps, struct_type, member, member_type) \
- ADD_PROP_NAME(ps, struct_type, member, member_type, # member)
-
-#define ADD_PROP_STRUCT(ps, struct_type, member, sub) \
- do {                                                                      \
-   struct_type ___ett;                                                  \
-   Property p = { # member, PROPERTY_STRUCT, \
-     (char *)(& (___ett.member)) -        \
-     (char *)(& (___ett)),                \
-     sizeof ___ett.member, \
-     sub};                \
-   eina_inarray_push(ps->array, &p); \
-   PROPERTY_SET_TYPE(ps, struct_type); \
-   EET_DATA_DESCRIPTOR_ADD_SUB(ps->descriptor, struct_type, # member, member, sub->descriptor); \
  } while(0)
 
 
-
-#define ADD_PROP_STRUCT_NESTED(ps, struct_type, member, sub) \
- do {                                                                      \
-   struct_type ___ett;                                                  \
-   Property p = { # member, PROPERTY_STRUCT_NESTED, \
-     (char *)(& (___ett.member)) -        \
-     (char *)(& (___ett)),                \
-     sizeof ___ett.member, \
-     sub};                \
-   add_offset(sub, p.offset); \
-   eina_inarray_push(ps->array, &p); \
+#define PROPERTY_BASIC_ADD_WITH_NAME(ps, struct_type, member, member_type, name_str) \
+ do { \
+   Property *p; \
+   PROPERTY_NEW(p, struct_type, member, member_type); \
+   p->name = name_str; \
+   p->parent = ps; \
+   ps->list = eina_list_append(ps->list, p); \
    PROPERTY_SET_TYPE(ps, struct_type); \
-   EET_DATA_DESCRIPTOR_ADD_SUB_NESTED(ps->descriptor, struct_type, # member, member, sub->descriptor); \
+   EET_DATA_DESCRIPTOR_ADD_BASIC(ps->descriptor, struct_type, name_str, member, member_type); \
  } while(0)
 
-PropertySet* property_set_vec3();
-PropertySet* property_set_vec4();
-PropertySet* property_set_quat();
+#define PROPERTY_BASIC_ADD(ps, struct_type, member, member_type) \
+ PROPERTY_BASIC_ADD_WITH_NAME(ps, struct_type, member, member_type, # member)
 
-#define ADD_RESOURCE(ps, struct_type, member, resource_type) \
- do {                                                   \
-   struct_type ___ett;                                                  \
-   Property p = { resource_type, EET_T_STRING, \
-     (char *)(& (___ett.member)) -        \
-     (char *)(& (___ett)),                \
-     sizeof ___ett.member, \
-     NULL,\
-     true,\
-     resource_type\
-     };                \
-   eina_inarray_push(ps->array, &p); \
-   \
+
+#define PROPERTY_SUB_ADD(ps, struct_type, member, ssub) \
+ do { \
+   Property *p; \
+   PROPERTY_NEW(p, struct_type, member, PROPERTY_STRUCT); \
+   p->sub = ssub; \
+   ssub->parent = p; \
+   ps->list = eina_list_append(ps->list, p); \
+   PROPERTY_SET_TYPE(ps, struct_type); \
+   EET_DATA_DESCRIPTOR_ADD_SUB(ps->descriptor, struct_type, # member, member, ssub->descriptor); \
+ } while(0)
+
+
+//TODO remove the offset
+#define PROPERTY_SUB_NESTED_ADD(ps, struct_type, member, ssub) \
+ do { \
+   Property *p; \
+   PROPERTY_NEW(p, struct_type, member, PROPERTY_STRUCT_NESTED); \
+   p->sub = ssub; \
+   ssub->parent = p; \
+   p->parent = ps; \
+   /*add_offset(ssub, p->offset); */ \
+   ps->list = eina_list_append(ps->list, p); \
+   PROPERTY_SET_TYPE(ps, struct_type); \
+   EET_DATA_DESCRIPTOR_ADD_SUB_NESTED(ps->descriptor, struct_type, # member, member, ssub->descriptor); \
+ } while(0)
+
+
+#define PROPERTY_RESOURCE_ADD(ps, struct_type, member, resource_type_str) \
+ do { \
+   Property* p; \
+   PROPERTY_NEW(p, struct_type, member, EET_T_STRING); \
+   p->name = resource_type_str; \
+   p->sub = NULL; \
+   p->is_resource = true; \
+   p->resource_type = resource_type_str; \
+   ps->list = eina_list_append(ps->list, p); \
    PROPERTY_SET_TYPE(ps, struct_type); \
    EET_DATA_DESCRIPTOR_ADD_BASIC(ps->descriptor, struct_type, # member, member, EET_T_STRING);\
  } while(0)
 
-#define ADD_PROP_HASH(ps, struct_type, member, psdata) \
- do {                                                                      \
-   struct_type ___ett;                                                  \
-   Property p = { # member, EET_G_HASH, \
-     (char *)(& (___ett.member)) -        \
-     (char *)(& (___ett)),                \
-     sizeof ___ett.member, \
-     psdata, \
-   };                \
-   eina_inarray_push(ps->array, &p); \
-   \
-   int mt = property_type_check(EET_G_HASH);\
+
+#define PROPERTY_HASH_ADD(ps, struct_type, member, psdata) \
+ do { \
+   Property* p; \
+   PROPERTY_NEW(p, struct_type, member, EET_G_HASH); \
+   p->sub = psdata; \
+   ps->list = eina_list_append(ps->list, p); \
    PROPERTY_SET_TYPE(ps, struct_type); \
    EET_DATA_DESCRIPTOR_ADD_HASH(ps->descriptor, struct_type, # member, member, psdata->descriptor);\
  } while(0)
+
+
+Property* property_set_vec3();
+Property* property_set_vec4();
+Property* property_set_quat();
+
 
 #endif
