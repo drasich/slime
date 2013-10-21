@@ -635,13 +635,8 @@ _component_property_update_data_recur(ComponentProperties* cp, void* data, const
   Property *p;
   Eina_List* l;
   EINA_LIST_FOREACH(ps->list, l, p) {
-  //EINA_INARRAY_FOREACH(ps->array, p) {
-    //Evas_Object* obj = eina_hash_find(cp->properties, &p);
-    //TODO chris now
     Evas_Object* obj = eina_hash_find(cp->properties, &p);
     //printf("component %s, name: %s , type: %d, offset: %d\n", cp->name, p->name, p->type, p->offset);
-    //if (!obj) {printf("obj is null!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!%p\n", p); }
-    //else printf("object is not null %p\n", p);
     switch(p->type) {
       case EET_T_DOUBLE:
          {
@@ -807,7 +802,6 @@ _add_properties(ComponentProperties* cp, const Property* ps, Evas_Object* box, v
   Property *p;
   Eina_List* l;
   EINA_LIST_FOREACH(ps->list, l, p) {
-  //EINA_INARRAY_FOREACH(ps->array, p) {
    //printf("name: %s , type: %d, offset: %d\n", p->name, p->type, p->offset);
    //printf("   value is : ");
    switch(p->type) {
