@@ -127,13 +127,13 @@ resource_shader_create(ResourceManager* rm)
   shader_uniform_add(simple, "normal_matrix");
   shader_uniform_type_add(simple, "texture", UNIFORM_TEXTURE);
 
-  /*
   Shader* red = create_shader("shader/red.shader", "shader/simple.vert", "shader/red.frag");
-  red->has_vertex = true;
-  red->has_normal = true;
-  red->has_texcoord = true;
-  red->has_uniform_normal_matrix = true;
-  */
+  shader_attribute_add(red, "vertex", 3, GL_FLOAT);
+  shader_attribute_add(red, "normal", 3, GL_FLOAT);
+  shader_attribute_add(red, "texcoord", 2, GL_FLOAT);
+  shader_uniform_add(red, "matrix");
+  shader_uniform_add(red, "normal_matrix");
+  shader_uniform_type_add(red, "texture", UNIFORM_TEXTURE);
 
   Shader* dragger = create_shader("shader/dragger.shader","shader/dragger.vert", "shader/dragger.frag");
   shader_attribute_add(dragger, "vertex", 3, GL_FLOAT);
@@ -142,7 +142,8 @@ resource_shader_create(ResourceManager* rm)
   shader_write(dragger);
 
   //Shader* simple = shader_read("shader/simple.shader");
-  Shader* red = shader_read("shader/red.shader");
+  //Shader* red = shader_read("shader/red.shader");
+
 
   eina_hash_add(rm->shaders, simple->name, simple);
   eina_hash_add(rm->shaders, red->name, red);
