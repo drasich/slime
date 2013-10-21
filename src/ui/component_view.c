@@ -334,11 +334,23 @@ _property_add_entry(ComponentProperties* cp, Property* p)
 
   evas_object_name_set(en, p->name);
 
+  if (p->parent && p->parent->type == EET_G_HASH) {
+    printf("youuuuuuuuuuuuuuuuu I add a hash to the hash : %s \n", p->name);
+    Eina_Hash* hash_prop = eina_hash_find(cp->properties, &p->parent);
+    eina_hash_add(hash_prop, p->name, en);
+  }
+  else {
+    printf("just normal entry : %s \n", p->name);
+    if (!p->parent)
+    printf("it has no parent : %s \n", p->name);
+    else
+    printf("it has a parent : %s, parent name: %s, %d, %d \n", p->name, p->parent->name, p->parent->type, EET_G_HASH);
   eina_hash_add(
         cp->properties,
         //p->name,
         &p,
         en);
+  }
 
   evas_object_smart_callback_add(en, "changed,user", _entry_changed_cb, cp);
   evas_object_smart_callback_add(en, "activated", _entry_activated_cb, cp);
@@ -516,6 +528,13 @@ _component_property_orientation_update(ComponentProperties* cp, void* data, Prop
   
 }
 
+struct _ComponentPropertyCouple
+{
+  ComponentProperties* cp;
+  Property* p;
+  Evas_Object* box;
+};
+
 static Eina_Bool 
 _component_property_update_hash(
       const Eina_Hash *hash,
@@ -523,26 +542,24 @@ _component_property_update_hash(
       void *data,
       void *fdata)
 {
-  printf("the key is %s \n", key);
-  return EINA_TRUE;
 
   const char* keyname = key;
-  Eina_Hash* hash_prop = fdata;
+  printf("update,the key is %s \n", keyname);
   Texture* t = data;
 
+  struct _ComponentPropertyCouple* cpp = fdata;
+  Eina_Hash* hash_prop = eina_hash_find(cpp->cp->properties, &cpp->p);
   Evas_Object* entry = eina_hash_find(hash_prop, keyname);
   elm_object_text_set(entry, t->filename );
+
+  /*
+  Evas_Object* entry = eina_hash_find(hash_prop, keyname);
+  elm_object_text_set(entry, t->filename );
+  */
 
 
   return EINA_TRUE;
 }
-
-struct _ComponentPropertyCouple
-{
-  ComponentProperties* cp;
-  Property* p;
-  Evas_Object* box;
-};
 
 static Evas_Object* 
 _property_add_tex(ComponentProperties* cp, const char* name)
@@ -663,9 +680,9 @@ _component_property_update_data_recur(ComponentProperties* cp, void* data, const
          }
         break;
      case PROPERTY_STRUCT:
-        continue;
          {
-          void** structdata = (void*)data + p->offset;
+          int offset = property_offset_get(p);
+          void** structdata = (void*)data + offset;
           _component_property_update_data_recur(cp, *structdata, p->sub);
          }
          break;
@@ -677,13 +694,13 @@ _component_property_update_data_recur(ComponentProperties* cp, void* data, const
         _component_property_update_data_recur(cp, data, p->sub);
          break;
       case EET_G_HASH:
-         continue;
           {
-           break; //TODO chris now
-           Eina_Hash* hash_prop = eina_hash_find(cp->properties, &p);
-           const void** ptr = (void*)data + p->offset;
+           //Eina_Hash* hash_prop = eina_hash_find(cp->properties, &p);
+           int offset = property_offset_get(p);
+           const void** ptr = (void*)data + offset;
            const Eina_Hash* hash = *ptr;
-           eina_hash_foreach(hash, _component_property_update_hash, hash_prop);
+           struct _ComponentPropertyCouple cpp = {cp, p};
+           eina_hash_foreach(hash, _component_property_update_hash, &cpp);
           }
          break;
      case PROPERTY_POINTER:
@@ -817,9 +834,9 @@ _add_properties(ComponentProperties* cp, const Property* ps, Evas_Object* box, v
          _property_add_fileselect(cp, p);
          break;
      case PROPERTY_STRUCT:
-         continue;
           {
-           void** datastruct = (void*)data + p->offset;
+           int offset = property_offset_get(p);
+           void** datastruct = (void*)data + offset;
            _add_properties(cp, p->sub, cp->box, *datastruct);
           }
          break;
@@ -852,19 +869,17 @@ _add_properties(ComponentProperties* cp, const Property* ps, Evas_Object* box, v
          //_add_properties(cp, p->sub, cp->box, data);
          break;
      case EET_G_HASH:
-         continue;
           {
            Eina_Hash* hash_prop = eina_hash_string_superfast_new(NULL);
            //TODO chris now
-           /*
            eina_hash_add(
                  cp->properties,
                  &p,
                  hash_prop);
-                 */
 
            printf("add properties we have a hash\n");
-           const void** ptr = (void*)data + p->offset;
+           int offset = property_offset_get(p);
+           const void** ptr = (void*)data + offset;
            const Eina_Hash* hash = *ptr;
            struct _ComponentPropertyCouple cpp = {cp, p, box};
            eina_hash_foreach(hash, _component_property_add_hash, &cpp);

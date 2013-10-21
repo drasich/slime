@@ -12,7 +12,9 @@ Property* create_property_set()
 int
 property_offset_get(const Property* p)
 {
-  if (p->parent && p->parent->type != PROPERTY_STRUCT) {
+  if (p->parent &&
+        p->parent->type != PROPERTY_STRUCT &&
+        p->parent->type != EET_G_HASH) {
     return p->offset + property_offset_get(p->parent);
   }
   else return p->offset;

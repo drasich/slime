@@ -144,7 +144,6 @@ resource_shader_create(ResourceManager* rm)
   //Shader* simple = shader_read("shader/simple.shader");
   //Shader* red = shader_read("shader/red.shader");
 
-
   eina_hash_add(rm->shaders, simple->name, simple);
   eina_hash_add(rm->shaders, red->name, red);
   eina_hash_add(rm->shaders, dragger->name, dragger);

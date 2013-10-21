@@ -51,6 +51,7 @@ enum {
    Eet_Data_Descriptor_Class eddc; \
    EET_EINA_FILE_DATA_DESCRIPTOR_CLASS_SET(&eddc, type); \
    ps->descriptor = eet_data_descriptor_stream_new(&eddc); \
+   ps->name = # type; \
  }
 
 //TODO chris
@@ -127,6 +128,7 @@ enum {
    Property* p; \
    PROPERTY_NEW(p, struct_type, member, EET_G_HASH); \
    p->sub = psdata; \
+   p->sub->parent = p; \
    ps->list = eina_list_append(ps->list, p); \
    PROPERTY_SET_TYPE(ps, struct_type); \
    EET_DATA_DESCRIPTOR_ADD_HASH(ps->descriptor, struct_type, # member, member, psdata->descriptor);\
