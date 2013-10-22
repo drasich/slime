@@ -763,8 +763,6 @@ create_my_prop(Component* c, Evas_Object* win, Control* control, bool can_remove
   cp->property = c->properties;
   cp->win = win;
   cp->control = control;
-  //cp->properties = eina_hash_string_superfast_new(_property_entry_free_cb);
-  cp->properties = eina_hash_pointer_new(_property_entry_free_cb);
   cp->name = c->name;
 
   Evas_Object* frame = elm_frame_add(win);

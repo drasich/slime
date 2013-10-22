@@ -12,7 +12,6 @@ struct _ComponentProperties
   Evas_Object* win;
   Evas_Object* box;
   const Property *property;
-  Eina_Hash *properties;
   struct _PropertyView *pw;
   // add callbacks here if we want to call something when data has changed.
   property_changed callback;
