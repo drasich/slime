@@ -29,13 +29,13 @@ struct _Property
   Hint hint;
   Eet_Data_Descriptor *descriptor;
   Property* parent;
-  //Evas_Object* eo;
 };
 
 int property_offset_get(const Property* p);
 
 Property* create_property_set();
 int property_type_check(int type);
+Property* property_real_parent_get(Property* p);
 
 enum {
   PROPERTY_FILENAME = EET_I_LIMIT,

@@ -6,6 +6,7 @@
 Property* create_property_set()
 {
   Property *ps = calloc(1, sizeof *ps);
+  ps->type = PROPERTY_STRUCT_NESTED;
   return ps;
 }
 
@@ -17,7 +18,28 @@ property_offset_get(const Property* p)
         p->parent->type != EET_G_HASH) {
     return p->offset + property_offset_get(p->parent);
   }
-  else return p->offset;
+  else {
+    return p->offset;
+  }
+}
+
+Property* property_real_parent_get(Property* p)
+{
+  if (p->parent) {
+    if (p->parent->type == PROPERTY_STRUCT ||
+          p->parent->type == PROPERTY_STRUCT_NESTED) {
+      printf("parent is struct, %s\n", p->name);
+      return property_real_parent_get(p->parent);
+    }
+    else {
+      printf("return parent, parent type %s, %d\n", p->parent->name, p->parent->type);
+    return p->parent;
+    }
+  }
+  else {
+    printf("return null, %s\n", p->name);
+    return NULL;
+  }
 }
 
 int property_type_check(int type)

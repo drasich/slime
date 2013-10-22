@@ -11,7 +11,7 @@ struct _ComponentProperties
 {
   Evas_Object* win;
   Evas_Object* box;
-  const Property *arr;
+  const Property *property;
   Eina_Hash *properties;
   struct _PropertyView *pw;
   // add callbacks here if we want to call something when data has changed.
@@ -25,6 +25,8 @@ struct _ComponentProperties
 
   Eina_Value saved;
   Quat quat_saved;
+  Eina_List* entries;
+
 };
 
 ComponentProperties* create_my_prop(Component* c, Evas_Object* win, Control* control, bool can_remove);
