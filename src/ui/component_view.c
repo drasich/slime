@@ -14,11 +14,10 @@ static void _add_properties(
 static void
 _entry_orientation_changed_cb(void *data, Evas_Object *obj, void *event)
 {
-  return; //TODO chris
   ComponentProperties* cp = data;
-  void* cd = cp->component->data;
+  //void* cd = cp->component->data;
 
-  if (cd == NULL) return;
+  //if (cd == NULL) return;
 
   Property* p = evas_object_data_get(obj, "property");
   void* thedata = evas_object_data_get(obj, "data");
@@ -41,7 +40,7 @@ _entry_orientation_changed_cb(void *data, Evas_Object *obj, void *event)
 
   q = quat_mul(cp->quat_saved, q);
   int offset = property_offset_get(p);
-  memcpy(cd + offset, &q, sizeof q);
+  memcpy(thedata + offset, &q, sizeof q);
 }
 
 static void
