@@ -15,9 +15,6 @@ static void
 _entry_orientation_changed_cb(void *data, Evas_Object *obj, void *event)
 {
   ComponentProperties* cp = data;
-  //void* cd = cp->component->data;
-
-  //if (cd == NULL) return;
 
   Property* p = evas_object_data_get(obj, "property");
   void* thedata = evas_object_data_get(obj, "data");
