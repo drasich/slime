@@ -21,6 +21,7 @@ _entry_orientation_changed_cb(void *data, Evas_Object *obj, void *event)
   if (cd == NULL) return;
 
   Property* p = evas_object_data_get(obj, "property");
+  void* thedata = evas_object_data_get(obj, "data");
   const char* name = evas_object_data_get(obj, "property_name");
 
   double v =  elm_spinner_value_get(obj);
@@ -468,33 +469,6 @@ _property_add_fileselect(ComponentProperties* cp, Property* p)
   return en;
 }
 
-
-static void
-_component_property_orientation_update(ComponentProperties* cp, void* data, Property* p)
-{
-  return; //TODO chris
-  Quat q;
-  int offset = property_offset_get(p);
-  memcpy(&q, (void*)data + offset, sizeof q);
-  Vec3 deg = quat_to_euler_deg(q);
-  //printf("deg : %f, %f, %f \n", deg.x, deg.y, deg.z);
-  Eina_List* widgets = eina_hash_find(cp->properties, &p);
-
-  Eina_List* l;
-  Evas_Object* o;
-  int i = 0;
-  EINA_LIST_FOREACH(widgets, l, o) {
-    if (i==0)
-    elm_spinner_value_set(o, deg.x );
-    else if (i==1)
-    elm_spinner_value_set(o, deg.y );
-    else if (i==2)
-    elm_spinner_value_set(o, deg.z );
-    ++i;
-  }
-  
-}
-
 struct _ComponentPropertyCouple
 {
   ComponentProperties* cp;
@@ -537,9 +511,26 @@ component_property_update_data(ComponentProperties* cp)
   EINA_LIST_FOREACH(cp->entries, l, obj) {
     Property* p = evas_object_data_get(obj, "property");
     void* data = evas_object_data_get(obj, "data");
-    //printf("property %s, data %p \n", p->name, data);
+    //printf("property %s, data %p, type %d \n", p->name, data, p->type);
 
     switch(p->type) {
+      case PROPERTY_STRUCT_NESTED:
+        if (!strcmp(p->name, "orientation")) {
+
+          Quat q;
+          int offset = property_offset_get(p);
+          memcpy(&q, (void*)data + offset, sizeof q);
+          Vec3 deg = quat_to_euler_deg(q);
+          //printf("deg : %f, %f, %f \n", deg.x, deg.y, deg.z);
+          const char* pname = evas_object_data_get(obj, "property_name");
+          if (!strcmp(pname, "x"))
+          elm_spinner_value_set(obj, deg.x );
+          else if (!strcmp(pname, "y"))
+          elm_spinner_value_set(obj, deg.y );
+          else if (!strcmp(pname, "z"))
+          elm_spinner_value_set(obj, deg.z );
+        }
+        break;
       case EET_T_DOUBLE:
          {
           double d;
@@ -610,7 +601,8 @@ _property_add_spinner_angle(
       ComponentProperties* cp,
       Property* p,
       Evas_Object* box,
-      const char* name)
+      const char* name,
+      void* data)
 {
   Evas_Object *en, *label;
 
@@ -640,30 +632,27 @@ _property_add_spinner_angle(
   evas_object_smart_callback_add(en, "spinner,drag,start", _spinner_drag_start_cb, cp);
   evas_object_smart_callback_add(en, "spinner,drag,stop", _spinner_drag_stop_cb, cp);
 
+
   evas_object_data_set(en, "property", p);
   evas_object_data_set(en, "property_name", name);
+  evas_object_data_set(en, "data", data );
+  cp->entries = eina_list_append(cp->entries, en);
 
   return en;
 }
 
 
 static void
-_add_orientation_properties(ComponentProperties* cp, Property* p, Evas_Object* box)
+_add_orientation_properties(ComponentProperties* cp, Property* p, Evas_Object* box, void* data)
 {
   Eina_List* l = NULL;
 
   l = eina_list_append(l,
-  _property_add_spinner_angle(cp, p, box, "x"));
+  _property_add_spinner_angle(cp, p, box, "x", data));
   l = eina_list_append(l,
-  _property_add_spinner_angle(cp, p, box, "y"));
+  _property_add_spinner_angle(cp, p, box, "y", data));
   l = eina_list_append(l,
-  _property_add_spinner_angle(cp, p, box, "z"));
-
-  eina_hash_add(
-        cp->properties,
-        &p,
-        l);
-
+  _property_add_spinner_angle(cp, p, box, "z", data));
 }
 
 static Evas_Object*
@@ -730,7 +719,9 @@ _add_properties(ComponentProperties* cp, const Property* ps, Evas_Object* box, v
            elm_box_pack_end(hbox, label);
 
            if (!strcmp(p->name, "orientation")) {
-             _add_orientation_properties(cp, p, hbox);
+             int offset = property_offset_get(p);
+             void* datastruct = (void*)data + offset;
+             _add_orientation_properties(cp, p, hbox, data);
            }
            else {
              int offset = property_offset_get(p);
@@ -739,18 +730,14 @@ _add_properties(ComponentProperties* cp, const Property* ps, Evas_Object* box, v
            }
 
          }
-         //else
-         //_add_properties(cp, p->sub, cp->box, data);
+         else {
+             int offset = property_offset_get(p);
+             void* datastruct = (void*)data + offset;
+             _add_properties(cp, p->sub, cp->box, datastruct);
+         }
          break;
      case EET_G_HASH:
           {
-           Eina_Hash* hash_prop = eina_hash_string_superfast_new(NULL);
-           //TODO chris now
-           eina_hash_add(
-                 cp->properties,
-                 &p,
-                 hash_prop);
-
            int offset = property_offset_get(p);
            const void** ptr = (void*)data + offset;
            const Eina_Hash* hash = *ptr;
