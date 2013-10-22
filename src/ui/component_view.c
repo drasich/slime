@@ -198,6 +198,8 @@ _create_resource_menu(Evas_Object* win, const char* resource_type)
   hash = resource_meshes_get(s_rm);
   else if (!strcmp(resource_type, "shader"))
   hash = resource_shaders_get(s_rm);
+  else if (!strcmp(resource_type, "texture"))
+  hash = resource_textures_get(s_rm);
 
   if (!hash) return NULL;
 

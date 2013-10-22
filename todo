@@ -1,4 +1,7 @@
 LATELY
+- in shader instance replace Texture by just the path of the image?
+  but what if it's a fbo... don't care? or just in Texture replace filename
+  string by resource
 - show textures and uniforms in meshcomponent/shaderinstance
   - first textures, component_view _component_property_add_hash
 - rotate dragger : display a better disk

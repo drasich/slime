@@ -44,6 +44,13 @@ resource_shaders_get(ResourceManager* rm)
   return rm->shaders;
 }
 
+Eina_Hash*
+resource_textures_get(ResourceManager* rm)
+{
+  return rm->textures;
+}
+
+
 static void
 _print_cb(const char *name, const char *path, void *data)
 {
