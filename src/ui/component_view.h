@@ -32,6 +32,6 @@ struct _ComponentProperties
 ComponentProperties* create_my_prop(Component* c, Evas_Object* win, Control* control, bool can_remove);
 ComponentProperties* create_component_properties(Component* c, struct _PropertyView* pw);
 
-void component_property_update_data(ComponentProperties* mp, void* data);
+void component_property_update_data(ComponentProperties* mp);
 
 #endif

@@ -69,7 +69,7 @@ property_update_components_data(PropertyView* pw, Component* component)
 
   EINA_LIST_FOREACH(pw->component_widgets, l, cp) {
     if (component == cp->component)
-    component_property_update_data(cp, cp->component->data);
+    component_property_update_data(cp);
   }
 }
 
@@ -206,13 +206,13 @@ property_object_display(PropertyView* pw, Object* o)
   cp = create_component_properties(o->component, pw);
   property_add_component(pw, cp);
   cp->component = o->component;
-  component_property_update_data(cp, o->component->data);
+  component_property_update_data(cp);
 
   EINA_LIST_FOREACH(o->components, l, c) {
     cp = create_component_properties(c, pw);
     property_add_component(pw, cp);
     cp->component = c;
-    component_property_update_data(cp, c->data);
+    component_property_update_data(cp);
   }
 
 }
@@ -225,7 +225,7 @@ property_update_component(PropertyView* pw, const char* name)
 
   EINA_LIST_FOREACH(pw->component_widgets, l, cp) {
     if (!strcmp(cp->name, name)) {
-      component_property_update_data(cp, cp->component->data);
+      component_property_update_data(cp);
     }
   }
 
