@@ -184,3 +184,25 @@ resource_texture_create(ResourceManager* rm)
   eina_hash_add(rm->textures, tex->filename, tex);
 }
 
+/*
+void
+resource_handle_change(ResourceManager* rm, ResourceHandle* rh, const char* name)
+{
+  Resource* r = resource_get(rm, name);
+  if (!r) return;
+
+  if (r->is_loaded) {
+    rh->resource = r;
+    return;
+  }
+  else if (!rh->r) {
+    //TODO
+    //rh->r = resource_default_(rm);
+  }
+
+  ResourceWaiting rw = { rh, r};
+
+  rm->waiting = eina_list_append(rm->waiting, rw);
+
+}
+*/

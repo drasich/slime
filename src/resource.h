@@ -13,6 +13,8 @@ struct _ResourceManager {
   Eina_List* meshes_to_load;
   Eina_Hash* textures;
   Eina_List* textures_to_load;
+
+  Eina_List* waiting;
 };
 
 Mesh* resource_mesh_get(ResourceManager* rm, const char* name);
@@ -36,5 +38,31 @@ Eina_Hash* resource_textures_get(ResourceManager* rm);
 ResourceManager* resource_manager_create();
 
 ResourceManager* s_rm;
+
+
+//////////////////
+
+typedef struct _Resource Resource;
+struct _Resource {
+  const char* name;
+  int type;
+  void* data;
+  bool is_loaded;
+};
+
+typedef struct _ResourceHandle ResourceHandle;
+struct _ResourceHandle {
+  const char* name;
+  Resource *resource;
+};
+
+void resource_handle_change(ResourceManager* rm, ResourceHandle* rh, const char* name);
+
+typedef struct _ResourceWaiting ResourceWaiting;
+struct _ResourceWaiting {
+  ResourceHandle* rh;
+  Resource* r;
+};
+
 
 #endif
