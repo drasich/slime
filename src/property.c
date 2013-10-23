@@ -88,11 +88,13 @@ Property* property_set_resource_handle()
   Property* ps = create_property_set();
   //PROPERTY_SET_TYPE(ps, ResourceHandle);
   PROPERTY_SET_TYPE(ps, TextureHandle);
-  ps->name = "resource_handle";
+  ps->name = "texture file";
   ps->type = PROPERTY_RESOURCE;
   ps->resource_type_new = RESOURCE_TEXTURE;
   ps->resource_type = "texture"; //TODO remove
   ps->is_resource = true;
+
+  EET_DATA_DESCRIPTOR_ADD_BASIC(ps->descriptor, TextureHandle, "name", name, EET_T_STRING);
 
   //PROPERTY_BASIC_ADD(ps, ResourceHandle, name, EET_T_STRING);
 
