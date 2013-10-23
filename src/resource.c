@@ -206,3 +206,33 @@ resource_handle_change(ResourceManager* rm, ResourceHandle* rh, const char* name
 
 }
 */
+
+TextureHandle* texture_handle_new()
+{
+  TextureHandle* th = calloc(1, sizeof *th);
+  return th;
+}
+
+TextureHandle* resource_texture_handle_new(ResourceManager* rm, const char* name)
+{
+  TextureHandle* th = calloc(1, sizeof *th);
+  resource_texture_handle_set(rm, th, name);
+  return th;
+}
+
+void
+resource_texture_handle_set(ResourceManager* rm, TextureHandle* th, const char* name)
+{
+  th->name = name;
+  Texture* t = resource_texture_get(rm, name);
+  if (t)
+  th->texture = t;
+  else {
+    //TODO waiting list
+    /*
+    ResourceWaiting rw = { rh, r};
+    rm->waiting = eina_list_append(rm->waiting, rw);
+    */
+  }
+}
+

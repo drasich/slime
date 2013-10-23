@@ -355,7 +355,7 @@ static Eina_Bool uniform_send(
   GLint uniloc =  uni->location;
   if (uniloc < 0) {
     printf("no such uniform '%s' \n", key);
-    return;
+    return EINA_FALSE;
   }
 
   //TODO data

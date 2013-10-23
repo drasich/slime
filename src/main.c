@@ -117,7 +117,8 @@ _object_mesh_create(const char* file)
   MeshComponent* mc = meshcomp->data;
   mesh_component_shader_set_by_name(mc,"shader/simple.shader");
 
-  Texture* t = resource_texture_get(s_rm, "model/ceil.png");
+  TextureHandle* t = resource_texture_handle_new(s_rm, "model/ceil.png");
+  //Texture* t = resource_texture_get(s_rm, "model/ceil.png");
   shader_instance_texture_data_set(mc->shader_instance, "texture", t);
 
   mc->mesh_name = file;

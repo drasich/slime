@@ -56,6 +56,15 @@ struct _ResourceHandle {
   Resource *resource;
 };
 
+typedef struct _TextureHandle TextureHandle;
+struct _TextureHandle {
+  const char* name;
+  Texture *texture;
+};
+
+TextureHandle* texture_handle_new();
+
+
 void resource_handle_change(ResourceManager* rm, ResourceHandle* rh, const char* name);
 
 typedef struct _ResourceWaiting ResourceWaiting;
@@ -64,5 +73,7 @@ struct _ResourceWaiting {
   Resource* r;
 };
 
+TextureHandle* resource_texture_handle_new(ResourceManager* rm, const char* name);
+void resource_texture_handle_set(ResourceManager* rm, TextureHandle* th, const char* name);
 
 #endif

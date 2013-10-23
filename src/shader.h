@@ -63,6 +63,8 @@ void shader_init_attribute(Shader* s, char* att_name, GLuint* att);
 void shader_init_uniform(Shader* s, char* uni_name, GLint* uni);
 
 void shader_use(Shader* s);
+struct _MeshComponent;
+void shader_mesh_draw(Shader* s, struct _MeshComponent* mc);
 
 void shader_destroy(Shader* s);
 
@@ -77,6 +79,7 @@ void shader_matrices_set(Shader* mesh, Matrix4 mat, const Matrix4 projection);
 void shader_uniform_add(Shader* s, const char* name);
 void shader_uniform_type_add(Shader* s, const char* name, UniformType type);
 Uniform* shader_uniform_get(Shader* s, const char* name);
+GLint shader_uniform_location_get(Shader* s, const char* name);
 
 void shader_attribute_add(Shader* s, const char* name, GLint size, GLenum type);
 

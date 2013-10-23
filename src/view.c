@@ -426,7 +426,7 @@ _create_grid(Camera* camera)
 static void
 _file_chosen(void *data, Evas_Object *obj __UNUSED__, void *event_info)
 {
-  printf("todo %s %s\n",  __FILE__, __LINE__);
+  printf("todo %s %d\n",  __FILE__, __LINE__);
   /*
   const char *file = event_info;
   View* v = data;
@@ -1063,8 +1063,16 @@ create_render()
 
   mesh_component_shader_set(mc, s);
 
-  shader_instance_texture_data_set(mc->shader_instance, "texture", tsel);
-  shader_instance_texture_data_set(mc->shader_instance, "texture_all", tall);
+  TextureHandle* th = texture_handle_new();
+  th->name = "fbo_sel";
+  th->texture = tsel;
+  //shader_instance_texture_data_set(mc->shader_instance, "texture", tsel);
+  shader_instance_texture_data_set(mc->shader_instance, "texture", th);
+  th = texture_handle_new();
+  th->name = "fbo_all";
+  th->texture = tall;
+  //shader_instance_texture_data_set(mc->shader_instance, "texture_all", tall);
+  shader_instance_texture_data_set(mc->shader_instance, "texture_all", th);
 
 
   /*

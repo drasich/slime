@@ -183,11 +183,10 @@ _change_resource(void *data,
       memcpy(entrydata + offset, &name, entryproperty->size);
       mc->shader = resource_shader_get(s_rm, name);
     }
-    else if (!strcmp(p->name, "texture")) {
-      //TODO chris change the texture
-      ShaderInstance* si = mc->shader_instance;
-      Texture* t = resource_texture_get(s_rm, name);
-      shader_instance_texture_data_set(si, "texture", t);
+    //else if (!strcmp(p->name, "texture")) {
+    else if (!strcmp(p->resource_type, "texture")) {
+      TextureHandle* t = entrydata;
+      resource_texture_handle_set(s_rm, t, name);
     }
   }
 }
@@ -307,7 +306,7 @@ _entry_unfocused_cb(void *data, Evas_Object *obj, void *event)
 }
 
 static Evas_Object* 
-_property_add_entry(ComponentProperties* cp, Property* p, void* data)
+_property_add_entry(ComponentProperties* cp, const Property* p, void* data)
 {
   Evas_Object *en, *bx2, *label;
 
@@ -360,9 +359,64 @@ _property_add_entry(ComponentProperties* cp, Property* p, void* data)
 
 }
 
+static Evas_Object* 
+_property_add_resource(ComponentProperties* cp, Property* p, void* data)
+{
+  Evas_Object *en, *bx2, *label;
+
+  bx2 = elm_box_add(cp->win);
+  elm_box_horizontal_set(bx2, EINA_TRUE);
+  evas_object_size_hint_weight_set(bx2, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bx2, EVAS_HINT_FILL, EVAS_HINT_FILL);
+
+  label = elm_label_add(cp->win);
+  char s[256];
+  sprintf(s, "<b> %s </b> : ", p->name);
+
+  elm_object_text_set(label, s);
+  evas_object_show(label);
+  elm_box_pack_end(bx2, label);
+
+  en = elm_entry_add(cp->win);
+  elm_entry_scrollable_set(en, EINA_TRUE);
+  evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
+  elm_object_text_set(en, "none");
+  //elm_entry_scrollbar_policy_set(en, 
+  //      ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_OFF);
+  elm_entry_single_line_set(en, EINA_TRUE);
+  //elm_entry_select_all(en);
+  evas_object_show(en);
+  elm_box_pack_end(bx2, en);
+  elm_entry_editable_set(en, EINA_FALSE);
+
+  evas_object_name_set(en, p->name);
+
+  evas_object_data_set(en, "property", p);
+  evas_object_data_set(en, "data", data );
+  cp->entries = eina_list_append(cp->entries, en);
+
+  evas_object_smart_callback_add(en, "changed,user", _entry_changed_cb, cp);
+  evas_object_smart_callback_add(en, "activated", _entry_activated_cb, cp);
+  evas_object_smart_callback_add(en, "aborted", _entry_aborted_cb, cp);
+  evas_object_smart_callback_add(en, "focused", _entry_focused_cb, cp);
+  evas_object_smart_callback_add(en, "unfocused", _entry_unfocused_cb, cp);
+  evas_object_smart_callback_add(en, "clicked", _entry_clicked_cb, cp);
+
+  elm_entry_context_menu_disabled_set(en, EINA_TRUE);
+  
+  elm_box_pack_end(cp->box, bx2);
+  evas_object_show(bx2);
+
+  return en;
+
+}
+
+
+
 
 static Evas_Object* 
-_property_add_spinner(ComponentProperties* cp, Property* p, Evas_Object* box, void* data)
+_property_add_spinner(ComponentProperties* cp, const Property* p, Evas_Object* box, void* data)
 {
   Evas_Object *en, *label;
 
@@ -414,7 +468,7 @@ _file_chosen(void *data, Evas_Object *obj, void *event_info)
 
 
 static Evas_Object*
-_property_add_fileselect(ComponentProperties* cp, Property* p)
+_property_add_fileselect(ComponentProperties* cp, const Property* p)
 {
   printf("file select %s \n", cp->name);
   printf("file select %s \n", cp->component->name);
@@ -481,7 +535,7 @@ _property_add_fileselect(ComponentProperties* cp, Property* p)
 struct _ComponentPropertyCouple
 {
   ComponentProperties* cp;
-  Property* p;
+  const Property* p;
   Evas_Object* box;
 };
 
@@ -506,6 +560,7 @@ _component_property_add_hash(
   elm_box_pack_end(cpp->cp->box, label);
   evas_object_show(label);
 
+  //printf("hhhhhhhhhhhhhhhhhhhh addddddddd hashhhhhhhhhhhhh %s, data :%p \n", keyname, data);
   _add_properties(cpp->cp, cpp->p->sub, cpp->box, data);
 
   return EINA_TRUE;
@@ -520,7 +575,7 @@ component_property_update_data(ComponentProperties* cp)
   EINA_LIST_FOREACH(cp->entries, l, obj) {
     Property* p = evas_object_data_get(obj, "property");
     void* data = evas_object_data_get(obj, "data");
-    //printf("property %s, data %p, type %d \n", p->name, data, p->type);
+    //printf("update data property %s, data %p, type %d \n", p->name, data, p->type);
 
     switch(p->type) {
       case PROPERTY_STRUCT_NESTED:
@@ -528,7 +583,8 @@ component_property_update_data(ComponentProperties* cp)
 
           Quat q;
           int offset = property_offset_get(p);
-          memcpy(&q, (void*)data + offset, sizeof q);
+          //memcpy(&q, (void*)data + offset, sizeof q);
+          memcpy(&q, data + offset, sizeof q);
           Vec3 deg = quat_to_euler_deg(q);
           //printf("deg : %f, %f, %f \n", deg.x, deg.y, deg.z);
           const char* pname = evas_object_data_get(obj, "property_name");
@@ -544,7 +600,8 @@ component_property_update_data(ComponentProperties* cp)
          {
           double d;
           int offset = property_offset_get(p);
-          memcpy(&d, (void*)data + offset, sizeof d);
+          //memcpy(&d, (void*)data + offset, sizeof d);
+          memcpy(&d, data + offset, sizeof d);
           //printf("my value is : %f\n", d);
           //printf("%f\n",d);
           double old = elm_spinner_value_get(obj);
@@ -557,7 +614,8 @@ component_property_update_data(ComponentProperties* cp)
       case EET_T_STRING:
          {
           int offset = property_offset_get(p);
-          const char** str = (void*)data + offset;
+          //const char** str = (void*)data + offset;
+          const char** str = data + offset;
           const char* s = elm_object_text_get(obj);
           if (!*str) break;
           if (strcmp(*str,s)) 
@@ -580,6 +638,15 @@ component_property_update_data(ComponentProperties* cp)
           }
           */
 
+         break;
+     case PROPERTY_RESOURCE:
+          {
+           int offset = property_offset_get(p);
+           const TextureHandle* th = data + offset;
+           const char* s = elm_object_text_get(obj);
+           if (strcmp(th->name,s)) 
+           elm_object_text_set(obj, th->name );
+          }
          break;
     }
   }
@@ -608,7 +675,7 @@ _remove_component(
 static Evas_Object* 
 _property_add_spinner_angle(
       ComponentProperties* cp,
-      Property* p,
+      const Property* p,
       Evas_Object* box,
       const char* name,
       void* data)
@@ -652,7 +719,7 @@ _property_add_spinner_angle(
 
 
 static void
-_add_orientation_properties(ComponentProperties* cp, Property* p, Evas_Object* box, void* data)
+_add_orientation_properties(ComponentProperties* cp, const Property* p, Evas_Object* box, void* data)
 {
   Eina_List* l = NULL;
 
@@ -680,88 +747,104 @@ _property_struct_add(ComponentProperties* cp, const Property* p)
   return label;
 }
 
+static void
+_property_add(ComponentProperties* cp, const Property* p, Evas_Object* box, void* data)
+{
+  //printf("property add name: %s , type: %d, offset: %d, data : %p\n", p->name, p->type, p->offset, data);
+
+  switch(p->type) {
+    case EET_T_DOUBLE:
+       {
+        _property_add_spinner(cp, p, box, data);
+       }
+      break;
+    case EET_T_STRING:
+      _property_add_entry(cp, p, data);
+      break;
+    case PROPERTY_FILENAME:
+      _property_add_fileselect(cp, p);
+      break;
+    case PROPERTY_STRUCT:
+       {
+        int offset = property_offset_get(p);
+        //void** datastruct = (void*)data + offset;
+        void** datastruct = data + offset;
+        //void* datastruct = data + offset;
+        _property_struct_add(cp, p);
+        _add_properties(cp, p->sub, cp->box, *datastruct);
+       }
+      break;
+    case PROPERTY_STRUCT_NESTED:
+      if (p->sub->hint == HORIZONTAL) {
+        Evas_Object* hbox = elm_box_add(cp->win);
+        elm_box_horizontal_set(hbox, EINA_TRUE);
+        evas_object_size_hint_weight_set(hbox, EVAS_HINT_EXPAND, 0.0);
+        evas_object_size_hint_align_set(hbox, EVAS_HINT_FILL, EVAS_HINT_FILL);
+        elm_box_pack_end(box, hbox);
+        evas_object_show(hbox);
+        //TODO clean box
+        //
+        Evas_Object* label = elm_label_add(cp->win);
+        char s[256];
+        sprintf(s, "<b> %s </b> : ", p->name);
+
+        elm_object_text_set(label, s);
+        evas_object_show(label);
+        elm_box_pack_end(hbox, label);
+
+        if (!strcmp(p->name, "orientation")) {
+          int offset = property_offset_get(p);
+          //void* datastruct = (void*)data + offset;
+          void* datastruct = data + offset;
+          _add_orientation_properties(cp, p, hbox, data);
+        }
+        else {
+          int offset = property_offset_get(p);
+          //void* datastruct = (void*)data + offset;
+          void* datastruct = data + offset;
+          _add_properties(cp, p->sub, hbox, datastruct);
+        }
+
+      }
+      else {
+        int offset = property_offset_get(p);
+        void* datastruct = (void*)data + offset;
+        _add_properties(cp, p->sub, cp->box, datastruct);
+      }
+      break;
+    case EET_G_HASH:
+       {
+        int offset = property_offset_get(p);
+        const void** ptr = data + offset;
+        const Eina_Hash* hash = *ptr;
+        struct _ComponentPropertyCouple cpp = {cp, p, box};
+        eina_hash_foreach(hash, _component_property_add_hash, &cpp);
+       }
+      break;
+    case PROPERTY_POINTER:
+      //TODO
+      //_property_add_entry(cp, p);
+      break;
+    case PROPERTY_RESOURCE:
+      _property_add_entry(cp, p, data);
+      break;
+    default:
+      fprintf (stderr, "type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
+      break;
+  }
+
+}
 
 static void
 _add_properties(ComponentProperties* cp, const Property* ps, Evas_Object* box, void* data )
 {
+  _property_add(cp, ps, box, data);
+
   Property *p;
   Eina_List* l;
   EINA_LIST_FOREACH(ps->list, l, p) {
    //printf("name: %s , type: %d, offset: %d, data : %p\n", p->name, p->type, p->offset, data);
-   //printf("   value is : ");
-   switch(p->type) {
-     case EET_T_DOUBLE:
-        {
-         _property_add_spinner(cp, p, box, data);
-        }
-         break;
-     case EET_T_STRING:
-         _property_add_entry(cp, p, data);
-         break;
-     case PROPERTY_FILENAME:
-         _property_add_fileselect(cp, p);
-         break;
-     case PROPERTY_STRUCT:
-          {
-           int offset = property_offset_get(p);
-           void** datastruct = (void*)data + offset;
-           _property_struct_add(cp, p);
-           _add_properties(cp, p->sub, cp->box, *datastruct);
-          }
-         break;
-     case PROPERTY_STRUCT_NESTED:
-         if (p->sub->hint == HORIZONTAL) {
-           Evas_Object* hbox = elm_box_add(cp->win);
-           elm_box_horizontal_set(hbox, EINA_TRUE);
-           evas_object_size_hint_weight_set(hbox, EVAS_HINT_EXPAND, 0.0);
-           evas_object_size_hint_align_set(hbox, EVAS_HINT_FILL, EVAS_HINT_FILL);
-           elm_box_pack_end(box, hbox);
-           evas_object_show(hbox);
-           //TODO clean box
-           //
-           Evas_Object* label = elm_label_add(cp->win);
-           char s[256];
-           sprintf(s, "<b> %s </b> : ", p->name);
-
-           elm_object_text_set(label, s);
-           evas_object_show(label);
-           elm_box_pack_end(hbox, label);
-
-           if (!strcmp(p->name, "orientation")) {
-             int offset = property_offset_get(p);
-             void* datastruct = (void*)data + offset;
-             _add_orientation_properties(cp, p, hbox, data);
-           }
-           else {
-             int offset = property_offset_get(p);
-             void* datastruct = (void*)data + offset;
-             _add_properties(cp, p->sub, hbox, datastruct);
-           }
-
-         }
-         else {
-             int offset = property_offset_get(p);
-             void* datastruct = (void*)data + offset;
-             _add_properties(cp, p->sub, cp->box, datastruct);
-         }
-         break;
-     case EET_G_HASH:
-          {
-           int offset = property_offset_get(p);
-           const void** ptr = (void*)data + offset;
-           const Eina_Hash* hash = *ptr;
-           struct _ComponentPropertyCouple cpp = {cp, p, box};
-           eina_hash_foreach(hash, _component_property_add_hash, &cpp);
-          }
-         break;
-     case PROPERTY_POINTER:
-         //TODO
-         //_property_add_entry(cp, p);
-         break;
-     default:
-         fprintf (stderr, "type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
-         break;
-   }
+   _property_add(cp, p, box, data);
   }
 
 }

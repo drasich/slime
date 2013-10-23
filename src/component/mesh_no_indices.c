@@ -181,7 +181,7 @@ void mesh_read_file_no_indices(Mesh* mesh, FILE* f)
 void
 mesh_show_wireframe(Mesh* m, bool b)
 {
-  printf("todo %s, %s\n", __FILE__, __LINE__);
+  printf("todo %s, %d\n", __FILE__, __LINE__);
   //shader_use(m->shader);
   //gl->glUniform1i(m->uniform_wireframe, b?1:0);
 }

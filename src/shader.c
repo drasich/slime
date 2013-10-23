@@ -29,7 +29,7 @@ _shader_attribute_location_init(Shader* s, Attribute* att)
 {
   GLint att_tmp = gl->glGetAttribLocation(s->program, att->name);
   if (att_tmp == -1) {
-    printf("Error in getting attribute '%s'\n", att->name);
+    printf("Shader %s, Error in getting attribute '%s' at line %d \n", s->name, att->name, __LINE__);
   }
   else {
      att->location = att_tmp;
@@ -146,7 +146,7 @@ shader_init_attribute(Shader* s, char* att_name, GLuint* att)
 {
   GLint att_tmp = gl->glGetAttribLocation(s->program, att_name);
   if (att_tmp == -1) {
-    printf("Error in getting attribute %s \n", att_name);
+    printf("Error in getting attribute '%s' at line %d\n", att_name, __LINE__);
   }
   else {
      *att = att_tmp;
@@ -299,8 +299,9 @@ shader_read(const char* filename)
 }
 
 #include "texture.h"
+#include "resource.h"
 void 
-shader_mesh_draw(Shader* s, MeshComponent* mc)
+shader_mesh_draw(Shader* s, struct _MeshComponent* mc)
 {
   Mesh* m = mc->mesh;
 
@@ -313,8 +314,11 @@ shader_mesh_draw(Shader* s, MeshComponent* mc)
       //GLint uni_tex = shader_uniform_location_get(s, uniname);
       GLint uni_tex = uni->location;
       GLint tex_id = -1;
-      Texture* t = shader_instance_texture_data_get(mc->shader_instance, uniname);
-      if (t) {
+      TextureHandle* th = shader_instance_texture_data_get(mc->shader_instance, uniname);
+
+      //Texture* t = shader_instance_texture_data_get(mc->shader_instance, uniname);
+      if (th && th->texture) {
+        Texture* t = th->texture;
         texture_init(t);
         tex_id = texture_id_get(t);
       }
@@ -496,8 +500,10 @@ property_set_shader_instance()
   Property* ps = create_property_set();
   PROPERTY_SET_TYPE(ps, ShaderInstance);
 
-  Property* ps_tex = property_set_texture();
+  //Property* ps_tex = property_set_texture();
+  Property* ps_tex = property_set_resource_handle();
 
   PROPERTY_HASH_ADD(ps, ShaderInstance, textures, ps_tex);
   return ps;
 }
+

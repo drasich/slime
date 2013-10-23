@@ -2,11 +2,12 @@
 #include "property.h"
 #include "vec.h"
 #include "quat.h"
+#include "resource.h"
 
 Property* create_property_set()
 {
   Property *ps = calloc(1, sizeof *ps);
-  ps->type = PROPERTY_STRUCT_NESTED;
+  ps->type = PROPERTY_ROOT;
   return ps;
 }
 
@@ -79,5 +80,25 @@ property_set_quat()
   return ps;
 }
 
+static Property* _resource_handle = NULL;
+Property* property_set_resource_handle()
+{
+  if (_resource_handle) return _resource_handle;
+
+  Property* ps = create_property_set();
+  //PROPERTY_SET_TYPE(ps, ResourceHandle);
+  PROPERTY_SET_TYPE(ps, TextureHandle);
+  ps->name = "resource_handle";
+  ps->type = PROPERTY_RESOURCE;
+  ps->resource_type_new = RESOURCE_TEXTURE;
+  ps->resource_type = "texture"; //TODO remove
+  ps->is_resource = true;
+
+  //PROPERTY_BASIC_ADD(ps, ResourceHandle, name, EET_T_STRING);
+
+  _resource_handle = ps;
+
+  return ps;
+}
 
 
