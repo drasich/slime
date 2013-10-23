@@ -29,7 +29,6 @@ struct _Property
 
   bool is_resource;
   const char* resource_type;
-  int type_group;
 
   Eina_List* list;
   Hint hint;
