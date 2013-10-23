@@ -12,6 +12,12 @@ enum _Hint{
   HORIZONTAL
 };
 
+typedef enum _ResourceType ResourceType;
+enum _ResourceType{
+  RESOURCE_TEXTURE,
+  RESOURCE_MESH,
+  RESOURCE_SHADER
+};
 
 struct _Property
 {
@@ -28,7 +34,6 @@ struct _Property
   Eina_List* list;
   Hint hint;
   Eet_Data_Descriptor *descriptor;
-  Property* parent;
 };
 
 int property_offset_get(const Property* p);
@@ -42,6 +47,7 @@ enum {
   PROPERTY_STRUCT,
   PROPERTY_STRUCT_NESTED,
   PROPERTY_POINTER,
+  PROPERTY_RESOURCE,
   TEST1,
   TEST2
 };
@@ -72,7 +78,6 @@ enum {
    Property *p; \
    PROPERTY_NEW(p, struct_type, member, member_type); \
    p->name = name_str; \
-   p->parent = ps; \
    ps->list = eina_list_append(ps->list, p); \
    PROPERTY_SET_TYPE(ps, struct_type); \
    EET_DATA_DESCRIPTOR_ADD_BASIC(ps->descriptor, struct_type, name_str, member, member_type); \
@@ -87,7 +92,6 @@ enum {
    Property *p; \
    PROPERTY_NEW(p, struct_type, member, PROPERTY_STRUCT); \
    p->sub = ssub; \
-   ssub->parent = p; \
    ps->list = eina_list_append(ps->list, p); \
    PROPERTY_SET_TYPE(ps, struct_type); \
    EET_DATA_DESCRIPTOR_ADD_SUB(ps->descriptor, struct_type, # member, member, ssub->descriptor); \
@@ -100,8 +104,6 @@ enum {
    Property *p; \
    PROPERTY_NEW(p, struct_type, member, PROPERTY_STRUCT_NESTED); \
    p->sub = ssub; \
-   ssub->parent = p; \
-   p->parent = ps; \
    /*add_offset(ssub, p->offset); */ \
    ps->list = eina_list_append(ps->list, p); \
    PROPERTY_SET_TYPE(ps, struct_type); \
@@ -122,13 +124,27 @@ enum {
    EET_DATA_DESCRIPTOR_ADD_BASIC(ps->descriptor, struct_type, # member, member, EET_T_STRING);\
  } while(0)
 
+/*
+#define PROPERTY_RESOURCE_ADD_NEW(ps, struct_type, member, resource_type_id) \
+ do { \
+   Property* p; \
+   PROPERTY_NEW(p, struct_type, member, PROPERTY_RESOURCE); \
+   p->name = # member; \
+   p->sub = NULL; \
+   p->is_resource = true; \
+   p->resource_type = resource_type_str; \
+   ps->list = eina_list_append(ps->list, p); \
+   PROPERTY_SET_TYPE(ps, struct_type); \
+   EET_DATA_DESCRIPTOR_ADD_BASIC(ps->descriptor, struct_type, # member, member, EET_T_STRING);\
+ } while(0)
+ */
+
 
 #define PROPERTY_HASH_ADD(ps, struct_type, member, psdata) \
  do { \
    Property* p; \
    PROPERTY_NEW(p, struct_type, member, EET_G_HASH); \
    p->sub = psdata; \
-   p->sub->parent = p; \
    ps->list = eina_list_append(ps->list, p); \
    PROPERTY_SET_TYPE(ps, struct_type); \
    EET_DATA_DESCRIPTOR_ADD_HASH(ps->descriptor, struct_type, # member, member, psdata->descriptor);\
