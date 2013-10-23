@@ -158,25 +158,36 @@ _change_resource(void *data,
   Property* p = evas_object_data_get(obj, "property");
   Component* c = evas_object_data_get(obj, "component");
   const char *name = data;
-  //printf("property name: %s, component name: %s, change mesh : %s \n ",p->name, c->name, name);
+  //printf("property name: %s, component name: %s, change resource : %s \n ",p->name, c->name, name);
   Evas_Object* entry = evas_object_data_get(obj, "entry");
   elm_object_text_set(entry, name);
 
+  Property* entryproperty = evas_object_data_get(entry, "property");
+  void* entrydata = evas_object_data_get(entry, "data");
 
-  const char* old = component_property_data_get(c, p);
+  int offset = property_offset_get(entryproperty);
+  void** theolddata  = (void*)(entrydata + offset);
+  const char* old = *theolddata;
   if (!strcmp(old, name)) {
     return;
   }
 
-  component_property_data_set(c, p, &name);
-
-  //TODO
+  //TODO how to get the data to change and how to get the hash key for the texture
   if (!strcmp(c->name, "mesh")) {
     MeshComponent* mc = c->data;
-    if (!strcmp(p->name, "mesh"))
-    mc->mesh = resource_mesh_get(s_rm, name);
+    if (!strcmp(p->name, "mesh")) {
+      memcpy(entrydata + offset, &name, entryproperty->size);
+      mc->mesh = resource_mesh_get(s_rm, name);
+    }
     else if (!strcmp(p->name, "shader")) {
+      memcpy(entrydata + offset, &name, entryproperty->size);
       mc->shader = resource_shader_get(s_rm, name);
+    }
+    else if (!strcmp(p->name, "texture")) {
+      //TODO chris change the texture
+      ShaderInstance* si = mc->shader_instance;
+      Texture* t = resource_texture_get(s_rm, name);
+      shader_instance_texture_data_set(si, "texture", t);
     }
   }
 }

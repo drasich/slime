@@ -172,5 +172,15 @@ resource_texture_create(ResourceManager* rm)
   tex->filename = filetex;
   texture_png_read(tex);
   eina_hash_add(rm->textures, filetex, tex);
+
+  tex = texture_new();
+  tex->filename = "model/test.png";
+  texture_png_read(tex);
+  eina_hash_add(rm->textures, tex->filename, tex);
+
+  tex = texture_new();
+  tex->filename = "model/red64.png";
+  texture_png_read(tex);
+  eina_hash_add(rm->textures, tex->filename, tex);
 }
 

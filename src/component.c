@@ -143,6 +143,7 @@ component_manager_unload(ComponentManager* cm)
 void* 
 component_property_data_get(Component* c, Property* p)
 {
+  printf("warning -- review this function %s\n", __FUNCTION__);
   void** data  = (void*)(c->data + p->offset);
   return *data;
 }
@@ -150,6 +151,7 @@ component_property_data_get(Component* c, Property* p)
 void
 component_property_data_set(Component* c, Property* p, const void* data)
 {
+  printf("warning -- review this function %s\n", __FUNCTION__);
   void* cd = c->data;
   memcpy(cd + p->offset, data, p->size);
 }
