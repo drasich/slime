@@ -179,6 +179,7 @@ populate_scene(Control* c, Scene* s)
 
     mc->mesh_name = "model/smallchar.mesh";
     mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
+    resource_mesh_handle_set(s_rm, &mc->mesh_handle, "model/smallchar.mesh");
     object_add_component(empty, meshcomp);
     empty->position = vec3(6,0,0);
 
