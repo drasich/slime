@@ -1,6 +1,6 @@
 #include "shader.h"
 #include "Eet.h"
-#include "component/mesh.h"
+#include "component/meshcomponent.h"
 
 char* 
 stringFromFile(const char* path)

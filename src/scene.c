@@ -212,6 +212,7 @@ scene_print(Scene* s)
    EINA_LIST_FOREACH(o->components, cl, c) {
      printf("     component name, pointer : %s, %p \n", c->name,c);
      if (!c->name) continue;
+     /*
      if (!strcmp(c->name, "mesh")) {
        MeshComponent* mc = c->data;
        printf("        mesh name, mc pointer : %s, %p \n", mc->mesh_name, mc);
@@ -226,6 +227,7 @@ scene_print(Scene* s)
        printf("       player name : %s \n", *yep);
 
      }
+     */
    }
   }
 

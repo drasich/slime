@@ -4,7 +4,6 @@
 #include "matrix.h"
 #include "geometry.h"
 #include <stdbool.h>
-#include "component.h"
 
 typedef struct _Weight Weight;
 struct _Weight
@@ -80,18 +79,6 @@ struct _Mesh
 };
 
 
-typedef struct _MeshComponent MeshComponent;
-struct _MeshComponent
-{
-  const char* mesh_name;
-  const char* shader_name;
-  Mesh* mesh;
-  Shader* shader;
-  ShaderInstance* shader_instance;
-  bool hide;
-};
-
-ComponentDesc mesh_desc;
 
 void mesh_file_set(Mesh* m, const char* filename);
 
@@ -129,8 +116,6 @@ Buffer* mesh_buffer_get(Mesh* m, const char* name);
 
 void mesh_buffer_add(Mesh* m, const char* name, GLenum target, const void* data, int size);
 
-void mesh_component_shader_set(MeshComponent* mc, Shader* s);
-void mesh_component_shader_set_by_name(MeshComponent* mc, const char* name);
 
 
 #endif

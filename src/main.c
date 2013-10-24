@@ -6,6 +6,7 @@
 #include "control.h"
 #include "resource.h"
 #include "texture.h"
+#include "component/meshcomponent.h"
 #define __UNUSED__
 
 //TODO put these in application

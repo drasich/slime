@@ -1,6 +1,6 @@
 #include <Elementary.h>
 #include "view.h"
-#include "component/mesh.h"
+#include "component/meshcomponent.h"
 #include "object.h"
 #include "scene.h"
 #include "gl.h"

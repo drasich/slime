@@ -291,6 +291,7 @@ Object* create_object_file(const char* path)
 
     if (!strcmp(type, "mesh")){
       //TODO add this to component
+      /*
       Component* comp = create_component(&mesh_desc);
       object_add_component(o, comp);
       Mesh* mesh = comp->data;
@@ -298,6 +299,7 @@ Object* create_object_file(const char* path)
       mesh->name = path;
       //Mesh* mesh = create_mesh_file(f);
       o->mesh = mesh;
+      */
 
 
       //TODO box component

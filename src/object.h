@@ -3,7 +3,7 @@
 #include "vec.h"
 #include "quat.h"
 #include "matrix.h"
-#include "component/mesh.h"
+#include "mesh.h"
 #include "armature.h"
 #include "animation.h"
 #include "component/transform.h"

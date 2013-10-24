@@ -3,6 +3,7 @@
 #include "control.h"
 #include <dlfcn.h>
 #include "component/camera.h"
+#include "component/meshcomponent.h"
 
 Component*
 create_component(ComponentDesc *cd)

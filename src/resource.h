@@ -1,7 +1,7 @@
 #ifndef __resource__
 #define __resource__
 #include "Eina.h"
-#include "component/mesh.h"
+#include "mesh.h"
 #include "shader.h"
 #include "texture.h"
 

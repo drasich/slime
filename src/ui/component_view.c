@@ -4,6 +4,7 @@
 #include "property.h"
 #include "view.h"
 #include "resource.h"
+#include "component/meshcomponent.h" //TODO remove
 
 static void _add_properties(
       ComponentProperties* cp,

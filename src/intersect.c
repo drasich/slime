@@ -3,6 +3,7 @@
 #include <math.h>
 #include <stdint.h>
 #include <float.h>
+#include "component/meshcomponent.h"
 
 IntersectionRay
 intersection_ray_plane(Ray ray, Plane plane)
