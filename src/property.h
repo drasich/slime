@@ -156,6 +156,7 @@ Property* property_set_vec3();
 Property* property_set_vec4();
 Property* property_set_quat();
 Property* property_set_resource_handle();
+Property* property_set_resource_mesh_handle();
 
 
 

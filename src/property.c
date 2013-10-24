@@ -104,3 +104,22 @@ Property* property_set_resource_handle()
 }
 
 
+Property* property_set_resource_mesh_handle()
+{
+  Property* ps = create_property_set();
+  PROPERTY_SET_TYPE(ps, MeshHandle);
+  ps->name = "mesh file";
+  ps->type = PROPERTY_RESOURCE;
+  ps->resource_type_new = RESOURCE_MESH;
+  ps->resource_type = "mesh"; //TODO remove
+  ps->is_resource = true;
+
+  EET_DATA_DESCRIPTOR_ADD_BASIC(ps->descriptor, MeshHandle, "name", name, EET_T_STRING);
+
+  //PROPERTY_BASIC_ADD(ps, ResourceHandle, name, EET_T_STRING);
+
+  _resource_handle = ps;
+
+  return ps;
+}
+

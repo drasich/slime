@@ -3,6 +3,7 @@
 #include "component.h"
 #include "mesh.h"
 #include "shader.h"
+#include "resource.h"
 
 typedef struct _MeshComponent MeshComponent;
 struct _MeshComponent
@@ -13,6 +14,7 @@ struct _MeshComponent
   Shader* shader;
   ShaderInstance* shader_instance;
   bool hide;
+  MeshHandle mesh_handle;
 };
 
 ComponentDesc mesh_desc;

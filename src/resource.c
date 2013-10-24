@@ -236,3 +236,27 @@ resource_texture_handle_set(ResourceManager* rm, TextureHandle* th, const char* 
   }
 }
 
+/////////
+MeshHandle* resource_mesh_handle_new(ResourceManager* rm, const char* name)
+{
+  MeshHandle* mh = calloc(1, sizeof *mh);
+  resource_mesh_handle_set(rm, mh, name);
+  return mh;
+}
+
+void
+resource_mesh_handle_set(ResourceManager* rm, MeshHandle* mh, const char* name)
+{
+  mh->name = name;
+  Mesh* m = resource_mesh_get(rm, name);
+  if (m)
+  mh->mesh = m;
+  else {
+    //TODO waiting list
+    /*
+    ResourceWaiting rw = { rh, r};
+    rm->waiting = eina_list_append(rm->waiting, rw);
+    */
+  }
+}
+

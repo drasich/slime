@@ -64,6 +64,12 @@ struct _TextureHandle {
 
 TextureHandle* texture_handle_new();
 
+typedef struct _MeshHandle MeshHandle;
+struct _MeshHandle {
+  const char* name;
+  Mesh *mesh;
+};
+
 
 void resource_handle_change(ResourceManager* rm, ResourceHandle* rh, const char* name);
 
@@ -75,5 +81,8 @@ struct _ResourceWaiting {
 
 TextureHandle* resource_texture_handle_new(ResourceManager* rm, const char* name);
 void resource_texture_handle_set(ResourceManager* rm, TextureHandle* th, const char* name);
+
+MeshHandle* resource_mesh_handle_new(ResourceManager* rm, const char* name);
+void resource_mesh_handle_set(ResourceManager* rm, MeshHandle* mh, const char* name);
 
 #endif

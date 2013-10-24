@@ -124,6 +124,8 @@ _object_mesh_create(const char* file)
 
   mc->mesh_name = file;
   mc->mesh = resource_mesh_get(s_rm, file);
+  //mc->mesh_handle = resource_mesh_handle_new(s_rm, file);
+  resource_mesh_handle_set(s_rm, &mc->mesh_handle, file);
 
   object_add_component(o, meshcomp);
 
