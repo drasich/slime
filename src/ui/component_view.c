@@ -841,8 +841,10 @@ _property_add(ComponentProperties* cp, const Property* p, Evas_Object* box, void
     case PROPERTY_RESOURCE:
       _property_add_entry(cp, p, data);
       break;
+    case PROPERTY_ROOT:
+      break;
     default:
-      fprintf (stderr, "type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
+      fprintf (stderr, "type '%d' not yet implemented: at %s, line %d\n", p->type, __FILE__, __LINE__);
       break;
   }
 
