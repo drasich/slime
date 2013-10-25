@@ -159,7 +159,7 @@ _change_resource(void *data,
   Property* p = evas_object_data_get(obj, "property");
   Component* c = evas_object_data_get(obj, "component");
   const char *name = data;
-  printf("property name: %s, component name: %s, change resource : %s \n ",p->name, c->name, name);
+  //printf("property name: %s, component name: %s, change resource : %s \n ",p->name, c->name, name);
   Evas_Object* entry = evas_object_data_get(obj, "entry");
   elm_object_text_set(entry, name);
 
@@ -563,7 +563,7 @@ _component_property_add_hash(
   elm_box_pack_end(cpp->cp->box, label);
   evas_object_show(label);
 
-  printf("hhhhhhhhhhhhhhhhhhhh addddddddd hashhhhhhhhhhhhh %s, data :%p \n", keyname, data);
+  //printf("hhhhhhhhhhhhhhhhhhhh addddddddd hashhhhhhhhhhhhh %s, data :%p \n", keyname, data);
   _add_properties(cpp->cp, cpp->p->sub, cpp->box, data);
 
   return EINA_TRUE;
@@ -644,13 +644,11 @@ component_property_update_data(ComponentProperties* cp)
          break;
      case PROPERTY_RESOURCE:
           {
-           printf("TODO property resource cast in texturehandle but might be different, like mesh\n");
            int offset = property_offset_get(p);
-           const TextureHandle* th = data + offset;
+           const ResourceHandle* rh = data + offset;
            const char* s = elm_object_text_get(obj);
-           //if (th && th->name && strcmp(th->name,s)) 
-           if (th && strcmp(th->name,s)) 
-           elm_object_text_set(obj, th->name );
+           if (rh && strcmp(rh->name,s)) 
+           elm_object_text_set(obj, rh->name );
           }
          break;
     }
@@ -848,8 +846,8 @@ _add_properties(ComponentProperties* cp, const Property* ps, Evas_Object* box, v
   Property *p;
   Eina_List* l;
   EINA_LIST_FOREACH(ps->list, l, p) {
-   //printf("name: %s , type: %d, offset: %d, data : %p\n", p->name, p->type, p->offset, data);
-   _property_add(cp, p, box, data);
+    //printf("in list name: %s , type: %d, offset: %d, data : %p\n", p->name, p->type, p->offset, data);
+    _property_add(cp, p, box, data);
   }
 
 }

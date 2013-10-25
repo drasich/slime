@@ -42,6 +42,7 @@ ResourceManager* s_rm;
 
 //////////////////
 
+/*
 typedef struct _Resource Resource;
 struct _Resource {
   const char* name;
@@ -49,26 +50,22 @@ struct _Resource {
   void* data;
   bool is_loaded;
 };
+*/
 
 typedef struct _ResourceHandle ResourceHandle;
 struct _ResourceHandle {
   const char* name;
-  Resource *resource;
+  union {
+    Mesh* mesh;
+    Texture* texture;
+    Shader* shader;
+  };
 };
 
-typedef struct _TextureHandle TextureHandle;
-struct _TextureHandle {
-  const char* name;
-  Texture *texture;
-};
+typedef struct _ResourceHandle MeshHandle;
+typedef struct _ResourceHandle TextureHandle;
 
 TextureHandle* texture_handle_new();
-
-typedef struct _MeshHandle MeshHandle;
-struct _MeshHandle {
-  const char* name;
-  Mesh *mesh; //TODO set to const
-};
 
 
 void resource_handle_change(ResourceManager* rm, ResourceHandle* rh, const char* name);
@@ -76,7 +73,7 @@ void resource_handle_change(ResourceManager* rm, ResourceHandle* rh, const char*
 typedef struct _ResourceWaiting ResourceWaiting;
 struct _ResourceWaiting {
   ResourceHandle* rh;
-  Resource* r;
+  //Resource* r;
 };
 
 TextureHandle* resource_texture_handle_new(ResourceManager* rm, const char* name);

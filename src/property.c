@@ -86,9 +86,8 @@ Property* property_set_resource_handle()
   if (_resource_handle) return _resource_handle;
 
   Property* ps = create_property_set();
-  //PROPERTY_SET_TYPE(ps, ResourceHandle);
-  PROPERTY_SET_TYPE(ps, TextureHandle);
-  ps->name = "texture file";
+  PROPERTY_SET_TYPE(ps, ResourceHandle);
+  ps->name = "resource";
   ps->type = PROPERTY_RESOURCE;
   ps->resource_type_new = RESOURCE_TEXTURE;
   ps->resource_type = "texture"; //TODO remove
@@ -117,8 +116,6 @@ Property* property_set_resource_mesh_handle()
   EET_DATA_DESCRIPTOR_ADD_BASIC(ps->descriptor, MeshHandle, "name", name, EET_T_STRING);
 
   //PROPERTY_BASIC_ADD(ps, ResourceHandle, name, EET_T_STRING);
-
-  _resource_handle = ps;
 
   return ps;
 }
