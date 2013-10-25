@@ -1,4 +1,5 @@
 LATELY
+- handle shader as resoure
 - in shader instance replace Texture by just the path of the image?
   but what if it's a fbo... don't care? or just in Texture replace filename
   string by resource

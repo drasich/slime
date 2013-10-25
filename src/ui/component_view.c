@@ -173,30 +173,34 @@ _change_resource(void *data,
     return;
   }
 
+  if (p->resource_type_new == RESOURCE_TEXTURE) {
+    TextureHandle* t = entrydata;
+    resource_texture_handle_set(s_rm, t, name);
+  }
+  else if( p->resource_type_new == RESOURCE_MESH ) {
+    MeshHandle* m = entrydata;
+    resource_mesh_handle_set(s_rm, m, name);
+  }
+  else if( p->resource_type_new == RESOURCE_SHADER ) {
+    ShaderHandle* m = entrydata;
+    resource_shader_handle_set(s_rm, m, name);
+  }
+
+  /*
   //TODO how to get the data to change and how to get the hash key for the texture
   if (!strcmp(c->name, "mesh")) {
     MeshComponent* mc = c->data;
-    if (!strcmp(p->name, "mesh")) {
-      //memcpy(entrydata + offset, &name, entryproperty->size);
-      //mc->mesh = resource_mesh_get(s_rm, name);
-      MeshHandle* m = entrydata;
-      resource_mesh_handle_set(s_rm, m, name);
-    }
-    else if (!strcmp(p->name, "shader")) {
+    if (!strcmp(p->name, "shader")) {
       memcpy(entrydata + offset, &name, entryproperty->size);
       mc->shader = resource_shader_get(s_rm, name);
     }
-    //else if (!strcmp(p->name, "texture")) {
-    else if (!strcmp(p->resource_type, "texture")) {
-      TextureHandle* t = entrydata;
-      resource_texture_handle_set(s_rm, t, name);
-    }
   }
+  */
 }
 
 
 static Evas_Object*
-_create_resource_menu(Evas_Object* win, const char* resource_type)
+_create_resource_menu(Evas_Object* win, ResourceType resource_type)
 {
   Evas_Object* menu;
   Elm_Object_Item *menu_it,*menu_it1;
@@ -207,12 +211,17 @@ _create_resource_menu(Evas_Object* win, const char* resource_type)
   Eina_Hash* hash = NULL;
   void *data;
 
-  if (!strcmp(resource_type, "mesh"))
-  hash = resource_meshes_get(s_rm);
-  else if (!strcmp(resource_type, "shader"))
-  hash = resource_shaders_get(s_rm);
-  else if (!strcmp(resource_type, "texture"))
-  hash = resource_textures_get(s_rm);
+  switch(resource_type) {
+    case RESOURCE_MESH:
+      hash = resource_meshes_get(s_rm);
+      break;
+    case RESOURCE_SHADER:
+      hash = resource_shaders_get(s_rm);
+      break;
+    case RESOURCE_TEXTURE:
+      hash = resource_textures_get(s_rm);
+      break;
+  }
 
   if (!hash) return NULL;
 
@@ -279,7 +288,8 @@ _entry_clicked_cb(void *data, Evas_Object *obj, void *event)
 
   if (p->is_resource) {
     Evas_Object* win = evas_object_top_get(evas_object_evas_get(obj));
-    Evas_Object* menu = _create_resource_menu(win, p->resource_type);
+    printf("create resource : %s, %d \n", p->name, p->resource_type_new);
+    Evas_Object* menu = _create_resource_menu(win, p->resource_type_new);
     if (!menu) return;
     evas_object_data_set(menu, "component", cp->component);
     evas_object_data_set(menu, "property", p);

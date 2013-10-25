@@ -64,9 +64,9 @@ struct _ResourceHandle {
 
 typedef struct _ResourceHandle MeshHandle;
 typedef struct _ResourceHandle TextureHandle;
+typedef struct _ResourceHandle ShaderHandle;
 
 TextureHandle* texture_handle_new();
-
 
 void resource_handle_change(ResourceManager* rm, ResourceHandle* rh, const char* name);
 
@@ -81,5 +81,7 @@ void resource_texture_handle_set(ResourceManager* rm, TextureHandle* th, const c
 
 MeshHandle* resource_mesh_handle_new(ResourceManager* rm, const char* name);
 void resource_mesh_handle_set(ResourceManager* rm, MeshHandle* mh, const char* name);
+
+void resource_shader_handle_set(ResourceManager* rm, ShaderHandle* sh, const char* name);
 
 #endif

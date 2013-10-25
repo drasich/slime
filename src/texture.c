@@ -477,15 +477,3 @@ GLuint texture_id_get(Texture* t)
   else return t->id;
 }
 
-Property*
-property_set_texture()
-{
-  Property* ps = create_property_set();
-  PROPERTY_SET_TYPE(ps, Texture);
-
-  //PROPERTY_BASIC_ADD_WITH_NAME(ps, Texture, filename, EET_T_STRING, "filename");
-  PROPERTY_RESOURCE_ADD(ps, Texture, filename, "texture");
-
-  return ps;
-}
-

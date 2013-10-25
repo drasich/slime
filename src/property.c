@@ -80,40 +80,16 @@ property_set_quat()
   return ps;
 }
 
-static Property* _resource_handle = NULL;
-Property* property_set_resource_handle()
+Property* property_set_resource_handle(ResourceType type)
 {
-  if (_resource_handle) return _resource_handle;
-
   Property* ps = create_property_set();
   PROPERTY_SET_TYPE(ps, ResourceHandle);
   ps->name = "resource";
   ps->type = PROPERTY_RESOURCE;
-  ps->resource_type_new = RESOURCE_TEXTURE;
-  ps->resource_type = "texture"; //TODO remove
+  ps->resource_type_new = type;
   ps->is_resource = true;
 
-  EET_DATA_DESCRIPTOR_ADD_BASIC(ps->descriptor, TextureHandle, "name", name, EET_T_STRING);
-
-  //PROPERTY_BASIC_ADD(ps, ResourceHandle, name, EET_T_STRING);
-
-  _resource_handle = ps;
-
-  return ps;
-}
-
-
-Property* property_set_resource_mesh_handle()
-{
-  Property* ps = create_property_set();
-  PROPERTY_SET_TYPE(ps, MeshHandle);
-  ps->name = "mesh";
-  ps->type = PROPERTY_RESOURCE;
-  ps->resource_type_new = RESOURCE_MESH;
-  ps->resource_type = "mesh"; //TODO remove
-  ps->is_resource = true;
-
-  EET_DATA_DESCRIPTOR_ADD_BASIC(ps->descriptor, MeshHandle, "name", name, EET_T_STRING);
+  EET_DATA_DESCRIPTOR_ADD_BASIC(ps->descriptor, ResourceHandle, "name", name, EET_T_STRING);
 
   //PROPERTY_BASIC_ADD(ps, ResourceHandle, name, EET_T_STRING);
 

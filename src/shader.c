@@ -500,8 +500,7 @@ property_set_shader_instance()
   Property* ps = create_property_set();
   PROPERTY_SET_TYPE(ps, ShaderInstance);
 
-  //Property* ps_tex = property_set_texture();
-  Property* ps_tex = property_set_resource_handle();
+  Property* ps_tex = property_set_resource_handle(RESOURCE_TEXTURE);
 
   PROPERTY_HASH_ADD(ps, ShaderInstance, textures, ps_tex);
   return ps;

@@ -260,3 +260,19 @@ resource_mesh_handle_set(ResourceManager* rm, MeshHandle* mh, const char* name)
   }
 }
 
+void
+resource_shader_handle_set(ResourceManager* rm, ShaderHandle* sh, const char* name)
+{
+  sh->name = name;
+  Shader* s = resource_shader_get(rm, name);
+  if (s)
+  sh->shader = s;
+  else {
+    //TODO waiting list
+    /*
+    ResourceWaiting rw = { rh, r};
+    rm->waiting = eina_list_append(rm->waiting, rw);
+    */
+  }
+}
+

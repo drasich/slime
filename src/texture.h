@@ -43,6 +43,4 @@ void texture_init(Texture* t);
 void texture_fbo_link(Texture* t, GLuint* id);
 GLuint texture_id_get(Texture* t);
 
-Property* property_set_texture();
-
 #endif

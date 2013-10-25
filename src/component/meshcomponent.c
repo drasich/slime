@@ -14,11 +14,11 @@ _mesh_component_properties()
 {
   Property* ps = create_property_set();
 
-  //PROPERTY_RESOURCE_ADD(ps, MeshComponent, mesh_name, "mesh");
-  PROPERTY_RESOURCE_ADD(ps, MeshComponent, shader_name, "shader");
-
-  Property* mh = property_set_resource_mesh_handle();
+  Property* mh = property_set_resource_handle(RESOURCE_MESH);
   PROPERTY_SUB_NESTED_ADD(ps, MeshComponent, mesh_handle, mh);
+
+  Property* sh = property_set_resource_handle(RESOURCE_SHADER);
+  PROPERTY_SUB_NESTED_ADD(ps, MeshComponent, shader_handle, sh);
   
   Property *shader_instance_property_set = property_set_shader_instance();
   PROPERTY_SUB_ADD(ps, MeshComponent, shader_instance, shader_instance_property_set);
@@ -78,11 +78,13 @@ _mesh_component_draw(Component* c, Matrix4 world, const Matrix4 projection)
   }
 
 
-  Shader* s = mc->shader;
+  //Shader* s = mc->shader;
+  Shader* s = mesh_component_shader_get(mc);
   if (!s) {
+    /*
     s = resource_shader_get(s_rm, mc->shader_name);
     if (s) mc->shader = s;
-    else return;
+    else*/ return;
   }
 
   shader_use(s);
@@ -111,6 +113,12 @@ ComponentDesc mesh_desc = {
   NULL,
 };
 
+Shader*
+mesh_component_shader_get(MeshComponent* mc)
+{
+  //return mc->shader;
+  return mc->shader_handle.shader;
+}
 
 void
 mesh_component_shader_set_by_name(MeshComponent* mc, const char* name)
@@ -128,8 +136,11 @@ mesh_component_shader_set_by_name(MeshComponent* mc, const char* name)
 void
 mesh_component_shader_set(MeshComponent* mc, Shader* s)
 {
-  mc->shader_name = s->name;
-  mc->shader = s;
+  //mc->shader_name = s->name;
+  //mc->shader = s;
+
+  mc->shader_handle.name = s->name;
+  mc->shader_handle.shader = s;
 
   if (mc->shader_instance) {
     //TODO save the instance for later use? if someone else will link to this shader we already have
