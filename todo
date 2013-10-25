@@ -1,4 +1,5 @@
 LATELY
+- display shader instance in a frame (struct not nested for now)
 - show textures and uniforms in meshcomponent/shaderinstance
   - first textures, component_view _component_property_add_hash
 - rotate dragger : display a better disk
