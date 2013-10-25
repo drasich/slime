@@ -185,17 +185,6 @@ _change_resource(void *data,
     ShaderHandle* m = entrydata;
     resource_shader_handle_set(s_rm, m, name);
   }
-
-  /*
-  //TODO how to get the data to change and how to get the hash key for the texture
-  if (!strcmp(c->name, "mesh")) {
-    MeshComponent* mc = c->data;
-    if (!strcmp(p->name, "shader")) {
-      memcpy(entrydata + offset, &name, entryproperty->size);
-      mc->shader = resource_shader_get(s_rm, name);
-    }
-  }
-  */
 }
 
 
@@ -567,6 +556,7 @@ _component_property_add_hash(
   label = elm_label_add(cpp->cp->win);
   char s[256];
   sprintf(s, "<b> %s </b> : ", keyname);
+  evas_object_size_hint_align_set(label, 0,0);
 
   elm_object_text_set(label, s);
   elm_box_pack_end(cpp->cp->box, label);
@@ -750,7 +740,8 @@ _property_struct_add(ComponentProperties* cp, const Property* p)
 
   label = elm_label_add(cp->win);
   char s[256];
-  sprintf(s, "<b> %s </b> : ", p->name);
+  sprintf(s, "<b> %s </b> ->", p->name);
+  evas_object_size_hint_align_set(label, 0,0);
 
   elm_object_text_set(label, s);
   elm_box_pack_end(cp->box, label);
