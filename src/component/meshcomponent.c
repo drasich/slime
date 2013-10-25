@@ -15,9 +15,11 @@ _mesh_component_properties()
   Property* ps = create_property_set();
 
   Property* mh = property_set_resource_handle(RESOURCE_MESH);
+  mh->name = "mesh";
   PROPERTY_SUB_NESTED_ADD(ps, MeshComponent, mesh_handle, mh);
 
   Property* sh = property_set_resource_handle(RESOURCE_SHADER);
+  sh->name = "shader";
   PROPERTY_SUB_NESTED_ADD(ps, MeshComponent, shader_handle, sh);
   
   Property *shader_instance_property_set = property_set_shader_instance();

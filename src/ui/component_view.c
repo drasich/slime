@@ -307,7 +307,7 @@ _entry_unfocused_cb(void *data, Evas_Object *obj, void *event)
 }
 
 static Evas_Object* 
-_property_add_entry(ComponentProperties* cp, const Property* p, void* data)
+_property_add_entry(ComponentProperties* cp, const Property* p, void* data, Evas_Object* box)
 {
   Evas_Object *en, *bx2, *label;
 
@@ -316,13 +316,15 @@ _property_add_entry(ComponentProperties* cp, const Property* p, void* data)
   evas_object_size_hint_weight_set(bx2, EVAS_HINT_EXPAND, 0.0);
   evas_object_size_hint_align_set(bx2, EVAS_HINT_FILL, EVAS_HINT_FILL);
 
-  label = elm_label_add(cp->win);
-  char s[256];
-  sprintf(s, "<b> %s </b> : ", p->name);
+  if (!p->hide_name) {
+    label = elm_label_add(cp->win);
+    char s[256];
+    sprintf(s, "<b> %s </b> : ", p->name);
 
-  elm_object_text_set(label, s);
-  evas_object_show(label);
-  elm_box_pack_end(bx2, label);
+    elm_object_text_set(label, s);
+    evas_object_show(label);
+    elm_box_pack_end(bx2, label);
+  }
 
   en = elm_entry_add(cp->win);
   elm_entry_scrollable_set(en, EINA_TRUE);
@@ -353,68 +355,12 @@ _property_add_entry(ComponentProperties* cp, const Property* p, void* data)
 
   elm_entry_context_menu_disabled_set(en, EINA_TRUE);
   
-  elm_box_pack_end(cp->box, bx2);
+  elm_box_pack_end(box, bx2);
   evas_object_show(bx2);
 
   return en;
 
 }
-
-static Evas_Object* 
-_property_add_resource(ComponentProperties* cp, Property* p, void* data)
-{
-  Evas_Object *en, *bx2, *label;
-
-  bx2 = elm_box_add(cp->win);
-  elm_box_horizontal_set(bx2, EINA_TRUE);
-  evas_object_size_hint_weight_set(bx2, EVAS_HINT_EXPAND, 0.0);
-  evas_object_size_hint_align_set(bx2, EVAS_HINT_FILL, EVAS_HINT_FILL);
-
-  label = elm_label_add(cp->win);
-  char s[256];
-  sprintf(s, "<b> %s </b> : ", p->name);
-
-  elm_object_text_set(label, s);
-  evas_object_show(label);
-  elm_box_pack_end(bx2, label);
-
-  en = elm_entry_add(cp->win);
-  elm_entry_scrollable_set(en, EINA_TRUE);
-  evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
-  evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
-  elm_object_text_set(en, "none");
-  //elm_entry_scrollbar_policy_set(en, 
-  //      ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_OFF);
-  elm_entry_single_line_set(en, EINA_TRUE);
-  //elm_entry_select_all(en);
-  evas_object_show(en);
-  elm_box_pack_end(bx2, en);
-  elm_entry_editable_set(en, EINA_FALSE);
-
-  evas_object_name_set(en, p->name);
-
-  evas_object_data_set(en, "property", p);
-  evas_object_data_set(en, "data", data );
-  cp->entries = eina_list_append(cp->entries, en);
-
-  evas_object_smart_callback_add(en, "changed,user", _entry_changed_cb, cp);
-  evas_object_smart_callback_add(en, "activated", _entry_activated_cb, cp);
-  evas_object_smart_callback_add(en, "aborted", _entry_aborted_cb, cp);
-  evas_object_smart_callback_add(en, "focused", _entry_focused_cb, cp);
-  evas_object_smart_callback_add(en, "unfocused", _entry_unfocused_cb, cp);
-  evas_object_smart_callback_add(en, "clicked", _entry_clicked_cb, cp);
-
-  elm_entry_context_menu_disabled_set(en, EINA_TRUE);
-  
-  elm_box_pack_end(cp->box, bx2);
-  evas_object_show(bx2);
-
-  return en;
-
-}
-
-
-
 
 static Evas_Object* 
 _property_add_spinner(ComponentProperties* cp, const Property* p, Evas_Object* box, void* data)
@@ -551,23 +497,34 @@ _component_property_add_hash(
   const char* keyname = key;
   struct _ComponentPropertyCouple* cpp = fdata;
 
-  Evas_Object *label;
 
-  label = elm_label_add(cpp->cp->win);
-  char s[256];
-  sprintf(s, "<b> %s </b> : ", keyname);
-  evas_object_size_hint_align_set(label, 0,0);
+  if (cpp->p->sub->type == PROPERTY_RESOURCE) {
+    //TODO make a box
+    Evas_Object* bx;
+    bx = elm_box_add(cpp->cp->win);
+    elm_box_horizontal_set(bx, EINA_TRUE);
+    evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, 0.0);
+    evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
 
-  elm_object_text_set(label, s);
-  elm_box_pack_end(cpp->cp->box, label);
-  evas_object_show(label);
+    Evas_Object *label;
 
-  //printf("hhhhhhhhhhhhhhhhhhhh addddddddd hashhhhhhhhhhhhh %s, data :%p \n", keyname, data);
-  _add_properties(cpp->cp, cpp->p->sub, cpp->box, data);
+    label = elm_label_add(cpp->cp->win);
+    char s[256];
+    sprintf(s, "<b> %s </b> : ", keyname);
+
+    elm_object_text_set(label, s);
+    elm_box_pack_end(bx, label);
+    evas_object_show(label);
+
+    elm_box_pack_end(cpp->box, bx);
+    evas_object_show(bx);
+
+    //printf("hhhhhhhhhhhhhhhhhhhh addddddddd hashhhhhhhhhhhhh %s, data :%p \n", keyname, data);
+    _add_properties(cpp->cp, cpp->p->sub, bx, data);
+  }
 
   return EINA_TRUE;
 }
-
 
 void
 component_property_update_data(ComponentProperties* cp)
@@ -740,7 +697,7 @@ _property_struct_add(ComponentProperties* cp, const Property* p)
 
   label = elm_label_add(cp->win);
   char s[256];
-  sprintf(s, "<b> %s </b> ->", p->name);
+  sprintf(s, ".:: <b> %s </b> ::.", p->name);
   evas_object_size_hint_align_set(label, 0,0);
 
   elm_object_text_set(label, s);
@@ -762,7 +719,7 @@ _property_add(ComponentProperties* cp, const Property* p, Evas_Object* box, void
        }
       break;
     case EET_T_STRING:
-      _property_add_entry(cp, p, data);
+      _property_add_entry(cp, p, data, box);
       break;
     case PROPERTY_FILENAME:
       _property_add_fileselect(cp, p);
@@ -829,7 +786,7 @@ _property_add(ComponentProperties* cp, const Property* p, Evas_Object* box, void
       //_property_add_entry(cp, p);
       break;
     case PROPERTY_RESOURCE:
-      _property_add_entry(cp, p, data);
+      _property_add_entry(cp, p, data, box);
       break;
     case PROPERTY_ROOT:
       break;

@@ -32,6 +32,7 @@ struct _Property
   Eina_List* list;
   Hint hint;
   Eet_Data_Descriptor *descriptor;
+  bool hide_name;
 };
 
 int property_offset_get(const Property* p);

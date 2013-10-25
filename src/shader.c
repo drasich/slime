@@ -501,6 +501,7 @@ property_set_shader_instance()
   PROPERTY_SET_TYPE(ps, ShaderInstance);
 
   Property* ps_tex = property_set_resource_handle(RESOURCE_TEXTURE);
+  ps_tex->hide_name = true;
 
   PROPERTY_HASH_ADD(ps, ShaderInstance, textures, ps_tex);
   return ps;
