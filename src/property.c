@@ -86,8 +86,7 @@ Property* property_set_resource_handle(ResourceType type)
   PROPERTY_SET_TYPE(ps, ResourceHandle);
   ps->name = "resource";
   ps->type = PROPERTY_RESOURCE;
-  ps->resource_type_new = type;
-  ps->is_resource = true;
+  ps->resource_type = type;
 
   EET_DATA_DESCRIPTOR_ADD_BASIC(ps->descriptor, ResourceHandle, "name", name, EET_T_STRING);
 

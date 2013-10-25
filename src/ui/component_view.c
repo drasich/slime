@@ -173,15 +173,15 @@ _change_resource(void *data,
     return;
   }
 
-  if (p->resource_type_new == RESOURCE_TEXTURE) {
+  if (p->resource_type == RESOURCE_TEXTURE) {
     TextureHandle* t = entrydata;
     resource_texture_handle_set(s_rm, t, name);
   }
-  else if( p->resource_type_new == RESOURCE_MESH ) {
+  else if( p->resource_type == RESOURCE_MESH ) {
     MeshHandle* m = entrydata;
     resource_mesh_handle_set(s_rm, m, name);
   }
-  else if( p->resource_type_new == RESOURCE_SHADER ) {
+  else if( p->resource_type == RESOURCE_SHADER ) {
     ShaderHandle* m = entrydata;
     resource_shader_handle_set(s_rm, m, name);
   }
@@ -286,10 +286,9 @@ _entry_clicked_cb(void *data, Evas_Object *obj, void *event)
   ComponentProperties* cp = data;
   Property* p = evas_object_data_get(obj, "property");
 
-  if (p->is_resource) {
+  if (p->type == PROPERTY_RESOURCE) {
     Evas_Object* win = evas_object_top_get(evas_object_evas_get(obj));
-    printf("create resource : %s, %d \n", p->name, p->resource_type_new);
-    Evas_Object* menu = _create_resource_menu(win, p->resource_type_new);
+    Evas_Object* menu = _create_resource_menu(win, p->resource_type);
     if (!menu) return;
     evas_object_data_set(menu, "component", cp->component);
     evas_object_data_set(menu, "property", p);
@@ -347,7 +346,7 @@ _property_add_entry(ComponentProperties* cp, const Property* p, void* data)
   //elm_entry_select_all(en);
   evas_object_show(en);
   elm_box_pack_end(bx2, en);
-  if (p->is_resource)
+  if (p->type == PROPERTY_RESOURCE)
   elm_entry_editable_set(en, EINA_FALSE);
 
   evas_object_name_set(en, p->name);

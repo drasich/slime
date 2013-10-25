@@ -27,8 +27,7 @@ struct _Property
   size_t size;
   Property* sub;
 
-  bool is_resource;
-  ResourceType resource_type_new;
+  ResourceType resource_type;
 
   Eina_List* list;
   Hint hint;
