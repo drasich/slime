@@ -8,9 +8,9 @@
 typedef struct _MeshComponent MeshComponent;
 struct _MeshComponent
 {
-  const char* mesh_name;
+  //const char* mesh_name;
   const char* shader_name;
-  Mesh* mesh;
+  //Mesh* mesh;
   Shader* shader;
   ShaderInstance* shader_instance;
   bool hide;
@@ -20,5 +20,9 @@ struct _MeshComponent
 ComponentDesc mesh_desc;
 void mesh_component_shader_set(MeshComponent* mc, Shader* s);
 void mesh_component_shader_set_by_name(MeshComponent* mc, const char* name);
+
+Mesh* mesh_component_mesh_get(const MeshComponent* mc);
+void mesh_component_mesh_set(MeshComponent* mc, Mesh* m);
+void mesh_component_mesh_set_by_name(MeshComponent* mc, const char* name);
 
 #endif

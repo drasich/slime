@@ -108,7 +108,7 @@ Property* property_set_resource_mesh_handle()
 {
   Property* ps = create_property_set();
   PROPERTY_SET_TYPE(ps, MeshHandle);
-  ps->name = "mesh file";
+  ps->name = "mesh";
   ps->type = PROPERTY_RESOURCE;
   ps->resource_type_new = RESOURCE_MESH;
   ps->resource_type = "mesh"; //TODO remove

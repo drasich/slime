@@ -122,10 +122,7 @@ _object_mesh_create(const char* file)
   //Texture* t = resource_texture_get(s_rm, "model/ceil.png");
   shader_instance_texture_data_set(mc->shader_instance, "texture", t);
 
-  mc->mesh_name = file;
-  mc->mesh = resource_mesh_get(s_rm, file);
-  //mc->mesh_handle = resource_mesh_handle_new(s_rm, file);
-  resource_mesh_handle_set(s_rm, &mc->mesh_handle, file);
+  mesh_component_mesh_set_by_name(mc, file);
 
   object_add_component(o, meshcomp);
 
@@ -177,9 +174,7 @@ populate_scene(Control* c, Scene* s)
     MeshComponent* mc = meshcomp->data;
     mesh_component_shader_set_by_name(mc,"shader/simple.shader");
 
-    mc->mesh_name = "model/smallchar.mesh";
-    mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
-    resource_mesh_handle_set(s_rm, &mc->mesh_handle, "model/smallchar.mesh");
+    mesh_component_mesh_set_by_name(mc, "model/smallchar.mesh");
     object_add_component(empty, meshcomp);
     empty->position = vec3(6,0,0);
 

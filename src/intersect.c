@@ -391,7 +391,8 @@ intersection_ray_object(Ray ray, Object* o)
   if (!mc) {
     return out;
   }
-  Mesh* m = mc->mesh;
+
+  Mesh* m = mesh_component_mesh_get(mc);
   if (!m) {
     printf("no mesh %s \n", o->name);
     return out;
@@ -535,7 +536,7 @@ planes_is_in_object(const Plane* planes, int nb_planes, const Object* o)
   if (!mc)
   return planes_is_in(planes, 6, o->position);
 
-  Mesh* m = mc->mesh;
+  Mesh* m = mesh_component_mesh_get(mc);
   if (!m)
   return planes_is_in(planes, 6, o->position);
 

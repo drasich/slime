@@ -67,7 +67,7 @@ TextureHandle* texture_handle_new();
 typedef struct _MeshHandle MeshHandle;
 struct _MeshHandle {
   const char* name;
-  Mesh *mesh;
+  Mesh *mesh; //TODO set to const
 };
 
 

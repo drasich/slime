@@ -303,7 +303,7 @@ shader_read(const char* filename)
 void 
 shader_mesh_draw(Shader* s, struct _MeshComponent* mc)
 {
-  Mesh* m = mc->mesh;
+  Mesh* m = mesh_component_mesh_get(mc);
 
   Uniform* uni;
   GLuint i = 0;

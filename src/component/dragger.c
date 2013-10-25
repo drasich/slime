@@ -141,10 +141,7 @@ _dragger_rotate_create(Vec3 constraint, Vec4 color, bool plane)
   MeshComponent* mc = comp->data;
   mesh_component_shader_set_by_name(mc, "shader/dragger.shader");
 
-  //mc->mesh_name = "model/dragger_rotate_half.mesh";
-  //mc->mesh_name = "model/dragger_rotate_test.mesh";
-  mc->mesh_name = "model/dragger_rotate_quarter.mesh";
-  mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
+  mesh_component_mesh_set_by_name(mc, "model/dragger_rotate_quarter.mesh");
 
   Vec4* v = calloc(1, sizeof *v);
   shader_instance_uniform_data_set(mc->shader_instance, "color", v);
@@ -156,8 +153,7 @@ _dragger_rotate_create(Vec3 constraint, Vec4 color, bool plane)
   MeshComponent* mcs = comp->data;
   mesh_component_shader_set_by_name(mcs, "shader/dragger.shader");
 
-  mcs->mesh_name = "model/dragger_rotate_circle.mesh";
-  mcs->mesh = resource_mesh_get(s_rm, mcs->mesh_name);
+  mesh_component_mesh_set_by_name(mcs, "model/dragger_rotate_circle.mesh");
 
   v = calloc(1, sizeof *v);
   shader_instance_uniform_data_set(mcs->shader_instance, "color", v);
@@ -166,7 +162,9 @@ _dragger_rotate_create(Vec3 constraint, Vec4 color, bool plane)
   comp = create_component(dragger_desc());
   object_add_component(o,comp);
   Dragger* d = comp->data;
-  d->box = mc->mesh->box;
+  //d->box = mc->mesh->box;
+  Mesh* m = mesh_component_mesh_get(mc);
+  d->box = m->box;
   d->mc = mc;
   d->mc_second = mcs;
   d->constraint = constraint;
@@ -190,12 +188,10 @@ _dragger_scale_create(Vec3 constraint, Vec4 color, bool plane)
   mesh_component_shader_set_by_name(mc, "shader/dragger.shader");
 
   if (plane) {
-    mc->mesh_name = "model/dragger_plane.mesh";
-    mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
+    mesh_component_mesh_set_by_name(mc, "model/dragger_plane.mesh");
   }
   else {
-    mc->mesh_name = "model/dragger_scale.mesh";
-    mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
+    mesh_component_mesh_set_by_name(mc, "model/dragger_scale.mesh");
   }
 
   Vec4* v = calloc(1, sizeof *v);
@@ -205,7 +201,9 @@ _dragger_scale_create(Vec3 constraint, Vec4 color, bool plane)
   comp = create_component(dragger_desc());
   object_add_component(o,comp);
   Dragger* d = comp->data;
-  d->box = mc->mesh->box;
+  //d->box = mc->mesh->box;
+  Mesh* m = mesh_component_mesh_get(mc);
+  d->box = m->box;
   d->mc = mc;
   d->constraint = constraint;
   d->color_idle = color;
@@ -225,12 +223,10 @@ _dragger_translate_create(Vec3 constraint, Vec4 color, bool plane)
   mesh_component_shader_set_by_name(mc, "shader/dragger.shader");
 
   if (plane) {
-    mc->mesh_name = "model/dragger_plane.mesh";
-    mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
+    mesh_component_mesh_set_by_name(mc, "model/dragger_plane.mesh");
   }
   else {
-    mc->mesh_name = "model/dragger_arrow.mesh";
-    mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
+    mesh_component_mesh_set_by_name(mc, "model/dragger_arrow.mesh");
   }
 
   Vec4* v = calloc(1, sizeof *v);
@@ -251,7 +247,8 @@ _dragger_translate_create(Vec3 constraint, Vec4 color, bool plane)
   object_add_component(o,comp);
   Dragger* d = comp->data;
   //d->line->camera = camera;
-  d->box = mc->mesh->box;
+  Mesh* m = mesh_component_mesh_get(mc);
+  d->box = m->box;
   d->mc = mc;
   d->constraint = constraint;
   d->color_idle = color;

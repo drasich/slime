@@ -14,7 +14,7 @@ _mesh_component_properties()
 {
   Property* ps = create_property_set();
 
-  PROPERTY_RESOURCE_ADD(ps, MeshComponent, mesh_name, "mesh");
+  //PROPERTY_RESOURCE_ADD(ps, MeshComponent, mesh_name, "mesh");
   PROPERTY_RESOURCE_ADD(ps, MeshComponent, shader_name, "shader");
 
   Property* mh = property_set_resource_mesh_handle();
@@ -59,11 +59,22 @@ _mesh_component_draw(Component* c, Matrix4 world, const Matrix4 projection)
 
   if (mc->hide) return;
 
+  /*
   Mesh* m = mc->mesh;
   if (!m) {
     m = resource_mesh_get(s_rm, mc->mesh_name);
     if (m) mc->mesh = m;
     else return;
+  }
+  */
+
+  MeshHandle mh = mc->mesh_handle;
+  Mesh* m = mh.mesh;
+  if (!m) {
+    //m = resource_mesh_get(s_rm, mc->mesh_name);
+    //if (m) mc->mesh = m;
+    //else 
+    return;
   }
 
 
@@ -135,3 +146,18 @@ mesh_component_shader_set(MeshComponent* mc, Shader* s)
 }
 
 
+Mesh* mesh_component_mesh_get(const MeshComponent* mc)
+{
+  return mc->mesh_handle.mesh;
+}
+
+void mesh_component_mesh_set(MeshComponent* mc, Mesh* m)
+{
+  mc->mesh_handle.mesh = m;
+  mc->mesh_handle.name = m->name;
+}
+
+void mesh_component_mesh_set_by_name(MeshComponent* mc, const char* name)
+{
+  resource_mesh_handle_set(s_rm, &mc->mesh_handle, name);
+}

@@ -159,7 +159,7 @@ _change_resource(void *data,
   Property* p = evas_object_data_get(obj, "property");
   Component* c = evas_object_data_get(obj, "component");
   const char *name = data;
-  //printf("property name: %s, component name: %s, change resource : %s \n ",p->name, c->name, name);
+  printf("property name: %s, component name: %s, change resource : %s \n ",p->name, c->name, name);
   Evas_Object* entry = evas_object_data_get(obj, "entry");
   elm_object_text_set(entry, name);
 
@@ -177,8 +177,10 @@ _change_resource(void *data,
   if (!strcmp(c->name, "mesh")) {
     MeshComponent* mc = c->data;
     if (!strcmp(p->name, "mesh")) {
-      memcpy(entrydata + offset, &name, entryproperty->size);
-      mc->mesh = resource_mesh_get(s_rm, name);
+      //memcpy(entrydata + offset, &name, entryproperty->size);
+      //mc->mesh = resource_mesh_get(s_rm, name);
+      MeshHandle* m = entrydata;
+      resource_mesh_handle_set(s_rm, m, name);
     }
     else if (!strcmp(p->name, "shader")) {
       memcpy(entrydata + offset, &name, entryproperty->size);

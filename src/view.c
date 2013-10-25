@@ -63,7 +63,9 @@ _view_resize_gl(Evas_Object *obj)
   GLint uni_resolution = shader_uniform_location_get(mc->shader, "resolution");
   if (uni_resolution >= 0) gl->glUniform2f(uni_resolution, w, h);
 
-  quad_resize(mc->mesh, w, h);
+  //TODO the actual mesh is resized, see if we can scale it 
+  //
+  quad_resize(mesh_component_mesh_get(mc), w, h);
 
   /*
   mc = object_component_get(v->render->quad_color, "mesh");
@@ -983,7 +985,7 @@ _render_objects_add(View* v, Matrix4 root, Plane* planes, Eina_List* objects)
       continue;
     }
 
-    Mesh* m = mc->mesh;
+    Mesh* m = mesh_component_mesh_get(mc);
     if (!m) {
       _render_object_add(v, o, root);
       continue;
@@ -1041,9 +1043,9 @@ create_render()
   r->quad_outline = create_object();
   Component* comp = create_component(&mesh_desc);
   MeshComponent* mc = comp->data;
-  mc->mesh_name = "quad";
-  mc->mesh = resource_mesh_get(s_rm, mc->mesh_name);
-  r->quad_outline->mesh = mc->mesh;
+  mesh_component_mesh_set_by_name(mc, "quad");
+
+  r->quad_outline->mesh = mesh_component_mesh_get(mc);
   object_add_component(r->quad_outline, comp);
   Vec3 t3 = {0,0,-100};
   object_set_position(r->quad_outline, t3);
