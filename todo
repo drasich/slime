@@ -1,8 +1,8 @@
 LATELY
+- try to use panel instead of panes and put the tree on the right?
+- check if the scene is saved right with shader instance and everything
 - type get for uniform union in shader.c, uniform_type_set and get
-- display shader instance in a frame (struct not nested for now)
-- show textures and uniforms in meshcomponent/shaderinstance
-  - first textures, component_view _component_property_add_hash
+- handle all uniform types in shader instance, component view and draw shader
 - rotate dragger : display a better disk
 - undo/redo with spinners, orientation and generic stuff
 - patch elementary genlist tree for :
