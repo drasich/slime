@@ -123,7 +123,7 @@ _object_mesh_create(const char* file)
   shader_instance_texture_data_set(mc->shader_instance, "texture", t);
   UniformValue* uv = calloc(1, sizeof *uv);
   uv->type = UNIFORM_FLOAT;
-  uv->value.f = 0.1f;
+  uv->value.f = 1.0f;
   shader_instance_uniform_data_set(mc->shader_instance, "testfloat", uv);
 
   mesh_component_mesh_set_by_name(mc, file);
@@ -181,6 +181,11 @@ populate_scene(Control* c, Scene* s)
     mesh_component_mesh_set_by_name(mc, "model/smallchar.mesh");
     object_add_component(empty, meshcomp);
     empty->position = vec3(6,0,0);
+
+    UniformValue* uv = calloc(1, sizeof *uv);
+    uv->type = UNIFORM_FLOAT;
+    uv->value.f = 0.5f;
+    shader_instance_uniform_data_set(mc->shader_instance, "testfloat", uv);
 
     //control_object_add(c,s,empty);
     object_child_add(parent, empty);

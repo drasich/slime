@@ -42,13 +42,13 @@ int property_type_check(int type);
 Property* property_real_parent_get(Property* p);
 
 enum {
-  PROPERTY_FILENAME = EET_I_LIMIT,
+  PROPERTY_FILENAME = EET_I_LIMIT, //128
   PROPERTY_STRUCT,
   PROPERTY_STRUCT_NESTED,
   PROPERTY_POINTER,
   PROPERTY_RESOURCE,
   PROPERTY_ROOT,
-  PROPERTY_UNION,
+  PROPERTY_UNIFORM,
   TEST1,
   TEST2
 };

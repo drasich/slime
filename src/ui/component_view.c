@@ -67,6 +67,16 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
         //eina_stringshare_dump();
        }
       break;
+    case PROPERTY_UNIFORM:
+       {
+        UniformValue* uv = thedata;
+        if (uv->type == UNIFORM_FLOAT) {
+          float f =  elm_spinner_value_get(obj);
+          int offset = property_offset_get(p);
+          uv->value.f = f;
+        }
+       }
+      break;
     default:
       fprintf (stderr, "type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
       break;
@@ -499,7 +509,6 @@ _component_property_add_hash(
 
 
   if (cpp->p->sub->type == PROPERTY_RESOURCE) {
-    //TODO make a box
     Evas_Object* bx;
     bx = elm_box_add(cpp->cp->win);
     elm_box_horizontal_set(bx, EINA_TRUE);
@@ -521,6 +530,30 @@ _component_property_add_hash(
 
     //printf("hhhhhhhhhhhhhhhhhhhh addddddddd hashhhhhhhhhhhhh %s, data :%p \n", keyname, data);
     _add_properties(cpp->cp, cpp->p->sub, bx, data);
+  }
+  else if (cpp->p->sub->type == PROPERTY_UNIFORM) {
+    Evas_Object* bx;
+    bx = elm_box_add(cpp->cp->win);
+    elm_box_horizontal_set(bx, EINA_TRUE);
+    evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, 0.0);
+    evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+
+    Evas_Object *label;
+
+    label = elm_label_add(cpp->cp->win);
+    char s[256];
+    sprintf(s, "<b> %s </b> : ", keyname);
+
+    elm_object_text_set(label, s);
+    elm_box_pack_end(bx, label);
+    evas_object_show(label);
+
+    elm_box_pack_end(cpp->box, bx);
+    evas_object_show(bx);
+
+    //printf("hhhhhhhhhhhhhhhhhhhh addddddddd hashhhhhhhhhhhhh %s, data :%p \n", keyname, data);
+    _add_properties(cpp->cp, cpp->p->sub, bx, data);
+
   }
 
   return EINA_TRUE;
@@ -605,6 +638,19 @@ component_property_update_data(ComponentProperties* cp)
            const char* s = elm_object_text_get(obj);
            if (rh && strcmp(rh->name,s)) 
            elm_object_text_set(obj, rh->name );
+          }
+         break;
+     case PROPERTY_UNIFORM:
+          {
+           int offset = property_offset_get(p);
+           UniformValue* uv = data + offset;
+           if (uv->type == UNIFORM_FLOAT) {
+             float f = uv->value.f;
+             float old = elm_spinner_value_get(obj);
+             if (old != f) {
+               elm_spinner_value_set(obj, f);
+             }
+           }
           }
          break;
     }
@@ -808,6 +854,16 @@ _property_add(ComponentProperties* cp, const Property* p, Evas_Object* box, void
       break;
     case PROPERTY_RESOURCE:
       _property_add_entry(cp, p, data, box);
+      break;
+    case PROPERTY_UNIFORM:
+       {
+        int offset = property_offset_get(p);
+        UniformValue* uv = data + offset;
+        if (uv->type == UNIFORM_FLOAT) { 
+          // _property_add_entry(cp, p, data, box);
+          _property_add_spinner(cp, p, box, data);
+        }
+       }
       break;
     case PROPERTY_ROOT:
       break;

@@ -586,7 +586,7 @@ property_set_uniform()
 {
   Property* ps = create_property_set();
   //PROPERTY_SET_TYPE(ps, UniformValue);
-  ps->type = PROPERTY_UNION;
+  ps->type = PROPERTY_UNIFORM;
 
   
   Eet_Data_Descriptor_Class eddc;
