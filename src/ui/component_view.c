@@ -42,6 +42,39 @@ _entry_orientation_changed_cb(void *data, Evas_Object *obj, void *event)
 }
 
 static void
+_entry_vec3_changed_cb(void *data, Evas_Object *obj, void *event)
+{
+  ComponentProperties* cp = data;
+
+  Property* p = evas_object_data_get(obj, "property");
+  void* thedata = evas_object_data_get(obj, "data");
+  const char* name = evas_object_data_get(obj, "property_name");
+
+  double f =  elm_spinner_value_get(obj);
+  /*
+  double saved;
+  eina_value_get(&cp->saved, &saved);
+  saved = ;
+  */
+
+  int offset = property_offset_get(p);
+  Vec3* v = thedata + offset;
+
+  if (!strcmp(name, "x")) {
+    v->x = f;
+  }
+  else if (!strcmp(name, "y")) {
+    v->y = f;
+  }
+  else if (!strcmp(name, "z")) {
+    v->z = f;
+  }
+
+  //memcpy(thedata + offset, &q, sizeof q);
+}
+
+
+static void
 _entry_changed_cb(void *data, Evas_Object *obj, void *event)
 {
   ComponentProperties* cp = data;
@@ -393,11 +426,14 @@ _property_add_spinner(ComponentProperties* cp, const Property* p, Evas_Object* b
   elm_spinner_editable_set(en, EINA_TRUE);
 
   char s[50];
-  sprintf(s, "%s : %s", p->name, "%.4f");
+  if (p->name) {
+    evas_object_name_set(en, p->name);
+    sprintf(s, "%s : %s", p->name, "%.4f");
+  }
+  else
+    sprintf(s, "%s", "%.4f");
 
   elm_spinner_label_format_set(en, s);
-
-  evas_object_name_set(en, p->name);
 
   evas_object_data_set(en, "property", p);
   evas_object_data_set(en, "data", data );
@@ -651,6 +687,19 @@ component_property_update_data(ComponentProperties* cp)
                elm_spinner_value_set(obj, f);
              }
            }
+           else if (uv->type == UNIFORM_VEC3) {
+             Vec3 v = uv->value.vec3;
+             float old = elm_spinner_value_get(obj);
+             const char* pname = evas_object_data_get(obj, "property_name");
+             if (pname)
+             printf("pname is %s\n", pname);
+             if (!strcmp(pname, "x"))
+             elm_spinner_value_set(obj, v.x );
+             else if (!strcmp(pname, "y"))
+             elm_spinner_value_set(obj, v.y );
+             else if (!strcmp(pname, "z"))
+             elm_spinner_value_set(obj, v.z );
+           }
           }
          break;
     }
@@ -722,6 +771,53 @@ _property_add_spinner_angle(
   return en;
 }
 
+static Evas_Object* 
+_property_add_spinner_vec3(
+      ComponentProperties* cp,
+      const Property* p,
+      Evas_Object* box,
+      const char* name,
+      void* data)
+{
+  Evas_Object *en, *label;
+
+  en = elm_spinner_add(cp->win);
+  evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
+  //elm_spinner_value_set(en, atof(value));
+  evas_object_show(en);
+  //elm_box_pack_end(cp->box, en);
+  elm_box_pack_end(box, en);
+
+  evas_object_name_set(en, p->name);
+  
+  elm_spinner_step_set(en, 0.1);
+  elm_spinner_min_max_set(en, -DBL_MAX, DBL_MAX);
+  elm_object_style_set (en, "vertical");
+  elm_spinner_editable_set(en, EINA_TRUE);
+
+  char s[50];
+  sprintf(s, "%s : %s", name, "%.4f");
+
+  elm_spinner_label_format_set(en, s);
+
+  evas_object_name_set(en, name);
+
+  evas_object_smart_callback_add(en, "changed", _entry_vec3_changed_cb, cp);
+  //evas_object_smart_callback_add(en, "spinner,drag,start", _spinner_drag_start_cb, cp);
+  //evas_object_smart_callback_add(en, "spinner,drag,stop", _spinner_drag_stop_cb, cp);
+
+
+  evas_object_data_set(en, "property", p);
+  evas_object_data_set(en, "property_name", name);
+  evas_object_data_set(en, "data", data );
+  cp->entries = eina_list_append(cp->entries, en);
+
+  return en;
+}
+
+
+
 
 static void
 _add_orientation_properties(ComponentProperties* cp, const Property* p, Evas_Object* box, void* data)
@@ -735,6 +831,15 @@ _add_orientation_properties(ComponentProperties* cp, const Property* p, Evas_Obj
   l = eina_list_append(l,
   _property_add_spinner_angle(cp, p, box, "z", data));
 }
+
+static void
+_property_vec3_add(ComponentProperties* cp, const Property* p, Evas_Object* box, void* data)
+{
+  _property_add_spinner_vec3(cp, p, box, "x", data);
+  _property_add_spinner_vec3(cp, p, box, "y", data);
+  _property_add_spinner_vec3(cp, p, box, "z", data);
+}
+
 
 static Evas_Object*
 _property_struct_add(ComponentProperties* cp, const Property* p, Evas_Object* box_parent)
@@ -860,8 +965,11 @@ _property_add(ComponentProperties* cp, const Property* p, Evas_Object* box, void
         int offset = property_offset_get(p);
         UniformValue* uv = data + offset;
         if (uv->type == UNIFORM_FLOAT) { 
-          // _property_add_entry(cp, p, data, box);
           _property_add_spinner(cp, p, box, data);
+        }
+        else if (uv->type == UNIFORM_VEC3) { 
+          _property_vec3_add(cp, p, box, data);
+          //_property_add_spinner(cp, p, box, data);
         }
        }
       break;

@@ -4,6 +4,7 @@ attribute vec2 texcoord;
 uniform mat4 matrix;
 uniform mat3 normal_matrix;
 //uniform float test;
+uniform vec3 light;
 
 varying vec4 diffuse,ambient;
 varying vec3 eye_normal,lightDir,halfway;
@@ -14,7 +15,8 @@ void main(void)
 {
   eye_normal = normalize(normal_matrix * normal);
 
-  lightDir = normalize(vec3(0.2,-0.5,-1));
+  //lightDir = normalize(vec3(0.2,-0.5,-1));
+  lightDir = normalize(light);
   //lightDir = normalize(vec3(1,-1,-1));
 
   diffuse = vec4(0.4,0.4,0.9,1);
