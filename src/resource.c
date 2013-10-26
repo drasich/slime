@@ -133,6 +133,7 @@ resource_shader_create(ResourceManager* rm)
   shader_uniform_add(simple, "matrix");
   shader_uniform_add(simple, "normal_matrix");
   shader_uniform_type_add(simple, "texture", UNIFORM_TEXTURE);
+  shader_uniform_type_add(simple, "testfloat", UNIFORM_FLOAT);
 
   Shader* red = create_shader("shader/red.shader", "shader/simple.vert", "shader/red.frag");
   shader_attribute_add(red, "vertex", 3, GL_FLOAT);

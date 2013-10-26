@@ -210,7 +210,7 @@ shader_uniform_add(Shader* s, const char* name)
   Uniform uni;
   uni.name = name;
   uni.location = 0;
-  uni.type = UNIFORM_BASIC;
+  uni.type = UNIFORM_UNKNOWN;
   eina_inarray_push(s->uniforms, &uni);
 }
 
@@ -330,6 +330,21 @@ shader_mesh_draw(Shader* s, struct _MeshComponent* mc)
         ++i;
       }
     }
+    else {
+      const char* uniname = uni->name;
+      GLint uni_loc = uni->location;
+      UniformValue* uv = shader_instance_uniform_data_get(mc->shader_instance, uniname);
+
+      if (uni_loc < 0 || !uv) {
+        continue;
+      }
+
+      if (uni->type == UNIFORM_FLOAT)
+        gl->glUniform1f(uni_loc, uv->value.f);
+      else if (uni->type == UNIFORM_VEC3)
+        gl->glUniform3f(uni_loc, uv->value.vec3.x, uv->value.vec3.y, uv->value.vec3.z);
+    }
+
   }
 
   Attribute* att;
@@ -504,6 +519,108 @@ property_set_shader_instance()
   ps_tex->hide_name = true;
 
   PROPERTY_HASH_ADD(ps, ShaderInstance, textures, ps_tex);
+
+  Property* ps_uni = property_set_uniform();
+  PROPERTY_HASH_ADD(ps, ShaderInstance, uniforms, ps_uni);
+
   return ps;
 }
 
+struct
+{
+   UniformType u;
+   const char *name;
+} unfirom_mapping[] = {
+   {UNIFORM_UNKNOWN, "unknown"},
+   {UNIFORM_TEXTURE, "texture"},
+   {UNIFORM_INT, "int"},
+   {UNIFORM_FLOAT, "float"},
+   {UNIFORM_VEC2, "vec2"},
+   {UNIFORM_VEC3, "vec3"},
+   {UNIFORM_VEC4, "vec4"},
+   {UNIFORM_MAT3, "mat3"},
+   {UNIFORM_MAT4, "mat4"},
+};
+
+static const char *
+_uniform_type_get(
+      const void *data,
+      Eina_Bool  *unknow)
+{
+  /*
+  const char **name = (const char**) data;
+  if (!strcmp(*name, "object")) {
+    *unknow = EINA_TRUE;
+    return NULL;
+  }
+
+  *unknow = EINA_FALSE;
+
+  return *name;
+  */
+  return NULL;
+}
+
+static Eina_Bool
+_uniform_type_set(
+      const char *type,
+      void       *data,
+      Eina_Bool   unknow)
+{
+  /*
+  const char **name = data;
+  *name = type;
+
+  if (!strcmp(*name, "object"))
+  return EINA_FALSE;
+  */
+
+  return EINA_TRUE;
+}
+
+
+static Eet_Data_Descriptor *_uniform_unified_descriptor;
+
+Property*
+property_set_uniform()
+{
+  Property* ps = create_property_set();
+  //PROPERTY_SET_TYPE(ps, UniformValue);
+  ps->type = PROPERTY_UNION;
+
+  
+  Eet_Data_Descriptor_Class eddc;
+  EET_EINA_FILE_DATA_DESCRIPTOR_CLASS_SET(&eddc, UniformValue);
+  ps->descriptor = eet_data_descriptor_file_new(&eddc);
+
+  eddc.version = EET_DATA_DESCRIPTOR_CLASS_VERSION;
+  eddc.func.type_get = _uniform_type_get;
+  eddc.func.type_set = _uniform_type_set;
+  _uniform_unified_descriptor = eet_data_descriptor_file_new(&eddc);
+
+  /*
+   {UNIFORM_UNKNOWN, "unknown"},
+   {UNIFORM_TEXTURE, "texture"},
+   {UNIFORM_INT, "int"},
+   {UNIFORM_FLOAT, "float"},
+   {UNIFORM_VEC2, "vec2"},
+   {UNIFORM_VEC3, "vec3"},
+   {UNIFORM_VEC4, "vec4"},
+   {UNIFORM_MAT3, "mat3"},
+   {UNIFORM_MAT4, "mat4"},
+   */
+
+   EET_DATA_DESCRIPTOR_ADD_MAPPING_BASIC(
+     _uniform_unified_descriptor, "int", EET_T_INT);
+   EET_DATA_DESCRIPTOR_ADD_MAPPING_BASIC(
+     _uniform_unified_descriptor, "float", EET_T_FLOAT);
+   Property* psv3 = property_set_vec3();
+   EET_DATA_DESCRIPTOR_ADD_MAPPING(
+     _uniform_unified_descriptor, "vec3", psv3->descriptor);
+
+   EET_DATA_DESCRIPTOR_ADD_UNION(
+     ps->descriptor, UniformValue, "value", value, type,
+     _uniform_unified_descriptor);
+
+   return ps;
+}

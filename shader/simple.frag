@@ -1,4 +1,4 @@
-uniform float test;
+uniform float testfloat;
 
 varying vec4 diffuse,ambient;
 varying vec3 eye_normal,lightDir,halfway;
@@ -27,6 +27,8 @@ void main (void)
     NdotHV = max(dot(n,halfv),0.0);
     color += specular * pow(NdotHV, shininess);
   }
+
+  color.w = testfloat;
 
   gl_FragColor = color;
 }

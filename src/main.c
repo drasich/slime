@@ -121,6 +121,10 @@ _object_mesh_create(const char* file)
   TextureHandle* t = resource_texture_handle_new(s_rm, "model/ceil.png");
   //Texture* t = resource_texture_get(s_rm, "model/ceil.png");
   shader_instance_texture_data_set(mc->shader_instance, "texture", t);
+  UniformValue* uv = calloc(1, sizeof *uv);
+  uv->type = UNIFORM_FLOAT;
+  uv->value.f = 0.1f;
+  shader_instance_uniform_data_set(mc->shader_instance, "testfloat", uv);
 
   mesh_component_mesh_set_by_name(mc, file);
 

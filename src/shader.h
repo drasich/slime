@@ -16,6 +16,7 @@ struct _Attribute{
 };
 
 
+/*
 typedef enum {
   UNIFORM_BASIC, //TODO remove
   UNIFORM_TEXTURE,
@@ -24,6 +25,21 @@ typedef enum {
   UNIFORM_MATRIX3,
   UNIFORM_MATRIX4,
 } UniformType;
+*/
+
+typedef enum _UniformType UniformType;
+enum _UniformType {
+  UNIFORM_UNKNOWN,
+  UNIFORM_TEXTURE,
+  UNIFORM_INT,
+  UNIFORM_FLOAT,
+  UNIFORM_VEC2,
+  UNIFORM_VEC3,
+  UNIFORM_VEC4,
+  UNIFORM_MAT3,
+  UNIFORM_MAT4
+};
+
 
 struct _Uniform{
   const char* name;
@@ -97,5 +113,22 @@ void shader_instance_texture_data_set(ShaderInstance* si, const char* name, void
 void* shader_instance_texture_data_get(ShaderInstance* si, const char* name);
 
 Property* property_set_shader_instance();
+
+typedef struct _UniformValue UniformValue;
+struct _UniformValue
+{
+  union {
+    int i;
+    float f;
+    Vec2 vec2;
+    Vec3 vec3;
+    Vec4 vec4;
+    Matrix3GL mat3;
+    Matrix4GL mat4;
+  } value;
+
+  UniformType type;
+};
+Property* property_set_uniform();
 
 #endif
