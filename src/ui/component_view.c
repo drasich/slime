@@ -691,8 +691,9 @@ _add_orientation_properties(ComponentProperties* cp, const Property* p, Evas_Obj
 }
 
 static Evas_Object*
-_property_struct_add(ComponentProperties* cp, const Property* p)
+_property_struct_add(ComponentProperties* cp, const Property* p, Evas_Object* box_parent)
 {
+  /*
   Evas_Object *label;
 
   label = elm_label_add(cp->win);
@@ -705,6 +706,28 @@ _property_struct_add(ComponentProperties* cp, const Property* p)
   evas_object_show(label);
 
   return label;
+  */
+  //return NULL;
+
+  Evas_Object* frame = elm_frame_add(cp->win);
+  elm_frame_autocollapse_set(frame, EINA_TRUE);
+  char s[256];
+  sprintf(s, "%s", p->name);
+  elm_object_text_set(frame, s);
+  evas_object_size_hint_weight_set(frame, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_fill_set(frame, EVAS_HINT_FILL, 0.0);
+
+  elm_box_pack_end(box_parent, frame);
+  evas_object_show(frame);
+
+  Evas_Object* box = elm_box_add(cp->win);
+  evas_object_size_hint_weight_set(box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_fill_set(box, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  elm_box_align_set(box, 0.0, 0.0);
+  //evas_object_show(cp->box);
+  elm_object_content_set(frame, box);
+
+  return box;
 }
 
 static void
@@ -727,11 +750,9 @@ _property_add(ComponentProperties* cp, const Property* p, Evas_Object* box, void
     case PROPERTY_STRUCT:
        {
         int offset = property_offset_get(p);
-        //void** datastruct = (void*)data + offset;
         void** datastruct = data + offset;
-        //void* datastruct = data + offset;
-        _property_struct_add(cp, p);
-        _add_properties(cp, p->sub, cp->box, *datastruct);
+        Evas_Object* bx = _property_struct_add(cp, p, box);
+        _add_properties(cp, p->sub, bx, *datastruct);
        }
       break;
     case PROPERTY_STRUCT_NESTED:
