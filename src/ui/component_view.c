@@ -691,8 +691,6 @@ component_property_update_data(ComponentProperties* cp)
              Vec3 v = uv->value.vec3;
              float old = elm_spinner_value_get(obj);
              const char* pname = evas_object_data_get(obj, "property_name");
-             if (pname)
-             printf("pname is %s\n", pname);
              if (!strcmp(pname, "x"))
              elm_spinner_value_set(obj, v.x );
              else if (!strcmp(pname, "y"))

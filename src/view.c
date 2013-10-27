@@ -110,6 +110,59 @@ _view_draw_gl(Evas_Object *obj)
    gl->glFinish();
 }
 
+static void
+_tb_click_cb(void *data, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED)
+{
+   //char buf[PATH_MAX];
+   //snprintf(buf, sizeof(buf), "%s/images/panel_01.jpg", elm_app_data_dir_get());
+   //elm_photo_file_set(data, buf);
+   printf("you click an item of the toolbar\n");
+}
+
+
+
+static Evas_Object*
+_create_toolbar(Evas_Object* win)
+{
+  Evas_Object* tb = elm_toolbar_add(win);
+  elm_toolbar_shrink_mode_set(tb, ELM_TOOLBAR_SHRINK_MENU);
+  evas_object_size_hint_weight_set(tb, 0.0, 0.0);
+  evas_object_size_hint_weight_set(tb, 1.0, 1.0);
+  evas_object_size_hint_align_set(tb, EVAS_HINT_FILL, 0.0);
+  //   elm_object_scale_set(tb, 0.9);
+
+  Elm_Object_Item* tb_it = elm_toolbar_item_append(tb, "document-print", "Hello", _tb_click_cb, NULL);
+  elm_object_item_disabled_set(tb_it, EINA_TRUE);
+  elm_toolbar_item_priority_set(tb_it, 100);
+
+  evas_object_show(tb);
+
+  /*
+   tb_it = elm_toolbar_item_append(tb, "folder-new", "World", _tb_sel2_cb, ph1);
+   elm_toolbar_item_priority_set(tb_it, -100);
+
+   tb_it = elm_toolbar_item_append(tb, "object-rotate-right", "H", _tb_sel3_cb, ph4);
+   elm_toolbar_item_priority_set(tb_it, 150);
+
+   tb_it = elm_toolbar_item_append(tb, "mail-send", "Comes", _tb_sel4_cb, ph4);
+   elm_toolbar_item_priority_set(tb_it, 0);
+
+   tb_it = elm_toolbar_item_append(tb, "clock", "Elementary", _tb_sel5_cb, ph4);
+   elm_toolbar_item_priority_set(tb_it, -200);
+
+   tb_it = elm_toolbar_item_append(tb, "refresh", "Menu", NULL, NULL);
+   elm_toolbar_item_menu_set(tb_it, EINA_TRUE);
+   elm_toolbar_item_priority_set(tb_it, -9999);
+   elm_toolbar_menu_parent_set(tb, win);
+   menu = elm_toolbar_item_menu_get(tb_it);
+   */
+
+
+  return tb;
+
+}
+
+
 
 
 static void
@@ -945,10 +998,13 @@ create_view(Evas_Object *win)
   component_manager_load(s_component_manager);
 
   view->box = elm_box_add(win);
-  elm_box_horizontal_set(view->box, EINA_TRUE);
+  elm_box_horizontal_set(view->box, EINA_FALSE);
   evas_object_size_hint_weight_set(view->box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   //elm_win_resize_object_add(win, view->box);
   evas_object_show(view->box);
+
+  Evas_Object* toolbar = _create_toolbar(win);
+  //elm_box_pack_end(view->box, toolbar);
 
   view->glview = _create_glview(win);
   elm_box_pack_end(view->box, view->glview);
@@ -962,6 +1018,7 @@ create_view(Evas_Object *win)
 
   _create_view_objects(view);
   //view->menu = _create_component_menu(win);
+
 
   return view;
 }
