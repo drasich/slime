@@ -188,6 +188,20 @@ static void _handle_rect_select(View* v, Evas_Event_Mouse_Move* ev)
     yepy *= -1;
   }
 
+  Evas_Coord x, y, w, h;
+  evas_object_geometry_get (v->glview, &x, &y, &w, &h);
+  if (sx + yepx > x + w) yepx = x + w - sx;
+  if (sy + yepy > y + h) yepy = y + h - sy;
+
+  if (sx < x) {
+    yepx = yepx - (x - sx);
+    sx = x;
+  }
+  if (sy < y) {
+    yepy = yepy - (y - sy);
+    sy = y;
+  }
+
   evas_object_move(rect, sx, sy);
   evas_object_resize(rect, yepx, yepy);
 
@@ -195,6 +209,9 @@ static void _handle_rect_select(View* v, Evas_Event_Mouse_Move* ev)
   ViewCamera* c = v->camera;
   //Frustum f;
   //frustum_from_rect(&f, c, sx, sy, yepx, yepy);
+
+  sx = sx - x;
+  sy = sy - y;
 
   Plane planes[6];
   camera_get_frustum_planes_rect(c, planes, sx, sy, yepx, yepy );
@@ -336,8 +353,13 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
     return;
   }
 
-  Ray r = ray_from_screen(v->camera, ev->canvas.x, ev->canvas.y, 1000);
-  printf("click : %d, %d \n", ev->canvas.x, ev->canvas.y);
+  Evas_Coord x, y, w, h;
+  evas_object_geometry_get (v->glview, &x, &y, &w, &h);
+  int cx = ev->canvas.x - x;
+  int cy = ev->canvas.y - y;
+
+  Ray r = ray_from_screen(v->camera, cx, cy, 1000);
+  printf("clickgl pos : %d, %d \n", cx, cy);
 
   bool found = false;
   double d;
@@ -923,6 +945,7 @@ create_view(Evas_Object *win)
   component_manager_load(s_component_manager);
 
   view->box = elm_box_add(win);
+  elm_box_horizontal_set(view->box, EINA_TRUE);
   evas_object_size_hint_weight_set(view->box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   //elm_win_resize_object_add(win, view->box);
   evas_object_show(view->box);

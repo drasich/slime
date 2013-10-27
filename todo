@@ -36,6 +36,7 @@ BUG
 - focus the play and main windows alternatively(with the mouse)
   and close with escape sometimes window manager freeze. (maybe when
   there is composite in the window manager)
+- sometimes segfault when quitting after input I think
 
 
 RENDER
@@ -54,7 +55,6 @@ RENDER
 - material
 
 VIEW
-- make draggers translate, rotation, scale
 - save view : save camera position and scene... window size?
 - make the camera display better
 - remove the animator for view?

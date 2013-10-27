@@ -85,19 +85,20 @@ create_window()
 
   Evas_Object* panes = create_panes(win, false);
   elm_win_resize_object_add(win, panes);
-  Evas_Object* hpanes = create_panes(win, true);
+  Evas_Object* hpanes = create_panes(win, false);
   view = create_view(win);
   Evas_Object* glview = view->glview;
   Evas_Object* property = view->property->root;
   Evas_Object* tree = view->tree->root;
 
-  elm_object_part_content_set(hpanes, "left", property);
-  elm_object_part_content_set(hpanes, "right", tree);
+  elm_object_part_content_set(hpanes, "left", view->box);
+  elm_object_part_content_set(hpanes, "right", property);
 
-  elm_object_part_content_set(panes, "left", view->box);
+  elm_object_part_content_set(panes, "left", tree);
   elm_object_part_content_set(panes, "right", hpanes);
 
-  elm_panes_content_left_size_set(panes, 0.60f);
+  elm_panes_content_left_size_set(panes, 0.10f);
+  elm_panes_content_right_size_set(hpanes, 0.20f);
 
 
   //evas_object_resize(win, 800/3, 400/3);
@@ -109,6 +110,60 @@ create_window()
   //Evas* evas = evas_object_evas_get(win);
   //Evas_Object* edje = create_my_group(evas, "danceoff");
 }
+
+static void
+create_window_panels()
+{
+  Evas_Object *win;
+  win = elm_win_util_standard_add("slime", "slime");
+  elm_win_autodel_set(win, EINA_TRUE);
+  evas_object_smart_callback_add(win, "delete,request", win_del, NULL);
+
+  Evas_Object* box = elm_box_add(win);
+  elm_box_horizontal_set(box, EINA_TRUE);
+  evas_object_size_hint_weight_set(box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  elm_win_resize_object_add(win, box);
+  evas_object_show(box);
+
+  //view = create_view(win);
+  view = create_view(box);
+  Evas_Object* glview = view->glview;
+  Evas_Object* property = view->property->root;
+  Evas_Object* tree = view->tree->root;
+  elm_win_resize_object_add(win, view->box);
+  //elm_box_pack_end(box, view->box);
+
+  Evas_Object* panel = elm_panel_add(box);
+  elm_panel_orient_set(panel, ELM_PANEL_ORIENT_LEFT);
+  evas_object_size_hint_weight_set(panel, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(panel, EVAS_HINT_FILL, EVAS_HINT_FILL);
+
+  elm_object_content_set(panel, tree);
+  elm_box_pack_end(box, panel);
+  evas_object_show(panel);
+
+  elm_box_pack_end(box, view->box);
+
+  panel = elm_panel_add(box);
+  elm_panel_orient_set(panel, ELM_PANEL_ORIENT_RIGHT);
+  evas_object_size_hint_weight_set(panel, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_align_set(panel, EVAS_HINT_FILL, EVAS_HINT_FILL);
+
+  elm_object_content_set(panel, property);
+  elm_box_pack_end(box, panel);
+  evas_object_show(panel);
+
+
+  //evas_object_resize(win, 800/3, 400/3);
+  //evas_object_resize(win, 800, 200);
+  evas_object_resize(win, 1200, 400);
+  evas_object_show(win);
+
+
+  //Evas* evas = evas_object_evas_get(win);
+  //Evas_Object* edje = create_my_group(evas, "danceoff");
+}
+
 
 static Object*
 _object_mesh_create(const char* file)
@@ -268,6 +323,7 @@ elm_main(int argc, char **argv)
   //elm_config_focus_highlight_animate_set(EINA_TRUE);
   //elm_config_focus_highlight_enabled_set(EINA_TRUE);
   create_window();
+  //create_window_panels();
 
   build_scene();
   Quat qa = quat_angles_deg(vec3(110.0f,150,10));

@@ -24,8 +24,10 @@ _create_glview(Evas_Object* win)
   Evas_Object *glview;
 
   glview = elm_glview_add(win);
+
   if (!gl)
   gl = elm_glview_gl_api_get(glview);
+
   evas_object_size_hint_align_set(glview, EVAS_HINT_FILL, EVAS_HINT_FILL);
   evas_object_size_hint_weight_set(glview, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   elm_glview_mode_set(glview, ELM_GLVIEW_ALPHA | ELM_GLVIEW_DEPTH);
