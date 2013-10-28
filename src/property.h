@@ -121,6 +121,18 @@ enum {
    EET_DATA_DESCRIPTOR_ADD_HASH(ps->descriptor, struct_type, # member, member, psdata->descriptor);\
  } while(0)
 
+#ifndef EET_DATA_DESCRIPTOR_ADD_MAPPING_BASIC
+#define EET_DATA_DESCRIPTOR_ADD_MAPPING_BASIC(unified_type, name, basic_type) \
+  eet_data_descriptor_element_add(unified_type,                      \
+                                  name,                              \
+                                  basic_type,                        \
+                                  EET_G_UNKNOWN,                     \
+                                  0,                                 \
+                                  0,                                 \
+                                  NULL,                              \
+                                  NULL)
+#endif
+
 
 Property* property_set_vec3();
 Property* property_set_vec4();
