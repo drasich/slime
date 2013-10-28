@@ -730,6 +730,15 @@ _add_buttons(View* v, Evas_Object* win)
   elm_icon_standard_set(ic, "file");
   evas_object_size_hint_aspect_set(ic, EVAS_ASPECT_CONTROL_VERTICAL, 1, 1);
 
+
+  Evas_Object* box = elm_box_add(win);
+  elm_box_horizontal_set(box, EINA_TRUE);
+  //evas_object_size_hint_weight_set(box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_show(box);
+  elm_box_pack_end(v->box, box);
+  //evas_object_color_set(box, 150,150,150,150);
+  //elm_box_homogeneous_set(box, EINA_TRUE);
+
   /*
   fs_bt = elm_fileselector_button_add(win);
   elm_object_focus_allow_set(fs_bt, 0);
@@ -761,6 +770,7 @@ _add_buttons(View* v, Evas_Object* win)
 
   elm_object_text_set(bt, "Add empty");
   evas_object_show(bt);
+  elm_box_pack_end(box, bt);
 
   evas_object_color_get(bt, &r,&g,&b,&a);
   a = 150;
@@ -778,6 +788,7 @@ _add_buttons(View* v, Evas_Object* win)
   elm_object_focus_allow_set(bt, 0);
 
   elm_object_text_set(bt, "play");
+  elm_box_pack_end(box, bt);
   evas_object_show(bt);
 
   evas_object_color_set(bt, r,g,b,a);
@@ -792,6 +803,7 @@ _add_buttons(View* v, Evas_Object* win)
   elm_object_focus_allow_set(bt, 0);
 
   elm_object_text_set(bt, "pause");
+  elm_box_pack_end(box, bt);
   evas_object_show(bt);
 
   evas_object_color_set(bt, r,g,b,a);
@@ -805,6 +817,7 @@ _add_buttons(View* v, Evas_Object* win)
   elm_object_focus_allow_set(bt, 0);
 
   elm_object_text_set(bt, "add component");
+  elm_box_pack_end(box, bt);
   evas_object_show(bt);
 
   evas_object_color_set(bt, r,g,b,a);
@@ -818,6 +831,7 @@ _add_buttons(View* v, Evas_Object* win)
   elm_object_focus_allow_set(bt, 0);
 
   elm_object_text_set(bt, "reload");
+  elm_box_pack_end(box, bt);
   evas_object_show(bt);
 
   evas_object_color_set(bt, r,g,b,a);
@@ -836,6 +850,7 @@ _add_buttons(View* v, Evas_Object* win)
   elm_object_part_text_set(tg, "on", "Local");
   elm_object_part_text_set(tg, "off", "Global");
   //elm_box_pack_end(bx, tg);
+  elm_box_pack_end(box, tg);
   evas_object_show(tg);
   evas_object_smart_callback_add(tg, "changed", _dragger_global_local_changed_cb, v);
 
@@ -1006,11 +1021,13 @@ create_view(Evas_Object *win)
   Evas_Object* toolbar = _create_toolbar(win);
   //elm_box_pack_end(view->box, toolbar);
 
+  _add_buttons(view, win);
+
   view->glview = _create_glview(win);
   elm_box_pack_end(view->box, view->glview);
   _set_callbacks(view->glview);
 
-  _add_buttons(view, win);
+  //_add_buttons(view, win);
 
   view->property = create_property(win, view->context, view->control);
   view->tree = tree_widget_new(win, view);
@@ -1018,7 +1035,6 @@ create_view(Evas_Object *win)
 
   _create_view_objects(view);
   //view->menu = _create_component_menu(win);
-
 
   return view;
 }
