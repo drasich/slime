@@ -132,9 +132,9 @@ resource_shader_create(ResourceManager* rm)
   shader_attribute_add(simple, "texcoord", 2, GL_FLOAT);
   shader_uniform_add(simple, "matrix");
   shader_uniform_add(simple, "normal_matrix");
-  shader_uniform_type_add(simple, "texture", UNIFORM_TEXTURE);
-  shader_uniform_type_add(simple, "testfloat", UNIFORM_FLOAT);
-  shader_uniform_type_add(simple, "light", UNIFORM_VEC3);
+  shader_uniform_type_add(simple, "texture", UNIFORM_TEXTURE, true);
+  shader_uniform_type_add(simple, "testfloat", UNIFORM_FLOAT, true );
+  shader_uniform_type_add(simple, "light", UNIFORM_VEC3, true);
 
   Shader* red = create_shader("shader/red.shader", "shader/simple.vert", "shader/red.frag");
   shader_attribute_add(red, "vertex", 3, GL_FLOAT);
@@ -142,12 +142,12 @@ resource_shader_create(ResourceManager* rm)
   shader_attribute_add(red, "texcoord", 2, GL_FLOAT);
   shader_uniform_add(red, "matrix");
   shader_uniform_add(red, "normal_matrix");
-  shader_uniform_type_add(red, "texture", UNIFORM_TEXTURE);
+  shader_uniform_type_add(red, "texture", UNIFORM_TEXTURE, true);
 
   Shader* dragger = create_shader("shader/dragger.shader","shader/dragger.vert", "shader/dragger.frag");
   shader_attribute_add(dragger, "vertex", 3, GL_FLOAT);
   shader_uniform_add(dragger, "matrix");
-  shader_uniform_type_add(dragger, "color", UNIFORM_VEC4 );
+  shader_uniform_type_add(dragger, "color", UNIFORM_VEC4, false);
   shader_write(dragger);
 
   //Shader* simple = shader_read("shader/simple.shader");

@@ -211,6 +211,7 @@ shader_uniform_add(Shader* s, const char* name)
   uni.name = name;
   uni.location = 0;
   uni.type = UNIFORM_UNKNOWN;
+  uni.visible = false;
   eina_inarray_push(s->uniforms, &uni);
 }
 
@@ -303,7 +304,9 @@ shader_read(const char* filename)
 void 
 shader_mesh_draw(Shader* s, struct _MeshComponent* mc)
 {
+  if (!mc->shader_instance) return;
   Mesh* m = mesh_component_mesh_get(mc);
+  if (!m) return;
 
   Uniform* uni;
   GLuint i = 0;
@@ -451,12 +454,13 @@ shader_matrices_set(Shader* s, Matrix4 mat, const Matrix4 projection)
 
 
 void
-shader_uniform_type_add(Shader* s, const char* name, UniformType type)
+shader_uniform_type_add(Shader* s, const char* name, UniformType type, bool visible)
 {
   Uniform uni;
   uni.name = name;
   uni.location = 0;
   uni.type = type;
+  uni.visible = visible;
   eina_inarray_push(s->uniforms, &uni);
 }
 
@@ -467,18 +471,22 @@ shader_instance_create(Shader* s)
   si->textures = eina_hash_string_superfast_new(NULL);
   si->uniforms = eina_hash_string_superfast_new(NULL);
 
-  /*
   Uniform* uni;
   EINA_INARRAY_FOREACH(s->uniforms, uni) {
-    printf("shader instance create %s, uniname %s \n", s->name, uni->name);
-    if (uni->type == UNIFORM_TEXTURE) {
-      eina_hash_add(si->textures, uni->name, NULL);
-    }
-    else {
-      eina_hash_add(si->uniforms, uni->name, NULL);
+    if (uni->visible) {
+      //printf("shader instance create %s, uniname %s \n", s->name, uni->name);
+      if (uni->type == UNIFORM_TEXTURE ) {
+        //TODO another default texture
+        TextureHandle* t = resource_texture_handle_new(s_rm, "model/ceil.png");
+        eina_hash_add(si->textures, uni->name, t);
+      }
+      else {
+        UniformValue* uv = calloc(1, sizeof *uv);
+        uv->type = uni->type;
+        eina_hash_add(si->uniforms, uni->name, uv);
+      }
     }
   }
-  */
 
   return si;
 }

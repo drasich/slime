@@ -80,8 +80,8 @@ _mesh_component_draw(Component* c, Matrix4 world, const Matrix4 projection)
   }
 
 
-  //Shader* s = mc->shader;
-  Shader* s = mesh_component_shader_get(mc);
+  ShaderHandle sh = mc->shader_handle;
+  Shader* s = sh.shader;
   if (!s) {
     /*
     s = resource_shader_get(s_rm, mc->shader_name);
@@ -91,7 +91,10 @@ _mesh_component_draw(Component* c, Matrix4 world, const Matrix4 projection)
 
   shader_use(s);
 
-  //TODO remove the if test
+  if (!mc->shader_instance)
+  mc->shader_instance = shader_instance_create(s);
+
+
   if (mc->shader_instance) {
     eina_hash_foreach(mc->shader_instance->uniforms, uniform_send, s);
   }

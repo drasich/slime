@@ -212,7 +212,7 @@ _change_resource(void *data,
   int offset = property_offset_get(entryproperty);
   void** theolddata  = (void*)(entrydata + offset);
   const char* old = *theolddata;
-  if (!strcmp(old, name)) {
+  if (old && !strcmp(old, name)) {
     return;
   }
 
@@ -672,7 +672,7 @@ component_property_update_data(ComponentProperties* cp)
            int offset = property_offset_get(p);
            const ResourceHandle* rh = data + offset;
            const char* s = elm_object_text_get(obj);
-           if (rh && strcmp(rh->name,s)) 
+           if (rh && rh->name && strcmp(rh->name,s)) 
            elm_object_text_set(obj, rh->name );
           }
          break;
@@ -882,6 +882,9 @@ _property_struct_add(ComponentProperties* cp, const Property* p, Evas_Object* bo
 static void
 _property_add(ComponentProperties* cp, const Property* p, Evas_Object* box, void* data)
 {
+  if (!data) {
+    return;
+  }
   //printf("property add name: %s , type: %d, offset: %d, data : %p\n", p->name, p->type, p->offset, data);
 
   switch(p->type) {

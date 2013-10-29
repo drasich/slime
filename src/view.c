@@ -730,7 +730,6 @@ _add_buttons(View* v, Evas_Object* win)
   elm_icon_standard_set(ic, "file");
   evas_object_size_hint_aspect_set(ic, EVAS_ASPECT_CONTROL_VERTICAL, 1, 1);
 
-
   Evas_Object* box = elm_box_add(win);
   elm_box_horizontal_set(box, EINA_TRUE);
   //evas_object_size_hint_weight_set(box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -1152,8 +1151,8 @@ create_render()
   shader_attribute_add(s, "vertex", 3, GL_FLOAT);
   shader_uniform_add(s, "matrix");
   shader_uniform_add(s, "resolution");
-  shader_uniform_type_add(s, "texture", UNIFORM_TEXTURE);
-  shader_uniform_type_add(s, "texture_all", UNIFORM_TEXTURE);
+  shader_uniform_type_add(s, "texture", UNIFORM_TEXTURE, false);
+  shader_uniform_type_add(s, "texture_all", UNIFORM_TEXTURE, false);
 
   mesh_component_shader_set(mc, s);
 
