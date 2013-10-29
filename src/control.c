@@ -42,6 +42,7 @@ _objects_center(Control* c, Eina_List* objects)
   return v;
 }
 
+
 static void
 _control_move(Control* c)
 {
@@ -90,12 +91,16 @@ _control_scale(Control* c)
   int x, y;
   //evas_pointer_output_xy_get(evas_object_evas_get(v->glview), &x, &y);
   evas_pointer_canvas_xy_get(evas_object_evas_get(v->glview), &x, &y);
-  Vec2 mousepos = vec2(x,y);
-  //printf("mouse pos : %f, %f \n", mousepos.x, mousepos.y);
+
+  Evas_Coord cx, cy, cw, ch;
+  evas_object_geometry_get (v->glview, &cx, &cy, &cw, &ch);
+  x = x - cx;
+  y = y - cy;
+
   Object* o = context_object_get(v->context);
   if (o != NULL && c->state != CONTROL_SCALE) {
     _control_scale_prepare(c, context_objects_get(v->context));
-    c->mouse_start = mousepos;
+    c->mouse_start = vec2(x,y);
   }
 }
 
@@ -131,12 +136,16 @@ _control_rotate(Control* c)
   int x, y;
   //evas_pointer_output_xy_get(evas_object_evas_get(v->glview), &x, &y);
   evas_pointer_canvas_xy_get(evas_object_evas_get(v->glview), &x, &y);
-  Vec2 mousepos = vec2(x,y);
-  //printf("mouse pos : %f, %f \n", mousepos.x, mousepos.y);
+
+  Evas_Coord cx, cy, cw, ch;
+  evas_object_geometry_get (v->glview, &cx, &cy, &cw, &ch);
+  x = x - cx;
+  y = y - cy;
+
   Object* o = context_object_get(v->context);
   if (o != NULL && c->state != CONTROL_ROTATE) {
     _control_rotate_prepare(c, context_objects_get(v->context));
-    c->mouse_start = mousepos;
+    c->mouse_start = vec2(x,y);
   }
 
 }
@@ -218,7 +227,6 @@ _translate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
   p.normal = vec3_normalized(p.normal);
 
   Ray rstart = ray_from_screen(v->camera, c->mouse_start.x, c->mouse_start.y, 1);
-
 
   Evas_Coord cx, cy, cw, ch;
   evas_object_geometry_get (v->glview, &cx, &cy, &cw, &ch);
@@ -373,8 +381,10 @@ _scale_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
 
   Eina_List* objects = context_objects_get(v->context);
 
-  float x = e->cur.canvas.x;
-  float y = e->cur.canvas.y;
+  Evas_Coord cx, cy, cw, ch;
+  evas_object_geometry_get (v->glview, &cx, &cy, &cw, &ch);
+  float x = e->cur.canvas.x - cx;
+  float y = e->cur.canvas.y - cy;
 
   Vec2 ss = camera_world_to_screen(c->view->camera, c->start);
   Vec2 sss = vec2_sub(c->mouse_start, ss);
@@ -413,8 +423,12 @@ _rotate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
   Eina_List* objects = context_objects_get(v->context);
 
   Ray rstart = ray_from_screen(v->camera, c->mouse_start.x, c->mouse_start.y, 1);
-  float x = e->cur.canvas.x;
-  float y = e->cur.canvas.y;
+
+  Evas_Coord cx, cy, cw, ch;
+  evas_object_geometry_get (v->glview, &cx, &cy, &cw, &ch);
+  float x = e->cur.canvas.x - cx;
+  float y = e->cur.canvas.y - cy;
+
   Ray r = ray_from_screen(v->camera, x, y, 1);
 
   //Vec3 normal = constraint;

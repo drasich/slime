@@ -854,9 +854,6 @@ _add_buttons(View* v, Evas_Object* win)
   elm_box_pack_end(box, tg);
   evas_object_show(tg);
   evas_object_smart_callback_add(tg, "changed", _dragger_global_local_changed_cb, v);
-
-
-
 }
 
 static Eina_List*
