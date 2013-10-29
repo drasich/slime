@@ -1,4 +1,5 @@
 LATELY
+- update the shader instance display when changing the shader...
 - check if the scene is saved right with shader instance and everything
 - type get for uniform union in shader.c, uniform_type_set and get
 - handle all uniform types in shader instance, component view and draw shader
