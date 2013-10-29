@@ -735,7 +735,8 @@ _add_buttons(View* v, Evas_Object* win)
   elm_box_horizontal_set(box, EINA_TRUE);
   //evas_object_size_hint_weight_set(box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   evas_object_show(box);
-  elm_box_pack_end(v->box, box);
+  //elm_box_pack_end(v->box, box);
+  elm_table_pack(v->table, box, 0, 0, 1, 1);
   //evas_object_color_set(box, 150,150,150,150);
   //elm_box_homogeneous_set(box, EINA_TRUE);
 
@@ -1011,23 +1012,20 @@ create_view(Evas_Object *win)
   view->control = create_control(view);
   s_component_manager = create_component_manager(win, view->control); //TODO
   component_manager_load(s_component_manager);
+  
+  view->table = elm_table_add(win);
+  evas_object_size_hint_weight_set(view->table, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_show(view->table);
+  elm_table_homogeneous_set(view->table, EINA_TRUE);
 
-  view->box = elm_box_add(win);
-  elm_box_horizontal_set(view->box, EINA_FALSE);
-  evas_object_size_hint_weight_set(view->box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  //elm_win_resize_object_add(win, view->box);
-  evas_object_show(view->box);
-
-  Evas_Object* toolbar = _create_toolbar(win);
+  //Evas_Object* toolbar = _create_toolbar(win);
   //elm_box_pack_end(view->box, toolbar);
 
-  _add_buttons(view, win);
-
   view->glview = _create_glview(win);
-  elm_box_pack_end(view->box, view->glview);
+  elm_table_pack(view->table, view->glview, 0, 0, 1, 10);
   _set_callbacks(view->glview);
 
-  //_add_buttons(view, win);
+  _add_buttons(view, win);
 
   view->property = create_property(win, view->context, view->control);
   view->tree = tree_widget_new(win, view);

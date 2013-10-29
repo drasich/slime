@@ -91,7 +91,7 @@ create_window()
   Evas_Object* property = view->property->root;
   Evas_Object* tree = view->tree->root;
 
-  elm_object_part_content_set(hpanes, "left", view->box);
+  elm_object_part_content_set(hpanes, "left", view->table);
   elm_object_part_content_set(hpanes, "right", property);
 
   elm_object_part_content_set(panes, "left", tree);
@@ -111,6 +111,7 @@ create_window()
   //Evas_Object* edje = create_my_group(evas, "danceoff");
 }
 
+/*
 static void
 create_window_panels()
 {
@@ -163,6 +164,7 @@ create_window_panels()
   //Evas* evas = evas_object_evas_get(win);
   //Evas_Object* edje = create_my_group(evas, "danceoff");
 }
+*/
 
 
 static Object*
