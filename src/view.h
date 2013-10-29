@@ -35,7 +35,6 @@ struct _View
   Evas_Object* glview;
   PropertyView* property;
   struct _Tree* tree;
-  //Evas_Object* box;
   Evas_Object* table;
   ViewCamera* camera;
   Render* render;

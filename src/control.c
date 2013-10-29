@@ -49,11 +49,14 @@ _control_move(Control* c)
   int x, y;
   //evas_pointer_output_xy_get(evas_object_evas_get(v->glview), &x, &y);
   evas_pointer_canvas_xy_get(evas_object_evas_get(v->glview), &x, &y);
-  Vec2 mousepos = vec2(x,y);
-  //printf("mouse pos : %f, %f \n", mousepos.x, mousepos.y);
-  c->start = _objects_center(c, context_objects_get(v->context));
-  c->mouse_start = mousepos;
 
+  Evas_Coord cx, cy, cw, ch;
+  evas_object_geometry_get (v->glview, &cx, &cy, &cw, &ch);
+  x = x - cx;
+  y = y - cy;
+
+  c->mouse_start = vec2(x,y);
+  c->start = _objects_center(c, context_objects_get(v->context));
 }
 
 static void
@@ -216,8 +219,12 @@ _translate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
 
   Ray rstart = ray_from_screen(v->camera, c->mouse_start.x, c->mouse_start.y, 1);
 
-  float x = e->cur.canvas.x;
-  float y = e->cur.canvas.y;
+
+  Evas_Coord cx, cy, cw, ch;
+  evas_object_geometry_get (v->glview, &cx, &cy, &cw, &ch);
+  float x = e->cur.canvas.x - cx;
+  float y = e->cur.canvas.y - cy;
+
   Ray r = ray_from_screen(v->camera, x, y, 1);
 
   IntersectionRay ir =  intersection_ray_plane(r, p);
@@ -275,8 +282,11 @@ _translate_moving_local_axis(Control* c, Evas_Event_Mouse_Move* e, Vec3 constrai
 
   Ray rstart = ray_from_screen(v->camera, c->mouse_start.x, c->mouse_start.y, 1);
 
-  float x = e->cur.canvas.x;
-  float y = e->cur.canvas.y;
+  Evas_Coord cx, cy, cw, ch;
+  evas_object_geometry_get (v->glview, &cx, &cy, &cw, &ch);
+  float x = e->cur.canvas.x - cx;
+  float y = e->cur.canvas.y - cy;
+
   Ray r = ray_from_screen(v->camera, x, y, 1);
 
   IntersectionRay ir =  intersection_ray_plane(r, p);
@@ -322,8 +332,11 @@ _translate_moving_plane(Control* c, Evas_Event_Mouse_Move* e, Vec3 normal)
 
   Ray rstart = ray_from_screen(v->camera, c->mouse_start.x, c->mouse_start.y, 1);
 
-  float x = e->cur.canvas.x;
-  float y = e->cur.canvas.y;
+  Evas_Coord cx, cy, cw, ch;
+  evas_object_geometry_get (v->glview, &cx, &cy, &cw, &ch);
+  float x = e->cur.canvas.x - cx;
+  float y = e->cur.canvas.y - cy;
+
   Ray r = ray_from_screen(v->camera, x, y, 1);
 
   IntersectionRay ir =  intersection_ray_plane(r, p);
@@ -561,6 +574,11 @@ _draggers_highlight_check(Control* c, Evas_Coord x, Evas_Coord y)
 static bool
 _draggers_click_check(Control* c, Evas_Event_Mouse_Down* e)
 {
+  Evas_Coord x, y, w, h;
+  evas_object_geometry_get (c->view->glview, &x, &y, &w, &h);
+  int ex = e->canvas.x - x;
+  int ey = e->canvas.y - y;
+
   View* v = c->view;
   IntersectionRay ir;
   ir.hit = false;
@@ -576,7 +594,7 @@ _draggers_click_check(Control* c, Evas_Event_Mouse_Down* e)
     else
     dragger_state_set(d, DRAGGER_LOWLIGHT);
 
-    Ray r = ray_from_screen(v->camera, e->canvas.x, e->canvas.y, 1000);
+    Ray r = ray_from_screen(v->camera, ex, ey, 1000);
     AABox bb = d->box;
     bb.min = vec3_mul(bb.min, d->scale);
     bb.max = vec3_mul(bb.max, d->scale);
@@ -638,13 +656,15 @@ _draggers_click_check(Control* c, Evas_Event_Mouse_Down* e)
 void
 control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
 {
-  c->mouse_current.x = e->cur.canvas.x;
-  c->mouse_current.y = e->cur.canvas.y;
+  Evas_Coord x, y, w, h;
+  evas_object_geometry_get (c->view->glview, &x, &y, &w, &h);
+  c->mouse_current.x = e->cur.canvas.x - x;
+  c->mouse_current.y = e->cur.canvas.y - y;
 
   View* v = c->view;
   if (c->state == CONTROL_IDLE) {
     if (e->buttons == 0){
-       _draggers_highlight_check(c,e->cur.canvas.x, e->cur.canvas.y);
+       _draggers_highlight_check(c,c->mouse_current.x, c->mouse_current.y);
     }
     else if ( (e->buttons & 1) == 1){
       float x = e->cur.canvas.x - e->prev.canvas.x;
@@ -891,10 +911,15 @@ control_mouse_up(Control* c, Evas_Event_Mouse_Up *e)
 {
   View* v = c->view;
 
+  Evas_Coord x, y, w, h;
+  evas_object_geometry_get(v->glview, &x, &y, &w, &h);
+  int ex = e->canvas.x - x;
+  int ey = e->canvas.y - y;
+
   if (c->state == CONTROL_DRAGGER_TRANSLATE) {
     c->state = CONTROL_IDLE;
 
-    _draggers_highlight_check(c,e->canvas.x, e->canvas.y);
+    _draggers_highlight_check(c,ex, ey);
 
     Eina_List* objects = context_objects_get(v->context);
     Vec3 center = _objects_center(c, objects);
@@ -910,7 +935,7 @@ control_mouse_up(Control* c, Evas_Event_Mouse_Up *e)
   else if (c->state == CONTROL_DRAGGER_SCALE) {
     c->state = CONTROL_IDLE;
 
-    _draggers_highlight_check(c,e->canvas.x, e->canvas.y);
+    _draggers_highlight_check(c,ex, ey);
 
     Eina_List* objects = context_objects_get(c->view->context);
 
@@ -925,7 +950,7 @@ control_mouse_up(Control* c, Evas_Event_Mouse_Up *e)
   else if (c->state == CONTROL_DRAGGER_ROTATE) {
     c->state = CONTROL_IDLE;
 
-    _draggers_highlight_check(c,e->canvas.x, e->canvas.y);
+    _draggers_highlight_check(c,ex, ey);
 
     Eina_List* objects = context_objects_get(c->view->context);
 

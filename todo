@@ -1,5 +1,5 @@
 LATELY
-- add a tool bar or put the buttons correctly in the view
+- fix scale and rotate coords must be offset by the glview widget
 - check if the scene is saved right with shader instance and everything
 - type get for uniform union in shader.c, uniform_type_set and get
 - handle all uniform types in shader instance, component view and draw shader
