@@ -265,6 +265,9 @@ resource_mesh_handle_set(ResourceManager* rm, MeshHandle* mh, const char* name)
 void
 resource_shader_handle_set(ResourceManager* rm, ShaderHandle* sh, const char* name)
 {
+  printf("resource shader handle set\n");
+  if (sh->cb) sh->cb(sh->name, name, sh->data);
+
   sh->name = name;
   Shader* s = resource_shader_get(rm, name);
   if (s)
@@ -277,5 +280,6 @@ resource_shader_handle_set(ResourceManager* rm, ShaderHandle* sh, const char* na
     */
   }
   sh->state = RESOURCE_STATE_CHANGED;
+
 }
 

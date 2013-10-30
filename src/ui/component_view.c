@@ -200,7 +200,7 @@ _change_resource(void *data,
       void *event_info)
 {
   Property* p = evas_object_data_get(obj, "property");
-  //Component* c = evas_object_data_get(obj, "component");
+  ComponentProperties* cp = evas_object_data_get(obj, "componentproperties");
   const char *name = data;
   //printf("property name: %s, component name: %s, change resource : %s \n ",p->name, c->name, name);
   Evas_Object* entry = evas_object_data_get(obj, "entry");
@@ -227,6 +227,8 @@ _change_resource(void *data,
   else if( p->resource_type == RESOURCE_SHADER ) {
     ShaderHandle* sh = entrydata;
     resource_shader_handle_set(s_rm, sh, name);
+    //property_update_components_data(PropertyView* pw, Component* component)
+    //component_property_update_data(cp);
   }
 }
 
@@ -322,7 +324,7 @@ _entry_clicked_cb(void *data, Evas_Object *obj, void *event)
     Evas_Object* win = evas_object_top_get(evas_object_evas_get(obj));
     Evas_Object* menu = _create_resource_menu(win, p->resource_type);
     if (!menu) return;
-    evas_object_data_set(menu, "component", cp->component);
+    evas_object_data_set(menu, "componentproperties", cp);
     evas_object_data_set(menu, "property", p);
     evas_object_data_set(menu, "entry", obj);
     evas_object_show(menu);

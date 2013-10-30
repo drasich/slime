@@ -2,6 +2,15 @@
 #include "component.h"
 #include "resource.h"
 
+static void
+_mesh_component_shader_changed_cb(const char* oldname, const char* newname, void* data)
+{
+  MeshComponent* mc = data;
+  printf("this callback is called? %s, %s\n", mc->mesh_handle.name, newname);
+  mesh_component_shader_set_by_name(mc, newname);
+}
+
+
 static void*
 _mesh_component_create()
 {
@@ -110,11 +119,21 @@ _mesh_component_draw(Component* c, Matrix4 world, const Matrix4 projection)
   shader_mesh_draw(s,mc);
 }
 
+static void
+_mesh_component_init(Component* c)
+{
+  MeshComponent* mc = c->data;
+  if (!mc) return;
+
+  mc->shader_handle.cb = _mesh_component_shader_changed_cb;
+  mc->shader_handle.data = mc;
+}
+
 ComponentDesc mesh_desc = {
   "mesh",
   _mesh_component_create,
   _mesh_component_properties,
-  NULL,
+  _mesh_component_init,
   NULL,
   _mesh_component_draw,
   NULL,
@@ -181,3 +200,4 @@ void mesh_component_mesh_set_by_name(MeshComponent* mc, const char* name)
 {
   resource_mesh_handle_set(s_rm, &mc->mesh_handle, name);
 }
+

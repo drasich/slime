@@ -59,6 +59,8 @@ enum _ResourceHandleState{
   RESOURCE_STATE_LOADING,
 };
 
+typedef void (*resource_changed_cb)(const char* oldname, const char* newname, void* data);
+
 typedef struct _ResourceHandle ResourceHandle;
 struct _ResourceHandle {
   const char* name;
@@ -68,6 +70,8 @@ struct _ResourceHandle {
     Shader* shader;
   };
   ResourceHandleState state;
+  void* data;
+  resource_changed_cb cb;
 };
 
 typedef struct _ResourceHandle MeshHandle;

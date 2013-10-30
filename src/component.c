@@ -14,6 +14,8 @@ create_component(ComponentDesc *cd)
   if (cd->create) c->data = cd->create();
   if (cd->properties) c->properties = cd->properties();
   c->name = cd->name;
+  if (cd->init)
+  cd->init(c);
   return c;
 }
 
