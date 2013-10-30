@@ -200,7 +200,7 @@ _change_resource(void *data,
       void *event_info)
 {
   Property* p = evas_object_data_get(obj, "property");
-  Component* c = evas_object_data_get(obj, "component");
+  //Component* c = evas_object_data_get(obj, "component");
   const char *name = data;
   //printf("property name: %s, component name: %s, change resource : %s \n ",p->name, c->name, name);
   Evas_Object* entry = evas_object_data_get(obj, "entry");
@@ -221,12 +221,12 @@ _change_resource(void *data,
     resource_texture_handle_set(s_rm, t, name);
   }
   else if( p->resource_type == RESOURCE_MESH ) {
-    MeshHandle* m = entrydata;
-    resource_mesh_handle_set(s_rm, m, name);
+    MeshHandle* mh = entrydata;
+    resource_mesh_handle_set(s_rm, mh, name);
   }
   else if( p->resource_type == RESOURCE_SHADER ) {
-    ShaderHandle* m = entrydata;
-    resource_shader_handle_set(s_rm, m, name);
+    ShaderHandle* sh = entrydata;
+    resource_shader_handle_set(s_rm, sh, name);
   }
 }
 
@@ -965,10 +965,13 @@ _property_add(ComponentProperties* cp, const Property* p, Evas_Object* box, void
        {
         int offset = property_offset_get(p);
         UniformValue* uv = data + offset;
+        //printf("this is a uniform, type is %d \n", uv->type);
         if (uv->type == UNIFORM_FLOAT) { 
+          //printf("this is a uniform, type is float !! %d \n", uv->type);
           _property_add_spinner(cp, p, box, data);
         }
         else if (uv->type == UNIFORM_VEC3) { 
+          //printf("this is a uniform, type is vec3 !! %d \n", uv->type);
           _property_vec3_add(cp, p, box, data);
           //_property_add_spinner(cp, p, box, data);
         }
