@@ -276,5 +276,6 @@ resource_shader_handle_set(ResourceManager* rm, ShaderHandle* sh, const char* na
     rm->waiting = eina_list_append(rm->waiting, rw);
     */
   }
+  sh->state = RESOURCE_STATE_CHANGED;
 }
 

@@ -88,6 +88,9 @@ _mesh_component_draw(Component* c, Matrix4 world, const Matrix4 projection)
     if (s) mc->shader = s;
     else*/ return;
   }
+  if (sh.state == RESOURCE_STATE_CHANGED) {
+    mesh_component_shader_set(mc, s);
+  }
 
   shader_use(s);
 
@@ -146,6 +149,7 @@ mesh_component_shader_set(MeshComponent* mc, Shader* s)
 
   mc->shader_handle.name = s->name;
   mc->shader_handle.shader = s;
+  mc->shader_handle.state = RESOURCE_STATE_OK;
 
   if (mc->shader_instance) {
     //TODO save the instance for later use? if someone else will link to this shader we already have

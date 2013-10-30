@@ -52,6 +52,13 @@ struct _Resource {
 };
 */
 
+typedef enum _ResourceHandleState ResourceHandleState;
+enum _ResourceHandleState{
+  RESOURCE_STATE_OK,
+  RESOURCE_STATE_CHANGED,
+  RESOURCE_STATE_LOADING,
+};
+
 typedef struct _ResourceHandle ResourceHandle;
 struct _ResourceHandle {
   const char* name;
@@ -60,6 +67,7 @@ struct _ResourceHandle {
     Texture* texture;
     Shader* shader;
   };
+  ResourceHandleState state;
 };
 
 typedef struct _ResourceHandle MeshHandle;
