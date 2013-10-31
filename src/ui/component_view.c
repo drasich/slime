@@ -227,8 +227,7 @@ _change_resource(void *data,
   else if( p->resource_type == RESOURCE_SHADER ) {
     ShaderHandle* sh = entrydata;
     resource_shader_handle_set(s_rm, sh, name);
-    //property_update_components_data(PropertyView* pw, Component* component)
-    //component_property_update_data(cp);
+    property_reload_component(cp->pw, cp->component);
   }
 }
 

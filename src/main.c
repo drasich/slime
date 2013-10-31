@@ -175,7 +175,6 @@ _object_mesh_create(const char* file)
   mesh_component_shader_set_by_name(mc,"shader/simple.shader");
 
   TextureHandle* t = resource_texture_handle_new(s_rm, "model/ceil.png");
-  //Texture* t = resource_texture_get(s_rm, "model/ceil.png");
   shader_instance_texture_data_set(mc->shader_instance, "texture", t);
 
   UniformValue* uv = calloc(1, sizeof *uv);

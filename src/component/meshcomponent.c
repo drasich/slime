@@ -6,7 +6,6 @@ static void
 _mesh_component_shader_changed_cb(const char* oldname, const char* newname, void* data)
 {
   MeshComponent* mc = data;
-  printf("this callback is called? %s, %s\n", mc->mesh_handle.name, newname);
   mesh_component_shader_set_by_name(mc, newname);
 }
 
@@ -97,9 +96,12 @@ _mesh_component_draw(Component* c, Matrix4 world, const Matrix4 projection)
     if (s) mc->shader = s;
     else*/ return;
   }
+
+  /*
   if (sh.state == RESOURCE_STATE_CHANGED) {
     mesh_component_shader_set(mc, s);
   }
+  */
 
   shader_use(s);
 

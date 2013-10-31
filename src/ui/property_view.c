@@ -19,6 +19,33 @@ void property_clear_components(PropertyView* pw)
   printf("TODO clean components here\n");
 }
 
+void property_reload_component(PropertyView* pw, Component* c)
+{
+  ComponentProperties* cp = create_component_properties(c, pw);
+  cp->component = c;
+  component_property_update_data(cp);
+
+  Eina_List* l;
+  ComponentProperties* icp;
+  ComponentProperties* found;
+  EINA_LIST_FOREACH(pw->component_widgets, l, icp) {
+    if (icp->component == c) {
+      elm_box_pack_after(pw->box, cp->root, icp->root);
+      elm_box_unpack(pw->box, icp->root);
+      found = icp;
+      evas_object_hide(icp->root);
+      evas_object_show(cp->root);
+      break;
+    }
+  }
+  
+  if (found) {
+    pw->component_widgets = eina_list_append_relative(pw->component_widgets, cp, found);
+    pw->component_widgets = eina_list_remove(pw->component_widgets, found);
+  }
+
+}
+
 void
 property_add_component(PropertyView* pw, ComponentProperties* cp)
 {

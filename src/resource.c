@@ -265,6 +265,8 @@ resource_mesh_handle_set(ResourceManager* rm, MeshHandle* mh, const char* name)
 void
 resource_shader_handle_set(ResourceManager* rm, ShaderHandle* sh, const char* name)
 {
+  //TODO choose between this state or the callback or both
+  sh->state = RESOURCE_STATE_CHANGED;
   printf("resource shader handle set\n");
   if (sh->cb) sh->cb(sh->name, name, sh->data);
 
@@ -279,7 +281,6 @@ resource_shader_handle_set(ResourceManager* rm, ShaderHandle* sh, const char* na
     rm->waiting = eina_list_append(rm->waiting, rw);
     */
   }
-  sh->state = RESOURCE_STATE_CHANGED;
 
 }
 

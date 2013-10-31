@@ -343,9 +343,9 @@ shader_mesh_draw(Shader* s, struct _MeshComponent* mc)
       }
 
       if (uni->type == UNIFORM_FLOAT)
-        gl->glUniform1f(uni_loc, uv->value.f);
+      gl->glUniform1f(uni_loc, uv->value.f);
       else if (uni->type == UNIFORM_VEC3)
-        gl->glUniform3f(uni_loc, uv->value.vec3.x, uv->value.vec3.y, uv->value.vec3.z);
+      gl->glUniform3f(uni_loc, uv->value.vec3.x, uv->value.vec3.y, uv->value.vec3.z);
     }
 
   }
