@@ -306,7 +306,10 @@ shader_mesh_draw(Shader* s, struct _MeshComponent* mc)
 {
   if (!mc->shader_instance) return;
   Mesh* m = mesh_component_mesh_get(mc);
-  if (!m) return;
+  if (!m) {
+    printf("shader mesh draw, no mesh\n");
+    return;
+  }
 
   Uniform* uni;
   GLuint i = 0;

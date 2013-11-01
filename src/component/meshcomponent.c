@@ -72,38 +72,19 @@ _mesh_component_draw(Component* c, Matrix4 world, const Matrix4 projection)
 
   if (mc->hide) return;
 
-  /*
-  Mesh* m = mc->mesh;
-  if (!m) {
-    m = resource_mesh_get(s_rm, mc->mesh_name);
-    if (m) mc->mesh = m;
-    else return;
-  }
-  */
-
   MeshHandle mh = mc->mesh_handle;
   Mesh* m = mh.mesh;
   if (!m) {
-    //TODO put this in mesh component init
-    m = resource_mesh_get(s_rm, mh.name);
-    if (m)
-    mh.mesh = m;
-    else  {
-      printf("no mesh \n");
-      return;
-    }
+    printf("no mesh \n");
+    return;
   }
 
 
   ShaderHandle sh = mc->shader_handle;
   Shader* s = sh.shader;
   if (!s) {
-    s = resource_shader_get(s_rm, sh.name);
-    if (s) sh.shader = s;
-    else {
     printf("no shader \n");
     return;
-    }
   }
 
   /*
@@ -139,20 +120,18 @@ _mesh_component_init(Component* c)
   mc->shader_handle.cb = _mesh_component_shader_changed_cb;
   mc->shader_handle.data = mc;
 
-  MeshHandle mh = mc->mesh_handle;
-  if (mh.name) {
-    //TODO put this in mesh component init
-    mh.mesh = resource_mesh_get(s_rm, mh.name);
+  MeshHandle* mh = &mc->mesh_handle;
+  if (mh->name) {
+    mh->mesh = resource_mesh_get(s_rm, mh->name);
   }
 
-
-  ShaderHandle sh = mc->shader_handle;
-  if (sh.name) {
-    sh.shader = resource_shader_get(s_rm, sh.name);
+  ShaderHandle* sh = &mc->shader_handle;
+  if (sh->name) {
+    sh->shader = resource_shader_get(s_rm, sh->name);
   }
 
-  if (sh.shader)
-  mesh_component_shader_set(mc, sh.shader);
+  if (sh->shader)
+  mesh_component_shader_set(mc, sh->shader);
 }
 
 ComponentDesc mesh_desc = {
