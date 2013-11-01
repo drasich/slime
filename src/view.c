@@ -1041,7 +1041,7 @@ view_destroy(View* v)
   //TODO free camera
   //TODO free scene here?
   if (!gameview_) {
-    scene_write(v->context->scene, "scene/scene.eet");
+    //scene_write(v->context->scene, "scene/scene.eet");
   }
 
   free(v->context);

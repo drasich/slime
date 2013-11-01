@@ -1,6 +1,5 @@
 LATELY
-- update the shader instance display when changing the shader...
-  update is not enough... must remove entries/frame/widget
+- fix read scene
 - check if the scene is saved right with shader instance and everything
 - type get for uniform union in shader.c, uniform_type_set and get
 - handle all uniform types in shader instance, component view and draw shader
@@ -112,6 +111,14 @@ GAMEVIEW
 - check the gl callbacks init, update, draw.... for gameview;
 
 IDEAS
+- many times in unity I want to write a new component with new functions but
+  with the same data/properties, but If I write a new component, I lose the
+  data I set before. it sounds stupid to say that but yes must separate
+  data and logic... 
+  something like 
+  - ComponentData : the struct and the properties definition.
+  - ComponentBehavior : the functions that act on the data.
+
 - try to use panel instead of panes.... but panel are not resizable...
 - in the component managers, for all the components add objects
   to component, then call init update on the component that calls it for

@@ -274,17 +274,17 @@ static void
 build_scene()
 {
   scene_descriptor_init();
-  Scene* s = create_scene();
-  //Scene* s = scene_read("scene/scene.eet");
-  //scene_post_read(s);
+  //Scene* s = create_scene();
+  Scene* s = scene_read("scene/scene.eet");
+  scene_post_read(s);
   view->context->scene = s;
-  populate_scene(view->control, s);
+  //populate_scene(view->control, s);
   tree_scene_set(view->tree, s);
 
   printf("scene ORIGINAL\n");
   scene_print(s);
   printf("scene write*****\n");
-  Eina_Bool b = scene_write(s,"scene/scene.eet");
+  //Eina_Bool b = scene_write(s,"scene/scene.eet");
   /*
   printf("scene write end, scene read____\n");
   Scene* ss = scene_read();
@@ -326,10 +326,6 @@ elm_main(int argc, char **argv)
   //create_window_panels();
 
   build_scene();
-  Quat qa = quat_angles_deg(vec3(110.0f,150,10));
-  Vec3 angles = quat_to_euler(qa);
-  angles = vec3_mul(angles, 180.0f/M_PI);
-  printf("AAAAAAAAAAAAAAAAAAA %f, %f, %f \n", angles.x, angles.y, angles.z);
   //gameviewtest();
 
   elm_run();
