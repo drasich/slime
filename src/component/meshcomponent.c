@@ -45,6 +45,10 @@ static Eina_Bool uniform_send(
   Shader* s = fdata;
 
   Uniform* uni = shader_uniform_get(s, key);
+  if (!uni) {
+    printf("%s : cannot find uniform '%s' \n", __FUNCTION__, key);
+    return EINA_FALSE;
+  }
   GLint uniloc =  uni->location;
   if (uniloc < 0) {
     printf("no such uniform '%s' \n", key);
@@ -99,7 +103,8 @@ _mesh_component_draw(Component* c, Matrix4 world, const Matrix4 projection)
   mc->shader_instance = shader_instance_create(s);
 
 
-  if (mc->shader_instance) {
+  //TODO this is needed for draggers
+  if (mc->shader_instance && mc->shader_instance->uniforms) {
     eina_hash_foreach(mc->shader_instance->uniforms, uniform_send, s);
   }
 
@@ -132,6 +137,9 @@ _mesh_component_init(Component* c)
 
   if (sh->shader)
   mesh_component_shader_set(mc, sh->shader);
+
+  if (mc->shader_instance)
+  shader_instance_init(mc->shader_instance);
 }
 
 ComponentDesc mesh_desc = {
@@ -168,8 +176,11 @@ mesh_component_shader_set_by_name(MeshComponent* mc, const char* name)
 void
 mesh_component_shader_set(MeshComponent* mc, Shader* s)
 {
-  //mc->shader_name = s->name;
-  //mc->shader = s;
+  //printf("mesh component shader set meshcomponent mc: %p, shader name:%s \n", mc, s->name);
+  bool create_new_instance = true;
+  if (mc->shader_handle.name && !strcmp(s->name, mc->shader_handle.name)) {
+    create_new_instance = false;
+  }
 
   mc->shader_handle.name = s->name;
   mc->shader_handle.shader = s;
@@ -178,14 +189,18 @@ mesh_component_shader_set(MeshComponent* mc, Shader* s)
   if (mc->shader_instance) {
     //TODO save the instance for later use? if someone else will link to this shader we already have
     //an instance
-    eina_hash_free(mc->shader_instance->textures);
-    eina_hash_free(mc->shader_instance->uniforms);
-    mc->shader_instance->textures = NULL;
-    mc->shader_instance->uniforms = NULL;
-    free(mc->shader_instance);
-    mc->shader_instance = NULL;
-  }
+    if (create_new_instance) {
+      eina_hash_free(mc->shader_instance->textures);
+      eina_hash_free(mc->shader_instance->uniforms);
+      mc->shader_instance->textures = NULL;
+      mc->shader_instance->uniforms = NULL;
+      free(mc->shader_instance);
+      mc->shader_instance = NULL;
 
+      mc->shader_instance = shader_instance_create(s);
+    }
+  }
+  else 
   mc->shader_instance = shader_instance_create(s);
 }
 

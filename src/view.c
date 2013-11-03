@@ -477,6 +477,7 @@ static Object*
 _create_repere(float u, Camera* camera)
 {
   Object* o = create_object();
+  o->name = "repere";
   Component* comp = create_component(&line_desc);
   object_add_component(o,comp);
   Line* l = comp->data;
@@ -492,6 +493,7 @@ static Object*
 _create_grid(Camera* camera)
 {
   Object* grid = create_object();
+  grid->name = "grid";
   Component* comp = create_component(&line_desc);
   object_add_component(grid,comp);
   Line* l = comp->data;
@@ -546,7 +548,7 @@ _new_empty(void *data,
       void *event_info)
 {
   Object* yep = create_object();
-  yep->name = eina_stringshare_add("empty");
+  yep->name = eina_stringshare_add("new_empty");
   View* v = (View*) data;
 
   Vec3 cp = v->camera->object->position;
@@ -1041,7 +1043,11 @@ view_destroy(View* v)
   //TODO free camera
   //TODO free scene here?
   if (!gameview_) {
-    //scene_write(v->context->scene, "scene/scene.eet");
+    //*
+    printf("I write the scene before I destroy the scene\n");
+    scene_print(v->context->scene);
+    scene_write(v->context->scene, "scene/scenewrite.eet");
+    //*/
   }
 
   free(v->context);
@@ -1132,6 +1138,7 @@ create_render()
   r->fbo_all = create_fbo();
 
   r->quad_outline = create_object();
+  r->quad_outline->name = "outline";
   Component* comp = create_component(&mesh_desc);
   MeshComponent* mc = comp->data;
   mesh_component_mesh_set_by_name(mc, "quad");

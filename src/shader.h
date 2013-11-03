@@ -131,5 +131,7 @@ struct _UniformValue
   UniformType type;
 };
 Property* property_set_uniform();
+void shader_instance_print(ShaderInstance* si);
+void shader_instance_init(ShaderInstance* si);
 
 #endif

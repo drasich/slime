@@ -170,6 +170,7 @@ static Object*
 _object_mesh_create(const char* file)
 {
   Object* o = create_object();
+  o->name = file;
   Component* meshcomp = create_component(&mesh_desc);
   MeshComponent* mc = meshcomp->data;
   mesh_component_shader_set_by_name(mc,"shader/simple.shader");
@@ -233,7 +234,7 @@ populate_scene(Control* c, Scene* s)
   if (true)
    {
     Object* empty = create_object();
-    empty->name = eina_stringshare_add("empty");
+    empty->name = eina_stringshare_add("child");
 
     Component* meshcomp = create_component(&mesh_desc);
     MeshComponent* mc = meshcomp->data;
@@ -283,8 +284,8 @@ build_scene()
 
   printf("scene ORIGINAL\n");
   scene_print(s);
-  printf("scene write*****\n");
-  //Eina_Bool b = scene_write(s,"scene/scene.eet");
+  //printf("scene write*****\n");
+  //Eina_Bool b = scene_write(s,"scene/scenewrite.eet");
   /*
   printf("scene write end, scene read____\n");
   Scene* ss = scene_read();

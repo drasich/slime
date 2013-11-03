@@ -256,7 +256,7 @@ void object_add_component_armature(Object* o, Armature* a)
 Object* create_object()
 {
   Object* o = calloc(1, sizeof(Object));
-  o->name = eina_stringshare_add("empty");
+  o->name = eina_stringshare_add("new_obj");
   object_init(o);
   //eina_value_setup(&o->data_position, EINA_VALUE_TYPE_DOUBLE);
   //eina_value_set(&o->data_position, 777);
@@ -277,6 +277,7 @@ Object* create_object()
 Object* create_object_file(const char* path)
 {
   Object* o = create_object();
+  o->name = path;
   FILE *f;
   f = fopen(path, "rb");
   fseek(f, 0, SEEK_SET);
@@ -429,7 +430,7 @@ object_component_get(const Object* o, const char* name)
   Component* c;
 
   EINA_LIST_FOREACH(o->components, l, c) {
-    if (!strcmp(c->name, name))
+    if ( c->name && !strcmp(c->name, name))
     return c->data;
   }
 
@@ -473,6 +474,10 @@ property_set_object()
   EET_DATA_DESCRIPTOR_ADD_LIST
    (ob_descriptor, Object, "components", components,
     component_descriptor);
+
+  EET_DATA_DESCRIPTOR_ADD_LIST
+   (ob_descriptor, Object, "children", children,
+    ob_descriptor);
 
   return ps;
 }
@@ -518,6 +523,13 @@ object_post_read(Object* o)
 
     if (c->funcs->init)
     c->funcs->init(c);
+
+  }
+
+  Object* child;
+  EINA_LIST_FOREACH(o->children, l, child) {
+    object_post_read(child);
+    child->parent = o;
   }
 }
 

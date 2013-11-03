@@ -322,11 +322,14 @@ shader_mesh_draw(Shader* s, struct _MeshComponent* mc)
       GLint tex_id = -1;
       TextureHandle* th = shader_instance_texture_data_get(mc->shader_instance, uniname);
 
-      //Texture* t = shader_instance_texture_data_get(mc->shader_instance, uniname);
       if (th && th->texture) {
         Texture* t = th->texture;
         texture_init(t);
         tex_id = texture_id_get(t);
+      }
+      else {
+        printf("%s , I didn't find the texture, or it is not loaded: '%s' \n", __FUNCTION__, uniname);
+        shader_instance_print(mc->shader_instance);
       }
 
       if (uni_tex >= 0 && tex_id >= 0) {
@@ -541,7 +544,7 @@ struct
 {
    UniformType u;
    const char *name;
-} unfirom_mapping[] = {
+} uniform_mapping[] = {
    {UNIFORM_UNKNOWN, "unknown"},
    {UNIFORM_TEXTURE, "texture"},
    {UNIFORM_INT, "int"},
@@ -551,6 +554,7 @@ struct
    {UNIFORM_VEC4, "vec4"},
    {UNIFORM_MAT3, "mat3"},
    {UNIFORM_MAT4, "mat4"},
+   {UNIFORM_UNKNOWN, NULL},
 };
 
 static const char *
@@ -558,6 +562,23 @@ _uniform_type_get(
       const void *data,
       Eina_Bool  *unknow)
 {
+  const UniformType *u = data;
+  int i;
+  if (unknow)
+  *unknow = EINA_FALSE;
+
+  for (i = 0; uniform_mapping[i].name != NULL; ++i) {
+    if (*u == uniform_mapping[i].u) {  
+      return uniform_mapping[i].name;
+    }
+  }
+
+  if (unknow)
+  *unknow = EINA_TRUE;
+
+  return NULL;
+
+
   /*
   const char **name = (const char**) data;
   if (!strcmp(*name, "object")) {
@@ -578,6 +599,22 @@ _uniform_type_set(
       void       *data,
       Eina_Bool   unknow)
 {
+  UniformType *u = data;
+  int i;
+ 
+  if (unknow)
+  return EINA_FALSE;
+
+  for (i = 0; uniform_mapping[i].name != NULL; ++i)
+  if (strcmp(uniform_mapping[i].name, type) == 0)
+   {
+    *u = uniform_mapping[i].u;
+    return EINA_TRUE;
+   }
+
+  return EINA_FALSE;
+
+
   /*
   const char **name = data;
   *name = type;
@@ -601,25 +638,13 @@ property_set_uniform()
 
   
   Eet_Data_Descriptor_Class eddc;
-  EET_EINA_FILE_DATA_DESCRIPTOR_CLASS_SET(&eddc, UniformValue);
-  ps->descriptor = eet_data_descriptor_file_new(&eddc);
+  EET_EINA_STREAM_DATA_DESCRIPTOR_CLASS_SET(&eddc, UniformValue);
+  ps->descriptor = eet_data_descriptor_stream_new(&eddc);
 
   eddc.version = EET_DATA_DESCRIPTOR_CLASS_VERSION;
   eddc.func.type_get = _uniform_type_get;
   eddc.func.type_set = _uniform_type_set;
-  _uniform_unified_descriptor = eet_data_descriptor_file_new(&eddc);
-
-  /*
-   {UNIFORM_UNKNOWN, "unknown"},
-   {UNIFORM_TEXTURE, "texture"},
-   {UNIFORM_INT, "int"},
-   {UNIFORM_FLOAT, "float"},
-   {UNIFORM_VEC2, "vec2"},
-   {UNIFORM_VEC3, "vec3"},
-   {UNIFORM_VEC4, "vec4"},
-   {UNIFORM_MAT3, "mat3"},
-   {UNIFORM_MAT4, "mat4"},
-   */
+  _uniform_unified_descriptor = eet_data_descriptor_stream_new(&eddc);
 
    EET_DATA_DESCRIPTOR_ADD_MAPPING_BASIC(
      _uniform_unified_descriptor, "int", EET_T_INT);
@@ -635,3 +660,61 @@ property_set_uniform()
 
    return ps;
 }
+
+static Eina_Bool _uniform_print(
+      const Eina_Hash *hash,
+      const void *key,
+      void *data,
+      void *fdata)
+{
+  UniformValue* uv = data;
+  printf ("                    uniform key : %s, %d \n", key, uv->type);
+  if (uv->type == UNIFORM_FLOAT)
+  printf ("                       uniform value float : %f \n", uv->value.f);
+  else if (uv->type == UNIFORM_VEC3)
+  printf ("                       uniform value vec3 : %f, %f, %f \n", uv->value.vec3.x, uv->value.vec3.y,
+        uv->value.vec3.z);
+  return EINA_TRUE;
+}
+
+static Eina_Bool _tex_print(
+      const Eina_Hash *hash,
+      const void *key,
+      void *data,
+      void *fdata)
+{
+  printf ("                    tex key : %s \n", key);
+  TextureHandle* th = data;
+  printf ("                       tex name : %s \n", th->name);
+  return EINA_TRUE;
+}
+
+
+void shader_instance_print(ShaderInstance* si)
+{
+  if (si->uniforms)
+  eina_hash_foreach(si->uniforms, _uniform_print, NULL);
+  if (si->textures)
+  eina_hash_foreach(si->textures, _tex_print, NULL);
+
+}
+
+static Eina_Bool _texture_init(
+      const Eina_Hash *hash,
+      const void *key,
+      void *data,
+      void *fdata)
+{
+  TextureHandle* th = data;
+  th->texture = resource_texture_get(s_rm, th->name);
+  return EINA_TRUE;
+}
+
+
+void shader_instance_init(ShaderInstance* si)
+{
+  if (si->textures)
+  eina_hash_foreach(si->textures, _texture_init, NULL);
+
+}
+

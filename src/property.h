@@ -56,7 +56,7 @@ enum {
 #define PROPERTY_SET_TYPE(ps, type) \
  if (!ps->descriptor) { \
    Eet_Data_Descriptor_Class eddc; \
-   EET_EINA_FILE_DATA_DESCRIPTOR_CLASS_SET(&eddc, type); \
+   EET_EINA_STREAM_DATA_DESCRIPTOR_CLASS_SET(&eddc, type); \
    ps->descriptor = eet_data_descriptor_stream_new(&eddc); \
    ps->name = # type; \
  }

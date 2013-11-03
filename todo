@@ -1,5 +1,9 @@
 LATELY
 - fix read scene
+- uniforms send to fix: there should be only one method but now 2 different send, : 
+  - in _mesh_component_draw: send the data in shader instance
+  - in shader_mesh_draw: for each 'registered' uniform of the shader, 
+    if it exists, in the shader instance, find it and send it.
 - check if the scene is saved right with shader instance and everything
 - type get for uniform union in shader.c, uniform_type_set and get
 - handle all uniform types in shader instance, component view and draw shader

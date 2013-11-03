@@ -160,6 +160,7 @@ _output(void *data, const char *string)
 Scene*
 scene_read(const char* filename)
 {
+  printf("scene read start\n");
   Scene* s;
 
   Eet_File *ef = eet_open(filename, EET_FILE_MODE_READ);
@@ -183,7 +184,7 @@ scene_post_read(Scene* s)
   Eina_List *l;
   Object *o;
   EINA_LIST_FOREACH(s->objects, l, o) {
-    if (!strcmp(o->name, s->camera_name)) {
+    if (s->camera_name && !strcmp(o->name, s->camera_name)) {
       printf("found camera!!!! %s\n", s->camera_name);
       s->camera = o;
     }
@@ -197,6 +198,8 @@ scene_init(Scene* s)
 {
   scene_post_read(s);
 }
+
+#include "component/meshcomponent.h"
 
 void
 scene_print(Scene* s)
@@ -212,12 +215,22 @@ scene_print(Scene* s)
    EINA_LIST_FOREACH(o->components, cl, c) {
      printf("     component name, pointer : %s, %p \n", c->name,c);
      if (!c->name) continue;
-     /*
      if (!strcmp(c->name, "mesh")) {
        MeshComponent* mc = c->data;
-       printf("        mesh name, mc pointer : %s, %p \n", mc->mesh_name, mc);
-       printf("        mesh pointer : %p \n", mc->mesh);
+       if (mc->shader_handle.name)
+       printf("        mesh handle name, mc pointer : %s, %p \n", mc->mesh_handle.name, mc);
+       else
+       printf("SHADER HANDLE NAME IS NULL\n");
+       if (mc->shader_handle.name)
+       printf("        shader handle name, mc pointer : %s, %p \n", mc->shader_handle.name, mc);
+       else
+       printf("SHADER HANDLE NAME IS NULL\n");
+       if (mc->shader_instance) {
+         shader_instance_print(mc->shader_instance);
+
+       }
      }
+     /*
      else if (!strcmp(c->name, "camera")) {
        Camera* cc = c->data;
        printf("       camera width : %f \n", cc->width);
