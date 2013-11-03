@@ -1,11 +1,9 @@
 LATELY
-- fix read scene
 - uniforms send to fix: there should be only one method but now 2 different send, : 
   - in _mesh_component_draw: send the data in shader instance
   - in shader_mesh_draw: for each 'registered' uniform of the shader, 
-    if it exists, in the shader instance, find it and send it.
-- check if the scene is saved right with shader instance and everything
-- type get for uniform union in shader.c, uniform_type_set and get
+    if it exists in the shader instance, find it and send it.
+- check again scene_post_read idea
 - handle all uniform types in shader instance, component view and draw shader
 - rotate dragger : display a better disk
 - undo/redo with spinners, orientation and generic stuff
@@ -16,8 +14,8 @@ LATELY
 - display info on rotation, scale, translation
 - add an entry to tree to search for object name
 - use hoversel
-- fix the warnings (eina_hash) and the output
-- save children in the scene
+- fix the warnings (color) and the output
+- be able to set the relationship parent/children in the editor (just in code for now)
 
 CLEAN
 - TODO in the code.
@@ -55,8 +53,10 @@ RENDER
     every camera
   - make something like draw(Component* c, Render_info* info) where info has the matrix
     the uniform to sets etc...?
-- mesh component
+- mesh component 
    - be able to choose between drawelements or drawarrays, etc ?
+   -> separate component data and component functions, to reuse the same data
+   with different functions
 - material
 
 VIEW
