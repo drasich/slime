@@ -1,4 +1,5 @@
 LATELY
+- undo/redo with spinners, orientation and generic stuff, drag and also when modifying the entry.
 - uniforms send to fix: there should be only one method but now 2 different send, : 
   - in _mesh_component_draw: send the data in shader instance
   - in shader_mesh_draw: for each 'registered' uniform of the shader, 
@@ -6,7 +7,6 @@ LATELY
 - check again scene_post_read idea
 - handle all uniform types in shader instance, component view and draw shader
 - rotate dragger : display a better disk
-- undo/redo with spinners, orientation and generic stuff
 - patch elementary genlist tree for :
   - multi select with pressing crtl
   - drag something just click and move, no long press
@@ -23,22 +23,23 @@ CLEAN
 - clean the scene when?
 
 ISSUES (must be done)
-- looks like rotation around 2 selected objects is not working very well
-- use id instead of comparing string strcmp(component->name,"mesh") ?
-- save the component functions in the component manager
+- I cannot rotate the cameratest object while the play window is opened.
+- check the component functions in the component manager
 - change properties in ComponentDesc so there is only one to be created and I
   can remove the one in create_component and object_post_read
 - in control.c, _op_change_property save the data if it's not a pointer to existing data (like an int)
 - Fix property component update - remove object from parameter?
-- open play window and close the main window with the cross -> crash : because 
-  control is clean in view_destroy and then there is a pointer to control in gameview that is
-  used in the cleaning for gameview, I removed the free(v->control) temporarily but there shouldn't
-  be control in gameview... component manager I have to check
+- use id instead of comparing string strcmp(component->name,"mesh") ?
 
 BUG
 - focus the play and main windows alternatively(with the mouse)
   and close with escape sometimes window manager freeze. (maybe when
   there is composite in the window manager)
+- also maybe only happens when enlightenment is running with composite:
+  open play window and close the main window with the cross -> crash : because 
+  control is clean in view_destroy and then there is a pointer to control in gameview that is
+  used in the cleaning for gameview, I removed the free(v->control) temporarily but there shouldn't
+  be control in gameview... component manager I have to check
 - sometimes segfault when quitting after input I think
 
 
@@ -69,23 +70,18 @@ ARCHITECTURE
 - texture manager
 - make the mesh/resource manager. just input the name and it loads in
   the background
-- child and parent
-- make material to handle textures, uniform etc
-- init mode et real mode
+- separate shader instance from mesh component?
 - decider si transform devient un component a part en dehors d'object
 et aussi "object properties" "name, ..."
 - make one component, one library? instead of one big library for all?
 - add lua-jit
+- choose component init order
 
 
 PROPERTIES
-- make a hash of property_set, create_component(component manager, desc)
-  get propertyset or create if doesn't exit yet
 - camera choose ortho or pers, make an enum property
-
+  - comment faire pour editer facilement un enum...
 - make vec4 a possible type to edit easily
-- material
-- comment faire pour editer facilement un enum...
 - pointeur sur un object ou autre type
   - use pointer in the applicatio but...
   - ...make an id system for saving object
@@ -94,14 +90,14 @@ PROPERTIES
     - il faut pouvoir drag a partir du tree, ou bien peut etre de la view.
     - selectionner dans une liste?
     - ecrire le nom de l'object (le plus simple)
-- make a hide property for component, to avoid display in properties
+- make a hide property for component, to avoid display in properties,
+  or just make it unremovable with no properties
 - scene properties: set the camera (among other things)
 - remove component properties callback?
   but maybe needed when we edit multiple objects
 - handle properties when multiple objects selected?
   => make a structure in context with position and rotation
   be able to create an empty and change mesh in the properties
-- spinner : handle undo/redo->add signals
 
 
 CODE
@@ -109,7 +105,6 @@ CODE
 - check everything for cleaning
   - component widget
   - ...
-
 
 GAMEVIEW
 - check the gl callbacks init, update, draw.... for gameview;
@@ -123,9 +118,9 @@ IDEAS
   - ComponentData : the struct and the properties definition.
   - ComponentBehavior : the functions that act on the data.
 
-- try to use panel instead of panes.... but panel are not resizable...
+- tried to use panel instead of panes.... but panel are not resizable...
 - in the component managers, for all the components add objects
-  to component, then call init update on the component that calls it for
+  to component, then call functions like init, update on the component that calls it for
   all objects that has this component... (but we cannot choose the order 
   of the components)
 

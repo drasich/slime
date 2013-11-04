@@ -18,7 +18,24 @@ create_control(View* v)
 }
 
 static Vec3
-_objects_center(Control* c, Eina_List* objects)
+_objects_center(Eina_List* objects)
+{
+  Eina_List *l;
+  Object *o;
+  Vec3 v = vec3_zero();
+
+  EINA_LIST_FOREACH(objects, l, o) {
+    v = vec3_add(v, object_world_position_get(o));
+  }
+
+  int size = eina_list_count(objects);
+  v = vec3_mul(v, 1.0/(float)size);
+  return v;
+}
+
+
+static Vec3
+_control_move_prepare(Control* c, Eina_List* objects)
 {
   int size = eina_list_count(objects);
   c->positions = eina_inarray_new (sizeof(Vec3), size);
@@ -57,7 +74,7 @@ _control_move(Control* c)
   y = y - cy;
 
   c->mouse_start = vec2(x,y);
-  c->start = _objects_center(c, context_objects_get(v->context));
+  c->start = _control_move_prepare(c, context_objects_get(v->context));
 }
 
 static void
@@ -194,11 +211,12 @@ _rotate_camera(View* v, float x, float y)
   c->angles.x = cam->pitch/M_PI*180.0;
   c->angles.y = cam->yaw/M_PI*180.0;
 
-  Object* o = context_object_get(v->context);
+  Eina_List* objects = context_objects_get(v->context);
 
-  if (o != NULL) {
-    if (!vec3_equal(o->position, cam->center)) {
-      cam->center = o->position;
+  if (eina_list_count(objects) > 0) {
+    Vec3 objs_center = _objects_center(objects);
+    if (!vec3_equal(objs_center, cam->center)) {
+       cam->center = objs_center;
       camera_recalculate_origin(v->camera);
     }
   }
@@ -892,7 +910,7 @@ control_mouse_down(Control* c, Evas_Event_Mouse_Down *e)
 
       Eina_List* objects = context_objects_get(c->view->context);
 
-      Vec3 center = _objects_center(c, objects);
+      Vec3 center = _objects_center(objects);
 
       Operation* op = _op_move_object(
             objects,
@@ -936,7 +954,7 @@ control_mouse_up(Control* c, Evas_Event_Mouse_Up *e)
     _draggers_highlight_check(c,ex, ey);
 
     Eina_List* objects = context_objects_get(v->context);
-    Vec3 center = _objects_center(c, objects);
+    Vec3 center = _objects_center(objects);
 
     Operation* op = _op_move_object(
           objects,
