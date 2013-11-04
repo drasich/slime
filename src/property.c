@@ -4,7 +4,7 @@
 #include "quat.h"
 #include "resource.h"
 
-Property* create_property_set()
+Property* property_set_new()
 {
   Property *ps = calloc(1, sizeof *ps);
   ps->type = PROPERTY_ROOT;
@@ -36,7 +36,7 @@ int property_type_check(int type)
 Property*
 property_set_vec3()
 {
-  Property* ps = create_property_set();
+  Property* ps = property_set_new();
   PROPERTY_SET_TYPE(ps, Vec3);
   ps->hint = HORIZONTAL;
   ps->name = "vec3";
@@ -51,7 +51,7 @@ property_set_vec3()
 Property*
 property_set_vec4()
 {
-  Property* ps = create_property_set();
+  Property* ps = property_set_new();
   PROPERTY_SET_TYPE(ps, Vec4);
   ps->hint = HORIZONTAL;
   ps->name = "vec4";
@@ -67,7 +67,7 @@ property_set_vec4()
 Property*
 property_set_quat()
 {
-  Property* ps = create_property_set();
+  Property* ps = property_set_new();
   PROPERTY_SET_TYPE(ps, Quat);
   ps->hint = HORIZONTAL;
   ps->name = "quat";
@@ -82,7 +82,7 @@ property_set_quat()
 
 Property* property_set_resource_handle(ResourceType type)
 {
-  Property* ps = create_property_set();
+  Property* ps = property_set_new();
   PROPERTY_SET_TYPE(ps, ResourceHandle);
   ps->name = "resource";
   ps->type = PROPERTY_RESOURCE;

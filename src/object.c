@@ -445,7 +445,7 @@ property_set_object()
 {
   if (s_ps_obj) return s_ps_obj;
 
-  s_ps_obj = create_property_set();
+  s_ps_obj = property_set_new();
   Property* ps = s_ps_obj;
   ps->name = "objectblablabla";
   PROPERTY_SET_TYPE(ps, Object);

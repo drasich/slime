@@ -138,7 +138,7 @@ property_set(PropertyView* pw, ComponentProperties* cp)
 static Property* 
 _multiple_objects_init_array_properties()
 {
-  Property* ps = create_property_set();
+  Property* ps = property_set_new();
 
   /*
   ADD_PROP(ps, Multiple_Objects_Selection, center.x, EET_T_DOUBLE);

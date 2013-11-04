@@ -23,7 +23,7 @@ _create_line()
 static Property* 
 _line_properties()
 {
-  Property* ps = create_property_set();
+  Property* ps = property_set_new();
 
   return ps;
 }

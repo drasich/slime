@@ -37,7 +37,7 @@ struct _Property
 
 int property_offset_get(const Property* p);
 
-Property* create_property_set();
+Property* property_set_new();
 int property_type_check(int type);
 Property* property_real_parent_get(Property* p);
 

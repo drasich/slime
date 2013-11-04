@@ -22,7 +22,7 @@ player_update(Component* c, double dt)
 Property* 
 _player_properties(ComponentDesc* desc)
 {
-  Property *ps = create_property_set();
+  Property *ps = property_set_new();
 
   PROPERTY_BASIC_ADD(ps, Player, name, EET_T_STRING);
   PROPERTY_BASIC_ADD(ps, Player, rotation_speed, EET_T_DOUBLE);

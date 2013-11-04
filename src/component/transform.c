@@ -12,7 +12,7 @@ _create_transform()
 static Property* 
 _transform_properties()
 {
-  Property* ps = create_property_set();
+  Property* ps = property_set_new();
 
   //TODO clean the property sets
   Property *vec3 = property_set_vec3();

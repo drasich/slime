@@ -526,7 +526,7 @@ shader_instance_texture_data_get(ShaderInstance* si, const char* name)
 Property*
 property_set_shader_instance()
 {
-  Property* ps = create_property_set();
+  Property* ps = property_set_new();
   PROPERTY_SET_TYPE(ps, ShaderInstance);
 
   Property* ps_tex = property_set_resource_handle(RESOURCE_TEXTURE);
@@ -632,7 +632,7 @@ static Eet_Data_Descriptor *_uniform_unified_descriptor;
 Property*
 property_set_uniform()
 {
-  Property* ps = create_property_set();
+  Property* ps = property_set_new();
   //PROPERTY_SET_TYPE(ps, UniformValue);
   ps->type = PROPERTY_UNIFORM;
 

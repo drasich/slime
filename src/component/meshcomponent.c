@@ -20,7 +20,7 @@ _mesh_component_create()
 static Property* 
 _mesh_component_properties()
 {
-  Property* ps = create_property_set();
+  Property* ps = property_set_new();
 
   Property* mh = property_set_resource_handle(RESOURCE_MESH);
   mh->name = "mesh";

@@ -159,7 +159,7 @@ camera_init(Camera* c)
 static Property* 
 _camera_properties()
 {
-  Property* ps = create_property_set();
+  Property* ps = property_set_new();
 
   PROPERTY_BASIC_ADD(ps, Camera, width, EET_T_DOUBLE);
   PROPERTY_BASIC_ADD(ps, Camera, height, EET_T_DOUBLE);
