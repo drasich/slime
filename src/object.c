@@ -46,7 +46,7 @@ object_draw(
   Object* child;
   Eina_List* lc;
   EINA_LIST_FOREACH(o->children, lc, child) {
-    object_draw_edit(child, cam_inv, projection, world);
+    object_draw(child, cam_inv, projection, world);
   }
 }
 

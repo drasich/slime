@@ -177,11 +177,14 @@ gameview_draw(GameView* v)
   //printf("camera is %s\n", c->name);
   //printf("camera pos.z %f\n", c->Position.Z);
 
+  //printf("camera ori %f, %f, %f, %f \n", c->orientation.x, c->orientation.y, c->orientation.z, c->orientation.w);
+  //object_compute_matrix(c, c->matrix);
+
   Matrix4 cam_mat_inv, mo;
   Matrix4 id4;
   mat4_set_identity(id4);
 
-  mat4_inverse(((Object*)c)->matrix, cam_mat_inv);
+  mat4_inverse(c->matrix, cam_mat_inv);
   Matrix4* projection = &cam->projection;
   Matrix4* ortho = &cam->orthographic;
 
