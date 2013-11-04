@@ -61,7 +61,6 @@ enum {
    ps->name = # type; \
  }
 
-//TODO chris
 #define PROPERTY_NEW(p, struct_type, member, member_type) \
  do { \
    struct_type ___ett; \
@@ -99,13 +98,11 @@ enum {
  } while(0)
 
 
-//TODO remove the offset
 #define PROPERTY_SUB_NESTED_ADD(ps, struct_type, member, ssub) \
  do { \
    Property *p; \
    PROPERTY_NEW(p, struct_type, member, PROPERTY_STRUCT_NESTED); \
    p->sub = ssub; \
-   /*add_offset(ssub, p->offset); */ \
    ps->list = eina_list_append(ps->list, p); \
    PROPERTY_SET_TYPE(ps, struct_type); \
    EET_DATA_DESCRIPTOR_ADD_SUB_NESTED(ps->descriptor, struct_type, # member, member, ssub->descriptor); \

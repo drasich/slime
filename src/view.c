@@ -506,7 +506,6 @@ _create_grid(Camera* camera)
 static void
 _file_chosen(void *data, Evas_Object *obj __UNUSED__, void *event_info)
 {
-  printf("todo %s %d\n",  __FILE__, __LINE__);
   /*
   const char *file = event_info;
   View* v = data;
@@ -655,12 +654,9 @@ _addcomp(void *data,
 
   Object* o = context_object_get(v->context);
   if (o) {
-    //object_add_component(v->context->object, c); //TODO
-    //
     Component* c = create_component(cd);
     control_component_add(v->control, o, c);
   }
-        //find the object currently selected
 }
 
 static Evas_Object*
@@ -674,23 +670,9 @@ _create_component_menu(Evas_Object* win, Eina_List* components)
   Eina_List* l;
   ComponentDesc* c;
   EINA_LIST_FOREACH(components, l, c) {
-    printf("component name : %s\n", c->name);
     elm_menu_item_add(menu, NULL, NULL, c->name, _addcomp, c);
   }
 
-  /*
-  elm_menu_item_add(menu, NULL, NULL, "component name 1", NULL, NULL);
-  menu_it = elm_menu_item_add(menu, NULL, NULL, "second item", NULL, NULL);
-  //elm_menu_item_separator_add(menu, menu_it);
-  elm_menu_item_add(menu, NULL, NULL, "third item", NULL, NULL);
-  elm_menu_item_add(menu, NULL, NULL, "fourth item", NULL, NULL);
-  elm_menu_item_add(menu, NULL, NULL, "sub menu", NULL, NULL);
-
-  menu_it = elm_menu_item_add(menu, NULL, NULL, "third item", NULL, NULL);
-  //elm_object_item_disabled_set(menu_it, EINA_TRUE);
-
-  //evas_object_event_callback_add(rect, EVAS_CALLBACK_MOUSE_DOWN, _show, menu);
-  */
   return menu;
 }
 
@@ -701,9 +683,7 @@ _addcomponent(void *data,
 {
   View* v = data;
 
-  printf("add component\n");
   Evas_Object* win = evas_object_top_get (evas_object_evas_get(obj));
-  //Evas_Object* menu = v->menu;
   Evas_Object* menu = _create_component_menu(win, s_component_manager->components);
   evas_object_data_set(menu, "view", v);
   evas_object_show(menu);
@@ -716,7 +696,6 @@ _addcomponent(void *data,
 static void
 _dragger_global_local_changed_cb(void *data, Evas_Object *obj, void *event_info)
 {
-  printf("changed\n");
   View* v = data;
   v->control->dragger_is_local = !v->control->dragger_is_local;
 }
@@ -951,24 +930,13 @@ _create_view_objects(View* v)
   Quat q4 = quat_yaw_pitch_roll_deg(0, -90,0);
   v->dragger_rotate = _view_draggers_create(_dragger_rotate_create, false, q3, q4, qi);
 
-  /*
-  Object* dragger;
-
-  dragger = _dragger_rotate_create(
-        vec3(1,0,0),
-        vec4(0,0,1,1),
-        false);
-  v->dragger_rotate = eina_list_append(v->dragger_rotate, dragger);
-  */
   v->draggers = v->dragger_translate;
-
 
   v->camera_repere = _create_repere(40, v->camera->camera_component);
   v->camera_repere->position = vec3(10,10, -10);
   v->camera_repere->orientation_type = ORIENTATION_QUAT;
 
   v->grid = _create_grid(v->camera->camera_component);
-
 
   Evas* e = evas_object_evas_get(v->glview);
   Evas_Object* r = evas_object_rectangle_add(e);

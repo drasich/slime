@@ -14,15 +14,7 @@ Property* property_set_new()
 int
 property_offset_get(const Property* p)
 {
-  /*
-  if (p->parent &&
-        p->parent->type != PROPERTY_STRUCT &&
-        p->parent->type != EET_G_HASH) {
-    return p->offset + property_offset_get(p->parent);
-  }
-  else */{
-    return p->offset;
-  }
+  return p->offset;
 }
 
 int property_type_check(int type)
@@ -80,7 +72,8 @@ property_set_quat()
   return ps;
 }
 
-Property* property_set_resource_handle(ResourceType type)
+Property*
+property_set_resource_handle(ResourceType type)
 {
   Property* ps = property_set_new();
   PROPERTY_SET_TYPE(ps, ResourceHandle);
@@ -89,8 +82,6 @@ Property* property_set_resource_handle(ResourceType type)
   ps->resource_type = type;
 
   EET_DATA_DESCRIPTOR_ADD_BASIC(ps->descriptor, ResourceHandle, "name", name, EET_T_STRING);
-
-  //PROPERTY_BASIC_ADD(ps, ResourceHandle, name, EET_T_STRING);
 
   return ps;
 }
