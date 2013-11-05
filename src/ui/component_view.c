@@ -309,6 +309,17 @@ _spinner_drag_stop_cb(void *data, Evas_Object *obj, void *event)
 {
   ComponentProperties* cp = data;
   double v =  elm_spinner_value_get(obj);
+  Property* p = evas_object_data_get(obj, "property");
+  void* thedata = evas_object_data_get(obj, "data");
+  if (p->type == EET_T_DOUBLE){
+    double *old = malloc(sizeof *old);
+    eina_value_get(&cp->saved, old);
+    double *new = malloc(sizeof *new);
+    *new = v;
+    
+    control_property_data_change(cp->control, cp->component, thedata, p, old, new);
+  }
+
 }
 
 
@@ -442,6 +453,8 @@ _property_add_spinner(ComponentProperties* cp, const Property* p, Evas_Object* b
 
   evas_object_smart_callback_add(en, "changed", _entry_changed_cb, cp);
   evas_object_smart_callback_add(en, "focused", _entry_focused_cb, cp);
+  evas_object_smart_callback_add(en, "spinner,drag,start", _spinner_drag_start_cb, cp);
+  evas_object_smart_callback_add(en, "spinner,drag,stop", _spinner_drag_stop_cb, cp);
 
   return en;
 }

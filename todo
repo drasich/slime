@@ -21,9 +21,9 @@ CLEAN
 - TODO in the code.
 - fix functions name -> put the verb at the end
 - clean the scene when?
+- clean undo list and operation data
 
 ISSUES (must be done)
-- open/close gameview makes the view and the tree not in synched
 - check the component functions in the component manager
 - change properties in ComponentDesc so there is only one to be created and I
   can remove the one in create_component and object_post_read

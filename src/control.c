@@ -826,6 +826,26 @@ _op_change_property(Component* component, Property* p, const void* data_old, con
 }
 
 static Operation* 
+_op_change_property_data(Component* component, void* data, Property* p, const void* data_old, const void* data_new)
+{
+  Operation* op = calloc(1, sizeof *op);
+
+  op->do_cb = operation_change_property_data_do;
+  op->undo_cb = operation_change_property_data_undo;
+
+  Op_Change_Property_Data* od = calloc(1, sizeof *od);
+  od->component = component;
+  od->data = data;
+  od->p = p;
+  od->value_old = data_old;
+  od->value_new = data_new;
+
+  op->data = od;
+  return op;
+}
+
+
+static Operation* 
 _op_object_add_component(Object* o, Component* c)
 {
   Operation* op = calloc(1, sizeof *op);
@@ -1150,12 +1170,16 @@ control_property_change(Control* c, Component* component, Property* p, const voi
   Operation* op = _op_change_property(component, p, data_old, data_new);
   control_operation_add(c, op);
   op->do_cb(c, op->data);
-  if (p->type == PROPERTY_POINTER)
-   {
-    const Object* old = data_old;
-    const Object* new = data_new;
-   }
 }
+
+void
+control_property_data_change(Control* c, Component* component, void* data, Property* p, const void* data_old, const void* data_new)
+{
+  Operation* op = _op_change_property_data(component, data, p, data_old, data_new);
+  control_operation_add(c, op);
+  op->do_cb(c, op->data);
+}
+
 
 
 void

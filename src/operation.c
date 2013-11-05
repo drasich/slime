@@ -150,6 +150,23 @@ operation_change_property_undo(Control *c, void* data)
   control_property_update(c, component);
 }
 
+void 
+operation_change_property_data_do(Control *c, void* data)
+{
+  Op_Change_Property_Data* opd = data;
+  _change_data(opd->data, opd->p, opd->value_new);
+  control_property_update(c, opd->component);
+}
+
+void
+operation_change_property_data_undo(Control *c, void* data)
+{
+  Op_Change_Property_Data* opd = data;
+  _change_data(opd->data, opd->p, opd->value_old);
+  control_property_update(c, opd->component);
+}
+
+
 ////////////////////////////////////////////////////////
 void 
 operation_object_add_component_do(Control* c, void* data)
