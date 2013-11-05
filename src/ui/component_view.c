@@ -145,7 +145,8 @@ _entry_activated_cb(void *data, Evas_Object *obj, void *event)
     }
   }
   else if (p->type == EET_T_DOUBLE) {
-    double v =  elm_spinner_value_get(obj);
+    const char* s = elm_object_text_get(obj);
+    double v = atof(s);
     double saved;
     eina_value_get(&cp->saved, &saved);
     if (saved != v) {
@@ -193,20 +194,39 @@ _entry_aborted_cb(void *data, Evas_Object *obj, void *event)
 
   ComponentProperties* cp = data;
   Component* component = cp->component;
-  void* cd = component->data;
   const char* s = elm_object_text_get(obj);
 
-  if (strcmp(cp->value_saved, s)) {
-    eina_stringshare_del(s);
+  Property* p = evas_object_data_get(obj, "property");
+  void *thedata = evas_object_data_get(obj, "data");
 
-    Property* p = evas_object_data_get(obj, "property");
-    int offset = property_offset_get(p);
-    const char** str = (void*)cd + offset;
-    *str = eina_stringshare_add(cp->value_saved);
-    elm_object_text_set(obj, *str);
+  if (p->type == EET_T_STRING) {
+    if (strcmp(cp->value_saved, s)) {
+      eina_stringshare_del(s);
 
-    Control* ct = cp->control;
-    control_property_update(ct, component);
+      int offset = property_offset_get(p);
+      const char** str = (void*)thedata + offset;
+      *str = eina_stringshare_add(cp->value_saved);
+      elm_object_text_set(obj, *str);
+
+      Control* ct = cp->control;
+      control_property_update(ct, component);
+    }
+  }
+  else if (p->type == EET_T_DOUBLE) {
+    /*
+    double saved;
+    eina_value_get(&cp->saved, &saved);
+    double d = atof(s);
+    if (d != saved) {
+      //elm_object_text_set(obj, *str);
+      memcpy(thedata + p->offset, &d, sizeof(double));
+
+      Control* ct = cp->control;
+      control_property_update(ct, component);
+    }
+    */
+
+
   }
 
 }
@@ -296,8 +316,8 @@ _entry_focused_cb(void *data, Evas_Object *obj, void *event)
 
   Property* p = evas_object_data_get(obj, "property");
   if (p->type == EET_T_DOUBLE) {
-    double v =  elm_spinner_value_get(obj);
-    //printf("double get : %f \n", v);
+    const char* s = elm_object_text_get(obj);
+    double v = atof(s);
     eina_value_setup(&cp->saved, EINA_VALUE_TYPE_DOUBLE);
     eina_value_set(&cp->saved, v);
   }
@@ -388,10 +408,12 @@ _entry_unfocused_cb(void *data, Evas_Object *obj, void *event)
     }
   }
   else if (p->type == EET_T_DOUBLE) {
-    printf("entry unfocused\n");
-    double v =  elm_spinner_value_get(obj);
+    const char* s = elm_object_text_get(obj);
+    double v = atof(s);
+    //double v =  elm_spinner_value_get(obj);
     double saved;
     eina_value_get(&cp->saved, &saved);
+    printf("entry unfocused, it's double: %f to %f\n", saved, v);
     if (saved != v) {
       printf("send the change %f, %f\n", saved, v);
       double *old = malloc(sizeof *old);
@@ -448,6 +470,7 @@ _property_add_entry(ComponentProperties* cp, const Property* p, void* data, Evas
   evas_object_smart_callback_add(en, "aborted", _entry_aborted_cb, cp);
   evas_object_smart_callback_add(en, "focused", _entry_focused_cb, cp);
   evas_object_smart_callback_add(en, "unfocused", _entry_unfocused_cb, cp);
+  evas_object_smart_callback_add(en, "clicked", _entry_clicked_cb, cp);
 
   elm_entry_context_menu_disabled_set(en, EINA_TRUE);
   
@@ -493,8 +516,8 @@ _property_add_spinner(ComponentProperties* cp, const Property* p, Evas_Object* b
   cp->entries = eina_list_append(cp->entries, en);
 
   evas_object_smart_callback_add(en, "changed", _entry_changed_cb, cp);
-  evas_object_smart_callback_add(en, "focused", _entry_focused_cb, cp);
-  evas_object_smart_callback_add(en, "unfocused", _entry_unfocused_cb, cp);
+  //evas_object_smart_callback_add(en, "focused", _entry_focused_cb, cp);
+  //evas_object_smart_callback_add(en, "unfocused", _entry_unfocused_cb, cp);
   evas_object_smart_callback_add(en, "spinner,drag,start", _spinner_drag_start_cb, cp);
   evas_object_smart_callback_add(en, "spinner,drag,stop", _spinner_drag_stop_cb, cp);
 
@@ -503,8 +526,9 @@ _property_add_spinner(ComponentProperties* cp, const Property* p, Evas_Object* b
   evas_object_data_set(entry, "data", data );
 
   evas_object_smart_callback_add(entry, "activated", _entry_activated_cb, cp);
-  evas_object_smart_callback_add(entry, "aborted", _entry_aborted_cb, cp);
-  //evas_object_smart_callback_add(en, "clicked", _entry_clicked_cb, cp);
+  evas_object_smart_callback_add(entry, "focused", _entry_focused_cb, cp);
+  evas_object_smart_callback_add(entry, "unfocused", _entry_unfocused_cb, cp);
+  //evas_object_smart_callback_add(entry, "aborted", _entry_aborted_cb, cp);
 
   return en;
 }
