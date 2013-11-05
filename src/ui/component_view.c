@@ -132,43 +132,57 @@ static void
 _entry_activated_cb(void *data, Evas_Object *obj, void *event)
 {
   ComponentProperties* cp = data;
-  const char* s = elm_object_text_get(obj);
 
-  if (strcmp(cp->value_saved, s)) {
-    Property* p = evas_object_data_get(obj, "property");
-    void *thedata = evas_object_data_get(obj, "data");
+  printf("entry activated\n");
+  Property* p = evas_object_data_get(obj, "property");
+  void *thedata = evas_object_data_get(obj, "data");
 
-    if (p->type == EET_T_STRING)
-    control_property_change(cp->control, cp->component, thedata, p, cp->value_saved, s);
-    /*
-    else if (p->type == PROPERTY_POINTER) {
-      //TODO c'est un peu naze de get la scene comme ca
-      Scene* scene = cp->control->view->context->scene;
-      Object* o = scene_object_get(scene, s);
-      if (o) printf("object ok \n");
-      else
-      printf("object NULL \n");
-      Object* old = scene_object_get(scene, cp->value_saved);
-      if (old)
-      printf("old name :%s \n", old->name);
-      else
-      printf("old is null\n");
-
-      Object* pointer = component_property_data_get(cp->component, p);
-      if ( old == pointer)
-      printf("old == pointer %p, %p \n", old, pointer);
-      else 
-      printf("old != pointer %p, %p \n", old, pointer);
-      if (pointer)
-      printf("pointer name :%s \n", (pointer)->name);
-      printf("o name :%s \n", o->name);
-      control_property_change(cp->control, cp->component, p, pointer, o);
-
+  if (p->type == EET_T_STRING) {
+    const char* s = elm_object_text_get(obj);
+    if (strcmp(cp->value_saved, s)) {
+      control_property_change(cp->control, cp->component, thedata, p, cp->value_saved, s);
+      cp->value_saved = s;
     }
-    */
-
-    cp->value_saved = s;
   }
+  else if (p->type == EET_T_DOUBLE) {
+    double v =  elm_spinner_value_get(obj);
+    double saved;
+    eina_value_get(&cp->saved, &saved);
+    if (saved != v) {
+      printf("activated send the change %f, %f\n", saved, v);
+      double *old = malloc(sizeof *old);
+      eina_value_get(&cp->saved, old);
+      double *new = malloc(sizeof *new);
+      *new = v;
+      control_property_change(cp->control, cp->component, thedata, p, old, new);
+    }
+  }
+  /*
+     else if (p->type == PROPERTY_POINTER) {
+  //TODO c'est un peu naze de get la scene comme ca
+  Scene* scene = cp->control->view->context->scene;
+  Object* o = scene_object_get(scene, s);
+  if (o) printf("object ok \n");
+  else
+  printf("object NULL \n");
+  Object* old = scene_object_get(scene, cp->value_saved);
+  if (old)
+  printf("old name :%s \n", old->name);
+  else
+  printf("old is null\n");
+
+  Object* pointer = component_property_data_get(cp->component, p);
+  if ( old == pointer)
+  printf("old == pointer %p, %p \n", old, pointer);
+  else 
+  printf("old != pointer %p, %p \n", old, pointer);
+  if (pointer)
+  printf("pointer name :%s \n", (pointer)->name);
+  printf("o name :%s \n", o->name);
+  control_property_change(cp->control, cp->component, p, pointer, o);
+
+  }
+  */
 
 }
 
@@ -279,14 +293,22 @@ static void
 _entry_focused_cb(void *data, Evas_Object *obj, void *event)
 {
   ComponentProperties* cp = data;
-  const char* s = elm_object_text_get(obj);
-  const char* str = eina_stringshare_add(s);
-  //TODO don't forget to eina_stringshare_del
-  //
-  double v =  elm_spinner_value_get(obj);
-  printf("double get : %f \n", v);
-  printf("TODO stringshare del\n");
-  cp->value_saved = str;
+
+  Property* p = evas_object_data_get(obj, "property");
+  if (p->type == EET_T_DOUBLE) {
+    double v =  elm_spinner_value_get(obj);
+    //printf("double get : %f \n", v);
+    eina_value_setup(&cp->saved, EINA_VALUE_TYPE_DOUBLE);
+    eina_value_set(&cp->saved, v);
+  }
+  else if (p->type == EET_T_STRING) {
+    const char* s = elm_object_text_get(obj);
+    const char* str = eina_stringshare_add(s);
+    //printf("TODO stringshare del\n");
+    //TODO don't forget to eina_stringshare_del
+    //
+    cp->value_saved = str;
+  }
 }
 
 static void
@@ -356,11 +378,28 @@ static void
 _entry_unfocused_cb(void *data, Evas_Object *obj, void *event)
 {
   ComponentProperties* cp = data;
-  const char* s = elm_object_text_get(obj);
-  if (strcmp(cp->value_saved, s)) {
-    Property* p = evas_object_data_get(obj, "property");
-    void* thedata = evas_object_data_get(obj, "data");
-    control_property_change(cp->control, cp->component, thedata, p, cp->value_saved, s);
+  Property* p = evas_object_data_get(obj, "property");
+  void* thedata = evas_object_data_get(obj, "data");
+
+  if (p->type == EET_T_STRING) {
+    const char* s = elm_object_text_get(obj);
+    if (strcmp(cp->value_saved, s)) {
+      control_property_change(cp->control, cp->component, thedata, p, cp->value_saved, s);
+    }
+  }
+  else if (p->type == EET_T_DOUBLE) {
+    printf("entry unfocused\n");
+    double v =  elm_spinner_value_get(obj);
+    double saved;
+    eina_value_get(&cp->saved, &saved);
+    if (saved != v) {
+      printf("send the change %f, %f\n", saved, v);
+      double *old = malloc(sizeof *old);
+      eina_value_get(&cp->saved, old);
+      double *new = malloc(sizeof *new);
+      *new = v;
+      control_property_change(cp->control, cp->component, thedata, p, old, new);
+    }
   }
 }
 
@@ -409,7 +448,6 @@ _property_add_entry(ComponentProperties* cp, const Property* p, void* data, Evas
   evas_object_smart_callback_add(en, "aborted", _entry_aborted_cb, cp);
   evas_object_smart_callback_add(en, "focused", _entry_focused_cb, cp);
   evas_object_smart_callback_add(en, "unfocused", _entry_unfocused_cb, cp);
-  evas_object_smart_callback_add(en, "clicked", _entry_clicked_cb, cp);
 
   elm_entry_context_menu_disabled_set(en, EINA_TRUE);
   
@@ -456,8 +494,17 @@ _property_add_spinner(ComponentProperties* cp, const Property* p, Evas_Object* b
 
   evas_object_smart_callback_add(en, "changed", _entry_changed_cb, cp);
   evas_object_smart_callback_add(en, "focused", _entry_focused_cb, cp);
+  evas_object_smart_callback_add(en, "unfocused", _entry_unfocused_cb, cp);
   evas_object_smart_callback_add(en, "spinner,drag,start", _spinner_drag_start_cb, cp);
   evas_object_smart_callback_add(en, "spinner,drag,stop", _spinner_drag_stop_cb, cp);
+
+  Evas_Object* entry = elm_layout_content_get(en, "elm.swallow.entry");
+  evas_object_data_set(entry, "property", p);
+  evas_object_data_set(entry, "data", data );
+
+  evas_object_smart_callback_add(entry, "activated", _entry_activated_cb, cp);
+  evas_object_smart_callback_add(entry, "aborted", _entry_aborted_cb, cp);
+  //evas_object_smart_callback_add(en, "clicked", _entry_clicked_cb, cp);
 
   return en;
 }
