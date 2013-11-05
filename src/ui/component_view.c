@@ -224,8 +224,6 @@ _entry_aborted_cb(void *data, Evas_Object *obj, void *event)
       control_property_update(ct, component);
     }
     */
-
-
   }
 
 }
@@ -339,11 +337,11 @@ _spinner_drag_start_cb(void *data, Evas_Object *obj, void *event)
 
   //TODO I have to know the original quaternion
   Property* p = evas_object_data_get(obj, "property");
-  void* cd = cp->component->data;
+  void* thedata = evas_object_data_get(obj, "data");
 
   Quat q;
   int offset = property_offset_get(p);
-  memcpy(&q, (void*)cd + offset, sizeof q);
+  memcpy(&q, thedata + offset, sizeof q);
   cp->quat_saved = q;
 }
 
@@ -633,7 +631,6 @@ _component_property_add_hash(
   const char* keyname = key;
   struct _ComponentPropertyCouple* cpp = fdata;
 
-
   if (cpp->p->sub->type == PROPERTY_RESOURCE) {
     Evas_Object* bx;
     bx = elm_box_add(cpp->cp->win);
@@ -849,12 +846,22 @@ _property_add_spinner_angle(
   evas_object_smart_callback_add(en, "changed", _entry_orientation_changed_cb, cp);
   evas_object_smart_callback_add(en, "spinner,drag,start", _spinner_drag_start_cb, cp);
   evas_object_smart_callback_add(en, "spinner,drag,stop", _spinner_drag_stop_cb, cp);
+  //todo chris
 
 
   evas_object_data_set(en, "property", p);
   evas_object_data_set(en, "property_name", name);
   evas_object_data_set(en, "data", data );
   cp->entries = eina_list_append(cp->entries, en);
+
+  Evas_Object* entry = elm_layout_content_get(en, "elm.swallow.entry");
+  evas_object_data_set(entry, "property", p);
+  evas_object_data_set(entry, "property_name", name);
+  evas_object_data_set(entry, "data", data );
+
+  evas_object_smart_callback_add(entry, "activated", _entry_activated_cb, cp);
+  evas_object_smart_callback_add(entry, "focused", _entry_focused_cb, cp);
+  evas_object_smart_callback_add(entry, "unfocused", _entry_unfocused_cb, cp);
 
   return en;
 }
