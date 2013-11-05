@@ -807,33 +807,14 @@ _op_remove_object(Scene* s, Eina_List* objects)
 }
 
 static Operation* 
-_op_change_property(Component* component, Property* p, const void* data_old, const void* data_new)
+_op_change_property(Component* component, void* data, Property* p, const void* data_old, const void* data_new)
 {
-  //TODO handle the case when data is not a pointer and we have to save the data..
   Operation* op = calloc(1, sizeof *op);
 
   op->do_cb = operation_change_property_do;
   op->undo_cb = operation_change_property_undo;
 
   Op_Change_Property* od = calloc(1, sizeof *od);
-  od->component = component;
-  od->p = p;
-  od->value_old = data_old;
-  od->value_new = data_new;
-
-  op->data = od;
-  return op;
-}
-
-static Operation* 
-_op_change_property_data(Component* component, void* data, Property* p, const void* data_old, const void* data_new)
-{
-  Operation* op = calloc(1, sizeof *op);
-
-  op->do_cb = operation_change_property_data_do;
-  op->undo_cb = operation_change_property_data_undo;
-
-  Op_Change_Property_Data* od = calloc(1, sizeof *od);
   od->component = component;
   od->data = data;
   od->p = p;
@@ -1165,22 +1146,12 @@ control_remove_object(Control* c, Scene* s, Eina_List* objects)
 }
 
 void
-control_property_change(Control* c, Component* component, Property* p, const void* data_old, const void* data_new)
+control_property_change(Control* c, Component* component, void* data, Property* p, const void* data_old, const void* data_new)
 {
-  Operation* op = _op_change_property(component, p, data_old, data_new);
+  Operation* op = _op_change_property(component, data, p, data_old, data_new);
   control_operation_add(c, op);
   op->do_cb(c, op->data);
 }
-
-void
-control_property_data_change(Control* c, Component* component, void* data, Property* p, const void* data_old, const void* data_new)
-{
-  Operation* op = _op_change_property_data(component, data, p, data_old, data_new);
-  control_operation_add(c, op);
-  op->do_cb(c, op->data);
-}
-
-
 
 void
 control_property_update(Control* c, Component* component)

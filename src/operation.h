@@ -42,6 +42,7 @@ typedef struct _Op_Change_Property Op_Change_Property;
 struct _Op_Change_Property
 {
   Component* component;
+  void* data;
   Property* p;
   const void* value_old;
   const void* value_new;
@@ -49,20 +50,6 @@ struct _Op_Change_Property
 
 void operation_change_property_do(Control *c, void* data);
 void operation_change_property_undo(Control *c, void* data);
-
-/////////////////////////////////////////////////////
-typedef struct _Op_Change_Property_Data Op_Change_Property_Data;
-struct _Op_Change_Property_Data
-{
-  Component* component;
-  void* data;
-  Property* p;
-  const void* value_old;
-  const void* value_new;
-};
-
-void operation_change_property_data_do(Control *c, void* data);
-void operation_change_property_data_undo(Control *c, void* data);
 
 ////////////////////////////////////////////
 typedef struct _Op_Object_Add_Component Op_Object_Add_Component;

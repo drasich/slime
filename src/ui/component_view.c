@@ -136,9 +136,11 @@ _entry_activated_cb(void *data, Evas_Object *obj, void *event)
 
   if (strcmp(cp->value_saved, s)) {
     Property* p = evas_object_data_get(obj, "property");
+    void *thedata = evas_object_data_get(obj, "data");
 
     if (p->type == EET_T_STRING)
-    control_property_change(cp->control, cp->component, p, cp->value_saved, s);
+    control_property_change(cp->control, cp->component, thedata, p, cp->value_saved, s);
+    /*
     else if (p->type == PROPERTY_POINTER) {
       //TODO c'est un peu naze de get la scene comme ca
       Scene* scene = cp->control->view->context->scene;
@@ -163,6 +165,7 @@ _entry_activated_cb(void *data, Evas_Object *obj, void *event)
       control_property_change(cp->control, cp->component, p, pointer, o);
 
     }
+    */
 
     cp->value_saved = s;
   }
@@ -317,7 +320,7 @@ _spinner_drag_stop_cb(void *data, Evas_Object *obj, void *event)
     double *new = malloc(sizeof *new);
     *new = v;
     
-    control_property_data_change(cp->control, cp->component, thedata, p, old, new);
+    control_property_change(cp->control, cp->component, thedata, p, old, new);
   }
 
 }
@@ -355,9 +358,9 @@ _entry_unfocused_cb(void *data, Evas_Object *obj, void *event)
   ComponentProperties* cp = data;
   const char* s = elm_object_text_get(obj);
   if (strcmp(cp->value_saved, s)) {
-    cp->value_saved = s;
     Property* p = evas_object_data_get(obj, "property");
-    control_property_change(cp->control, cp->component, p, cp->value_saved, s);
+    void* thedata = evas_object_data_get(obj, "data");
+    control_property_change(cp->control, cp->component, thedata, p, cp->value_saved, s);
   }
 }
 

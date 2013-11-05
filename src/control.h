@@ -74,7 +74,7 @@ void control_redo(Control* c);
 void control_redo_clean(Control* c);
 
 void control_object_add(Control* c, Scene* s, Object* o);
-void control_property_change(Control* c, Component* component, Property* p, const void* data_old, const void* data_new);
+void control_property_change(Control* c, Component* component, void* data, Property* p, const void* data_old, const void* data_new);
 void control_component_add(Control* c, Object* o, Component* comp);
 void control_component_remove(Control* c, Object* o, Component* comp);
 
