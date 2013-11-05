@@ -73,7 +73,6 @@ _entry_vec3_changed_cb(void *data, Evas_Object *obj, void *event)
   //memcpy(thedata + offset, &q, sizeof q);
 }
 
-
 static void
 _entry_changed_cb(void *data, Evas_Object *obj, void *event)
 {
@@ -268,7 +267,6 @@ _change_resource(void *data,
   }
 }
 
-
 static Evas_Object*
 _create_resource_menu(Evas_Object* win, ResourceType resource_type)
 {
@@ -361,13 +359,19 @@ _spinner_drag_stop_cb(void *data, Evas_Object *obj, void *event)
     eina_value_get(&cp->saved, old);
     double *new = malloc(sizeof *new);
     *new = v;
-    
+    control_property_change(cp->control, cp->component, thedata, p, old, new);
+  }
+  else if (!strcmp(p->name, "orientation")) { 
+    Quat *old = malloc(sizeof *old);
+    //TODO use eina_value
+    //eina_value_get(&cp->saved, old);
+    *old = cp->quat_saved;
+    Quat *new = malloc(sizeof *new);
+    memcpy(new, thedata+p->offset, sizeof*new);
     control_property_change(cp->control, cp->component, thedata, p, old, new);
   }
 
 }
-
-
 
 static void
 _entry_clicked_cb(void *data, Evas_Object *obj, void *event)
@@ -391,8 +395,6 @@ _entry_clicked_cb(void *data, Evas_Object *obj, void *event)
   }
   
 }
-
-
 
 static void
 _entry_unfocused_cb(void *data, Evas_Object *obj, void *event)

@@ -124,6 +124,11 @@ _change_data(void* c, Property* p, const void *data)
         *ptr = data;
        }
       break;
+    case PROPERTY_STRUCT_NESTED:
+      if (!strcmp(p->name, "orientation")) {
+        memcpy(c+p->offset, data, sizeof(Quat));
+      }
+      break;
     default:
       fprintf (stderr, "_change_data: type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
       break;
