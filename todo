@@ -23,8 +23,7 @@ CLEAN
 - clean the scene when?
 
 ISSUES (must be done)
-- I cannot rotate the cameratest object while the play window is opened.
-  and open/close gameview makes the view and the tree not in synched
+- open/close gameview makes the view and the tree not in synched
 - check the component functions in the component manager
 - change properties in ComponentDesc so there is only one to be created and I
   can remove the one in create_component and object_post_read

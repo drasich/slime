@@ -165,8 +165,9 @@ object_draw_edit_component(
 void
 object_compute_matrix(Object* o, Matrix4 mat)
 {
-  //if (o->orientation_type == ORIENTATION_EULER)
-  //o->orientation = quat_angles_deg(o->angles);
+  if (o->orientation_type == ORIENTATION_EULER) {
+    o->orientation = quat_yaw_pitch_roll_deg(o->angles.y, o->angles.x, o->angles.z);
+  }
 
   Matrix4 mt, mr, ms;
   mat4_set_scale(ms, o->scale);
@@ -223,8 +224,7 @@ _animation_update(Object* o, float dt)
 void
 object_update(Object* o)
 {
-  o->orientation = quat_yaw_pitch_roll_deg(o->angles.y, o->angles.x, o->angles.z);
-  mat4_pos_ori(o->position, o->orientation, o->matrix);
+  object_compute_matrix(o, o->matrix);
 
   if (o->animation != NULL) {
     _animation_update(o, 0.007f);

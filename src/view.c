@@ -908,6 +908,7 @@ static void
 _create_view_objects(View* v)
 {
   v->camera = view_camera_new();
+  v->camera->object->orientation_type = ORIENTATION_EULER;
   Vec3 p = {50,20,50};
   //v->camera->origin = p;
   //v->camera->object.position = p;

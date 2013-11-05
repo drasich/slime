@@ -10,8 +10,8 @@
 #include "component.h"
 
 typedef enum {
-  ORIENTATION_EULER,
-  ORIENTATION_QUAT
+  ORIENTATION_QUAT,
+  ORIENTATION_EULER
 } OrientationType;
 
 typedef struct _Object Object;
