@@ -1,11 +1,11 @@
 LATELY
-- todo replace strcmp(p->name, "orientation") by PROPERTY_QUAT
 - finish undo/redo for orientation
 - undo/redo for
   - resources
   - uniforms
 - fix mov with 'g'
 - undo/redo with spinners, orientation and generic stuff, drag and also when modifying the entry.
+- make spinner smaller
 - uniforms send to fix: there should be only one method but now 2 different send, : 
   - in _mesh_component_draw: send the data in shader instance
   - in shader_mesh_draw: for each 'registered' uniform of the shader, 

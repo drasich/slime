@@ -359,7 +359,7 @@ _spinner_drag_stop_cb(void *data, Evas_Object *obj, void *event)
     *new = v;
     control_property_change(cp->control, cp->component, thedata, p, old, new);
   }
-  else if (!strcmp(p->name, "orientation")) { 
+  else if (p->type == PROPERTY_QUAT) {
     Quat *old = malloc(sizeof *old);
     //TODO use eina_value
     //eina_value_get(&cp->saved, old);
@@ -693,15 +693,12 @@ component_property_update_data(ComponentProperties* cp)
     //printf("update data property %s, data %p, type %d \n", p->name, data, p->type);
 
     switch(p->type) {
-      case PROPERTY_STRUCT_NESTED:
-        if (!strcmp(p->name, "orientation")) {
-
+      case PROPERTY_QUAT:
+         {
           Quat q;
           int offset = property_offset_get(p);
-          //memcpy(&q, (void*)data + offset, sizeof q);
           memcpy(&q, data + offset, sizeof q);
           Vec3 deg = quat_to_euler_deg(q);
-          //printf("deg : %f, %f, %f \n", deg.x, deg.y, deg.z);
           const char* pname = evas_object_data_get(obj, "property_name");
           if (!strcmp(pname, "x"))
           elm_spinner_value_set(obj, deg.x );
@@ -709,7 +706,7 @@ component_property_update_data(ComponentProperties* cp)
           elm_spinner_value_set(obj, deg.y );
           else if (!strcmp(pname, "z"))
           elm_spinner_value_set(obj, deg.z );
-        }
+         }
         break;
       case EET_T_DOUBLE:
          {
@@ -1004,6 +1001,11 @@ _property_add(ComponentProperties* cp, const Property* p, Evas_Object* box, void
         _add_properties(cp, p->sub, bx, *datastruct);
        }
       break;
+    case PROPERTY_QUAT:
+        {
+          _add_orientation_properties(cp, p, box, data);
+        }
+      break;
     case PROPERTY_STRUCT_NESTED:
       if (p->sub->hint == HORIZONTAL) {
         Evas_Object* hbox = elm_box_add(cp->win);
@@ -1022,18 +1024,9 @@ _property_add(ComponentProperties* cp, const Property* p, Evas_Object* box, void
         evas_object_show(label);
         elm_box_pack_end(hbox, label);
 
-        if (!strcmp(p->name, "orientation")) {
-          int offset = property_offset_get(p);
-          //void* datastruct = (void*)data + offset;
-          void* datastruct = data + offset;
-          _add_orientation_properties(cp, p, hbox, data);
-        }
-        else {
-          int offset = property_offset_get(p);
-          //void* datastruct = (void*)data + offset;
-          void* datastruct = data + offset;
-          _add_properties(cp, p->sub, hbox, datastruct);
-        }
+        int offset = property_offset_get(p);
+        void* datastruct = data + offset;
+        _add_properties(cp, p->sub, hbox, datastruct);
 
       }
       else {

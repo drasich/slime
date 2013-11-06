@@ -63,6 +63,7 @@ property_set_quat()
   PROPERTY_SET_TYPE(ps, Quat);
   ps->hint = HORIZONTAL;
   ps->name = "quat";
+  ps->type = PROPERTY_QUAT;
 
   PROPERTY_BASIC_ADD(ps, Quat, x, EET_T_DOUBLE);
   PROPERTY_BASIC_ADD(ps, Quat, y, EET_T_DOUBLE);
