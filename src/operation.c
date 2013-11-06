@@ -130,6 +130,18 @@ _change_data(void* c, Property* p, const void *data)
     case PROPERTY_RESOURCE:
       memcpy(c+p->offset, data, sizeof(ResourceHandle));
       break;
+    case PROPERTY_UNIFORM:
+       {
+        //int offset = property_offset_get(p);
+        //UniformValue* uv = c + offset;
+        UniformValue* uv = c;
+        if (uv->type == UNIFORM_FLOAT) {
+          const float* f = data;
+          uv->value.f = *f;
+          //memcpy(c+p->offset, data, sizeof(ResourceHandle));
+        }
+       }
+      break;
     default:
       fprintf (stderr, "_change_data: type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
       break;

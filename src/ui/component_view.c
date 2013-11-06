@@ -106,7 +106,6 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
         UniformValue* uv = thedata;
         if (uv->type == UNIFORM_FLOAT) {
           float f =  elm_spinner_value_get(obj);
-          int offset = property_offset_get(p);
           uv->value.f = f;
         }
        }
@@ -426,19 +425,18 @@ _spinner_drag_stop_cb(void *data, Evas_Object *obj, void *event)
     control_property_change(cp->control, cp->component, thedata, p, old, new);
   }
   else if (p->type == PROPERTY_UNIFORM) {
-
     //TODO uniform undo/redo
-    /*
     int offset = property_offset_get(p);
     UniformValue* uv = thedata + offset;
     if (uv->type == UNIFORM_FLOAT) {
-      double *old = malloc(sizeof *old);
-      eina_value_get(&cp->saved, old);
-      double *new = malloc(sizeof *new);
+      double d;
+      eina_value_get(&cp->saved, &d);
+      float *old = malloc(sizeof *old);
+      *old = d;
+      float *new = malloc(sizeof *new);
       *new = v;
-      control_property_change(cp->control, cp->component, thedata, p, old, new);
+      control_property_change(cp->control, cp->component, &uv->value.f, p, old, new);
     }
-    */
 
   }
 
