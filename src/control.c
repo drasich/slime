@@ -125,7 +125,6 @@ static void
 _control_rotate_prepare(Control* c, Eina_List* objects)
 {
   int size = eina_list_count(objects);
-  c->rotates = eina_inarray_new (sizeof(Vec3), size);
   c->quats = eina_inarray_new (sizeof(Quat), size);
 
   c->dragger_ori = quat_identity();
@@ -134,7 +133,6 @@ _control_rotate_prepare(Control* c, Eina_List* objects)
   Eina_List *l;
   Object *o;
   EINA_LIST_FOREACH(objects, l, o) {
-    eina_inarray_push(c->rotates, &o->angles);
     eina_inarray_push(c->quats, &o->orientation);
     c->dragger_ori = quat_mul(c->dragger_ori, object_world_orientation_get(o));
     c->start = vec3_add(c->start, object_world_position_get(o));
@@ -481,14 +479,13 @@ _rotate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
   }
 
   Quat qrot = quat_angle_axis(angle, constraint);
+  c->rotation = qrot;
 
   Eina_List *l;
   Object *o;
   int i = 0;
   EINA_LIST_FOREACH(objects, l, o) {
-    Vec3* angles_origin = (Vec3*) eina_inarray_nth(c->rotates, i);
     Quat* q_origin = (Quat*) eina_inarray_nth(c->quats, i);
-    //o->angles = vec3_add(*angles_origin, c->scale_factor);
     
     if (c->dragger_is_local)
     o->orientation = quat_mul(*q_origin, qrot);
@@ -501,55 +498,6 @@ _rotate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
   control_property_transform_update(c);
 }
 
-
-//Test by rotating according to the axe
-static void
-_rotate_moving_test(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
-{
-  View* v = c->view;
-
-  float x = e->cur.canvas.x;
-  float y = e->cur.canvas.y;
-
-  Eina_List* objects = context_objects_get(v->context);
-
-  if (!vec3_equal(constraint, vec3(0,0,1)))
-    return;
-  Vec3 p1 = vec3_add(
-        c->dragger_clicked->position,
-        //quat_rotate_vec3(c->dragger_ori,vec3(1,0,0)));
-        vec3(1,0,0));
-  Vec3 p2 = vec3_add(
-        c->dragger_clicked->position,
-        //quat_rotate_vec3(c->dragger_ori,vec3(0,1,0)));
-        vec3(0,1,0));
-
-  Vec2 pp1 = camera_world_to_screen(c->view->camera, p1);
-  Vec2 pp2 = camera_world_to_screen(c->view->camera, p2);
-  Vec2 diff = vec2_sub(pp1, pp2);
-  diff = vec2_normalized(diff);
-  printf("diff %f, %f\n", diff.x, diff.y);
-
-  Vec2 d = vec2(x - c->mouse_start.x, y - c->mouse_start.y);
-  double dot = vec2_dot(diff, d);
-  //printf("dot %f \n", dot);
-  Quat qrot = quat_angle_axis(dot/100, constraint);
-
-  Eina_List *l;
-  Object *o;
-  int i = 0;
-  EINA_LIST_FOREACH(objects, l, o) {
-    Vec3* angles_origin = (Vec3*) eina_inarray_nth(c->rotates, i);
-    Quat* q_origin = (Quat*) eina_inarray_nth(c->quats, i);
-    o->angles = vec3_add(*angles_origin, c->scale_factor);
-    o->orientation = quat_mul(*q_origin, qrot); //local
-    //o->orientation = quat_mul(qrot, *q_origin); // global
-    ++i;
-  }
-
-  if (i == 1)
-  control_property_transform_update(c);
-}
 
 
 static void
@@ -751,7 +699,6 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
     Dragger* d = object_component_get(c->dragger_clicked, "dragger");
     Vec3 constraint = d->constraint;
     _rotate_moving(c,e, constraint);
-    //_rotate_moving_test(c,e, constraint);
   }
 
 }
@@ -877,7 +824,7 @@ _op_scale_object(Eina_List* objects, Vec3 scale)
 }
 
 static Operation* 
-_op_rotate_object(Eina_List* objects, Vec3 rotate)
+_op_rotate_object(Eina_List* objects, Quat q, bool local)
 {
   Operation* op = calloc(1, sizeof *op);
 
@@ -886,7 +833,8 @@ _op_rotate_object(Eina_List* objects, Vec3 rotate)
 
   Op_Rotate_Object* oro = calloc(1, sizeof *oro);
   oro->objects = eina_list_clone(objects);
-  oro->angle = rotate;
+  oro->quat = q;
+  oro->local = local;
 
   op->data = oro;
 
@@ -989,7 +937,7 @@ control_mouse_up(Control* c, Evas_Event_Mouse_Up *e)
 
     Operation* op = _op_rotate_object(
           objects,
-          c->scale_factor);
+          c->rotation, c->dragger_is_local);
 
     control_operation_add(c, op);
     return true;

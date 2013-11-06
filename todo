@@ -1,5 +1,5 @@
 LATELY
-- finish undo/redo for orientation
+- change data in the entry -> show changes without pressing enter?
 - undo/redo for
   - resources
   - uniforms

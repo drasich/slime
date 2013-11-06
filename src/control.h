@@ -41,8 +41,8 @@ struct _Control{
 
   //used for rotation
   Quat dragger_ori;
-  Eina_Inarray* rotates;
   Eina_Inarray* quats;
+  Quat rotation;
 
   bool dragger_is_local;
 };

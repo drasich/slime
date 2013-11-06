@@ -36,6 +36,8 @@ _entry_orientation_changed_cb(void *data, Evas_Object *obj, void *event)
     q = quat_angles_deg(vec3(0,0,saved));
   }
 
+  cp->control->rotation = q;
+
   q = quat_mul(cp->quat_saved, q);
   int offset = property_offset_get(p);
   memcpy(thedata + offset, &q, sizeof q);
@@ -156,6 +158,41 @@ _entry_activated_cb(void *data, Evas_Object *obj, void *event)
       *new = v;
       control_property_change(cp->control, cp->component, thedata, p, old, new);
     }
+  }
+  else if (p->type == PROPERTY_QUAT) {
+    Quat *old = malloc(sizeof *old);
+    *old = cp->quat_saved;
+
+    const char* name = evas_object_data_get(obj, "property_name");
+
+    const char* s = elm_object_text_get(obj);
+    double v = atof(s);
+    double saved;
+    eina_value_get(&cp->saved, &saved);
+    saved = v - saved;
+
+    Quat q = quat_identity();
+    if (!strcmp(name, "x")) {
+      q = quat_angles_deg(vec3(saved,0,0));
+    }
+    else if (!strcmp(name, "y")) {
+      q = quat_angles_deg(vec3(0,saved,0));
+    }
+    else if (!strcmp(name, "z")) {
+      q = quat_angles_deg(vec3(0,0,saved));
+    }
+
+    Quat *new = malloc(sizeof *new);
+    *new = quat_mul(*old, q);
+
+    if (!quat_equals(*old, *new)) {
+      control_property_change(cp->control, cp->component, thedata, p, old, new);
+    }
+    else {
+      free(old);
+      free(new);
+    }
+
   }
   /*
      else if (p->type == PROPERTY_POINTER) {
@@ -311,11 +348,20 @@ _entry_focused_cb(void *data, Evas_Object *obj, void *event)
   ComponentProperties* cp = data;
 
   Property* p = evas_object_data_get(obj, "property");
-  if (p->type == EET_T_DOUBLE) {
+  if (p->type == EET_T_DOUBLE || p->type == PROPERTY_QUAT) {
     const char* s = elm_object_text_get(obj);
     double v = atof(s);
     eina_value_setup(&cp->saved, EINA_VALUE_TYPE_DOUBLE);
     eina_value_set(&cp->saved, v);
+
+    if (p->type == PROPERTY_QUAT) {
+      void* thedata = evas_object_data_get(obj, "data");
+      Quat q;
+      int offset = property_offset_get(p);
+      memcpy(&q, thedata + offset, sizeof q);
+      cp->quat_saved = q;
+    }
+
   }
   else if (p->type == EET_T_STRING) {
     const char* s = elm_object_text_get(obj);
@@ -1080,6 +1126,8 @@ static void
 _add_properties(ComponentProperties* cp, const Property* ps, Evas_Object* box, void* data )
 {
   _property_add(cp, ps, box, data);
+
+  if (ps->type == PROPERTY_QUAT) return;
 
   Property *p;
   Eina_List* l;

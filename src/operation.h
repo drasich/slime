@@ -80,7 +80,8 @@ typedef struct _Op_Rotate_Object Op_Rotate_Object;
 struct _Op_Rotate_Object
 {
   Eina_List* objects;
-  Vec3 angle;
+  Quat quat;
+  bool local;
 };
 
 void operation_rotate_object_do(Control *c, void* data);

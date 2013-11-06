@@ -124,10 +124,8 @@ _change_data(void* c, Property* p, const void *data)
         *ptr = data;
        }
       break;
-    case PROPERTY_STRUCT_NESTED:
-      if (!strcmp(p->name, "orientation")) {
-        memcpy(c+p->offset, data, sizeof(Quat));
-      }
+    case PROPERTY_QUAT:
+      memcpy(c+p->offset, data, sizeof(Quat));
       break;
     default:
       fprintf (stderr, "_change_data: type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
@@ -215,7 +213,10 @@ operation_rotate_object_do(Control* c, void* data)
   Eina_List *l;
   Object *o;
   EINA_LIST_FOREACH(od->objects, l, o) {
-    o->angles = vec3_add(o->angles, od->angle);
+    if (od->local)
+    o->orientation = quat_mul(o->orientation, od->quat);
+    else
+    o->orientation = quat_mul(od->quat, o->orientation);
   }
 
 }
@@ -228,7 +229,12 @@ operation_rotate_object_undo(Control* c, void* data)
   Eina_List *l;
   Object *o;
   EINA_LIST_FOREACH(od->objects, l, o) {
-    o->angles = vec3_sub(o->angles, od->angle);
+    Quat invrot = quat_inverse(od->quat);
+    Quat q = quat_inverse(od->quat);
+    if (od->local)
+    o->orientation = quat_mul(o->orientation, invrot);
+    else
+    o->orientation = quat_mul(invrot, o->orientation);
   }
 }
 
