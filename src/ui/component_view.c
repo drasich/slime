@@ -185,7 +185,7 @@ _entry_activated_cb(void *data, Evas_Object *obj, void *event)
     Quat *new = malloc(sizeof *new);
     *new = quat_mul(*old, q);
 
-    if (!quat_equals(*old, *new)) {
+    if (!quat_equal(*old, *new)) {
       control_property_change(cp->control, cp->component, thedata, p, old, new);
     }
     else {

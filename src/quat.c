@@ -386,7 +386,7 @@ Quat quat_angles_deg(Vec3 angles)
 }
 
 bool
-quat_equals(Quat q1, Quat q2)
+quat_equal(Quat q1, Quat q2)
 {
   return q1.x == q2.x && q1.y == q2.y && q1.z == q2.z && q1.w == q2.w;
 }

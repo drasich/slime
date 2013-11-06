@@ -230,14 +230,16 @@ _translate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
   Eina_List* objects = context_objects_get(v->context);
   Plane p = { c->start, quat_rotate_vec3(v->camera->object->orientation, vec3(0,0,-1)) };
 
-  if (constraint.z == 1) {
-    p.normal.z = 0;
-  }
-  if (constraint.y == 1) {
-    p.normal.y = 0;
-  }
-  if (constraint.x == 1) {
-    p.normal.x = 0;
+  if (!vec3_equal(constraint, vec3(1,1,1))) {
+    if (constraint.z == 1) {
+      p.normal.z = 0;
+    }
+    if (constraint.y == 1) {
+      p.normal.y = 0;
+    }
+    if (constraint.x == 1) {
+      p.normal.x = 0;
+    }
   }
 
   p.normal = vec3_normalized(p.normal);

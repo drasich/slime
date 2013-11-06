@@ -1,10 +1,7 @@
 LATELY
-- change data in the entry -> show changes without pressing enter?
 - undo/redo for
   - resources
   - uniforms
-- fix mov with 'g'
-- undo/redo with spinners, orientation and generic stuff, drag and also when modifying the entry.
 - make spinner smaller
 - uniforms send to fix: there should be only one method but now 2 different send, : 
   - in _mesh_component_draw: send the data in shader instance
@@ -129,4 +126,5 @@ IDEAS
   to component, then call functions like init, update on the component that calls it for
   all objects that has this component... (but we cannot choose the order 
   of the components)
+- change data in the entry -> show changes without pressing enter?
 
