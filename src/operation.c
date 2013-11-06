@@ -1,6 +1,6 @@
 #include "operation.h"
 #include "view.h"
-#include "ui/tree.h" //TODO remove this include
+#include "resource.h"
 
 void 
 operation_move_object_do(Control* c, void* data)
@@ -126,6 +126,9 @@ _change_data(void* c, Property* p, const void *data)
       break;
     case PROPERTY_QUAT:
       memcpy(c+p->offset, data, sizeof(Quat));
+      break;
+    case PROPERTY_RESOURCE:
+      memcpy(c+p->offset, data, sizeof(ResourceHandle));
       break;
     default:
       fprintf (stderr, "_change_data: type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);

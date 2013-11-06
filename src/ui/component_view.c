@@ -282,24 +282,36 @@ _change_resource(void *data,
 
   int offset = property_offset_get(entryproperty);
   void** theolddata  = (void*)(entrydata + offset);
-  const char* old = *theolddata;
-  if (old && !strcmp(old, name)) {
+  const char* oldstr = *theolddata;
+  if (oldstr && !strcmp(oldstr, name)) {
     return;
   }
 
+  ResourceHandle* rh = entrydata;
+  ResourceHandle* old = malloc(sizeof *old);
+  ResourceHandle* new = malloc(sizeof *new);
+  memcpy(old, entrydata, sizeof(*old));
+
   if (p->resource_type == RESOURCE_TEXTURE) {
-    TextureHandle* t = entrydata;
-    resource_texture_handle_set(s_rm, t, name);
+    resource_texture_handle_set(s_rm, rh, name);
+
   }
   else if( p->resource_type == RESOURCE_MESH ) {
-    MeshHandle* mh = entrydata;
-    resource_mesh_handle_set(s_rm, mh, name);
+    resource_mesh_handle_set(s_rm, rh, name);
   }
   else if( p->resource_type == RESOURCE_SHADER ) {
-    ShaderHandle* sh = entrydata;
-    resource_shader_handle_set(s_rm, sh, name);
+    //ShaderHandle* sh = entrydata;
+    resource_shader_handle_set(s_rm, rh, name);
     property_reload_component(cp->pw, cp->component);
   }
+  else{
+    free(old);
+    free(new);
+    return;
+  }
+
+  memcpy(new, entrydata, sizeof(*new));
+  control_property_change(cp->control, cp->component, entrydata, p, old, new);
 }
 
 static Evas_Object*

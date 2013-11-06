@@ -1,7 +1,7 @@
 LATELY
 - undo/redo for
-  - resources
   - uniforms
+- check undo/redo with shaders and shader instance
 - make spinner smaller
 - uniforms send to fix: there should be only one method but now 2 different send, : 
   - in _mesh_component_draw: send the data in shader instance
