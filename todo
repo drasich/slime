@@ -29,8 +29,6 @@ ISSUES (must be done)
 - check the component functions in the component manager
 - change properties in ComponentDesc so there is only one to be created and I
   can remove the one in create_component and object_post_read
-- in control.c, _op_change_property save the data if it's not a pointer to existing data (like an int)
-- Fix property component update - remove object from parameter?
 - use id instead of comparing string strcmp(component->name,"mesh") ?
 
 BUG
@@ -42,7 +40,6 @@ BUG
   control is clean in view_destroy and then there is a pointer to control in gameview that is
   used in the cleaning for gameview, I removed the free(v->control) temporarily but there shouldn't
   be control in gameview... component manager I have to check
-- sometimes segfault when quitting after input I think
 
 
 RENDER
@@ -78,6 +75,7 @@ et aussi "object properties" "name, ..."
 - make one component, one library? instead of one big library for all?
 - add lua-jit
 - choose component init order
+- component dependency
 
 
 PROPERTIES
