@@ -300,7 +300,6 @@ _change_resource(void *data,
     resource_mesh_handle_set(s_rm, rh, name);
   }
   else if( p->resource_type == RESOURCE_SHADER ) {
-    //ShaderHandle* sh = entrydata;
     resource_shader_handle_set(s_rm, rh, name);
     property_reload_component(cp->pw, cp->component);
   }
@@ -425,6 +424,22 @@ _spinner_drag_stop_cb(void *data, Evas_Object *obj, void *event)
     Quat *new = malloc(sizeof *new);
     memcpy(new, thedata+p->offset, sizeof*new);
     control_property_change(cp->control, cp->component, thedata, p, old, new);
+  }
+  else if (p->type == PROPERTY_UNIFORM) {
+
+    //TODO uniform undo/redo
+    /*
+    int offset = property_offset_get(p);
+    UniformValue* uv = thedata + offset;
+    if (uv->type == UNIFORM_FLOAT) {
+      double *old = malloc(sizeof *old);
+      eina_value_get(&cp->saved, old);
+      double *new = malloc(sizeof *new);
+      *new = v;
+      control_property_change(cp->control, cp->component, thedata, p, old, new);
+    }
+    */
+
   }
 
 }
@@ -709,7 +724,6 @@ _component_property_add_hash(
     elm_box_pack_end(cpp->box, bx);
     evas_object_show(bx);
 
-    //printf("hhhhhhhhhhhhhhhhhhhh addddddddd hashhhhhhhhhhhhh %s, data :%p \n", keyname, data);
     _add_properties(cpp->cp, cpp->p->sub, bx, data);
   }
   else if (cpp->p->sub->type == PROPERTY_UNIFORM) {
@@ -732,9 +746,7 @@ _component_property_add_hash(
     elm_box_pack_end(cpp->box, bx);
     evas_object_show(bx);
 
-    //printf("hhhhhhhhhhhhhhhhhhhh addddddddd hashhhhhhhhhhhhh %s, data :%p \n", keyname, data);
     _add_properties(cpp->cp, cpp->p->sub, bx, data);
-
   }
 
   return EINA_TRUE;

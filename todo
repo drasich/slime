@@ -1,6 +1,5 @@
 LATELY
-- undo/redo for
-  - uniforms
+- undo/redo for uniforms
 - check undo/redo with shaders and shader instance
 - make spinner smaller
 - uniforms send to fix: there should be only one method but now 2 different send, : 
