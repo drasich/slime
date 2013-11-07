@@ -1206,6 +1206,7 @@ _property_add(ComponentProperties* cp, const Property* p, Evas_Object* box, void
         const void** ptr = data + offset;
         const Eina_Hash* hash = *ptr;
         struct _ComponentPropertyCouple cpp = {cp, p, box};
+        if (hash)
         eina_hash_foreach(hash, _component_property_add_hash, &cpp);
        }
       break;

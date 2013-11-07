@@ -14,6 +14,7 @@ static void*
 _mesh_component_create()
 {
   MeshComponent* m = calloc(1,sizeof *m);
+  m->shader_instance_hash = eina_hash_stringshared_new(NULL);
   return m;
 }
 
@@ -32,6 +33,14 @@ _mesh_component_properties()
   
   Property *shader_instance_property_set = property_set_shader_instance();
   PROPERTY_SUB_ADD(ps, MeshComponent, shader_instance, shader_instance_property_set);
+
+  //don't show, just save
+  EET_DATA_DESCRIPTOR_ADD_HASH(
+        ps->descriptor,
+        MeshComponent,
+        "shader_instance_hash",
+        shader_instance_hash,
+        shader_instance_property_set->descriptor);
 
   return ps;
 }
@@ -99,9 +108,10 @@ _mesh_component_draw(Component* c, Matrix4 world, const Matrix4 projection)
 
   shader_use(s);
 
-  if (!mc->shader_instance)
-  mc->shader_instance = shader_instance_create(s);
-
+  if (!mc->shader_instance) {
+    mc->shader_instance = shader_instance_create(s);
+    eina_hash_add(mc->shader_instance_hash, s->name, mc->shader_instance);
+  }
 
   //TODO this is needed for draggers
   if (mc->shader_instance && mc->shader_instance->uniforms) {
@@ -134,6 +144,9 @@ _mesh_component_init(Component* c)
   if (sh->name) {
     sh->shader = resource_shader_get(s_rm, sh->name);
   }
+
+  if (!mc->shader_instance_hash)
+  mc->shader_instance_hash = eina_hash_stringshared_new(NULL);
 
   if (sh->shader)
   mesh_component_shader_set(mc, sh->shader);
@@ -177,10 +190,13 @@ void
 mesh_component_shader_set(MeshComponent* mc, Shader* s)
 {
   //printf("mesh component shader set meshcomponent mc: %p, shader name:%s \n", mc, s->name);
-  bool create_new_instance = true;
+  bool change_instance = true;
   if (mc->shader_handle.name && !strcmp(s->name, mc->shader_handle.name)) {
-    create_new_instance = false;
+    change_instance = false;
   }
+
+  if (!mc->shader_instance_hash)
+  mc->shader_instance_hash = eina_hash_stringshared_new(NULL);
 
   mc->shader_handle.name = s->name;
   mc->shader_handle.shader = s;
@@ -189,19 +205,35 @@ mesh_component_shader_set(MeshComponent* mc, Shader* s)
   if (mc->shader_instance) {
     //TODO save the instance for later use? if someone else will link to this shader we already have
     //an instance
-    if (create_new_instance) {
+    if (change_instance) {
+      /*
       eina_hash_free(mc->shader_instance->textures);
       eina_hash_free(mc->shader_instance->uniforms);
       mc->shader_instance->textures = NULL;
       mc->shader_instance->uniforms = NULL;
       free(mc->shader_instance);
       mc->shader_instance = NULL;
-
-      mc->shader_instance = shader_instance_create(s);
+      */
+      ShaderInstance* si = eina_hash_find(mc->shader_instance_hash, s->name);
+      if (si) {
+        mc->shader_instance = si;
+      }
+      else {
+        mc->shader_instance = shader_instance_create(s);
+        eina_hash_add(mc->shader_instance_hash, s->name, mc->shader_instance);
+      }
+    }
+    else {
+      ShaderInstance* si = eina_hash_find(mc->shader_instance_hash, s->name);
+      if (!si) {
+        eina_hash_add(mc->shader_instance_hash, s->name, mc->shader_instance);
+      }
     }
   }
-  else 
-  mc->shader_instance = shader_instance_create(s);
+  else {
+    mc->shader_instance = shader_instance_create(s);
+    eina_hash_add(mc->shader_instance_hash, s->name, mc->shader_instance);
+  }
 }
 
 
