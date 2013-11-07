@@ -193,6 +193,44 @@ _entry_activated_cb(void *data, Evas_Object *obj, void *event)
     }
 
   }
+  else if (p->type == PROPERTY_UNIFORM) {
+    const char* s = elm_object_text_get(obj);
+    double v = atof(s);
+    UniformValue* uv = thedata;
+    if (uv->type == UNIFORM_FLOAT) {
+      float* old = malloc(sizeof* old);
+      *old = uv->value.f;
+      float* new = malloc(sizeof* new);
+      *new = (float)v;
+      if (*old == *new) {
+        free(old);
+        free(new);
+      }
+      else
+      control_property_change(cp->control, cp->component, thedata, p, old, new);
+    }
+    else if (uv->type == UNIFORM_VEC3) {
+      Vec3* old = malloc(sizeof* old);
+      *old = uv->value.vec3;
+      Vec3* new = malloc(sizeof* new);
+      *new = uv->value.vec3;
+
+      const char* pname = evas_object_data_get(obj, "property_name");
+      if (!strcmp(pname, "x"))
+      new->x = v;
+      else if (!strcmp(pname, "y"))
+      new->y = v;
+      else if (!strcmp(pname, "z"))
+      new->z = v;
+
+      if (vec3_equal(*old, *new)) {
+        free(old);
+        free(new);
+      }
+      else
+      control_property_change(cp->control, cp->component, thedata, p, old, new);
+    }
+  }
   /*
      else if (p->type == PROPERTY_POINTER) {
   //TODO c'est un peu naze de get la scene comme ca
@@ -990,11 +1028,19 @@ _property_add_spinner_vec3(
   evas_object_smart_callback_add(en, "spinner,drag,start", _spinner_drag_start_cb, cp);
   evas_object_smart_callback_add(en, "spinner,drag,stop", _spinner_drag_stop_cb, cp);
 
-
   evas_object_data_set(en, "property", p);
   evas_object_data_set(en, "property_name", name);
   evas_object_data_set(en, "data", data );
   cp->entries = eina_list_append(cp->entries, en);
+
+  Evas_Object* entry = elm_layout_content_get(en, "elm.swallow.entry");
+  evas_object_data_set(entry, "property", p);
+  evas_object_data_set(entry, "property_name", name);
+  evas_object_data_set(entry, "data", data );
+
+  evas_object_smart_callback_add(entry, "activated", _entry_activated_cb, cp);
+  evas_object_smart_callback_add(entry, "focused", _entry_focused_cb, cp);
+  evas_object_smart_callback_add(entry, "unfocused", _entry_unfocused_cb, cp);
 
   return en;
 }
