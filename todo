@@ -1,6 +1,5 @@
 LATELY
 - undo/redo for uniforms
-- check undo/redo with shaders and shader instance
 - make spinner smaller
 - uniforms send to fix: there should be only one method but now 2 different send, : 
   - in _mesh_component_draw: send the data in shader instance
@@ -30,6 +29,7 @@ ISSUES (must be done)
 - change properties in ComponentDesc so there is only one to be created and I
   can remove the one in create_component and object_post_read
 - use id instead of comparing string strcmp(component->name,"mesh") ?
+- how to remove the many shader instances that are not used in shader instance hash.
 
 BUG
 - focus the play and main windows alternatively(with the mouse)
