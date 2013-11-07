@@ -437,6 +437,29 @@ _spinner_drag_stop_cb(void *data, Evas_Object *obj, void *event)
       *new = v;
       control_property_change(cp->control, cp->component, &uv->value.f, p, old, new);
     }
+    else if (uv->type == UNIFORM_VEC3) {
+      Vec3 *new = malloc(sizeof *new);
+      *new = uv->value.vec3;
+      Vec3 *old = malloc(sizeof *old);
+      *old = uv->value.vec3;
+      double d;
+      eina_value_get(&cp->saved, &d);
+      const char* pname = evas_object_data_get(obj, "property_name");
+      if (!strcmp(pname, "x"))
+      old->x = d;
+      else if (!strcmp(pname, "y"))
+      old->y = d;
+      else if (!strcmp(pname, "z"))
+      old->z = d;
+
+      if (vec3_equal(*old, *new)) {
+        free(old);
+        free(new);
+      }
+      else
+      control_property_change(cp->control, cp->component, &uv->value.vec3, p, old, new);
+
+    }
 
   }
 
@@ -964,8 +987,8 @@ _property_add_spinner_vec3(
   evas_object_name_set(en, name);
 
   evas_object_smart_callback_add(en, "changed", _entry_vec3_changed_cb, cp);
-  //evas_object_smart_callback_add(en, "spinner,drag,start", _spinner_drag_start_cb, cp);
-  //evas_object_smart_callback_add(en, "spinner,drag,stop", _spinner_drag_stop_cb, cp);
+  evas_object_smart_callback_add(en, "spinner,drag,start", _spinner_drag_start_cb, cp);
+  evas_object_smart_callback_add(en, "spinner,drag,stop", _spinner_drag_stop_cb, cp);
 
 
   evas_object_data_set(en, "property", p);
