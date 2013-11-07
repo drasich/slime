@@ -12,6 +12,7 @@ struct _MeshComponent
   bool hide;
   MeshHandle mesh_handle;
   ShaderHandle shader_handle;
+  Eina_Hash* shader_instance_hash;
 };
 
 ComponentDesc mesh_desc;

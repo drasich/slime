@@ -13,7 +13,7 @@ static void _add_properties(
       void* data);
 
 static void
-_entry_orientation_changed_cb(void *data, Evas_Object *obj, void *event)
+_spinner_orientation_changed_cb(void *data, Evas_Object *obj, void *event)
 {
   ComponentProperties* cp = data;
 
@@ -53,11 +53,6 @@ _entry_vec3_changed_cb(void *data, Evas_Object *obj, void *event)
   const char* name = evas_object_data_get(obj, "property_name");
 
   double f =  elm_spinner_value_get(obj);
-  /*
-  double saved;
-  eina_value_get(&cp->saved, &saved);
-  saved = ;
-  */
 
   int offset = property_offset_get(p);
   Vec3* v = thedata + offset;
@@ -71,8 +66,57 @@ _entry_vec3_changed_cb(void *data, Evas_Object *obj, void *event)
   else if (!strcmp(name, "z")) {
     v->z = f;
   }
+}
 
-  //memcpy(thedata + offset, &q, sizeof q);
+static void
+_spinner_changed_cb(void *data, Evas_Object *obj, void *event)
+{
+  ComponentProperties* cp = data;
+
+  Property* p = evas_object_data_get(obj, "property");
+  void* thedata = evas_object_data_get(obj, "data");
+
+  int type = p->type;
+  if (type == PROPERTY_UNIFORM) {
+    UniformValue* uv = thedata;
+    type = uv->type;
+    thedata = &uv->value;
+  }
+
+  switch(type) {
+    case EET_T_DOUBLE:
+       {
+        double v =  elm_spinner_value_get(obj);
+        int offset = property_offset_get(p);
+        memcpy(thedata + offset, &v, p->size);
+       }
+      break;
+    case EET_T_FLOAT:
+    case UNIFORM_FLOAT:
+       {
+        float v =  elm_spinner_value_get(obj);
+        int offset = property_offset_get(p);
+        //memcpy(thedata + offset, &v, p->size);
+        memcpy(thedata + offset, &v, sizeof(float));
+       }
+      break;
+    default:
+      fprintf (stderr, "type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
+      break;
+   }
+
+  Control* ct = cp->control;
+
+  if (cp->callback) {
+    cp->callback(ct, thedata, p);
+  }
+
+  if (cp->component && cp->component->funcs->on_property_changed)
+  cp->component->funcs->on_property_changed(cp->component);
+
+  if (!strcmp(cp->name, "object"))
+  control_property_update(ct, cp->component);
+
 }
 
 static void
@@ -84,13 +128,6 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
   void* thedata = evas_object_data_get(obj, "data");
 
   switch(p->type) {
-    case EET_T_DOUBLE:
-       {
-        double v =  elm_spinner_value_get(obj);
-        int offset = property_offset_get(p);
-        memcpy(thedata + offset, &v, p->size);
-       }
-      break;
     case EET_T_STRING:
        {
         int offset = property_offset_get(p);
@@ -99,15 +136,6 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
         const char* s = elm_object_text_get(obj);
         *str = eina_stringshare_add(s);
         //eina_stringshare_dump();
-       }
-      break;
-    case PROPERTY_UNIFORM:
-       {
-        UniformValue* uv = thedata;
-        if (uv->type == UNIFORM_FLOAT) {
-          float f =  elm_spinner_value_get(obj);
-          uv->value.f = f;
-        }
        }
       break;
     default:
@@ -192,6 +220,44 @@ _entry_activated_cb(void *data, Evas_Object *obj, void *event)
       free(new);
     }
 
+  }
+  else if (p->type == PROPERTY_UNIFORM) {
+    const char* s = elm_object_text_get(obj);
+    double v = atof(s);
+    UniformValue* uv = thedata;
+    if (uv->type == UNIFORM_FLOAT) {
+      float* old = malloc(sizeof* old);
+      *old = uv->value.f;
+      float* new = malloc(sizeof* new);
+      *new = (float)v;
+      if (*old == *new) {
+        free(old);
+        free(new);
+      }
+      else
+      control_property_change(cp->control, cp->component, thedata, p, old, new);
+    }
+    else if (uv->type == UNIFORM_VEC3) {
+      Vec3* old = malloc(sizeof* old);
+      *old = uv->value.vec3;
+      Vec3* new = malloc(sizeof* new);
+      *new = uv->value.vec3;
+
+      const char* pname = evas_object_data_get(obj, "property_name");
+      if (!strcmp(pname, "x"))
+      new->x = v;
+      else if (!strcmp(pname, "y"))
+      new->y = v;
+      else if (!strcmp(pname, "z"))
+      new->z = v;
+
+      if (vec3_equal(*old, *new)) {
+        free(old);
+        free(new);
+      }
+      else
+      control_property_change(cp->control, cp->component, thedata, p, old, new);
+    }
   }
   /*
      else if (p->type == PROPERTY_POINTER) {
@@ -437,6 +503,29 @@ _spinner_drag_stop_cb(void *data, Evas_Object *obj, void *event)
       *new = v;
       control_property_change(cp->control, cp->component, &uv->value.f, p, old, new);
     }
+    else if (uv->type == UNIFORM_VEC3) {
+      Vec3 *new = malloc(sizeof *new);
+      *new = uv->value.vec3;
+      Vec3 *old = malloc(sizeof *old);
+      *old = uv->value.vec3;
+      double d;
+      eina_value_get(&cp->saved, &d);
+      const char* pname = evas_object_data_get(obj, "property_name");
+      if (!strcmp(pname, "x"))
+      old->x = d;
+      else if (!strcmp(pname, "y"))
+      old->y = d;
+      else if (!strcmp(pname, "z"))
+      old->z = d;
+
+      if (vec3_equal(*old, *new)) {
+        free(old);
+        free(new);
+      }
+      else
+      control_property_change(cp->control, cp->component, &uv->value.vec3, p, old, new);
+
+    }
 
   }
 
@@ -586,7 +675,7 @@ _property_add_spinner(ComponentProperties* cp, const Property* p, Evas_Object* b
   evas_object_data_set(en, "data", data );
   cp->entries = eina_list_append(cp->entries, en);
 
-  evas_object_smart_callback_add(en, "changed", _entry_changed_cb, cp);
+  evas_object_smart_callback_add(en, "changed", _spinner_changed_cb, cp);
   //evas_object_smart_callback_add(en, "focused", _entry_focused_cb, cp);
   //evas_object_smart_callback_add(en, "unfocused", _entry_unfocused_cb, cp);
   evas_object_smart_callback_add(en, "spinner,drag,start", _spinner_drag_start_cb, cp);
@@ -908,7 +997,7 @@ _property_add_spinner_angle(
 
   evas_object_name_set(en, name);
 
-  evas_object_smart_callback_add(en, "changed", _entry_orientation_changed_cb, cp);
+  evas_object_smart_callback_add(en, "changed", _spinner_orientation_changed_cb, cp);
   evas_object_smart_callback_add(en, "spinner,drag,start", _spinner_drag_start_cb, cp);
   evas_object_smart_callback_add(en, "spinner,drag,stop", _spinner_drag_stop_cb, cp);
   //todo chris
@@ -964,14 +1053,22 @@ _property_add_spinner_vec3(
   evas_object_name_set(en, name);
 
   evas_object_smart_callback_add(en, "changed", _entry_vec3_changed_cb, cp);
-  //evas_object_smart_callback_add(en, "spinner,drag,start", _spinner_drag_start_cb, cp);
-  //evas_object_smart_callback_add(en, "spinner,drag,stop", _spinner_drag_stop_cb, cp);
-
+  evas_object_smart_callback_add(en, "spinner,drag,start", _spinner_drag_start_cb, cp);
+  evas_object_smart_callback_add(en, "spinner,drag,stop", _spinner_drag_stop_cb, cp);
 
   evas_object_data_set(en, "property", p);
   evas_object_data_set(en, "property_name", name);
   evas_object_data_set(en, "data", data );
   cp->entries = eina_list_append(cp->entries, en);
+
+  Evas_Object* entry = elm_layout_content_get(en, "elm.swallow.entry");
+  evas_object_data_set(entry, "property", p);
+  evas_object_data_set(entry, "property_name", name);
+  evas_object_data_set(entry, "data", data );
+
+  evas_object_smart_callback_add(entry, "activated", _entry_activated_cb, cp);
+  evas_object_smart_callback_add(entry, "focused", _entry_focused_cb, cp);
+  evas_object_smart_callback_add(entry, "unfocused", _entry_unfocused_cb, cp);
 
   return en;
 }
@@ -1109,6 +1206,7 @@ _property_add(ComponentProperties* cp, const Property* p, Evas_Object* box, void
         const void** ptr = data + offset;
         const Eina_Hash* hash = *ptr;
         struct _ComponentPropertyCouple cpp = {cp, p, box};
+        if (hash)
         eina_hash_foreach(hash, _component_property_add_hash, &cpp);
        }
       break;

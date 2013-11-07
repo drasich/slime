@@ -315,6 +315,10 @@ shader_mesh_draw(Shader* s, struct _MeshComponent* mc)
   GLuint i = 0;
   EINA_INARRAY_FOREACH(s->uniforms, uni) {
     if (uni->type == UNIFORM_TEXTURE) {
+      if (!mc->shader_instance->textures) {
+        continue;
+      }
+
       const char* uniname = uni->name;
 
       //GLint uni_tex = shader_uniform_location_get(s, uniname);
@@ -322,14 +326,19 @@ shader_mesh_draw(Shader* s, struct _MeshComponent* mc)
       GLint tex_id = -1;
       TextureHandle* th = shader_instance_texture_data_get(mc->shader_instance, uniname);
 
+      if (!th) {
+        printf("%s , I didn't find the texture handle with this name: '%s' \n", __FUNCTION__, uniname);
+        shader_instance_print(mc->shader_instance);
+      }
+      else if (!th->texture) {
+        printf("%s , texture is not loaded, or assigned?: '%s' \n", __FUNCTION__, uniname);
+        th->texture = resource_texture_get(s_rm, th->name);
+      }
+
       if (th && th->texture) {
         Texture* t = th->texture;
         texture_init(t);
         tex_id = texture_id_get(t);
-      }
-      else {
-        printf("%s , I didn't find the texture, or it is not loaded: '%s' \n", __FUNCTION__, uniname);
-        shader_instance_print(mc->shader_instance);
       }
 
       if (uni_tex >= 0 && tex_id >= 0) {
@@ -692,10 +701,12 @@ static Eina_Bool _tex_print(
 
 void shader_instance_print(ShaderInstance* si)
 {
+    printf("%s\n", __FUNCTION__);
   if (si->uniforms)
   eina_hash_foreach(si->uniforms, _uniform_print, NULL);
   if (si->textures)
   eina_hash_foreach(si->textures, _tex_print, NULL);
+    printf("%s\n", __FUNCTION__);
 
 }
 
@@ -713,8 +724,10 @@ static Eina_Bool _texture_init(
 
 void shader_instance_init(ShaderInstance* si)
 {
+    printf("%s\n", __FUNCTION__);
   if (si->textures)
   eina_hash_foreach(si->textures, _texture_init, NULL);
+    printf("%s\n", __FUNCTION__);
 
 }
 

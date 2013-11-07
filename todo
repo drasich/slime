@@ -1,5 +1,4 @@
 LATELY
-- undo/redo for uniforms
 - make spinner smaller
 - uniforms send to fix: there should be only one method but now 2 different send, : 
   - in _mesh_component_draw: send the data in shader instance
@@ -23,6 +22,7 @@ CLEAN
 - fix functions name -> put the verb at the end
 - clean the scene when?
 - clean undo list and operation data
+- factorize uniforms properties in component view
 
 ISSUES (must be done)
 - check the component functions in the component manager

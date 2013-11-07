@@ -138,7 +138,13 @@ _change_data(void* c, Property* p, const void *data)
         if (uv->type == UNIFORM_FLOAT) {
           const float* f = data;
           uv->value.f = *f;
-          //memcpy(c+p->offset, data, sizeof(ResourceHandle));
+        }
+        else if (uv->type == UNIFORM_VEC3) {
+          const Vec3* v = data;
+          uv->value.vec3 = *v;
+        }
+        else {
+          fprintf (stderr, "_change_data: uniform not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
         }
        }
       break;
