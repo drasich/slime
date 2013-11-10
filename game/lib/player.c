@@ -12,6 +12,7 @@ void
 player_update(Component* c, double dt)
 {
   Player* p = c->data;
+  c->object->orientation_type = ORIENTATION_EULER;
   c->object->angles.x += p->rotation_speed*dt;
   if (p->target) {
     Vec3 pt = vec3_add(p->target->position, vec3(5,0,0));

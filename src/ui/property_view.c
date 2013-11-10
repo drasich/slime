@@ -21,7 +21,7 @@ void property_clear_components(PropertyView* pw)
 
 void property_reload_component(PropertyView* pw, Component* c)
 {
-  ComponentProperties* cp = create_component_properties(c, pw);
+  ComponentProperties* cp = create_component_properties(c, pw, true);
   cp->component = c;
   component_property_update_data(cp);
 
@@ -230,13 +230,13 @@ property_object_display(PropertyView* pw, Object* o)
   Component* c;
   Eina_List* l;
 
-  cp = create_component_properties(o->component, pw);
+  cp = create_component_properties(o->component, pw, false);
   property_add_component(pw, cp);
   cp->component = o->component;
   component_property_update_data(cp);
 
   EINA_LIST_FOREACH(o->components, l, c) {
-    cp = create_component_properties(c, pw);
+    cp = create_component_properties(c, pw, true);
     property_add_component(pw, cp);
     cp->component = c;
     component_property_update_data(cp);

@@ -77,6 +77,9 @@ et aussi "object properties" "name, ..."
 - choose component init order
 - component dependency
 
+DESIGN
+- display scene properties on the right when nothing is selected
+  or tips?...
 
 PROPERTIES
 - camera choose ortho or pers, make an enum property

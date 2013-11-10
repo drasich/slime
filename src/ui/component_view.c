@@ -649,6 +649,7 @@ _property_add_spinner(ComponentProperties* cp, const Property* p, Evas_Object* b
   en = elm_spinner_add(cp->win);
   evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
   evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
+  evas_object_size_hint_min_set(en,1,1);
   //elm_spinner_value_set(en, atof(value));
   evas_object_show(en);
   //elm_box_pack_end(cp->box, en);
@@ -1290,6 +1291,8 @@ create_my_prop(Component* c, Evas_Object* win, Control* control, bool can_remove
   Evas_Object* bt = elm_button_add(win);
   elm_object_text_set(bt, "remove");
   evas_object_show(bt);
+  //todo chris
+  evas_object_size_hint_align_set(bt, 1, 1);
   elm_box_pack_end(cp->box, bt);
   evas_object_smart_callback_add(bt, "clicked", _remove_component, cp);
   }
@@ -1311,9 +1314,9 @@ create_my_prop(Component* c, Evas_Object* win, Control* control, bool can_remove
 }
 
 ComponentProperties*
-create_component_properties(Component* c, PropertyView* pw)
+create_component_properties(Component* c, PropertyView* pw, bool canremove)
 {
-  ComponentProperties* cp = create_my_prop(c, pw->win, pw->control, true);
+  ComponentProperties* cp = create_my_prop(c, pw->win, pw->control, canremove);
   //cp->component = c;
   cp->pw = pw;
   return cp;

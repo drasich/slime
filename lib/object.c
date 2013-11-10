@@ -223,7 +223,6 @@ _animation_update(Object* o, float dt)
 void
 object_update(Object* o)
 {
-  object_compute_matrix(o, o->matrix);
 
   if (o->animation != NULL) {
     _animation_update(o, 0.007f);
@@ -243,7 +242,8 @@ object_update(Object* o)
     if (c->funcs->update)
     c->funcs->update(c, 0.01f);
   }
-  
+
+  object_compute_matrix(o, o->matrix);
 }
 
 void object_add_component_armature(Object* o, Armature* a)
