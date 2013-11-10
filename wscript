@@ -56,31 +56,52 @@ def build(bld):
 
   #bld.exec_command('protoc -I=proto -I=/usr/include  --descriptor_set_out=proto/basedescriptor.proto --cpp_out=proto proto/base.proto')
 
+  engine_lib_c_files = bld.path.ant_glob('lib/*.c')
+  engine_lib_c_files += bld.path.ant_glob('lib/*/*.c')
+  bld.stlib(
+      source= engine_lib_c_files,
+      target='engine',
+      #use='myobjects',
+      use='elementary',
+      includes = 'lib',
+      cflags= ['-fpic']
+      )
+
   #cpp_files = bld.path.ant_glob('src/*.cpp proto/*.cc')
   #cpp_files = bld.path.ant_glob('src/*.c src/ui/*.c')
-  cpp_files = bld.path.ant_glob('src/*.c')
+  c_files = bld.path.ant_glob('src/*.c')
   #cpp_files += bld.path.ant_glob('src/ui/*.c')
-  cpp_files += bld.path.ant_glob('src/*/*.c')
+  c_files += bld.path.ant_glob('src/*/*.c')
   bld.program(
-      source= cpp_files, 
+      source= c_files, 
       target='slime', 
       #use='elementary indefini protobuf',
-      use='elementary png',
+      use='elementary png engine',
       linkflags = ['-ldl', '-rdynamic'],
       #includes = ['include'],
       #includes = 'include indefini/include proto',
-      includes = 'src include proto',
+      includes = 'src lib',
       defines = ['EDITOR']
       )
 
-  lib_cpp_files = bld.path.ant_glob('lib/*.c')
+  game_lib_c_files = bld.path.ant_glob('game/lib/*.c')
   bld.shlib(
-      source= lib_cpp_files,
-      target='gameshared',
+      source= game_lib_c_files,
+      target='gamelib',
       #use='myobjects',
       use='elementary',
       includes = 'lib src',
       cflags= ['-fpic']
+      )
+
+  game_cpp_files = bld.path.ant_glob('game/*.c')
+  bld.program(
+      source= game_cpp_files, 
+      target='gameexec', 
+      use='elementary png engine',
+      linkflags = ['-ldl', '-rdynamic'],
+      includes = 'game lib',
+      defines = ['GAME']
       )
 
 

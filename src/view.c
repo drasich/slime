@@ -977,7 +977,7 @@ create_view(Evas_Object *win)
 
   view->context = calloc(1,sizeof *view->context);
   view->control = create_control(view);
-  s_component_manager = create_component_manager(win, view->control); //TODO
+  s_component_manager = create_component_manager(); //TODO
   component_manager_load(s_component_manager);
   
   view->table = elm_table_add(win);

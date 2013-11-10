@@ -1,7 +1,7 @@
 #ifndef __gameview_h__
 #define __gameview_h__
 #include "matrix.h"
-#include "camera.h"
+//#include "camera.h"
 #include "fbo.h"
 #include "view.h"
 #include "component.h"
