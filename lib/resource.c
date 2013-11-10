@@ -1,5 +1,5 @@
 #include "resource.h"
-#include "Ecore.h"
+//#include "Ecore.h"
 
 Mesh*
 resource_mesh_get(ResourceManager* rm, const char* name)

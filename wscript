@@ -23,6 +23,9 @@ def configure(conf):
   conf.load('compiler_c')
   #conf.check(header_name='stdio.h', features='cxx cxxprogram', mandatory=False)
   conf.check(header_name='stdio.h', features='c cprogram', mandatory=False)
+  conf.check_cfg(package='eina', uselib_store='eina', atleast_version='0.0.1', args='--cflags --libs', mandatory=True)
+  conf.check_cfg(package='eet', uselib_store='eet', atleast_version='0.0.1', args='--cflags --libs', mandatory=True)
+  conf.check_cfg(package='evas', uselib_store='eet', atleast_version='0.0.1', args='--cflags --libs', mandatory=True)
   conf.check_cfg(package='elementary', uselib_store='elementary', atleast_version='0.0.1', args='--cflags --libs', mandatory=True)
   #conf.check_cfg(package='protobuf', uselib_store='protobuf', atleast_version='0.0.0', mandatory=1, args='--cflags --libs')
   conf.check_cfg(package='libpng', uselib_store='png', atleast_version='0.0.0', mandatory=1, args='--cflags --libs')
@@ -61,10 +64,10 @@ def build(bld):
   bld.stlib(
       source= engine_lib_c_files,
       target='engine',
-      #use='myobjects',
-      use='elementary',
+      #use='elementary',
+      use='eina eet evas',
       includes = 'lib',
-      cflags= ['-fpic']
+      defines = ['EVAS_GL']
       )
 
   #cpp_files = bld.path.ant_glob('src/*.cpp proto/*.cc')
@@ -81,7 +84,7 @@ def build(bld):
       #includes = ['include'],
       #includes = 'include indefini/include proto',
       includes = 'src lib',
-      defines = ['EDITOR']
+      defines = ['EDITOR', 'EVAS_GL']
       )
 
   game_lib_c_files = bld.path.ant_glob('game/lib/*.c')
@@ -101,7 +104,7 @@ def build(bld):
       use='elementary png engine',
       linkflags = ['-ldl', '-rdynamic'],
       includes = 'game lib',
-      defines = ['GAME']
+      defines = ['GAME', 'EVAS_GL']
       )
 
 

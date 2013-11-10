@@ -1,7 +1,7 @@
 #ifndef __component__
 #define __component__
 #include <Eina.h>
-#include <Elementary.h>
+//#include <Elementary.h>
 #include "matrix.h"
 #include "property.h"
 
