@@ -214,6 +214,7 @@ tree_widget_new(Evas_Object* win, struct _View* v)
   elm_genlist_tree_effect_enabled_set(gli, EINA_TRUE);
   elm_genlist_multi_select_set(gli, EINA_TRUE);
   elm_genlist_reorder_mode_set(gli, EINA_TRUE);  
+  elm_genlist_multi_select_mode_set(gli, ELM_OBJECT_MULTI_SELECT_MODE_WITH_CONTROL);
 
   itc1 = elm_genlist_item_class_new();
   itc1->item_style     = "default";
