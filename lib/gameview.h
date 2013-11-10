@@ -13,14 +13,12 @@ struct _GameView
 {
   Evas_Object* glview;
   Evas_Object* box;
-  //Render* render;
   struct _Scene* scene;
-  Evas_Object** window;
   ComponentManager* component_manager;
 };
 
 GameView* create_gameview(Evas_Object *win);
-//void gameview_destroy(View* v);
+void gameview_destroy(GameView* v);
 //void gameview_update(View* v, double dt);
 
 //Render* create_render();

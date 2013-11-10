@@ -53,6 +53,8 @@ void component_property_data_set(Component* c, Property* p, const void* data);
 Eet_Data_Descriptor* component_descriptor;
 void component_descriptor_init(Eina_List* component_desc);
 
+void component_manager_destroy(ComponentManager* cm);
+
 const ComponentDesc* component_manager_desc_get(const ComponentManager* cm, const char* name);
 ComponentManager* s_component_manager;
 

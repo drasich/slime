@@ -232,3 +232,9 @@ component_manager_desc_get(const ComponentManager* cm, const char* name)
   return NULL;
 
 }
+
+void
+component_manager_destroy(ComponentManager* cm)
+{
+  free(cm);
+}

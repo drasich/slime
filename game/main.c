@@ -6,14 +6,13 @@
 #include "component/meshcomponent.h"
 #define __UNUSED__
 
-//TODO put these in application
-//static View* view;
+static GameView* _gv;
 
 static void
 win_del(void *data, Evas_Object *obj, void *event_info)
 {
   printf("win delete \n");
-  //view_destroy(view);
+  gameview_destroy(_gv);
   elm_exit();
 }
 
@@ -54,7 +53,6 @@ create_window()
 */
 
 
-GameView* _gv;
 static void 
 build_scene()
 {
@@ -70,7 +68,7 @@ gameviewtest()
 {
   Evas_Object *win;
   win = elm_win_util_standard_add("slime", "slime");
-  evas_object_resize(win, 800, 200);
+  evas_object_resize(win, 800, 400);
   evas_object_show(win);
   elm_win_autodel_set(win, EINA_TRUE);
   evas_object_smart_callback_add(win, "delete,request", win_del, NULL);
