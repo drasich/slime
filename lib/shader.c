@@ -27,7 +27,7 @@ stringFromFile(const char* path)
 static void
 _shader_attribute_location_init(Shader* s, Attribute* att)
 {
-  GLint att_tmp = gl->glGetAttribLocation(s->program, att->name);
+  GLint att_tmp = glGetAttribLocation(s->program, att->name);
   if (att_tmp == -1) {
     printf("Shader %s, Error in getting attribute '%s' at line %d \n", s->name, att->name, __LINE__);
   }
@@ -39,7 +39,7 @@ _shader_attribute_location_init(Shader* s, Attribute* att)
 static void
 _shader_uniform_location_init(Shader* s, Uniform* uni)
 {
-  GLint uni_tmp = gl->glGetUniformLocation(s->program, uni->name);
+  GLint uni_tmp = glGetUniformLocation(s->program, uni->name);
   if (uni_tmp == -1) {
     printf("Error in getting uniform '%s'\n", uni->name);
   }
@@ -86,55 +86,55 @@ void
 shader_init_string(Shader* s, const char* vert, const char* frag)
 {
   //TODO factorize this by creating a function that get the shader id
-  s->vert_shader = gl->glCreateShader(GL_VERTEX_SHADER);
+  s->vert_shader = glCreateShader(GL_VERTEX_SHADER);
   if (s->vert_shader == 0) 
     printf("there was en error creating the vertex shader\n");
 
-  s->frag_shader = gl->glCreateShader(GL_FRAGMENT_SHADER);
+  s->frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
   if (s->frag_shader == 0) 
     printf("there was en error creating the fragment shader\n");
 
-  gl->glShaderSource(s->vert_shader, 1, &vert, 0);
-  gl->glCompileShader(s->vert_shader);
+  glShaderSource(s->vert_shader, 1, &vert, 0);
+  glCompileShader(s->vert_shader);
 
   GLint status;
   GLint info_length;
   GLchar* message;
 
-  gl->glGetShaderiv(s->vert_shader, GL_COMPILE_STATUS, &status);
+  glGetShaderiv(s->vert_shader, GL_COMPILE_STATUS, &status);
   if (status == GL_FALSE) {
     printf("There was an error compiling the vertex shader\n");
-    gl->glGetShaderiv(s->vert_shader, GL_INFO_LOG_LENGTH, &info_length);
+    glGetShaderiv(s->vert_shader, GL_INFO_LOG_LENGTH, &info_length);
     message = malloc(info_length);
-    gl->glGetShaderInfoLog(s->vert_shader, info_length, 0, message);
+    glGetShaderInfoLog(s->vert_shader, info_length, 0, message);
     printf("%s\n",message);
     free(message);
   }
 
-  gl->glShaderSource(s->frag_shader, 1, &frag, 0);
-  gl->glCompileShader(s->frag_shader);
+  glShaderSource(s->frag_shader, 1, &frag, 0);
+  glCompileShader(s->frag_shader);
 
-  gl->glGetShaderiv(s->frag_shader, GL_COMPILE_STATUS, &status);
+  glGetShaderiv(s->frag_shader, GL_COMPILE_STATUS, &status);
   if (status == GL_FALSE) {
     printf("There was an error compiling the fragment shader\n");
-    gl->glGetShaderiv(s->frag_shader, GL_INFO_LOG_LENGTH, &info_length);
+    glGetShaderiv(s->frag_shader, GL_INFO_LOG_LENGTH, &info_length);
     message = malloc(info_length);
-    gl->glGetShaderInfoLog(s->frag_shader, info_length, 0, message);
+    glGetShaderInfoLog(s->frag_shader, info_length, 0, message);
     printf("message : %s\n", message);
     free(message);
   }
 
-  s->program = gl->glCreateProgram();
-  gl->glAttachShader(s->program, s->vert_shader);
-  gl->glAttachShader(s->program, s->frag_shader);
-  gl->glLinkProgram(s->program);
+  s->program = glCreateProgram();
+  glAttachShader(s->program, s->vert_shader);
+  glAttachShader(s->program, s->frag_shader);
+  glLinkProgram(s->program);
 
-  gl->glGetProgramiv(s->program, GL_LINK_STATUS, &status);
+  glGetProgramiv(s->program, GL_LINK_STATUS, &status);
   if (status == GL_FALSE) {
     printf("There was an error in linking the program\n");
-    gl->glGetProgramiv(s->program, GL_INFO_LOG_LENGTH, &info_length);
+    glGetProgramiv(s->program, GL_INFO_LOG_LENGTH, &info_length);
     message = malloc(info_length);
-    gl->glGetProgramInfoLog(s->program, info_length, 0, message);
+    glGetProgramInfoLog(s->program, info_length, 0, message);
     printf("%s\n",message);
     free(message);
   }
@@ -144,7 +144,7 @@ shader_init_string(Shader* s, const char* vert, const char* frag)
 void
 shader_init_attribute(Shader* s, char* att_name, GLuint* att)
 {
-  GLint att_tmp = gl->glGetAttribLocation(s->program, att_name);
+  GLint att_tmp = glGetAttribLocation(s->program, att_name);
   if (att_tmp == -1) {
     printf("Error in getting attribute '%s' at line %d\n", att_name, __LINE__);
   }
@@ -156,7 +156,7 @@ shader_init_attribute(Shader* s, char* att_name, GLuint* att)
 void 
 shader_init_uniform(Shader* s, char* uni_name, GLint* uni)
 {
-  *uni = gl->glGetUniformLocation(s->program, uni_name);
+  *uni = glGetUniformLocation(s->program, uni_name);
   if (*uni == -1) 
     printf("Error in getting uniform %s \n", uni_name);
 }
@@ -167,15 +167,15 @@ shader_use(Shader* s)
   if (!s->is_init) {
     shader_init(s);
   }
-  gl->glUseProgram(s->program);
+  glUseProgram(s->program);
 }
 
 void
 shader_destroy(Shader* s)
 {
-  gl->glDeleteShader(s->vert_shader);
-  gl->glDeleteShader(s->frag_shader);
-  gl->glDeleteProgram(s->program);
+  glDeleteShader(s->vert_shader);
+  glDeleteShader(s->frag_shader);
+  glDeleteProgram(s->program);
 }
 
 
@@ -342,9 +342,9 @@ shader_mesh_draw(Shader* s, struct _MeshComponent* mc)
       }
 
       if (uni_tex >= 0 && tex_id >= 0) {
-        gl->glUniform1i(uni_tex, i);
-        gl->glActiveTexture(GL_TEXTURE0 + i);
-        gl->glBindTexture(GL_TEXTURE_2D, tex_id);
+        glUniform1i(uni_tex, i);
+        glActiveTexture(GL_TEXTURE0 + i);
+        glBindTexture(GL_TEXTURE_2D, tex_id);
         ++i;
       }
     }
@@ -358,9 +358,9 @@ shader_mesh_draw(Shader* s, struct _MeshComponent* mc)
       }
 
       if (uni->type == UNIFORM_FLOAT)
-      gl->glUniform1f(uni_loc, uv->value.f);
+      glUniform1f(uni_loc, uv->value.f);
       else if (uni->type == UNIFORM_VEC3)
-      gl->glUniform3f(uni_loc, uv->value.vec3.x, uv->value.vec3.y, uv->value.vec3.z);
+      glUniform3f(uni_loc, uv->value.vec3.x, uv->value.vec3.y, uv->value.vec3.z);
     }
 
   }
@@ -370,10 +370,10 @@ shader_mesh_draw(Shader* s, struct _MeshComponent* mc)
     Buffer* buf = mesh_buffer_get(m, att->name);
     if (buf) {
       if (buf->target == GL_ARRAY_BUFFER) {
-        gl->glBindBuffer(buf->target, buf->id);
-        gl->glEnableVertexAttribArray(att->location);
+        glBindBuffer(buf->target, buf->id);
+        glEnableVertexAttribArray(att->location);
 
-        gl->glVertexAttribPointer(
+        glVertexAttribPointer(
               att->location,
               att->size,
               att->type,
@@ -386,23 +386,23 @@ shader_mesh_draw(Shader* s, struct _MeshComponent* mc)
 
   Buffer* buf_indices = mesh_buffer_get(m, "index");
   if (buf_indices) {
-    gl->glBindBuffer(buf_indices->target, buf_indices->id);
-    gl->glDrawElements(
+    glBindBuffer(buf_indices->target, buf_indices->id);
+    glDrawElements(
           GL_TRIANGLES, 
           m->indices_len,
           GL_UNSIGNED_INT,
           0);
-    gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
   else {
-    gl->glDrawArrays(GL_TRIANGLES,0, m->vertices_len/3);
-    gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glDrawArrays(GL_TRIANGLES,0, m->vertices_len/3);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
   }
 
-  gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
 
   EINA_INARRAY_FOREACH(s->attributes, att) {
-    gl->glDisableVertexAttribArray(att->location);
+    glDisableVertexAttribArray(att->location);
   }
 
 }
@@ -459,11 +459,11 @@ shader_matrices_set(Shader* s, Matrix4 mat, const Matrix4 projection)
 
   GLint uni_matrix = shader_uniform_location_get(s, "matrix");
   if (uni_matrix >= 0)
-  gl->glUniformMatrix4fv(uni_matrix, 1, GL_FALSE, matrix);
+  glUniformMatrix4fv(uni_matrix, 1, GL_FALSE, matrix);
 
   uni_matrix = shader_uniform_location_get(s, "normal_matrix");
   if (uni_matrix >= 0)
-  gl->glUniformMatrix3fv(uni_matrix, 1, GL_FALSE, matrix_normal);
+  glUniformMatrix3fv(uni_matrix, 1, GL_FALSE, matrix_normal);
 
 }
 

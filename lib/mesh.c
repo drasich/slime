@@ -191,9 +191,9 @@ mesh_init(Mesh* m)
 {
   Buffer* b;
   EINA_INARRAY_FOREACH(m->buffers, b) {
-    gl->glGenBuffers(1, &b->id);
-    gl->glBindBuffer(b->target, b->id);
-    gl->glBufferData(
+    glGenBuffers(1, &b->id);
+    glBindBuffer(b->target, b->id);
+    glBufferData(
           b->target,
           b->size,
           b->data,
@@ -208,8 +208,8 @@ mesh_resend(Mesh* m)
 {
   Buffer* b;
   EINA_INARRAY_FOREACH(m->buffers, b) {
-    gl->glBindBuffer(b->target, b->id);
-    gl->glBufferSubData(
+    glBindBuffer(b->target, b->id);
+    glBufferSubData(
           b->target,
           0,
           b->size,
@@ -223,12 +223,12 @@ mesh_init_texture(Mesh* m)
   /*
   //TODO texture path
   Texture* tex = texture_read_png_file("model/ceil.png");
-  gl->glGenTextures(1, &m->id_texture);
-	gl->glBindTexture(GL_TEXTURE_2D, m->id_texture);
-	gl->glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	gl->glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glGenTextures(1, &m->id_texture);
+	glBindTexture(GL_TEXTURE_2D, m->id_texture);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-  gl->glTexImage2D(
+  glTexImage2D(
         GL_TEXTURE_2D,
         0,
         //GL_RGBA, //4,
@@ -250,13 +250,13 @@ void
 mesh_draw(Mesh* m)
 {
   /*
-  gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->buffer_indices);
-  gl->glDrawElements(
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->buffer_indices);
+  glDrawElements(
         GL_TRIANGLES, 
         m->indices_len,
         GL_UNSIGNED_INT,
         0);
-  gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   */
 }
 
@@ -316,7 +316,7 @@ mesh_destroy(Mesh* m)
 
   Buffer* b;
   EINA_INARRAY_FOREACH(m->buffers, b) {
-    gl->glDeleteBuffers(1,&b->id);
+    glDeleteBuffers(1,&b->id);
   }
 }
 
@@ -367,9 +367,9 @@ mesh_buffer_add(Mesh* m, const char* name, GLenum target, const void* data, int 
   eina_inarray_push(m->buffers, &b);
 
   /*
-  gl->glGenBuffers(1, &b.id);
-  gl->glBindBuffer(target, b.id);
-  gl->glBufferData(
+  glGenBuffers(1, &b.id);
+  glBindBuffer(target, b.id);
+  glBufferData(
     target,
     size,
     data,

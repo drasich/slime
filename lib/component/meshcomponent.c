@@ -67,7 +67,7 @@ static Eina_Bool uniform_send(
   //TODO data
   if (uni->type == UNIFORM_VEC4) {
     Vec4* v = data;
-    gl->glUniform4f(uniloc, v->x,v->y,v->z,v->w);
+    glUniform4f(uniloc, v->x,v->y,v->z,v->w);
   }
 
   return EINA_TRUE;

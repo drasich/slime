@@ -11,11 +11,11 @@ _init_gl(Evas_Object *obj)
 {
   //Evas_GL_API *gla = elm_glview_gl_api_get(obj);
 
-  gl->glEnable(GL_DEPTH_TEST);
-  gl->glEnable(GL_STENCIL_TEST);
-  gl->glDepthFunc(GL_LEQUAL);
-  gl->glClearDepthf(1.0f);
-  gl->glClearStencil(0);
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_STENCIL_TEST);
+  glDepthFunc(GL_LEQUAL);
+  glClearDepthf(1.0f);
+  glClearStencil(0);
 
   GameView* gv = evas_object_data_get(obj, "gameview");
   scene_init(gv->scene);
@@ -36,7 +36,7 @@ _resize_gl(Evas_Object *obj)
 
   // GL Viewport stuff. you can avoid doing this if viewport is all the
   // same as last frame if you want
-  gl->glViewport(0, 0, w, h);
+  glViewport(0, 0, w, h);
 
   GameView* gv = evas_object_data_get(obj, "gameview");
 
@@ -53,19 +53,19 @@ _draw_gl(Evas_Object *obj)
 
   elm_glview_size_get(obj, &w, &h);
 
-  gl->glViewport(0, 0, w, h);
-  //gl->glClearColor(1.0,0.8,0.3,1);
-  gl->glClearColor(0.2,0.2,0.2,1);
-  gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glViewport(0, 0, w, h);
+  //glClearColor(1.0,0.8,0.3,1);
+  glClearColor(0.2,0.2,0.2,1);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  gl->glEnable(GL_BLEND);
-  gl->glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glEnable(GL_BLEND);
+  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   GameView* gv = evas_object_data_get(obj, "gameview");
   scene_update(gv->scene);
   gameview_draw(gv);
 
-  gl->glFinish();
+  glFinish();
 }
 
 static void
@@ -190,16 +190,16 @@ gameview_draw(GameView* v)
   Object *o;
 
   //Render all objects to fbo to get depth for the lines.
-  gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT) ;
-  //gl->glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
-  //gl->glClearStencil(0);
-  gl->glEnable(GL_STENCIL_TEST);
-  gl->glStencilFunc(GL_ALWAYS, 0x1, 0x1);
-  gl->glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT) ;
+  //glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
+  //glClearStencil(0);
+  glEnable(GL_STENCIL_TEST);
+  glStencilFunc(GL_ALWAYS, 0x1, 0x1);
+  glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
   EINA_LIST_FOREACH(s->objects, l, o) {
     object_draw(o, cam_mat_inv, cam->projection, id4);
   }
-  //gl->glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
+  //glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
  
 }

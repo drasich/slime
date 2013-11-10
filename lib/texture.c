@@ -285,14 +285,14 @@ texture_init(Texture* tex)
   */
 
   GLuint idtex;
-  gl->glGenTextures(1, &idtex);
+  glGenTextures(1, &idtex);
   tex->id = idtex;
 
-	gl->glBindTexture(GL_TEXTURE_2D, idtex);
-	gl->glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	gl->glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glBindTexture(GL_TEXTURE_2D, idtex);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-  gl->glTexImage2D(
+  glTexImage2D(
         GL_TEXTURE_2D,
         0,
         //GL_RGBA, //4,

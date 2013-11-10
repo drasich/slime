@@ -191,10 +191,10 @@ void
 line_init(Line* l)
 {
   //TODO factorize these functions
-  gl->glGenBuffers(1, &l->buffer_vertices);
-  gl->glBindBuffer(GL_ARRAY_BUFFER, l->buffer_vertices);
+  glGenBuffers(1, &l->buffer_vertices);
+  glBindBuffer(GL_ARRAY_BUFFER, l->buffer_vertices);
   
-  gl->glBufferData(
+  glBufferData(
     GL_ARRAY_BUFFER,
     l->vertices->len * l->vertices->member_size,
     l->vertices->members,
@@ -202,10 +202,10 @@ line_init(Line* l)
     //l->vertices_gl,
     GL_DYNAMIC_DRAW);
 
-  gl->glGenBuffers(1, &l->buffer_colors);
-  gl->glBindBuffer(GL_ARRAY_BUFFER, l->buffer_colors);
+  glGenBuffers(1, &l->buffer_colors);
+  glBindBuffer(GL_ARRAY_BUFFER, l->buffer_colors);
   
-  gl->glBufferData(
+  glBufferData(
     GL_ARRAY_BUFFER,
     l->colors->len * l->colors->member_size,
     l->colors->members,
@@ -245,8 +245,8 @@ line_resend(Line* l)
   }
   */
 
-  gl->glBindBuffer(GL_ARRAY_BUFFER, l->buffer_vertices);
-  gl->glBufferSubData(
+  glBindBuffer(GL_ARRAY_BUFFER, l->buffer_vertices);
+  glBufferSubData(
     GL_ARRAY_BUFFER,
     0,
     l->vertices->len * l->vertices->member_size,
@@ -254,8 +254,8 @@ line_resend(Line* l)
     //l->vertices_len*sizeof(GLfloat),
     //l->vertices_gl);
     
-  gl->glBindBuffer(GL_ARRAY_BUFFER, l->buffer_colors);
-  gl->glBufferSubData(
+  glBindBuffer(GL_ARRAY_BUFFER, l->buffer_colors);
+  glBufferSubData(
     GL_ARRAY_BUFFER,
     0,
     l->colors->len * l->colors->member_size,
@@ -274,10 +274,10 @@ line_set_matrices(Line* l, Matrix4 mat, Matrix4 projection)
   mat4_multiply(projection, mat, tm);
   mat4_transpose(tm, tm);
   mat4_to_gl(tm, l->matrix);
-  gl->glUniformMatrix4fv(l->uniform_matrix, 1, GL_FALSE, l->matrix);
+  glUniformMatrix4fv(l->uniform_matrix, 1, GL_FALSE, l->matrix);
   float width = 1200;
   float height = 400;
-  gl->glUniform2f(l->uniform_resolution, width, height);
+  glUniform2f(l->uniform_resolution, width, height);
 }
 
 void
@@ -314,13 +314,13 @@ line_prepare_draw(Line* l, Matrix4 world, const Matrix4 projection)
   */
 
   mat4_to_gl(tm, l->matrix);
-  gl->glUniformMatrix4fv(l->uniform_matrix, 1, GL_FALSE, l->matrix);
+  glUniformMatrix4fv(l->uniform_matrix, 1, GL_FALSE, l->matrix);
   float width = l->camera->width;
   float height = l->camera->height;
-  gl->glUniform2f(l->uniform_resolution, width, height);
+  glUniform2f(l->uniform_resolution, width, height);
 
-  gl->glUniform1i(l->uniform_use_depth, l->use_depth?1:0);
-  gl->glUniform1i(l->uniform_size_fixed, l->use_size_fixed?1:0);
+  glUniform1i(l->uniform_use_depth, l->use_depth?1:0);
+  glUniform1i(l->uniform_size_fixed, l->use_size_fixed?1:0);
 }
 
 void 
@@ -336,17 +336,17 @@ line_draw(Line* l)
   //int height = 400;
   
   //GLuint mypixels[width*height];    //There is no 24 bit variable, so we'll have to settle for 32 bit
-  //gl->glReadPixels(0, 0, width, height, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT_24_8_OES, mypixels);  //No upconversion.
-  //gl->glReadPixels(0, 0, width, height, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, mypixels);  //No upconversion.
+  //glReadPixels(0, 0, width, height, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT_24_8_OES, mypixels);  //No upconversion.
+  //glReadPixels(0, 0, width, height, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, mypixels);  //No upconversion.
 
   /*
   GLfloat mypixels[width*height];
-  gl->glReadPixels(0, 0, width, height, GL_DEPTH_COMPONENT, GL_FLOAT, mypixels);
+  glReadPixels(0, 0, width, height, GL_DEPTH_COMPONENT, GL_FLOAT, mypixels);
 
   //save_png(mypixels);
 
-	gl->glBindTexture(GL_TEXTURE_2D, l->id_texture);
-  gl->glTexImage2D(
+	glBindTexture(GL_TEXTURE_2D, l->id_texture);
+  glTexImage2D(
         GL_TEXTURE_2D,
         0,
         //GL_RGBA, //4,
@@ -363,14 +363,14 @@ line_draw(Line* l)
         */
 
   shader_use(l->shader);
-	gl->glBindTexture(GL_TEXTURE_2D, l->id_texture);
-  gl->glActiveTexture(GL_TEXTURE0);
-  gl->glUniform1i(l->uniform_texture, 0);
+	glBindTexture(GL_TEXTURE_2D, l->id_texture);
+  glActiveTexture(GL_TEXTURE0);
+  glUniform1i(l->uniform_texture, 0);
 
-  gl->glBindBuffer(GL_ARRAY_BUFFER, l->buffer_vertices);
-  gl->glEnableVertexAttribArray(l->attribute_vertex);
+  glBindBuffer(GL_ARRAY_BUFFER, l->buffer_vertices);
+  glEnableVertexAttribArray(l->attribute_vertex);
   
-  gl->glVertexAttribPointer(
+  glVertexAttribPointer(
     l->attribute_vertex,
     3,
     GL_FLOAT,
@@ -388,10 +388,10 @@ line_draw(Line* l)
   }
   */
 
-  gl->glBindBuffer(GL_ARRAY_BUFFER, l->buffer_colors);
-  gl->glEnableVertexAttribArray(l->attribute_color);
+  glBindBuffer(GL_ARRAY_BUFFER, l->buffer_colors);
+  glEnableVertexAttribArray(l->attribute_color);
   
-  gl->glVertexAttribPointer(
+  glVertexAttribPointer(
     l->attribute_color,
     4,
     GL_FLOAT,
@@ -399,12 +399,12 @@ line_draw(Line* l)
     0,
     0);
 
-  gl->glDrawArrays(GL_LINES,0, l->vertices->len/3);
+  glDrawArrays(GL_LINES,0, l->vertices->len/3);
 
-  gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
-  gl->glDisableVertexAttribArray(l->attribute_vertex);
-  gl->glDisableVertexAttribArray(l->attribute_color);
-	gl->glBindTexture(GL_TEXTURE_2D, 0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glDisableVertexAttribArray(l->attribute_vertex);
+  glDisableVertexAttribArray(l->attribute_color);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void
@@ -414,8 +414,8 @@ line_destroy(Line* l)
     shader_destroy(l->shader);
     free(l->shader);
 
-    gl->glDeleteBuffers(1,&l->buffer_vertices);
-    gl->glDeleteBuffers(1,&l->buffer_colors);
+    glDeleteBuffers(1,&l->buffer_vertices);
+    glDeleteBuffers(1,&l->buffer_colors);
   }
 
   eina_inarray_free(l->vertices);

@@ -29,11 +29,11 @@ _view_init_gl(Evas_Object *obj)
   View* v = evas_object_data_get(obj, "view");
   v->render = create_render();
 
-  gl->glEnable(GL_DEPTH_TEST);
-  gl->glEnable(GL_STENCIL_TEST);
-  gl->glDepthFunc(GL_LEQUAL);
-  gl->glClearDepthf(1.0f);
-  gl->glClearStencil(0);
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_STENCIL_TEST);
+  glDepthFunc(GL_LEQUAL);
+  glClearDepthf(1.0f);
+  glClearStencil(0);
 }
 
 static void
@@ -49,7 +49,7 @@ _view_resize_gl(Evas_Object *obj)
 
   // GL Viewport stuff. you can avoid doing this if viewport is all the
   // same as last frame if you want
-  gl->glViewport(0, 0, w, h);
+  glViewport(0, 0, w, h);
 
   View* v = evas_object_data_get(obj, "view");
   ccamera_set_resolution(v->camera->camera_component, w, h);
@@ -62,7 +62,7 @@ _view_resize_gl(Evas_Object *obj)
   shader_use(s);
 
   GLint uni_resolution = shader_uniform_location_get(s, "resolution");
-  if (uni_resolution >= 0) gl->glUniform2f(uni_resolution, w, h);
+  if (uni_resolution >= 0) glUniform2f(uni_resolution, w, h);
 
   //TODO the actual mesh is resized, see if we can scale it 
   //
@@ -71,7 +71,7 @@ _view_resize_gl(Evas_Object *obj)
   /*
   mc = object_component_get(v->render->quad_color, "mesh");
   shader_use(mc->shader);
-  gl->glUniform2f(mc->mesh->uniform_resolution, w, h);
+  glUniform2f(mc->mesh->uniform_resolution, w, h);
   quad_resize(mc->mesh, w, h);
   */
 
@@ -87,14 +87,14 @@ _view_draw_gl(Evas_Object *obj)
 
   elm_glview_size_get(obj, &w, &h);
 
-  gl->glViewport(0, 0, w, h);
-  //gl->glClearColor(1.0,0.8,0.3,1);
-  gl->glClearColor(0.2,0.2,0.2,1);
-  gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glViewport(0, 0, w, h);
+  //glClearColor(1.0,0.8,0.3,1);
+  glClearColor(0.2,0.2,0.2,1);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // Draw a Triangle
-  gl->glEnable(GL_BLEND);
-  gl->glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glEnable(GL_BLEND);
+  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   //TODO remove the function update here
   /*
@@ -107,7 +107,7 @@ _view_draw_gl(Evas_Object *obj)
   view_update(v,0);
   view_draw(v);
 
-   gl->glFinish();
+   glFinish();
 }
 
 static void
@@ -1256,7 +1256,7 @@ view_draw(View* v)
   Eina_List* cxol = context_objects_get(cx);
 
   fbo_use(r->fbo_selected);
-  gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT) ;
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT) ;
   /*
   EINA_LIST_FOREACH(cxol, l, o) {
     object_draw_edit_component(o, cam_mat_inv, cc->projection , id4, "mesh");
@@ -1273,12 +1273,12 @@ view_draw(View* v)
 
   //Render all objects to fbo to get depth for the lines.
   fbo_use(r->fbo_all);
-  gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT) ;
-  //gl->glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
-  //gl->glClearStencil(0);
-  gl->glEnable(GL_STENCIL_TEST);
-  gl->glStencilFunc(GL_ALWAYS, 0x1, 0x1);
-  gl->glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT) ;
+  //glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
+  //glClearStencil(0);
+  glEnable(GL_STENCIL_TEST);
+  glStencilFunc(GL_ALWAYS, 0x1, 0x1);
+  glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
   /*
   EINA_LIST_FOREACH(r->objects, l, o) {
@@ -1290,7 +1290,7 @@ view_draw(View* v)
     object_draw_edit_component2(ro->object, cam_mat_inv, cc->projection, ro->world, "mesh");
   }
 
-  //gl->glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
+  //glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 
   //was a test, can be removed
   /*
@@ -1298,7 +1298,7 @@ view_draw(View* v)
   int h = c->height;
   printf(" w , h : %d, %d \n", w, h);
   GLuint mypixels[w*h];
-  gl->glReadPixels(
+  glReadPixels(
         0, 
         0, 
         w, 
@@ -1312,7 +1312,7 @@ view_draw(View* v)
   fbo_use_end();
 
   //draw grid
-  gl->glClear(GL_DEPTH_BUFFER_BIT);
+  glClear(GL_DEPTH_BUFFER_BIT);
   object_compute_matrix(v->grid, mo);
   //TODO 1)find a better/faster way to get a component and set the texture
   //TODO 2)and also we find the first component but there might be more of the same component
@@ -1340,7 +1340,7 @@ view_draw(View* v)
   //TODO avoid compute matrix 2 times
 
   //Render lines only selected
-  gl->glClear(GL_DEPTH_BUFFER_BIT);
+  glClear(GL_DEPTH_BUFFER_BIT);
   Vec3 repere_position = vec3_zero();
   Quat repere_ori = quat_identity();
   EINA_LIST_FOREACH(cxol, l, o) {
@@ -1370,7 +1370,7 @@ view_draw(View* v)
   //repere
   /*
   if (last_obj) {
-    gl->glClear(GL_DEPTH_BUFFER_BIT);
+    glClear(GL_DEPTH_BUFFER_BIT);
     v->repere->position = repere_position;
     v->repere->angles = last_obj->angles;
     object_compute_matrix(v->repere, mo);
@@ -1383,7 +1383,7 @@ view_draw(View* v)
   if (last_obj) {
     Object* dragger;
     Eina_List* l;
-    gl->glClear(GL_DEPTH_BUFFER_BIT);
+    glClear(GL_DEPTH_BUFFER_BIT);
     EINA_LIST_FOREACH(v->draggers, l, dragger){
       dragger->position = repere_position;
       Dragger* d = object_component_get(dragger, "dragger");
@@ -1409,7 +1409,7 @@ view_draw(View* v)
 
 
   //Render camera repere
-  gl->glClear(GL_DEPTH_BUFFER_BIT);
+  glClear(GL_DEPTH_BUFFER_BIT);
   float m = 40;
   Matrix4 id;
   mat4_set_identity(id);
