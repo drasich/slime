@@ -31,5 +31,6 @@ void property_object_display(PropertyView* pw, Object* o);
 void property_update_components_data(PropertyView* pw, Component* component);
 void property_update_component(PropertyView* pw, const char* name);
 
+void property_reload_component(PropertyView* pw, Component* c);
 
 #endif

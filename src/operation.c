@@ -1,6 +1,7 @@
 #include "operation.h"
 #include "view.h"
 #include "resource.h"
+#include "ui/tree.h" //TODO remove
 
 void 
 operation_move_object_do(Control* c, void* data)

@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include "mesh.h"
-#include "gl.h"
 #include "read.h"
 
-void mesh_read_file(Mesh* mesh, FILE* f)
+static void
+mesh_read_file(Mesh* mesh, FILE* f)
 {
   printf("mesh_read-file\n");
   mesh->name = read_name(f);
@@ -170,19 +170,6 @@ void mesh_read_file(Mesh* mesh, FILE* f)
 }
 
 void
-mesh_read(Mesh* mesh, const char* path)
-{
-  printf("come here ~~~~~~~~~~~~~~~~4444444444444\n");
-  FILE *f;
-  f = fopen(path, "rb");
-  fseek(f, 0, SEEK_SET);
-
-  mesh->name = read_name(f);
-  mesh_read_file(mesh, f);
-  fclose(f);
-}
-
-void
 mesh_init(Mesh* m)
 {
   Buffer* b;
@@ -213,77 +200,11 @@ mesh_resend(Mesh* m)
   }
 }
 
-void
-mesh_init_texture(Mesh* m)
-{
-  /*
-  //TODO texture path
-  Texture* tex = texture_read_png_file("model/ceil.png");
-  glGenTextures(1, &m->id_texture);
-	glBindTexture(GL_TEXTURE_2D, m->id_texture);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-  glTexImage2D(
-        GL_TEXTURE_2D,
-        0,
-        //GL_RGBA, //4,
-        tex->internal_format,
-        tex->width,
-        tex->height,
-        0,
-        //GL_RGBA,
-        tex->format,
-        GL_UNSIGNED_BYTE,
-        tex->data);
-
-  free(tex->data);
-  free(tex);
-  */
-}
-
-void
-mesh_draw(Mesh* m)
-{
-  /*
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->buffer_indices);
-  glDrawElements(
-        GL_TRIANGLES, 
-        m->indices_len,
-        GL_UNSIGNED_INT,
-        0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-  */
-}
-
-
 Mesh*
-create_mesh(const char* path)
-{
-  printf("come here ~~~~~~~~~~~~~~~~\n");
-  Mesh* m = calloc(1,sizeof(Mesh));
-  mesh_read(m, path);
-  mesh_init(m);
-  return m;
-}
-
-Mesh*
-mesh_create()
+mesh_new()
 {
   Mesh* m = calloc(1,sizeof(Mesh));
   m->buffers = eina_inarray_new(sizeof(Buffer),0);
-  return m;
-}
-
-Mesh*
-create_mesh_file(FILE* f)
-{
-  printf("come here ~~~~~~~~~~~~~~~~ 22222222\n");
-  Mesh* m = calloc(1,sizeof(Mesh));
-  mesh_read_file(m, f);
-  //mesh_init(m);
-  //mesh_read_file_no_indices(m, f);
-  //mesh_init_no_indices(m);
   return m;
 }
 
@@ -319,7 +240,6 @@ mesh_destroy(Mesh* m)
 void
 mesh_file_set(Mesh* m, const char* filename)
 {
-  //return;
   FILE *f;
   f = fopen(filename, "rb");
   if (!f) {
@@ -327,13 +247,12 @@ mesh_file_set(Mesh* m, const char* filename)
   }
   fseek(f, 0, SEEK_SET);
 
-  const char* type = read_string(f); //type
-  printf("mesh file set, type %s\n", type);
+  const char* type = read_string(f);
+  //printf("mesh file set, type %s\n", type);
   //mesh->name = read_name(f);
   //const char* name = read_name(f);
   //printf("mesh file set name: %s\n", name);
   mesh_read_file(m, f);
-  m->name = filename;
   //mesh_read_file_no_indices(mesh, f);
   fclose(f);
 
@@ -361,15 +280,5 @@ mesh_buffer_add(Mesh* m, const char* name, GLenum target, const void* data, int 
   b.size = size;
   b.target = target;
   eina_inarray_push(m->buffers, &b);
-
-  /*
-  glGenBuffers(1, &b.id);
-  glBindBuffer(target, b.id);
-  glBufferData(
-    target,
-    size,
-    data,
-    GL_DYNAMIC_DRAW);
-    */
 }
 

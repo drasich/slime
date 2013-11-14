@@ -107,7 +107,7 @@ void resource_load(ResourceManager* rm)
     eina_str_join(filepath, l, '/', path , name);
     printf("l is %d, filepath is %s \n", l, filepath);
 
-    Mesh* m = mesh_create();
+    Mesh* m = mesh_new();
     mesh_file_set(m, filepath);
     eina_hash_add(rm->meshes, filepath, m);
   }
@@ -116,7 +116,7 @@ void resource_load(ResourceManager* rm)
 void
 resource_simple_mesh_create(ResourceManager* rm)
 {
-  Mesh* m = mesh_create();
+  Mesh* m = mesh_new();
   create_mesh_quad(m,1,1);
   m->name = "quad";
   eina_hash_add(rm->meshes, m->name, m);
