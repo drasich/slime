@@ -1,11 +1,7 @@
 #include <stdio.h>
 #include "mesh.h"
-#include "texture.h"
 #include "gl.h"
 #include "read.h"
-#include "property.h"
-#include "component/camera.h"
-#include "resource.h" //TODO separate mesh component and mesh and put this header in the component
 
 void mesh_read_file(Mesh* mesh, FILE* f)
 {
