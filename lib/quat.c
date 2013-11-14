@@ -165,11 +165,7 @@ quat_slerp(Quat from, Quat to, float t)
      scale_to = t ;
    }
 
-
-  //TODO quat add 
   Quat q = quat_add(quat_mul_scalar(from, scale_from),quat_mul_scalar(quatTo,scale_to));
-  //*this = (from*scale_from) + (quatTo*scale_to);
-  // so that we get a Vec4
 
   return q;
 }
