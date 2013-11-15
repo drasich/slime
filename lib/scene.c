@@ -2,7 +2,7 @@
 #include "gl.h"
 
 Scene*
-create_scene()
+scene_new()
 {
   Scene* s = calloc(1, sizeof(Scene));
   s->objects = NULL;

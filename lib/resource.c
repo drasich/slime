@@ -52,14 +52,25 @@ resource_textures_get(ResourceManager* rm)
 
 
 static void
-_print_cb(const char *name, const char *path, void *data)
+_resource_mesh_add_cb(const char *name, const char *path, void *data)
 {
   ResourceManager* rm = data;
   if (eina_str_has_extension(name,"mesh")) {
-    printf("file %s in %s\n", name, path);
+    printf("mesh %s in %s\n", name, path);
     rm->meshes_to_load = eina_list_append(rm->meshes_to_load, eina_stringshare_add(name));
   }
 }
+
+static void
+_resource_scene_add_cb(const char *name, const char *path, void *data)
+{
+  ResourceManager* rm = data;
+  if (eina_str_has_extension(name,"scene")) {
+    printf("scene %s in %s\n", name, path);
+    rm->scenes_to_load = eina_list_append(rm->scenes_to_load, eina_stringshare_add(name));
+  }
+}
+
 
 void
 resource_read_path(ResourceManager* rm)
@@ -78,8 +89,9 @@ resource_read_path(ResourceManager* rm)
   }
   */
 
-  eina_file_dir_list(dir, EINA_FALSE, _print_cb, rm);
-  resource_load(rm);
+  eina_file_dir_list("model", EINA_FALSE, _resource_mesh_add_cb, rm);
+  eina_file_dir_list("scene", EINA_FALSE, _resource_scene_add_cb, rm);
+  //resource_load(rm);
 }
 
 ResourceManager*
@@ -90,13 +102,14 @@ resource_manager_create()
   rm->shaders = eina_hash_string_superfast_new(NULL);
   rm->meshes_to_load = NULL;
   rm->textures = eina_hash_string_superfast_new(NULL);
+  rm->scenes = eina_hash_string_superfast_new(NULL);
+  rm->scenes_to_load = NULL;
   return rm;
 
 }
 
 void resource_load(ResourceManager* rm)
 {
-  //TODO read meshes_to_load and add meshes to the hash.
   Eina_List *l;
   const char *name;
   const char *path = "model";
@@ -110,6 +123,19 @@ void resource_load(ResourceManager* rm)
     Mesh* m = mesh_new();
     mesh_file_set(m, filepath);
     eina_hash_add(rm->meshes, filepath, m);
+  }
+
+
+  EINA_LIST_FOREACH(rm->scenes_to_load, l, name) {
+    printf("scene load name is %s\n", (char*) name);
+    int l = strlen(name) + strlen("scene") + 2;
+    char filepath[l];
+    eina_str_join(filepath, l, '/', "scene" , name);
+    printf("l is %d, filepath is %s \n", l, filepath);
+
+    Scene* s = scene_read(filepath);
+    eina_hash_add(rm->scenes, filepath, s);
+    scene_post_read(s);
   }
 }
 
@@ -281,6 +307,17 @@ resource_shader_handle_set(ResourceManager* rm, ShaderHandle* sh, const char* na
     rm->waiting = eina_list_append(rm->waiting, rw);
     */
   }
+
+}
+
+Scene*
+resource_scene_get(ResourceManager* rm, const char* name)
+{
+  Scene* s = eina_hash_find(rm->scenes, name);
+  if (!s)
+  printf("Cannot find scene %s \n", name);
+
+  return s;
 
 }
 

@@ -58,4 +58,6 @@ void view_update(View* v, double dt);
 Render* create_render();
 void view_draw(View* v);
 
+void view_scene_set(View* v, Scene* s);
+
 #endif

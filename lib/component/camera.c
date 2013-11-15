@@ -6,6 +6,7 @@
 static void
 _camera_display(Camera* c)
 {
+  return; //TODO
   line_clear(c->line);
   float near = c->near;
   float far = c->far;

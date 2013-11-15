@@ -274,26 +274,12 @@ populate_scene(Control* c, Scene* s)
 static void 
 build_scene()
 {
-  scene_descriptor_init();
-  //Scene* s = create_scene();
-  Scene* s = scene_read("scene/scene.eet");
-  scene_post_read(s);
-  view->context->scene = s;
-  //populate_scene(view->control, s);
+  Scene* s = scene_new();
+  populate_scene(view->control, s);
   tree_scene_set(view->tree, s);
 
-  printf("scene ORIGINAL\n");
-  scene_print(s);
-  //printf("scene write*****\n");
-  //Eina_Bool b = scene_write(s,"scene/scenewrite.eet");
-  /*
-  printf("scene write end, scene read____\n");
-  Scene* ss = scene_read();
-  printf("scene write read, scene read____\n");
-  printf("scene COPY\n");
-  scene_print(ss);
-  */
-
+  //printf("scene ORIGINAL\n");
+  //scene_print(s);
 }
 
 static void
@@ -314,11 +300,19 @@ elm_main(int argc, char **argv)
 {
   eina_init();
   eet_init();
+
+  s_component_manager = create_component_manager(); //TODO
+  component_manager_load(s_component_manager);
+
+  scene_descriptor_init();
+
   s_rm = resource_manager_create();
   resource_read_path(s_rm);
+
   resource_simple_mesh_create(s_rm);
   resource_shader_create(s_rm);
   resource_texture_create(s_rm);
+  resource_load(s_rm);
 
   elm_config_preferred_engine_set("opengl_x11");
   //elm_config_focus_highlight_animate_set(EINA_TRUE);
@@ -326,7 +320,8 @@ elm_main(int argc, char **argv)
   create_window();
   //create_window_panels();
 
-  build_scene();
+  view_scene_set(view, resource_scene_get(s_rm, "scene/base.scene"));
+  //build_scene();
   //gameviewtest();
 
   elm_run();

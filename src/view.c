@@ -977,8 +977,6 @@ create_view(Evas_Object *win)
 
   view->context = calloc(1,sizeof *view->context);
   view->control = create_control(view);
-  s_component_manager = create_component_manager(); //TODO
-  component_manager_load(s_component_manager);
   
   view->table = elm_table_add(win);
   evas_object_size_hint_weight_set(view->table, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -1425,3 +1423,9 @@ view_draw(View* v)
 }
 
 
+void
+view_scene_set(View* v, Scene* s)
+{
+  v->context->scene = s;
+  tree_scene_set(v->tree, s);
+}

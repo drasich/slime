@@ -4,6 +4,7 @@
 #include "mesh.h"
 #include "shader.h"
 #include "texture.h"
+#include "scene.h"
 
 typedef struct _ResourceManager ResourceManager;
 
@@ -14,12 +15,16 @@ struct _ResourceManager {
   Eina_Hash* textures;
   Eina_List* textures_to_load;
 
+  Eina_Hash* scenes;
+  Eina_List* scenes_to_load;
+
   Eina_List* waiting;
 };
 
 Mesh* resource_mesh_get(ResourceManager* rm, const char* name);
 Shader* resource_shader_get(ResourceManager* rm, const char* name);
 Texture* resource_texture_get(ResourceManager* rm, const char* name);
+Scene* resource_scene_get(ResourceManager* rm, const char* name);
 
 //TODO do something like:?
 void* resource_get(ResourceManager* rm, const char* group, const char* name);
