@@ -50,6 +50,13 @@ resource_textures_get(ResourceManager* rm)
   return rm->textures;
 }
 
+Eina_Hash*
+resource_scenes_get(ResourceManager* rm)
+{
+  return rm->scenes;
+}
+
+
 
 static void
 _resource_mesh_add_cb(const char *name, const char *path, void *data)

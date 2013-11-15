@@ -75,30 +75,58 @@ win_del(void *data, Evas_Object *obj, void *event_info)
   elm_exit();
 }
 
-/*
+static void
+_change_scene(void *data,
+      Evas_Object *obj,
+      void *event_info)
+{
+  const char *name = data;
+  printf("change scene : %s \n", name);
+  view_scene_set(view, resource_scene_get(s_rm, name));
+}
+
+static Evas_Object*
+_create_scene_menu(Evas_Object* win)
+{
+  Evas_Object* menu;
+
+  menu = elm_menu_add(win);
+
+  Eina_Iterator* it;
+  Eina_Hash* hash = resource_scenes_get(s_rm);
+  void *data;
+
+  if (!hash) return NULL;
+
+  it = eina_hash_iterator_tuple_new(hash);
+
+  while (eina_iterator_next(it, &data)) {
+    Eina_Hash_Tuple *t = data;
+    const char* name = t->key;
+    //const Scene* s = t->data;
+    //printf("key, scene name : %s, %s\n", name, s->name);
+    elm_menu_item_add(menu, NULL, NULL, name, _change_scene, name);
+  }
+  eina_iterator_free(it);
+
+  return menu;
+}
+
+
 static void
 _entry_clicked_cb(void *data, Evas_Object *obj, void *event)
 {
-  ComponentProperties* cp = data;
-  Property* p = evas_object_data_get(obj, "property");
+  Evas_Object* win = evas_object_top_get(evas_object_evas_get(obj));
+  Evas_Object* menu = _create_scene_menu(win);
+  
+  if (!menu) return;
+  evas_object_show(menu);
 
-  if (p->type == PROPERTY_RESOURCE) {
-    Evas_Object* win = evas_object_top_get(evas_object_evas_get(obj));
-    Evas_Object* menu = _create_resource_menu(win, p->resource_type);
-    if (!menu) return;
-    evas_object_data_set(menu, "componentproperties", cp);
-    evas_object_data_set(menu, "property", p);
-    evas_object_data_set(menu, "entry", obj);
-    evas_object_show(menu);
-
-    Evas_Coord x,y,w,h;
-    evas_object_geometry_get(obj, &x, &y, &w, &h);
-    elm_menu_move(menu, x, y);
-    
-  }
+  Evas_Coord x,y,w,h;
+  evas_object_geometry_get(obj, &x, &y, &w, &h);
+  elm_menu_move(menu, x, y);
   
 }
-*/
 
 
 
@@ -122,7 +150,7 @@ create_window()
   elm_entry_editable_set(scene_entry, EINA_FALSE);
   elm_entry_scrollable_set(scene_entry, EINA_TRUE);
   //TODO wip
-  //evas_object_smart_callback_add(scene_entry, "clicked", _entry_clicked_cb, cp);
+  evas_object_smart_callback_add(scene_entry, "clicked", _entry_clicked_cb, NULL);
 
 
   evas_object_size_hint_align_set(scene_entry, EVAS_HINT_FILL, EVAS_HINT_FILL);

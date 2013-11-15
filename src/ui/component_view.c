@@ -382,7 +382,7 @@ static Evas_Object*
 _create_resource_menu(Evas_Object* win, ResourceType resource_type)
 {
   Evas_Object* menu;
-  Elm_Object_Item *menu_it,*menu_it1;
+  //Elm_Object_Item *menu_it,*menu_it1;
 
   menu = elm_menu_add(win);
 

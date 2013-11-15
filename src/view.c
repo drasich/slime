@@ -1426,7 +1426,7 @@ view_draw(View* v)
 void
 view_scene_set(View* v, Scene* s)
 {
-  v->context->scene = s;
+  context_scene_set(v->context, s);
   tree_scene_set(v->tree, s);
   char yep[256];
   sprintf(yep, "<b>Scene: </b>%s", s->name);

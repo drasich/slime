@@ -39,6 +39,7 @@ void resource_texture_create(ResourceManager* rm);
 Eina_Hash* resource_meshes_get(ResourceManager* rm);
 Eina_Hash* resource_shaders_get(ResourceManager* rm);
 Eina_Hash* resource_textures_get(ResourceManager* rm);
+Eina_Hash* resource_scenes_get(ResourceManager* rm);
 
 ResourceManager* resource_manager_create();
 
