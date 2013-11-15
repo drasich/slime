@@ -134,6 +134,7 @@ void resource_load(ResourceManager* rm)
     printf("l is %d, filepath is %s \n", l, filepath);
 
     Scene* s = scene_read(filepath);
+    s->name = eina_stringshare_add(filepath);
     eina_hash_add(rm->scenes, filepath, s);
     scene_post_read(s);
   }

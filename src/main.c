@@ -75,6 +75,33 @@ win_del(void *data, Evas_Object *obj, void *event_info)
   elm_exit();
 }
 
+/*
+static void
+_entry_clicked_cb(void *data, Evas_Object *obj, void *event)
+{
+  ComponentProperties* cp = data;
+  Property* p = evas_object_data_get(obj, "property");
+
+  if (p->type == PROPERTY_RESOURCE) {
+    Evas_Object* win = evas_object_top_get(evas_object_evas_get(obj));
+    Evas_Object* menu = _create_resource_menu(win, p->resource_type);
+    if (!menu) return;
+    evas_object_data_set(menu, "componentproperties", cp);
+    evas_object_data_set(menu, "property", p);
+    evas_object_data_set(menu, "entry", obj);
+    evas_object_show(menu);
+
+    Evas_Coord x,y,w,h;
+    evas_object_geometry_get(obj, &x, &y, &w, &h);
+    elm_menu_move(menu, x, y);
+    
+  }
+  
+}
+*/
+
+
+
 static void
 create_window()
 {
@@ -83,10 +110,32 @@ create_window()
   elm_win_autodel_set(win, EINA_TRUE);
   evas_object_smart_callback_add(win, "delete,request", win_del, NULL);
 
+  Evas_Object* box = elm_box_add(win);
+  evas_object_size_hint_weight_set(box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+
+  elm_win_resize_object_add(win, box);
+  evas_object_show(box);
+
+  Evas_Object* scene_entry = elm_entry_add(win);
+  elm_object_text_set(scene_entry, "<b>Scene: </b>my test");
+  elm_entry_single_line_set(scene_entry, EINA_TRUE);
+  elm_entry_editable_set(scene_entry, EINA_FALSE);
+  elm_entry_scrollable_set(scene_entry, EINA_TRUE);
+  //TODO wip
+  //evas_object_smart_callback_add(scene_entry, "clicked", _entry_clicked_cb, cp);
+
+
+  evas_object_size_hint_align_set(scene_entry, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  //evas_object_size_hint_weight_set(scene_entry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_show(scene_entry);
+  elm_box_pack_end(box, scene_entry);
+
   Evas_Object* panes = create_panes(win, false);
-  elm_win_resize_object_add(win, panes);
+  elm_box_pack_end(box, panes);
+  //elm_win_resize_object_add(win, panes);
   Evas_Object* hpanes = create_panes(win, false);
-  view = create_view(win);
+  view = view_new(win);
+  view->scene_entry = scene_entry;
   Evas_Object* glview = view->glview;
   Evas_Object* property = view->property->root;
   Evas_Object* tree = view->tree->root;

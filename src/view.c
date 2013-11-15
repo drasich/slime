@@ -971,7 +971,7 @@ _set_callbacks(Evas_Object* glview)
 }
 
 View*
-create_view(Evas_Object *win)
+view_new(Evas_Object *win)
 {
   View *view = calloc(1,sizeof *view);
 
@@ -1428,4 +1428,7 @@ view_scene_set(View* v, Scene* s)
 {
   v->context->scene = s;
   tree_scene_set(v->tree, s);
+  char yep[256];
+  sprintf(yep, "<b>Scene: </b>%s", s->name);
+  elm_object_text_set(v->scene_entry, yep);
 }

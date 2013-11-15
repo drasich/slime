@@ -36,6 +36,7 @@ struct _View
   PropertyView* property;
   struct _Tree* tree;
   Evas_Object* table;
+  Evas_Object* scene_entry;
   ViewCamera* camera;
   Render* render;
   Object* repere;
@@ -51,7 +52,7 @@ struct _View
   Eina_List* dragger_scale;
 };
 
-View* create_view(Evas_Object *win);
+View* view_new(Evas_Object *win);
 void view_destroy(View* v);
 void view_update(View* v, double dt);
 

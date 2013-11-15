@@ -13,6 +13,7 @@ struct _Scene {
   Eina_List* ortho;
   Object* camera;
   const char* camera_name;
+  const char* name;
 };
 
 Scene* scene_new();
