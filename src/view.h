@@ -36,7 +36,7 @@ struct _View
   PropertyView* property;
   struct _Tree* tree;
   Evas_Object* table;
-  Evas_Object* scene_entry;
+  //Evas_Object* scene_entry;
   ViewCamera* camera;
   Render* render;
   Object* repere;

@@ -7,6 +7,7 @@
 #include "resource.h"
 #include "texture.h"
 #include "component/meshcomponent.h"
+#include "ui/resource_view.h"
 #define __UNUSED__
 
 //TODO put these in application
@@ -138,6 +139,7 @@ create_window()
   elm_win_autodel_set(win, EINA_TRUE);
   evas_object_smart_callback_add(win, "delete,request", win_del, NULL);
 
+  /*
   Evas_Object* box = elm_box_add(win);
   evas_object_size_hint_weight_set(box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 
@@ -149,37 +151,71 @@ create_window()
   elm_entry_single_line_set(scene_entry, EINA_TRUE);
   elm_entry_editable_set(scene_entry, EINA_FALSE);
   elm_entry_scrollable_set(scene_entry, EINA_TRUE);
-  //TODO wip
   evas_object_smart_callback_add(scene_entry, "clicked", _entry_clicked_cb, NULL);
-
 
   evas_object_size_hint_align_set(scene_entry, EVAS_HINT_FILL, EVAS_HINT_FILL);
   //evas_object_size_hint_weight_set(scene_entry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   evas_object_show(scene_entry);
   elm_box_pack_end(box, scene_entry);
+  */
 
   Evas_Object* panes = create_panes(win, false);
-  elm_box_pack_end(box, panes);
-  //elm_win_resize_object_add(win, panes);
+  //elm_box_pack_end(box, panes);
+  elm_win_resize_object_add(win, panes);
   Evas_Object* hpanes = create_panes(win, false);
+  Evas_Object* treepanes = create_panes(win, false);
   view = view_new(win);
-  view->scene_entry = scene_entry;
+  //view->scene_entry = scene_entry;
   Evas_Object* glview = view->glview;
   Evas_Object* property = view->property->root;
   Evas_Object* tree = view->tree->root;
 
+  ResourceView* rv = resource_view_new(win, view);
+  
+   {
+    Eina_Iterator* it;
+    Eina_Hash* hash = resource_scenes_get(s_rm);
+
+    if (hash) {
+
+      it = eina_hash_iterator_tuple_new(hash);
+      void *data;
+
+      while (eina_iterator_next(it, &data)) {
+        Eina_Hash_Tuple *t = data;
+        //const char* name = t->key;
+        const Scene* s = t->data;
+        //printf("key, scene name : %s, %s\n", name, s->name);
+        //elm_menu_item_add(menu, NULL, NULL, name, _change_scene, name);
+        resource_view_scene_add(rv, s);
+      }
+      eina_iterator_free(it);
+    }
+   }
+
+
+
+
+
+
+  elm_object_part_content_set(treepanes, "left", rv->gl);
+  elm_object_part_content_set(treepanes, "right", tree);
+
+
   elm_object_part_content_set(hpanes, "left", view->table);
   elm_object_part_content_set(hpanes, "right", property);
 
-  elm_object_part_content_set(panes, "left", tree);
+  //elm_object_part_content_set(panes, "left", tree);
+  evas_object_hide(tree);
+  elm_object_part_content_set(panes, "left", treepanes);
   elm_object_part_content_set(panes, "right", hpanes);
 
-  elm_panes_content_left_size_set(panes, 0.15f);
-  elm_panes_content_right_size_set(hpanes, 0.40f);
+  elm_panes_content_left_size_set(panes, 0.20f);
+  elm_panes_content_right_size_set(hpanes, 0.35f);
 
   //evas_object_resize(win, 800/3, 400/3);
   //evas_object_resize(win, 800, 200);
-  evas_object_resize(win, 1200, 400);
+  evas_object_resize(win, 1600, 600);
   evas_object_show(win);
 
 

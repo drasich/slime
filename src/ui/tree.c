@@ -8,8 +8,7 @@
 static Elm_Genlist_Item_Class *itc1;
 static Elm_Genlist_Item_Class *itc4;
 
-
-char *gl4_text_get(void *data, Evas_Object *obj __UNUSED__, const char *part __UNUSED__)
+static char *gl4_text_get(void *data, Evas_Object *obj __UNUSED__, const char *part __UNUSED__)
 {
   char buf[256];
   Object* o = (Object*) data;
@@ -19,26 +18,28 @@ char *gl4_text_get(void *data, Evas_Object *obj __UNUSED__, const char *part __U
 
 Evas_Object *gl4_content_get(void *data __UNUSED__, Evas_Object *obj, const char *part)
 {
-   char buf[PATH_MAX];
-   if (!strcmp(part, "elm.swallow.icon"))
-     {
-      return NULL;
-        Evas_Object *ic = elm_icon_add(obj);
-        snprintf(buf, sizeof(buf), "%s/images/logo_small.png", elm_app_data_dir_get());
-        elm_image_file_set(ic, buf, NULL);
-        evas_object_size_hint_aspect_set(ic, EVAS_ASPECT_CONTROL_VERTICAL, 1, 1);
-        evas_object_show(ic);
-        return ic;
-     }
-   else if (!strcmp(part, "elm.swallow.end"))
-     {
-        Evas_Object *ck;
-        ck = elm_check_add(obj);
-        evas_object_propagate_events_set(ck, EINA_FALSE);
-        evas_object_show(ck);
-        return ck;
-     }
-   return NULL;
+  return NULL;
+
+  char buf[PATH_MAX];
+  if (!strcmp(part, "elm.swallow.icon"))
+   {
+    Evas_Object *ic = elm_icon_add(obj);
+    snprintf(buf, sizeof(buf), "%s/images/logo_small.png", elm_app_data_dir_get());
+    elm_image_file_set(ic, buf, NULL);
+    evas_object_size_hint_aspect_set(ic, EVAS_ASPECT_CONTROL_VERTICAL, 1, 1);
+    evas_object_show(ic);
+    return ic;
+   }
+  else if (!strcmp(part, "elm.swallow.end"))
+   {
+    Evas_Object *ck;
+    ck = elm_check_add(obj);
+    evas_object_propagate_events_set(ck, EINA_FALSE);
+    evas_object_show(ck);
+    return ck;
+   }
+
+  return NULL;
 }
 
 Eina_Bool gl4_state_get(void *data __UNUSED__, Evas_Object *obj __UNUSED__, const char *part __UNUSED__)

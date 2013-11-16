@@ -1430,5 +1430,5 @@ view_scene_set(View* v, Scene* s)
   tree_scene_set(v->tree, s);
   char yep[256];
   sprintf(yep, "<b>Scene: </b>%s", s->name);
-  elm_object_text_set(v->scene_entry, yep);
+  //elm_object_text_set(v->scene_entry, yep);
 }
