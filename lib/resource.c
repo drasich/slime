@@ -170,6 +170,12 @@ resource_shader_create(ResourceManager* rm)
   shader_uniform_type_add(simple, "testfloat", UNIFORM_FLOAT, true );
   shader_uniform_type_add(simple, "light", UNIFORM_VEC3, true);
 
+  Shader* diffuse = create_shader("shader/diffuse.shader","shader/diffuse.vert", "shader/diffuse.frag");
+  shader_attribute_add(diffuse, "vertex", 3, GL_FLOAT);
+  shader_attribute_add(diffuse, "texcoord", 2, GL_FLOAT);
+  shader_uniform_add(diffuse, "matrix");
+  shader_uniform_type_add(diffuse, "texture", UNIFORM_TEXTURE, true);
+
   Shader* red = create_shader("shader/red.shader", "shader/simple.vert", "shader/red.frag");
   shader_attribute_add(red, "vertex", 3, GL_FLOAT);
   shader_attribute_add(red, "normal", 3, GL_FLOAT);
@@ -188,6 +194,7 @@ resource_shader_create(ResourceManager* rm)
   //Shader* red = shader_read("shader/red.shader");
 
   eina_hash_add(rm->shaders, simple->name, simple);
+  eina_hash_add(rm->shaders, diffuse->name, diffuse);
   eina_hash_add(rm->shaders, red->name, red);
   eina_hash_add(rm->shaders, dragger->name, dragger);
 
@@ -216,6 +223,11 @@ resource_texture_create(ResourceManager* rm)
 
   tex = texture_new();
   tex->filename = "model/red64.png";
+  texture_png_read(tex);
+  eina_hash_add(rm->textures, tex->filename, tex);
+
+  tex = texture_new();
+  tex->filename = "model/base_skeleton_col.png";
   texture_png_read(tex);
   eina_hash_add(rm->textures, tex->filename, tex);
 }

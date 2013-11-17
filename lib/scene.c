@@ -6,7 +6,6 @@ scene_new()
 {
   Scene* s = calloc(1, sizeof(Scene));
   s->objects = NULL;
-  s->ortho = NULL;
   eina_init();
 
   return s;
@@ -27,16 +26,6 @@ scene_remove_object(Scene* s, Object* o)
   o->scene = 0;
 }
 
-
-void
-scene_add_object_ortho(Scene* s, Object* o)
-{
-  s->ortho = eina_list_append(s->ortho, o);
-  o->scene = s;
-}
-
-
-
 void
 scene_destroy(Scene* s)
 {
@@ -44,10 +33,6 @@ scene_destroy(Scene* s)
   Object *o;
 
   EINA_LIST_FREE(s->objects, o) {
-    object_destroy(o);
-  }
-
-  EINA_LIST_FREE(s->ortho, o) {
     object_destroy(o);
   }
 
