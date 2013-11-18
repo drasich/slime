@@ -36,4 +36,6 @@ void scene_descriptor_init(void);
 void scene_descriptor_delete(void);
 void scene_init(Scene* s);
 
+Property* property_set_scene();
+
 #endif

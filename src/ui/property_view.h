@@ -33,4 +33,6 @@ void property_update_component(PropertyView* pw, const char* name);
 
 void property_reload_component(PropertyView* pw, Component* c);
 
+void property_scene_show(PropertyView* pw, Scene* s);
+
 #endif

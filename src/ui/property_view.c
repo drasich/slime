@@ -89,6 +89,16 @@ property_update(PropertyView* pw, Eina_List* objects)
 }
 
 void
+property_scene_show(PropertyView* pw, Scene* s)
+{
+  property_clear_components(pw);
+
+  ComponentProperties* cp = create_data_properties(s, property_set_scene(), pw, false);
+  property_add_component(pw, cp);
+  component_property_update_data(cp);
+}
+
+void
 property_update_components_data(PropertyView* pw, Component* component)
 {
   Eina_List* l;

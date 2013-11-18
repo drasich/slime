@@ -232,3 +232,22 @@ scene_print(Scene* s)
   printf("scene print end\n");
 }
 
+
+static Property* s_ps_scene = NULL;
+
+Property*
+property_set_scene()
+{
+  if (s_ps_scene) return s_ps_scene;
+
+  s_ps_scene = property_set_new();
+  Property* ps = s_ps_scene;
+  ps->name = "scene";
+  PROPERTY_SET_TYPE(ps, Scene);
+
+
+  PROPERTY_BASIC_ADD(ps, Scene, name, EET_T_STRING);
+
+  return ps;
+}
+

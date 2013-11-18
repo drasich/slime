@@ -20,7 +20,7 @@ struct _ComponentProperties
   const char* value_saved;
   const char* name;
   Evas_Object* root;
-  Component* component;
+  void* component;
 
   Eina_Value saved;
   Quat quat_saved;
@@ -30,6 +30,7 @@ struct _ComponentProperties
 
 ComponentProperties* create_my_prop(Component* c, Evas_Object* win, Control* control, bool can_remove);
 ComponentProperties* create_component_properties(Component* c, struct _PropertyView* pw, bool can_remove);
+ComponentProperties* create_data_properties(void* data, Property* p,  struct _PropertyView* pw, bool can_remove);
 
 void component_property_update_data(ComponentProperties* mp);
 

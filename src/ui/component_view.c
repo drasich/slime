@@ -111,8 +111,8 @@ _spinner_changed_cb(void *data, Evas_Object *obj, void *event)
     cp->callback(ct, thedata, p);
   }
 
-  if (cp->component && cp->component->funcs->on_property_changed)
-  cp->component->funcs->on_property_changed(cp->component);
+  //if (cp->component && cp->component->funcs->on_property_changed)
+  //cp->component->funcs->on_property_changed(cp->component);
 
   if (!strcmp(cp->name, "object"))
   control_property_update(ct, cp->component);
@@ -149,8 +149,8 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
     cp->callback(ct, thedata, p);
   }
 
-  if (cp->component && cp->component->funcs->on_property_changed)
-  cp->component->funcs->on_property_changed(cp->component);
+  //if (cp->component && cp->component->funcs->on_property_changed)
+  //cp->component->funcs->on_property_changed(cp->component);
 
   if (!strcmp(cp->name, "object"))
   control_property_update(ct, cp->component);
@@ -713,7 +713,7 @@ static Evas_Object*
 _property_add_fileselect(ComponentProperties* cp, const Property* p)
 {
   printf("file select %s \n", cp->name);
-  printf("file select %s \n", cp->component->name);
+  //printf("file select %s \n", cp->component->name);
   //TODO
    Evas_Object *en, *bx2, *label;
 
@@ -1322,22 +1322,18 @@ create_component_properties(Component* c, PropertyView* pw, bool canremove)
   return cp;
 }
 
-//TODO chris
 ComponentProperties*
-create_my_prop_data(Component* c, Evas_Object* win, Control* control, Property* p, void* data)
+create_my_prop_data(void* data, Property* p, Evas_Object* win, Control* control, bool can_remove)
 {
   ComponentProperties* cp = calloc(1, sizeof *cp);
-  cp->component = c;
+  cp->component = data;
   cp->property = p;
   cp->win = win;
   cp->control = control;
-  cp->name = p->name;
 
   Evas_Object* frame = elm_frame_add(win);
   elm_frame_autocollapse_set(frame, EINA_TRUE);
-  char s[256];
-  sprintf(s, "Component/%s", c->name);
-  elm_object_text_set(frame, s);
+  elm_object_text_set(frame, "testscene");
   evas_object_size_hint_weight_set(frame, EVAS_HINT_EXPAND, 0.0);
   evas_object_size_hint_fill_set(frame, EVAS_HINT_FILL, 0.0);
 
@@ -1351,18 +1347,26 @@ create_my_prop_data(Component* c, Evas_Object* win, Control* control, Property* 
   elm_object_content_set(frame, cp->box);
   cp->root = frame;
 
-  /*
-  Evas_Object* label = elm_label_add(cp->win);
-  char s[256];
-  sprintf(s, "Component <b>%s</b>", name);
+  if (can_remove) {
+  Evas_Object* bt = elm_button_add(win);
+  elm_object_text_set(bt, "remove");
+  evas_object_show(bt);
+  //todo chris
+  evas_object_size_hint_align_set(bt, 1, 1);
+  elm_box_pack_end(cp->box, bt);
+  //evas_object_smart_callback_add(bt, "clicked", _remove_component, cp);
+  }
 
-  elm_object_text_set(label, s);
-  evas_object_show(label);
-  elm_box_pack_end(cp->box, label);
-  */
-
-  _add_properties(cp, c->properties, cp->box, c->data);
+  _add_properties(cp, p, cp->box, data);
 
   return cp;
 }
 
+ComponentProperties*
+create_data_properties(void* data, Property* p,  struct _PropertyView* pw, bool can_remove)
+{
+  ComponentProperties* cp = create_my_prop_data(data, p, pw->win, pw->control, can_remove);
+  cp->pw = pw;
+  return cp;
+
+}

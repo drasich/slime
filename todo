@@ -1,4 +1,5 @@
 LATELY
+- component_view: replace componentproperties by dataproperties
 - uniforms send to fix: there should be only one method but now 2 different send, : 
   - in _mesh_component_draw: send the data in shader instance
   - in shader_mesh_draw: for each 'registered' uniform of the shader, 
