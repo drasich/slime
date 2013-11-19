@@ -34,4 +34,8 @@ ComponentProperties* create_data_properties(void* data, Property* p,  struct _Pr
 
 void component_property_update_data(ComponentProperties* mp);
 
+
+struct _WidgetData {
+};
+
 #endif

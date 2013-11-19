@@ -1,6 +1,8 @@
 LATELY
+- in operation_change_property_do/undo, update the places where this data is...
+- make a struct with entry/spinner data, in callbacks like entry_activate, entry_changed
+  use this info to do something appropriate
 - right click for scene tree and objects
-
 - component_view: replace componentproperties by dataproperties
 - uniforms send to fix: there should be only one method but now 2 different send, : 
   - in _mesh_component_draw: send the data in shader instance

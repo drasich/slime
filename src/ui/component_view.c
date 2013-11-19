@@ -1330,6 +1330,7 @@ create_my_prop_data(void* data, Property* p, Evas_Object* win, Control* control,
   cp->property = p;
   cp->win = win;
   cp->control = control;
+  cp->name = p->name;
 
   Evas_Object* frame = elm_frame_add(win);
   elm_frame_autocollapse_set(frame, EINA_TRUE);
