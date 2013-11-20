@@ -160,7 +160,8 @@ operation_change_property_do(Control *c, void* data)
 {
   Op_Change_Property* opd = data;
   _change_data(opd->data, opd->p, opd->value_new);
-  control_property_update(c, opd->component);
+  //control_property_update(c, opd->component);
+  property_holder_update(opd->data + opd->p->offset);
 }
 
 void
@@ -168,7 +169,8 @@ operation_change_property_undo(Control *c, void* data)
 {
   Op_Change_Property* opd = data;
   _change_data(opd->data, opd->p, opd->value_old);
-  control_property_update(c, opd->component);
+  //control_property_update(c, opd->component);
+  property_holder_update(opd->data + opd->p->offset);
 }
 
 

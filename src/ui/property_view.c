@@ -268,3 +268,103 @@ property_update_component(PropertyView* pw, const char* name)
 
 }
 
+/////////////////////
+static Eina_Hash* s_ph = NULL;
+
+void
+property_holder_init()
+{
+  s_ph = eina_hash_pointer_new(NULL);
+}
+
+void
+property_holder_object_add(const void* data, const Property* p, Evas_Object* o)
+{
+  PropertyHolder* ph = eina_hash_find(s_ph, &data);
+  if (!ph) {
+    printf("add data'%s' %p\n", p->name, data);
+    ph = calloc(1, sizeof *ph);
+    eina_hash_add(s_ph, &data, ph);
+  }
+
+  if (!ph->property) ph->property = p;
+
+  printf("  add object %p \n", o);
+  ph->objects = eina_list_append(ph->objects, o);
+}
+
+void
+property_holder_object_del(void* data, Evas_Object* o)
+{
+  PropertyHolder* ph = eina_hash_find(s_ph, &data);
+  if (!ph) return;
+
+  ph->objects = eina_list_remove(ph->objects, o);
+}
+
+void
+property_holder_del(void* data)
+{
+  eina_hash_del_by_key(s_ph, &data);
+
+}
+
+void
+property_holder_genlist_item_add(const void* data, Elm_Object_Item* i)
+{
+  PropertyHolder* ph = eina_hash_find(s_ph, &data);
+  if (!ph) {
+    printf("add data %p\n", data);
+    ph = calloc(1, sizeof *ph);
+    eina_hash_add(s_ph, &data, ph);
+  }
+
+  printf("add item %p \n", i);
+  ph->items = eina_list_append(ph->items, i);
+}
+
+void property_holder_update(void* data)
+{
+  PropertyHolder* ph = eina_hash_find(s_ph, &data);
+  if (!ph) {
+    printf("cannot find data %p \n", data);
+    return;
+  }
+  printf("I found ph for data %p \n", data);
+
+  Eina_List* l;
+  Elm_Object_Item* i;
+
+  EINA_LIST_FOREACH(ph->items, l, i) {
+    printf("I update the item %p", i);
+    elm_genlist_item_update(i);
+  }
+
+  Evas_Object* o;
+  EINA_LIST_FOREACH(ph->objects, l, o) {
+    printf("I update the object %p", o);
+
+    //int offset = property_offset_get(ph);
+    //const char** str = data + offset;
+    if (ph->property->type == EET_T_STRING) {
+      const char** str = data;
+      const char* s = elm_object_text_get(o);
+      if (!*str) break;
+      if (strcmp(*str,s)) 
+      elm_object_text_set(o, *str );
+    }
+    else if (ph->property->type == EET_T_DOUBLE) {
+
+      double d;
+      //int offset = property_offset_get(p);
+      //memcpy(&d, (void*)data + offset, sizeof d);
+      memcpy(&d, data, sizeof d);
+      double old = elm_spinner_value_get(o);
+      if (old != d) {
+        elm_spinner_value_set(o, d );
+      }
+
+    }
+  }
+
+}

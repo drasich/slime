@@ -35,4 +35,19 @@ void property_reload_component(PropertyView* pw, Component* c);
 
 void property_scene_show(PropertyView* pw, Scene* s);
 
+typedef struct _PropertyHolder PropertyHolder;
+struct _PropertyHolder
+{
+  Eina_List* objects;
+  Eina_List* items;
+  const Property* property;
+};
+
+void property_holder_init();
+
+void property_holder_object_add(const void* data, const Property* p, Evas_Object* o);
+void property_holder_genlist_item_add(const void* data, Elm_Object_Item* i);
+void property_holder_object_del(void* data, Evas_Object* o);
+void property_holder_del(void* data);
+
 #endif

@@ -289,8 +289,9 @@ tree_object_add(Tree* t,  Object* o)
           gl4_sel/* func */,
           t->view);
 
-    printf("I add parent %p \n", eoi);
+    printf("I add parent %p, object pointer %p, object name pointer %p \n", eoi, o, &o->name );
     eina_hash_add(t->objects, &o, eoi);
+    property_holder_genlist_item_add(&o->name, eoi);
 
     return;
   }
@@ -304,8 +305,9 @@ tree_object_add(Tree* t,  Object* o)
           ELM_GENLIST_ITEM_NONE,
           gl4_sel,
           t->view);
+    property_holder_genlist_item_add(&o->name, eoi);
 
-    printf("I add leaf %p \n", eoi);
+    printf("I add leaf %s, %p, object pointer %p, object name pointer %p \n", o->name, eoi, o, &o->name);
     eina_hash_add(t->objects, &o, eoi);
   }
 

@@ -413,6 +413,7 @@ elm_main(int argc, char **argv)
 {
   eina_init();
   eet_init();
+  property_holder_init();
 
   s_component_manager = create_component_manager(); //TODO
   component_manager_load(s_component_manager);

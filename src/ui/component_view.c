@@ -637,6 +637,8 @@ _property_add_entry(ComponentProperties* cp, const Property* p, void* data, Evas
   elm_box_pack_end(box, bx2);
   evas_object_show(bx2);
 
+  property_holder_object_add(data + p->offset, p, en);
+
   return en;
 
 }
@@ -690,6 +692,8 @@ _property_add_spinner(ComponentProperties* cp, const Property* p, Evas_Object* b
   evas_object_smart_callback_add(entry, "focused", _entry_focused_cb, cp);
   evas_object_smart_callback_add(entry, "unfocused", _entry_unfocused_cb, cp);
   //evas_object_smart_callback_add(entry, "aborted", _entry_aborted_cb, cp);
+
+  property_holder_object_add(data + p->offset, p, en);
 
   return en;
 }
