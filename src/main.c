@@ -344,7 +344,6 @@ populate_scene(Control* c, Scene* s)
     scene_camera_set(s,cam);
    }
 
-  if (true)
    {
     Object* empty = create_object();
     empty->name = eina_stringshare_add("child");

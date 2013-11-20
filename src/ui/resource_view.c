@@ -90,6 +90,7 @@ resource_view_scene_add(ResourceView* rv, const Scene* s)
         gl_item_sel,
         rv);
 
+  property_holder_genlist_item_add(&s->name, eoi);
   printf("I add scene %p \n", eoi);
   eina_hash_add(rv->scenes, &s, eoi);
 
