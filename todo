@@ -1,5 +1,4 @@
 LATELY
-- in operation_change_property_do/undo, update the places where this data is...
 - make a struct with entry/spinner data, in callbacks like entry_activate, entry_changed
   use this info to do something appropriate
 - right click for scene tree and objects

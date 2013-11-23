@@ -73,15 +73,11 @@ _resource_scene_add_cb(const char *name, const char *path, void *data)
 {
   ResourceManager* rm = data;
   if (eina_str_has_extension(name,"scene")) {
-    printf("scene %s in %s\n", name, path);
     int len = strlen(name) - strlen(".scene");
-    char yep[len+1];
-    memcpy(yep, name, len);
-    yep[len] = '\0';
-
-    printf("scene name :::::::::::::::::::::::::::::: %s \n", yep);
-    //rm->scenes_to_load = eina_list_append(rm->scenes_to_load, eina_stringshare_add(name));
-    rm->scenes_to_load = eina_list_append(rm->scenes_to_load, eina_stringshare_add(yep));
+    char shortname[len+1];
+    memcpy(shortname, name, len);
+    shortname[len] = '\0';
+    rm->scenes_to_load = eina_list_append(rm->scenes_to_load, eina_stringshare_add(shortname));
   }
 }
 
@@ -128,34 +124,27 @@ void resource_load(ResourceManager* rm)
   const char *name;
   const char *path = "model";
   EINA_LIST_FOREACH(rm->meshes_to_load, l, name) {
-    printf("load name is %s\n", (char*) name);
     int l = strlen(name) + strlen(path) + 2;
     char filepath[l];
     eina_str_join(filepath, l, '/', path , name);
-    printf("l is %d, filepath is %s \n", l, filepath);
 
     Mesh* m = mesh_new();
     mesh_file_set(m, filepath);
     eina_hash_add(rm->meshes, filepath, m);
   }
 
-
   EINA_LIST_FOREACH(rm->scenes_to_load, l, name) {
-    printf("scene load name is %s\n", (char*) name);
     int l = strlen(name) + strlen("scene") + 2;
     int l2 = l+ strlen(".scene");
     char filepath[l2 + 1];
     eina_str_join(filepath, l, '/', "scene" , name);
     eina_str_join(filepath, l2, '.', filepath, "scene" );
     filepath[l2] = '\0';
-    printf("l is %d, filepath is %s \n", l, filepath);
 
     Scene* s = scene_read(filepath);
-    printf("I read the scene and the name is %s \n", s->name);
     s->name = eina_stringshare_add(name);
     eina_hash_add(rm->scenes, s->name, s);
     scene_post_read(s);
-    printf("222222I read the scene and the name is %s \n", s->name);
   }
 }
 
@@ -351,5 +340,13 @@ resource_scene_get(ResourceManager* rm, const char* name)
 
   return s;
 
+}
+
+void
+resource_scene_del(ResourceManager* rm, Scene* s)
+{
+  eina_hash_del_by_key(rm->scenes, s->name);
+  scene_del(s);
+  s = NULL;
 }
 

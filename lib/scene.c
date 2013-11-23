@@ -27,7 +27,7 @@ scene_remove_object(Scene* s, Object* o)
 }
 
 void
-scene_destroy(Scene* s)
+scene_del(Scene* s)
 {
   Eina_List *l;
   Object *o;

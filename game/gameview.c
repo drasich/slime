@@ -82,7 +82,7 @@ void gameview_destroy(GameView* v)
 {
   printf("gameview destroy\n");
   component_manager_destroy(v->component_manager);
-  scene_destroy(v->scene);
+  scene_del(v->scene);
   free(v);
 }
 

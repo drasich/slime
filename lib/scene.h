@@ -21,7 +21,7 @@ void scene_remove_object(Scene* s, Object* o);
 //void scene_draw(Scene* s, Camera* c);
 void scene_update(Scene* s);
 
-void scene_destroy(Scene* s);
+void scene_del(Scene* s);
 
 void scene_camera_set(Scene* s, Object* camera);
 

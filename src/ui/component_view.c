@@ -1336,7 +1336,7 @@ create_my_prop_data(void* data, Property* p, Evas_Object* win, Control* control,
 
   Evas_Object* frame = elm_frame_add(win);
   elm_frame_autocollapse_set(frame, EINA_TRUE);
-  elm_object_text_set(frame, "testscene");
+  elm_object_text_set(frame, p->name);
   evas_object_size_hint_weight_set(frame, EVAS_HINT_EXPAND, 0.0);
   evas_object_size_hint_fill_set(frame, EVAS_HINT_FILL, 0.0);
 

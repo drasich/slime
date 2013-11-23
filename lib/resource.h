@@ -46,6 +46,8 @@ ResourceManager* resource_manager_create();
 ResourceManager* s_rm;
 
 
+void resource_scene_del(ResourceManager* rm, Scene* s);
+
 //////////////////
 
 /*

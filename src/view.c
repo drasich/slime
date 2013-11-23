@@ -573,7 +573,7 @@ _gameview_closed(void *data, Evas_Object *obj, void *event_info)
   View* v = data;
   Context* context = v->context;
 
-  scene_destroy(context->scene);
+  scene_del(context->scene);
   Scene* s = scene_read("scenecur.eet");
   scene_post_read(s);
 
@@ -622,7 +622,7 @@ _reload(void *data,
   View* v = data;
   scene_write(v->context->scene, "scenetmp.eet");
   context_objects_clean(v->context);
-  scene_destroy(v->context->scene);
+  scene_del(v->context->scene);
   scene_descriptor_delete();
   component_manager_unload(s_component_manager);
   component_manager_load(s_component_manager);
