@@ -74,7 +74,14 @@ _resource_scene_add_cb(const char *name, const char *path, void *data)
   ResourceManager* rm = data;
   if (eina_str_has_extension(name,"scene")) {
     printf("scene %s in %s\n", name, path);
-    rm->scenes_to_load = eina_list_append(rm->scenes_to_load, eina_stringshare_add(name));
+    int len = strlen(name) - strlen(".scene");
+    char yep[len+1];
+    memcpy(yep, name, len);
+    yep[len] = '\0';
+
+    printf("scene name :::::::::::::::::::::::::::::: %s \n", yep);
+    //rm->scenes_to_load = eina_list_append(rm->scenes_to_load, eina_stringshare_add(name));
+    rm->scenes_to_load = eina_list_append(rm->scenes_to_load, eina_stringshare_add(yep));
   }
 }
 
@@ -136,14 +143,19 @@ void resource_load(ResourceManager* rm)
   EINA_LIST_FOREACH(rm->scenes_to_load, l, name) {
     printf("scene load name is %s\n", (char*) name);
     int l = strlen(name) + strlen("scene") + 2;
-    char filepath[l];
+    int l2 = l+ strlen(".scene");
+    char filepath[l2 + 1];
     eina_str_join(filepath, l, '/', "scene" , name);
+    eina_str_join(filepath, l2, '.', filepath, "scene" );
+    filepath[l2] = '\0';
     printf("l is %d, filepath is %s \n", l, filepath);
 
     Scene* s = scene_read(filepath);
-    s->name = eina_stringshare_add(filepath);
-    eina_hash_add(rm->scenes, filepath, s);
+    printf("I read the scene and the name is %s \n", s->name);
+    s->name = eina_stringshare_add(name);
+    eina_hash_add(rm->scenes, s->name, s);
     scene_post_read(s);
+    printf("222222I read the scene and the name is %s \n", s->name);
   }
 }
 

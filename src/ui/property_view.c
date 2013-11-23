@@ -323,7 +323,8 @@ property_holder_genlist_item_add(const void* data, Elm_Object_Item* i)
   ph->items = eina_list_append(ph->items, i);
 }
 
-void property_holder_update(void* data)
+void
+property_holder_update(void* data)
 {
   PropertyHolder* ph = eina_hash_find(s_ph, &data);
   if (!ph) {

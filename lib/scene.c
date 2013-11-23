@@ -115,6 +115,7 @@ static const char SCENE_FILE_ENTRY[] = "scene";
 Eina_Bool
 scene_write(const Scene* s, const char* filename)
 {
+  printf("going to print scene %s \n", s->name);
   Eina_Bool ret;
   Eet_File *ef = eet_open(filename, EET_FILE_MODE_WRITE);
   if (!ef) {

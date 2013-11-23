@@ -433,7 +433,7 @@ elm_main(int argc, char **argv)
   create_window();
   //create_window_panels();
 
-  view_scene_set(view, resource_scene_get(s_rm, "scene/base.scene"));
+  view_scene_set(view, resource_scene_get(s_rm, "base"));
   //build_scene();
   //gameviewtest();
 

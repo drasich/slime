@@ -152,8 +152,7 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
   //if (cp->component && cp->component->funcs->on_property_changed)
   //cp->component->funcs->on_property_changed(cp->component);
 
-  if (!strcmp(cp->name, "object"))
-  control_property_update(ct, cp->component);
+  property_holder_update(thedata + p->offset);
 }
 
 static void
@@ -309,8 +308,7 @@ _entry_aborted_cb(void *data, Evas_Object *obj, void *event)
       *str = eina_stringshare_add(cp->value_saved);
       elm_object_text_set(obj, *str);
 
-      Control* ct = cp->control;
-      control_property_update(ct, component);
+      property_holder_update(thedata + offset);
     }
   }
   else if (p->type == EET_T_DOUBLE) {

@@ -49,5 +49,6 @@ void property_holder_object_add(const void* data, const Property* p, Evas_Object
 void property_holder_genlist_item_add(const void* data, Elm_Object_Item* i);
 void property_holder_object_del(void* data, Evas_Object* o);
 void property_holder_del(void* data);
+void property_holder_update(void* data);
 
 #endif
