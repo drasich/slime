@@ -38,4 +38,6 @@ void scene_init(Scene* s);
 
 Property* property_set_scene();
 
+Scene* scene_copy(const Scene* s, const char* name);
+
 #endif

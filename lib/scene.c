@@ -6,6 +6,7 @@ scene_new()
 {
   Scene* s = calloc(1, sizeof(Scene));
   s->objects = NULL;
+  s->name = "empty";
   eina_init();
 
   return s;
@@ -252,3 +253,24 @@ property_set_scene()
   return ps;
 }
 
+Scene*
+scene_copy(const Scene* so, const char* name)
+{
+  Scene* s = calloc(1, sizeof *s);
+  memcpy(s, so, sizeof *s);
+  s->name = name;
+
+  s->objects = NULL;
+
+  Eina_List* l;
+  Object* oo;
+  EINA_LIST_FOREACH(so->objects, l, oo) {
+    //todo copy objects
+    Object* o = object_copy(oo);
+    s->objects = eina_list_append(s->objects, o);
+  }
+
+  //s->camera  //find the camera
+
+  return s;
+}

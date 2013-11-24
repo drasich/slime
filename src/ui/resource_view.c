@@ -109,6 +109,20 @@ _scene_remove(void *data,
   resource_scene_del(s_rm, s);
 }
 
+static void
+_scene_add(void *data,
+      Evas_Object *obj,
+      void *event_info)
+{
+  ResourceView* rv = evas_object_data_get(obj, "resourceview");
+  Elm_Object_Item* item = data;
+
+  Scene* s = scene_new();
+
+  view_scene_set(rv->view, s);
+  resource_view_scene_add(rv, s);
+}
+
 static Evas_Object*
 _create_scene_menu(Evas_Object* win, Elm_Object_Item* item)
 {
@@ -117,6 +131,7 @@ _create_scene_menu(Evas_Object* win, Elm_Object_Item* item)
   menu = elm_menu_add(win);
 
   elm_menu_item_add(menu, NULL, NULL, "remove", _scene_remove, item);
+  elm_menu_item_add(menu, NULL, NULL, "add new scene", _scene_add, item);
 
   return menu;
 }

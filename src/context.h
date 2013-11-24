@@ -41,6 +41,7 @@ void context_add_callback(Context* c, context_cb cb, void* listener);
 bool context_object_contains(Context* c, struct _Object* o);
 
 void context_scene_set(Context* c, struct _Scene* s);
+struct _Scene* context_scene_get(Context* c);
 
 
 #endif

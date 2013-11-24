@@ -723,7 +723,7 @@ _op_move_object(Eina_List* objects, Vec3 translation)
 }
 
 static Operation* 
-_op_add_object(Scene* s, Object* o)
+_op_add_object(Scene* s, Eina_List* objects)
 {
   Operation* op = calloc(1, sizeof *op);
 
@@ -732,7 +732,7 @@ _op_add_object(Scene* s, Object* o)
 
   Op_Add_Object* od = calloc(1, sizeof *od);
   od->s = s;
-  od->o = o;
+  od->o = objects;
 
   op->data = od;
   return op;
@@ -1082,10 +1082,25 @@ control_redo_clean(Control* c)
 void
 control_object_add(Control* c, Scene* s, Object* o)
 {
+  Eina_List* l = NULL;
+  l = eina_list_append(l, o);
+
+  /*
   Operation* op = _op_add_object(s,o);
   control_operation_add(c, op);
   op->do_cb(c, op->data);
+  */
+  control_objects_add(c, s, l);
 }
+
+void
+control_objects_add(Control* c, Scene* s, Eina_List* objects)
+{
+  Operation* op = _op_add_object(s, objects);
+  control_operation_add(c, op);
+  op->do_cb(c, op->data);
+}
+
 
 void
 control_remove_object(Control* c, Scene* s, Eina_List* objects)

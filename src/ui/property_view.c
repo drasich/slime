@@ -95,6 +95,7 @@ property_scene_show(PropertyView* pw, Scene* s)
 
   ComponentProperties* cp = create_data_properties(s, property_set_scene(), pw, false);
   property_add_component(pw, cp);
+  printf("todo chris : %s \n", s->name);
   component_property_update_data(cp);
 }
 

@@ -18,7 +18,7 @@ typedef struct _Op_Add_Object Op_Add_Object;
 struct _Op_Add_Object
 {
   Scene* s;
-  Object* o;
+  Eina_List* o;
 };
 
 void operation_add_object_do(Control *c, void* data);

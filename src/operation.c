@@ -35,23 +35,36 @@ void
 operation_add_object_do(Control* c, void* data)
 {
   Op_Add_Object* od = (Op_Add_Object*) data;
-  scene_add_object(od->s, od->o);
-  tree_object_add(c->view->tree,  od->o);
+
+  Eina_List* l;
+  Object* o;
+  EINA_LIST_FOREACH(od->o, l, o) {
+    scene_add_object(od->s, o);
+    tree_object_add(c->view->tree, o);
+  }
 }
 
 void 
 operation_add_object_undo(Control*c, void* data)
 {
   Op_Add_Object* od = (Op_Add_Object*) data;
-  scene_remove_object(od->s, od->o);
-  tree_object_remove(c->view->tree,  od->o);
 
+  Eina_List* l;
+  Object* o;
+  EINA_LIST_FOREACH(od->o, l, o) {
+    scene_remove_object(od->s, o);
+    tree_object_remove(c->view->tree, o);
+    context_object_remove(c->view->context, o);
+  }
+
+  /*
   Object* o = context_object_get(c->view->context);
 
   if (od->o == o &&  od->s == c->view->context->scene){
     //c->view->context->object = NULL;
     context_object_remove(c->view->context, o);
   }
+  */
   //TODO context if object was the object in the context remove it
 }
 

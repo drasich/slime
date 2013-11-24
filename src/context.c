@@ -102,3 +102,9 @@ context_scene_set(Context* c, struct _Scene* s)
   context_objects_clean(c);
   c->scene = s;
 }
+
+struct _Scene*
+context_scene_get(Context* c)
+{
+  return c->scene;
+}

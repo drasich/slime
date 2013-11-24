@@ -336,6 +336,27 @@ _makeRect(View* v, Evas_Event_Mouse_Down* ev)
   evas_object_show(r);
 }
 
+static void
+_object_duplicate(void* data, Evas_Object* o, void* event_info)
+{
+  View* v = data;
+  Eina_List* objects = context_objects_get(v->context);
+  Scene* s = context_scene_get(v->context);
+
+
+  Eina_List* newobj = NULL;
+  Eina_List* l;
+  Object* obj;
+  EINA_LIST_FOREACH(objects, l, obj) {
+    Object* copy = object_copy(obj);
+    object_post_read(copy);
+    newobj = eina_list_append(newobj, copy);
+  }
+
+  control_objects_add(v->control, s, newobj);
+  context_objects_set(v->context, newobj);
+}
+
 static Evas_Object*
 _context_menu_create(Evas_Object* win, View* v)
 {
@@ -357,7 +378,7 @@ _context_menu_create(Evas_Object* win, View* v)
     else if (count >1) {
       elm_menu_item_add(menu, NULL, NULL, "Set parent", NULL, NULL);
     }
-    elm_menu_item_add(menu, NULL, NULL, "Duplicate", NULL, NULL);
+    elm_menu_item_add(menu, NULL, NULL, "Duplicate", _object_duplicate, v);
     elm_menu_item_add(menu, NULL, NULL, "Remove", NULL, NULL);
     elm_menu_item_add(menu, NULL, NULL, "Add Component", NULL, NULL);
   }

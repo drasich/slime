@@ -122,4 +122,6 @@ void object_world_position_set(Object* o, Vec3 worldpos);
 
 Eina_List* object_parents_path_get(Object* o);
 
+Object* object_copy(const Object* o);
+
 #endif

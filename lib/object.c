@@ -598,3 +598,21 @@ object_parents_path_get(Object* o)
   l = _object_parents_path_get(o, l);
   return l;
 }
+
+Object*
+object_copy(const Object* oo)
+{
+  int size;
+  void *encoded = eet_data_descriptor_encode(
+        s_ps_obj->descriptor,
+        oo,
+        &size);
+
+  Object* o = eet_data_descriptor_decode(
+        s_ps_obj->descriptor,
+        encoded,
+        size);
+
+  return o;
+}
+
