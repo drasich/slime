@@ -184,10 +184,25 @@ gl_item_sel(void *data, Evas_Object *obj __UNUSED__, void *event_info)
    view_scene_set(rv->view, s);
 }
 
+static char *gl_group_text_get(void *data, Evas_Object *obj EINA_UNUSED, const char *part EINA_UNUSED)
+{
+  /*
+   char buf[256];
+   int* d = malloc(sizeof *d);
+   *d = 5;
+   snprintf(buf, sizeof(buf), "Group Index # %i (Item # %i)",  (int)((uintptr_t)d / 10), (int)(uintptr_t)d);
+   free(d);
+   return strdup(buf);
+   */
+   return strdup("Scenes");
+}
+
+
 
 
 
 static Elm_Genlist_Item_Class *itc1;
+static Elm_Genlist_Item_Class *_group;
 
 ResourceView*
 resource_view_new(Evas_Object* win, View* v)
@@ -195,6 +210,7 @@ resource_view_new(Evas_Object* win, View* v)
   ResourceView* rv = calloc(1, sizeof rv);
   rv->scenes = eina_hash_pointer_new(NULL);
   rv->view = v;
+  rv->view->rv = rv;
 
   Evas_Object* gl;
 
@@ -218,9 +234,31 @@ resource_view_new(Evas_Object* win, View* v)
   //itc1->func.state_get = gl4_state_get;
   //itc1->func.del       = gl4_del;
 
+  _group = elm_genlist_item_class_new();
+  _group->item_style     = "group_index";
+  _group->func.text_get = gl_group_text_get;
 
+  rv->scene_group = resource_view_group_add(rv, "Scenes");
 
   return rv;
+}
+
+Elm_Object_Item* 
+resource_view_group_add(ResourceView* rv, const char* name)
+{
+
+  Elm_Object_Item* gli = elm_genlist_item_append(
+        rv->gl,
+        _group,
+        NULL,//(void *)(uintptr_t)i/* item data */,
+        NULL/* parent */,
+        ELM_GENLIST_ITEM_GROUP,
+        NULL,//gl_sel/* func */,
+        NULL//(void *)(uintptr_t)(i * 10)/* func data */
+        );
+
+  elm_genlist_item_select_mode_set(gli, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY);
+  return gli;
 }
 
 void
@@ -232,7 +270,7 @@ resource_view_scene_add(ResourceView* rv, const Scene* s)
         rv->gl,
         itc1,
         s,
-        NULL,
+        rv->scene_group,//NULL,
         ELM_GENLIST_ITEM_NONE,
         gl_item_sel,
         rv);

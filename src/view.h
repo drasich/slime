@@ -50,6 +50,7 @@ struct _View
   Eina_List* dragger_translate;
   Eina_List* dragger_rotate;
   Eina_List* dragger_scale;
+  struct _ResourceView* rv;
 };
 
 View* view_new(Evas_Object *win);

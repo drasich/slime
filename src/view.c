@@ -605,6 +605,7 @@ _gameview_closed(void *data, Evas_Object *obj, void *event_info)
 
 Evas_Object* gameview_;
 
+#include "ui/resource_view.h"
 static void
 _play(void *data,
       Evas_Object *obj,
@@ -618,6 +619,8 @@ _play(void *data,
     Scene* s = scene_copy(v->context->scene, "gameviewcopy");
     printf("scene to copy is name is %s\n", v->context->scene->name);
     scene_post_read(s);
+
+    resource_view_scene_add(v->rv, s);
 
     //gameview_ = create_gameview_window(v->context->scene, &gameview_, v->control );
     gameview_ = create_gameview_window(s, &gameview_, v->control );
@@ -725,7 +728,6 @@ _dragger_global_local_changed_cb(void *data, Evas_Object *obj, void *event_info)
   View* v = data;
   v->control->dragger_is_local = !v->control->dragger_is_local;
 }
-
 
 static void
 _add_buttons(View* v, Evas_Object* win)
@@ -850,8 +852,8 @@ _add_buttons(View* v, Evas_Object* win)
 
   Evas_Object* tg = elm_check_add(win);
   evas_object_color_set(tg, r,g,b,a);
-  evas_object_move(tg, 15, 45);
-  evas_object_resize(tg, 200, 25);
+  //evas_object_move(tg, 15, 45);
+  //evas_object_resize(tg, 200, 25);
   elm_object_style_set(tg, "toggle");
   elm_object_text_set(tg, "Dragger");
   elm_object_part_text_set(tg, "on", "Local");
@@ -860,6 +862,7 @@ _add_buttons(View* v, Evas_Object* win)
   elm_box_pack_end(box, tg);
   evas_object_show(tg);
   evas_object_smart_callback_add(tg, "changed", _dragger_global_local_changed_cb, v);
+
 }
 
 static Eina_List*
