@@ -592,14 +592,14 @@ _gameview_closed(void *data, Evas_Object *obj, void *event_info)
   if (s_view_destroyed) return;
 
   View* v = data;
-  Context* context = v->context;
+  //Context* context = v->context;
 
-  scene_del(context->scene);
-  Scene* s = scene_read("scenecur.eet");
-  scene_post_read(s);
+  //scene_del(context->scene);
+  //Scene* s = scene_read("scenecur.eet");
+  //scene_post_read(s);
 
-  context_objects_clean(context);
-  context->scene = s;
+  //context_objects_clean(context);
+  //context->scene = s;
 }
 
 
@@ -613,9 +613,14 @@ _play(void *data,
   View* v = data;
 
   if (!gameview_) {
-    scene_write(v->context->scene, "scenecur.eet");
+    //scene_write(v->context->scene, "scenecur.eet");
 
-    gameview_ = create_gameview_window(v->context->scene, &gameview_, v->control );
+    Scene* s = scene_copy(v->context->scene, "gameviewcopy");
+    printf("scene to copy is name is %s\n", v->context->scene->name);
+    scene_post_read(s);
+
+    //gameview_ = create_gameview_window(v->context->scene, &gameview_, v->control );
+    gameview_ = create_gameview_window(s, &gameview_, v->control );
     evas_object_smart_callback_add(gameview_, "delete,request", _gameview_closed, v);
   }
   else {

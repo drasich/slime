@@ -175,8 +175,12 @@ scene_post_read(Scene* s)
       printf("found camera!!!! %s\n", s->camera_name);
       s->camera = o;
     }
+    else printf("object name is %s \n", o->name);
     object_post_read(o);
   }
+
+  printf("scene name is %s\n", s->name);
+  printf("objects number is %d\n", eina_list_count(s->objects));
 
 }
 
@@ -256,6 +260,7 @@ property_set_scene()
 Scene*
 scene_copy(const Scene* so, const char* name)
 {
+  /*
   Scene* s = calloc(1, sizeof *s);
   memcpy(s, so, sizeof *s);
   s->name = name;
@@ -271,6 +276,22 @@ scene_copy(const Scene* so, const char* name)
   }
 
   //s->camera  //find the camera
+
+  return s;
+  */
+
+  int size;
+  void *encoded = eet_data_descriptor_encode(
+        _scene_descriptor,
+        so,
+        &size);
+
+  Scene* s = eet_data_descriptor_decode(
+        _scene_descriptor,
+        encoded,
+        size);
+
+  s->name = name;
 
   return s;
 }
