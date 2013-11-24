@@ -280,3 +280,29 @@ resource_view_scene_add(ResourceView* rv, const Scene* s)
   eina_hash_add(rv->scenes, &s, eoi);
 }
 
+
+void
+resource_view_scene_del(ResourceView* rv, const Scene* s)
+{
+  static Elm_Object_Item* parent = NULL;
+
+  eina_hash_del_by_key(rv->scenes, s->name);
+
+  Elm_Object_Item* item = elm_genlist_first_item_get(rv->gl);
+  if (!item) return;
+
+  Scene* ss = elm_object_item_data_get(item);
+
+  while (ss != s && item) {
+    item = elm_genlist_item_next_get(item);
+    ss = elm_object_item_data_get(item);
+  }
+
+  if (s == ss) {
+    elm_object_item_del(item);
+  }
+
+  return;
+}
+
+

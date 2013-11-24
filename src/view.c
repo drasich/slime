@@ -585,6 +585,8 @@ _new_empty(void *data,
 
 }
 
+#include "ui/resource_view.h"
+static Scene* gamescene_ = NULL;
 static void
 _gameview_closed(void *data, Evas_Object *obj, void *event_info)
 {
@@ -592,6 +594,25 @@ _gameview_closed(void *data, Evas_Object *obj, void *event_info)
   if (s_view_destroyed) return;
 
   View* v = data;
+  resource_view_scene_del(v->rv, gamescene_);
+
+  Scene* cs = context_scene_get(v->context);
+  if (cs == gamescene_) {
+    //TODO select another scene... the first scene? or last selected scene before gameview
+    void* s;
+    Eina_Iterator *it = eina_hash_iterator_data_new(resource_scenes_get(s_rm));
+    while (eina_iterator_next(it, &s))
+     {
+      view_scene_set(v, s);
+      //const char *number = data;
+      //printf("%s\n", number);
+      break;
+     }
+  }
+
+  scene_del(gamescene_);
+  gamescene_ = NULL;
+
   //Context* context = v->context;
 
   //scene_del(context->scene);
@@ -605,7 +626,6 @@ _gameview_closed(void *data, Evas_Object *obj, void *event_info)
 
 Evas_Object* gameview_;
 
-#include "ui/resource_view.h"
 static void
 _play(void *data,
       Evas_Object *obj,
@@ -619,6 +639,7 @@ _play(void *data,
     Scene* s = scene_copy(v->context->scene, "gameviewcopy");
     printf("scene to copy is name is %s\n", v->context->scene->name);
     scene_post_read(s);
+    gamescene_ = s;
 
     resource_view_scene_add(v->rv, s);
 

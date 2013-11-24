@@ -18,7 +18,14 @@ struct _ResourceView
 
 ResourceView* resource_view_new(Evas_Object* win, View* v);
 void resource_view_scene_add(ResourceView* rv, const Scene* s);
+void resource_view_scene_del(ResourceView* rv, const Scene* s);
 
 Elm_Object_Item* resource_view_group_add(ResourceView* rv, const char* name);
+
+typedef struct _ResourceGroup ResourceGroup;
+struct _ResourceGroup
+{
+  const char* name;
+};
 
 #endif
