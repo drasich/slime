@@ -587,6 +587,7 @@ _new_empty(void *data,
 
 #include "ui/resource_view.h"
 static Scene* gamescene_ = NULL;
+static Scene* scene_previous_ = NULL;
 static void
 _gameview_closed(void *data, Evas_Object *obj, void *event_info)
 {
@@ -598,6 +599,10 @@ _gameview_closed(void *data, Evas_Object *obj, void *event_info)
 
   Scene* cs = context_scene_get(v->context);
   if (cs == gamescene_) {
+    //TODO it's possible this scene was removed during playing...
+    if (scene_previous_)
+    view_scene_set(v, scene_previous_);
+    else {
     //TODO select another scene... the first scene? or last selected scene before gameview
     void* s;
     Eina_Iterator *it = eina_hash_iterator_data_new(resource_scenes_get(s_rm));
@@ -608,6 +613,7 @@ _gameview_closed(void *data, Evas_Object *obj, void *event_info)
       //printf("%s\n", number);
       break;
      }
+    }
   }
 
   scene_del(gamescene_);
@@ -635,13 +641,14 @@ _play(void *data,
 
   if (!gameview_) {
     //scene_write(v->context->scene, "scenecur.eet");
-
+    scene_previous_ = v->context->scene;
     Scene* s = scene_copy(v->context->scene, "gameview");
     printf("scene to copy is name is %s\n", v->context->scene->name);
     scene_post_read(s);
     gamescene_ = s;
 
     resource_view_playing_scene_add(v->rv, s);
+    view_scene_set(v, s);
 
     //gameview_ = create_gameview_window(v->context->scene, &gameview_, v->control );
     gameview_ = create_gameview_window(s, &gameview_, v->control );
@@ -1478,9 +1485,6 @@ view_scene_set(View* v, Scene* s)
 {
   context_scene_set(v->context, s);
   tree_scene_set(v->tree, s);
-  //char yep[256];
-  //sprintf(yep, "<b>Scene: </b>%s", s->name);
-  //elm_object_text_set(v->scene_entry, yep);
  
   property_scene_show(v->property, s);
 }
