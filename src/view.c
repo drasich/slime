@@ -636,12 +636,12 @@ _play(void *data,
   if (!gameview_) {
     //scene_write(v->context->scene, "scenecur.eet");
 
-    Scene* s = scene_copy(v->context->scene, "gameviewcopy");
+    Scene* s = scene_copy(v->context->scene, "gameview");
     printf("scene to copy is name is %s\n", v->context->scene->name);
     scene_post_read(s);
     gamescene_ = s;
 
-    resource_view_scene_add(v->rv, s);
+    resource_view_playing_scene_add(v->rv, s);
 
     //gameview_ = create_gameview_window(v->context->scene, &gameview_, v->control );
     gameview_ = create_gameview_window(s, &gameview_, v->control );

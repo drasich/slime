@@ -189,8 +189,8 @@ static char *gl_group_text_get(
       Evas_Object *obj EINA_UNUSED,
       const char *part EINA_UNUSED)
 {
-  //ResourceGroup* rg = data;
-  //return strdup(rg->name);
+  ResourceGroup* rg = data;
+  return strdup(rg->name);
   /*
    char buf[256];
    int* d = malloc(sizeof *d);
@@ -244,7 +244,7 @@ resource_view_new(Evas_Object* win, View* v)
   _group->func.text_get = gl_group_text_get;
 
   rv->scene_group = resource_view_group_add(rv, "Scenes");
-  //resource_view_group_add(rv, "Scenes(Playing)");
+  rv->scene_group_playing = resource_view_group_add(rv, "Scenes(Playing)");
 
   return rv;
 }
@@ -288,8 +288,28 @@ resource_view_scene_add(ResourceView* rv, const Scene* s)
 
   property_holder_genlist_item_add(&s->name, eoi);
   printf("I add scene %s, %p, %p \n", s->name, eoi, rv->scenes);
-  //eina_hash_add(rv->scenes, &s, eoi);
+  eina_hash_add(rv->scenes, &s, eoi);
   printf("I added scene %p \n", eoi);
+}
+
+void
+resource_view_playing_scene_add(ResourceView* rv, const Scene* s)
+{
+  static Elm_Object_Item* parent = NULL;
+
+  Elm_Object_Item* eoi = elm_genlist_item_append(
+        rv->gl,
+        itc1,
+        s,
+        rv->scene_group_playing,//NULL,
+        ELM_GENLIST_ITEM_NONE,
+        gl_item_sel,
+        rv);
+
+  property_holder_genlist_item_add(&s->name, eoi);
+  //printf("I add scene %s, %p, %p \n", s->name, eoi, rv->scenes);
+  eina_hash_add(rv->scenes, &s, eoi);
+  //printf("I added scene %p \n", eoi);
 }
 
 
