@@ -26,6 +26,8 @@ typedef struct _ResourceGroup ResourceGroup;
 struct _ResourceGroup
 {
   const char* name;
+  Eina_Hash* resources;
+  Elm_Object_Item* item;
 };
 
 #endif

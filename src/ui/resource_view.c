@@ -184,8 +184,13 @@ gl_item_sel(void *data, Evas_Object *obj __UNUSED__, void *event_info)
    view_scene_set(rv->view, s);
 }
 
-static char *gl_group_text_get(void *data, Evas_Object *obj EINA_UNUSED, const char *part EINA_UNUSED)
+static char *gl_group_text_get(
+      void *data,
+      Evas_Object *obj EINA_UNUSED,
+      const char *part EINA_UNUSED)
 {
+  //ResourceGroup* rg = data;
+  //return strdup(rg->name);
   /*
    char buf[256];
    int* d = malloc(sizeof *d);
@@ -239,6 +244,7 @@ resource_view_new(Evas_Object* win, View* v)
   _group->func.text_get = gl_group_text_get;
 
   rv->scene_group = resource_view_group_add(rv, "Scenes");
+  //resource_view_group_add(rv, "Scenes(Playing)");
 
   return rv;
 }
@@ -246,11 +252,14 @@ resource_view_new(Evas_Object* win, View* v)
 Elm_Object_Item* 
 resource_view_group_add(ResourceView* rv, const char* name)
 {
+  ResourceGroup* rg = calloc(1, sizeof *rg);
+  rg->resources = eina_hash_stringshared_new(NULL);
+  rg->name = eina_stringshare_add(name);
 
   Elm_Object_Item* gli = elm_genlist_item_append(
         rv->gl,
         _group,
-        NULL,//(void *)(uintptr_t)i/* item data */,
+        rg,//(void *)(uintptr_t)i/* item data */,
         NULL/* parent */,
         ELM_GENLIST_ITEM_GROUP,
         NULL,//gl_sel/* func */,
@@ -258,6 +267,8 @@ resource_view_group_add(ResourceView* rv, const char* name)
         );
 
   elm_genlist_item_select_mode_set(gli, ELM_OBJECT_SELECT_MODE_DISPLAY_ONLY);
+  rg->item = gli;
+
   return gli;
 }
 
@@ -276,8 +287,9 @@ resource_view_scene_add(ResourceView* rv, const Scene* s)
         rv);
 
   property_holder_genlist_item_add(&s->name, eoi);
-  printf("I add scene %p \n", eoi);
-  eina_hash_add(rv->scenes, &s, eoi);
+  printf("I add scene %s, %p, %p \n", s->name, eoi, rv->scenes);
+  //eina_hash_add(rv->scenes, &s, eoi);
+  printf("I added scene %p \n", eoi);
 }
 
 
@@ -286,7 +298,7 @@ resource_view_scene_del(ResourceView* rv, const Scene* s)
 {
   static Elm_Object_Item* parent = NULL;
 
-  eina_hash_del_by_key(rv->scenes, s->name);
+  //eina_hash_del_by_key(rv->scenes, s->name);
 
   Elm_Object_Item* item = elm_genlist_first_item_get(rv->gl);
   if (!item) return;
