@@ -1,4 +1,6 @@
 LATELY
+- scene property : camera object, set object as property.
+  - use an id to identify the object and display its name.
 - make a struct with entry/spinner data, in callbacks like entry_activate, entry_changed
   use this info to do something appropriate
 - right click for scene tree and objects,
@@ -69,6 +71,7 @@ VIEW
 - remove the animator for view?
 
 ARCHITECTURE
+- with ecore, read directories and detect changes: files added, removed, etc...
 - handle fbo/texture/texture_handle better;
 - texture manager
 - make the mesh/resource manager. just input the name and it loads in
