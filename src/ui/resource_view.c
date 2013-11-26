@@ -88,12 +88,11 @@ _scene_remove(void *data,
   Scene* s = elm_object_item_data_get(item);
   printf("remove the scene: %s \n", s->name);
 
-  Elm_Object_Item* another = elm_genlist_item_next_get(item);
-  if (!another) {
-    another = elm_genlist_item_prev_get(item);
-  }
+  Elm_Object_Item* another = elm_genlist_item_prev_get(item);
+  if (!another || (another && elm_genlist_item_type_get(another) != ELM_GENLIST_ITEM_NONE))
+    another = elm_genlist_item_next_get(item);
 
-  if (!another) {
+  if (!another || (another && elm_genlist_item_type_get(another) != ELM_GENLIST_ITEM_NONE)) {
     //display error
     //Evas* e = evas_object_evas_get(obj);
     //Evas_Object* win = evas_object_top_get(e);
@@ -319,6 +318,7 @@ resource_view_scene_del(ResourceView* rv, const Scene* s)
   static Elm_Object_Item* parent = NULL;
 
   //eina_hash_del_by_key(rv->scenes, s->name);
+  eina_hash_del_by_key(rv->scenes, &s);
 
   Elm_Object_Item* item = elm_genlist_first_item_get(rv->gl);
   if (!item) return;

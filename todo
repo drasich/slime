@@ -1,5 +1,4 @@
 LATELY
-- choose core, play, choose base, choose core, core is null
 - make a struct with entry/spinner data, in callbacks like entry_activate, entry_changed
   use this info to do something appropriate
 - right click for scene tree and objects,
