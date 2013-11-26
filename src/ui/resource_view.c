@@ -212,7 +212,7 @@ static Elm_Genlist_Item_Class *_group;
 ResourceView*
 resource_view_new(Evas_Object* win, View* v)
 {
-  ResourceView* rv = calloc(1, sizeof rv);
+  ResourceView* rv = calloc(1, sizeof *rv);
   rv->scenes = eina_hash_pointer_new(NULL);
   rv->view = v;
   rv->view->rv = rv;

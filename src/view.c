@@ -585,7 +585,7 @@ _new_empty(void *data,
 
 }
 
-#include "ui/resource_view.h"
+#include "ui/resource_view.h" //TODO chris
 static Scene* gamescene_ = NULL;
 static Scene* scene_previous_ = NULL;
 static void
