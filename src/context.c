@@ -99,8 +99,11 @@ context_object_contains(Context* c, struct _Object* o)
 void
 context_scene_set(Context* c, struct _Scene* s)
 {
-  context_objects_clean(c);
-  c->scene = s;
+  if (c->scene != s) {
+    context_objects_clean(c);
+    c->scene = s;
+    _context_send_message(c, "scene_changed");
+  }
 }
 
 struct _Scene*

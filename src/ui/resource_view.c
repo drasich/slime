@@ -202,6 +202,15 @@ static char *gl_group_text_get(
 }
 
 
+static void
+_context_scene_list_msg_receive(Context* c, void* scene_list, const char* msg)
+{
+  if (!strcmp(msg, "scene_changed")) {
+    resource_view_scene_select(scene_list, c->scene);
+  }
+}
+
+
 
 
 
@@ -245,6 +254,8 @@ resource_view_new(Evas_Object* win, View* v)
   rv->scene_group = resource_view_group_add(rv, "Scenes");
   rv->scene_group_playing = resource_view_group_add(rv, "Scenes(Playing)");
 
+  context_add_callback(v->context, _context_scene_list_msg_receive, rv);
+
   return rv;
 }
 
@@ -274,8 +285,6 @@ resource_view_group_add(ResourceView* rv, const char* name)
 void
 resource_view_scene_add(ResourceView* rv, const Scene* s)
 {
-  static Elm_Object_Item* parent = NULL;
-
   Elm_Object_Item* eoi = elm_genlist_item_append(
         rv->gl,
         itc1,
@@ -294,8 +303,6 @@ resource_view_scene_add(ResourceView* rv, const Scene* s)
 void
 resource_view_playing_scene_add(ResourceView* rv, const Scene* s)
 {
-  static Elm_Object_Item* parent = NULL;
-
   Elm_Object_Item* eoi = elm_genlist_item_append(
         rv->gl,
         itc1,
@@ -335,6 +342,37 @@ resource_view_scene_del(ResourceView* rv, const Scene* s)
   }
 
   return;
+}
+
+static Elm_Object_Item*
+_scene_list_get_item(ResourceView* rv, const Scene* s)
+{ 
+  Elm_Object_Item* item = elm_genlist_first_item_get(rv->gl);
+  if (!item) {
+    return NULL;
+  }
+
+  Scene* es = elm_object_item_data_get(item);
+
+  while (es != s && item) {
+    item = elm_genlist_item_next_get(item);
+    es = elm_object_item_data_get(item);
+  }
+
+  if (s == es) {
+    return item;
+  }
+  return NULL;
+}
+
+
+void
+resource_view_scene_select(ResourceView* rv, const Scene* s)
+{
+  Elm_Object_Item* item = _scene_list_get_item(rv, s);
+
+  if (item)
+  elm_genlist_item_selected_set(item, EINA_TRUE);
 }
 
 

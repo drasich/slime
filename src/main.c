@@ -76,6 +76,7 @@ win_del(void *data, Evas_Object *obj, void *event_info)
   elm_exit();
 }
 
+/*
 static void
 _change_scene(void *data,
       Evas_Object *obj,
@@ -128,6 +129,7 @@ _entry_clicked_cb(void *data, Evas_Object *obj, void *event)
   elm_menu_move(menu, x, y);
   
 }
+*/
 
 
 

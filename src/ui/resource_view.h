@@ -21,6 +21,7 @@ ResourceView* resource_view_new(Evas_Object* win, View* v);
 void resource_view_scene_add(ResourceView* rv, const Scene* s);
 void resource_view_playing_scene_add(ResourceView* rv, const Scene* s);
 void resource_view_scene_del(ResourceView* rv, const Scene* s);
+void resource_view_scene_select(ResourceView* rv, const Scene* s);
 
 Elm_Object_Item* resource_view_group_add(ResourceView* rv, const char* name);
 
