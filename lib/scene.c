@@ -18,6 +18,7 @@ scene_add_object(Scene* s, Object* o)
 {
   s->objects = eina_list_append(s->objects, o);
   o->scene = s;
+  o->id = ++s->last_id;
 }
 
 void
@@ -168,6 +169,8 @@ scene_read(const char* filename)
 void
 scene_post_read(Scene* s)
 {
+  s->last_id = 0;
+
   Eina_List *l;
   Object *o;
   EINA_LIST_FOREACH(s->objects, l, o) {
@@ -175,8 +178,10 @@ scene_post_read(Scene* s)
       printf("found camera!!!! %s\n", s->camera_name);
       s->camera = o;
     }
-    else printf("object name is %s \n", o->name);
-    object_post_read(o);
+    else
+    printf("object name is %s \n", o->name);
+
+    object_post_read(o, s);
   }
 
   printf("scene name is %s\n", s->name);
@@ -202,7 +207,7 @@ scene_print(Scene* s)
   Object *o;
   Component* c;
   EINA_LIST_FOREACH(s->objects, l, o) {
-   printf("  object name : %s \n", o->name);
+   printf("  object name, id : %s, %llu \n", o->name, o->id);
    EINA_LIST_FOREACH(o->components, cl, c) {
      printf("     component name, pointer : %s, %p \n", c->name,c);
      if (!c->name) continue;
@@ -251,7 +256,6 @@ property_set_scene()
   ps->name = "scene";
   PROPERTY_SET_TYPE(ps, Scene);
 
-
   PROPERTY_BASIC_ADD(ps, Scene, name, EET_T_STRING);
 
   return ps;
@@ -295,3 +299,43 @@ scene_copy(const Scene* so, const char* name)
 
   return s;
 }
+
+static void
+_object_id_gen(Scene* s, Object* o)
+{
+  o->id = ++ s->last_id;
+
+  Eina_List* l;
+  Object* child;
+  EINA_LIST_FOREACH(o->children, l, child){
+    _object_id_gen(s, child);
+  }
+
+}
+
+void
+scene_objects_id_generate(Scene* s)
+{
+  s->last_id = 0;
+
+  Eina_List *l;
+  Object *o;
+  EINA_LIST_FOREACH(s->objects, l, o) {
+    _object_id_gen(s, o);
+  }
+  
+}
+
+void
+scene_reference_get(Scene* s, ObjectPointer* op)
+{
+  Eina_List *l;
+  Object *o;
+  EINA_LIST_FOREACH(s->objects, l, o) {
+    if (op->id == o->id) {
+      op->object = o;
+      return;
+    }
+  }
+}
+

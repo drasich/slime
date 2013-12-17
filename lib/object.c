@@ -1,6 +1,7 @@
 #include "object.h"
 #include "gl.h"
 #include "read.h"
+#include "scene.h"
 
 void
 object_init(Object* o)
@@ -451,6 +452,7 @@ property_set_object()
 
 
   PROPERTY_BASIC_ADD(ps, Object, name, EET_T_STRING);
+  PROPERTY_BASIC_ADD(ps, Object, id, EET_T_ULONG_LONG);
 
   //TODO clean the property sets
   Property *vec3 = property_set_vec3();
@@ -498,13 +500,16 @@ ComponentDesc object_desc = {
 };
 
 void 
-object_post_read(Object* o)
+object_post_read(Object* o, struct _Scene* s)
 {
   if (!o->component) {
     o->component =  create_component(&object_desc);
     o->component->data = o;
     o->component->object = o;
   }
+
+  o->scene = s;
+  if (o->id > s->last_id) s->last_id = o->id;
 
   Eina_List* l;
   Component* c;
@@ -527,7 +532,7 @@ object_post_read(Object* o)
 
   Object* child;
   EINA_LIST_FOREACH(o->children, l, child) {
-    object_post_read(child);
+    object_post_read(child, s);
     child->parent = o;
   }
 }
@@ -614,5 +619,21 @@ object_copy(const Object* oo)
         size);
 
   return o;
+}
+
+Property*
+property_set_object_pointer(const char* name)
+{
+  Property* ps = property_set_new();
+  PROPERTY_SET_TYPE(ps, ObjectPointer);
+  ps->name = name;
+  ps->type = PROPERTY_OBJECT;
+
+  //Serialize the id with the descriptor only
+  EET_DATA_DESCRIPTOR_ADD_BASIC(
+        ps->descriptor,
+        ObjectPointer, "id", id, EET_T_ULONG_LONG);
+
+  return ps;
 }
 

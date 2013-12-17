@@ -41,6 +41,8 @@ Eina_Hash* resource_shaders_get(ResourceManager* rm);
 Eina_Hash* resource_textures_get(ResourceManager* rm);
 Eina_Hash* resource_scenes_get(ResourceManager* rm);
 
+bool resource_scene_add(ResourceManager* rm, Scene* s);
+
 ResourceManager* resource_manager_create();
 
 ResourceManager* s_rm;

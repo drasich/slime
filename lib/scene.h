@@ -13,6 +13,7 @@ struct _Scene {
   Object* camera;
   const char* camera_name;
   const char* name;
+  unsigned long long last_id;
 };
 
 Scene* scene_new();
@@ -39,5 +40,8 @@ void scene_init(Scene* s);
 Property* property_set_scene();
 
 Scene* scene_copy(const Scene* s, const char* name);
+
+void scene_objects_id_generate(Scene* s);
+void scene_reference_get(Scene* s, ObjectPointer* op);
 
 #endif

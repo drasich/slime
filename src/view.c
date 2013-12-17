@@ -349,7 +349,7 @@ _object_duplicate(void* data, Evas_Object* o, void* event_info)
   Object* obj;
   EINA_LIST_FOREACH(objects, l, obj) {
     Object* copy = object_copy(obj);
-    object_post_read(copy);
+    object_post_read(copy, obj->scene);
     newobj = eina_list_append(newobj, copy);
   }
 

@@ -40,6 +40,8 @@ struct _Object {
 
   Object* parent;
   Eina_List* children;
+
+  unsigned long long id;
 };
 
 struct _Camera;
@@ -109,7 +111,7 @@ void* object_component_get(const Object* o, const char* name);
 ComponentDesc object_desc;
 Property* property_set_object();
 
-void object_post_read(Object* o);
+void object_post_read(Object* o, struct _Scene* s);
 void object_descriptor_delete();
 
 void object_child_add(Object* parent, Object* child);
@@ -123,5 +125,15 @@ void object_world_position_set(Object* o, Vec3 worldpos);
 Eina_List* object_parents_path_get(Object* o);
 
 Object* object_copy(const Object* o);
+
+Property* property_set_object_pointer(const char* name);
+
+typedef struct _ObjectPointer ObjectPointer;
+
+struct _ObjectPointer {
+  Object* object;
+  unsigned long long id;
+  //Scene* s;
+};
 
 #endif

@@ -2,10 +2,13 @@
 #include "object.h"
 #include "property.h"
 #include <Eet.h>
+#include "scene.h"
 
 void
 player_init(Component* c)
 {
+  Player* p = c->data;
+  scene_reference_get(c->object->scene, &p->targetpointer);
 }
 
 void
@@ -27,8 +30,10 @@ _player_properties(ComponentDesc* desc)
 
   PROPERTY_BASIC_ADD(ps, Player, name, EET_T_STRING);
   PROPERTY_BASIC_ADD(ps, Player, rotation_speed, EET_T_DOUBLE);
-  PROPERTY_BASIC_ADD(ps, Player, target, PROPERTY_POINTER );
   PROPERTY_BASIC_ADD(ps, Player, my_test, EET_T_DOUBLE );
+
+  Property *obp = property_set_object_pointer("target");
+  PROPERTY_SUB_NESTED_ADD(ps, Player, targetpointer, obp);
 
   return ps;
 }

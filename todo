@@ -1,4 +1,5 @@
 LATELY
+- undo/redo for reference object in change_object in component_view.c
 - scene property : camera object, set object as property.
   - use an id to identify the object and display its name.
 - make a struct with entry/spinner data, in callbacks like entry_activate, entry_changed
@@ -36,6 +37,16 @@ ISSUES (must be done)
   can remove the one in create_component and object_post_read
 - use id instead of comparing string strcmp(component->name,"mesh") ?
 - how to remove the many shader instances that are not used in shader instance hash.
+- unselect object in tree : can press control to unselect but soso.
+- replace longpress by right click in genlist
+
+NOT URGENT
+- scene resource : change hash to list, or add callback to property
+  when it is changed...
+  will have to do that eventually because, if I rename a scene, what do
+  I do with the file... I have to rename it right...
+  so add void* callback in the property struct?
+- check name of scenes? only one name for each?
 
 BUG
 - focus the play and main windows alternatively(with the mouse)

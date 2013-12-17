@@ -376,6 +376,67 @@ _change_resource(void *data,
   control_property_change(cp->control, cp->component, entrydata, p, old, new);
 }
 
+static void
+_change_object(void *data,
+      Evas_Object *obj,
+      void *event_info)
+{
+  Property* p = evas_object_data_get(obj, "property");
+  ComponentProperties* cp = evas_object_data_get(obj, "componentproperties");
+  Object* o = data;
+  //printf("property name: %s, component name: %s, change object : %s \n ",p->name, c->name, o->name);
+  Evas_Object* entry = evas_object_data_get(obj, "entry");
+  elm_object_text_set(entry, o->name);
+
+  Property* entryproperty = evas_object_data_get(entry, "property");
+
+  //TODO undo/redo
+  ObjectPointer* op = evas_object_data_get(entry, "data");
+  op->object = o;
+  op->id = o->id;
+
+  /*
+  int offset = property_offset_get(entryproperty);
+  void** theolddata  = (void*)(entrydata + offset);
+  const char* oldstr = *theolddata;
+  if (oldstr && !strcmp(oldstr, name)) {
+    return;
+  }
+  */
+
+  //set the entrydata to this object
+
+  //memcpy(&entrydata, o
+  //Object* target = entrydata;
+  /*
+  ResourceHandle* rh = entrydata;
+  ResourceHandle* old = malloc(sizeof *old);
+  ResourceHandle* new = malloc(sizeof *new);
+  memcpy(old, entrydata, sizeof(*old));
+
+  if (p->resource_type == RESOURCE_TEXTURE) {
+    resource_texture_handle_set(s_rm, rh, name);
+
+  }
+  else if( p->resource_type == RESOURCE_MESH ) {
+    resource_mesh_handle_set(s_rm, rh, name);
+  }
+  else if( p->resource_type == RESOURCE_SHADER ) {
+    resource_shader_handle_set(s_rm, rh, name);
+    property_reload_component(cp->pw, cp->component);
+  }
+  else{
+    free(old);
+    free(new);
+    return;
+  }
+  */
+
+  //memcpy(new, entrydata, sizeof(*new));
+  //control_property_change(cp->control, cp->component, entrydata, p, old, new);
+}
+
+
 static Evas_Object*
 _create_resource_menu(Evas_Object* win, ResourceType resource_type)
 {
@@ -415,6 +476,21 @@ _create_resource_menu(Evas_Object* win, ResourceType resource_type)
 
   return menu;
 }
+
+static Evas_Object*
+_create_object_menu(Evas_Object* win, Scene* s)
+{
+  Evas_Object* menu = elm_menu_add(win);
+
+  Eina_List* l;
+  Object* o;
+  EINA_LIST_FOREACH(s->objects, l, o) {
+    elm_menu_item_add(menu, NULL, NULL, o->name, _change_object, o);
+  }
+
+  return menu;
+}
+
 
 static void
 _entry_focused_cb(void *data, Evas_Object *obj, void *event)
@@ -549,6 +625,20 @@ _entry_clicked_cb(void *data, Evas_Object *obj, void *event)
     elm_menu_move(menu, x, y);
     
   }
+  else if (p->type == PROPERTY_OBJECT) {
+    Evas_Object* win = evas_object_top_get(evas_object_evas_get(obj));
+    Evas_Object* menu = _create_object_menu(win, context_scene_get(cp->pw->context));
+    if (!menu) return;
+    evas_object_data_set(menu, "componentproperties", cp);
+    evas_object_data_set(menu, "property", p);
+    evas_object_data_set(menu, "entry", obj);
+    evas_object_show(menu);
+
+    Evas_Coord x,y,w,h;
+    evas_object_geometry_get(obj, &x, &y, &w, &h);
+    elm_menu_move(menu, x, y);
+    
+  }
   
 }
 
@@ -615,6 +705,8 @@ _property_add_entry(ComponentProperties* cp, const Property* p, void* data, Evas
   evas_object_show(en);
   elm_box_pack_end(bx2, en);
   if (p->type == PROPERTY_RESOURCE)
+  elm_entry_editable_set(en, EINA_FALSE);
+  else if (p->type == PROPERTY_OBJECT)
   elm_entry_editable_set(en, EINA_FALSE);
 
   evas_object_name_set(en, p->name);
@@ -944,6 +1036,20 @@ component_property_update_data(ComponentProperties* cp)
            }
           }
          break;
+
+        case PROPERTY_OBJECT:
+          {
+           int offset = property_offset_get(p);
+           ObjectPointer* op = data + offset;
+           if (!op) break;
+           Object* o = op->object;
+           const char* s = elm_object_text_get(obj);
+           if (o && o->name && strcmp(o->name,s)) {
+             elm_object_text_set(obj, o->name );
+           }
+          }
+
+         break;
     }
   }
 }
@@ -1144,10 +1250,7 @@ _property_struct_add(ComponentProperties* cp, const Property* p, Evas_Object* bo
 static void
 _property_add(ComponentProperties* cp, const Property* p, Evas_Object* box, void* data)
 {
-  if (!data) {
-    return;
-  }
-  //printf("property add name: %s , type: %d, offset: %d, data : %p\n", p->name, p->type, p->offset, data);
+  printf("property add name: %s , type: %d, offset: %d, data : %p, data add: %p\n", p->name, p->type, p->offset, data, &data);
 
   switch(p->type) {
     case EET_T_DOUBLE:
@@ -1218,12 +1321,14 @@ _property_add(ComponentProperties* cp, const Property* p, Evas_Object* box, void
       //_property_add_entry(cp, p);
       break;
     case PROPERTY_RESOURCE:
+        if (!data) break;
       _property_add_entry(cp, p, data, box);
       break;
     case PROPERTY_UNIFORM:
        {
         int offset = property_offset_get(p);
         UniformValue* uv = data + offset;
+        if (!uv) break;
         //printf("this is a uniform, type is %d \n", uv->type);
         if (uv->type == UNIFORM_FLOAT) { 
           //printf("this is a uniform, type is float !! %d \n", uv->type);
@@ -1234,6 +1339,12 @@ _property_add(ComponentProperties* cp, const Property* p, Evas_Object* box, void
           _property_vec3_add(cp, p, box, data);
           //_property_add_spinner(cp, p, box, data);
         }
+       }
+      break;
+    case PROPERTY_OBJECT:
+       {
+        ObjectPointer* o = data + property_offset_get(p);
+        _property_add_entry(cp, p, data + property_offset_get(p), box);
        }
       break;
     case PROPERTY_ROOT:
@@ -1251,6 +1362,7 @@ _add_properties(ComponentProperties* cp, const Property* ps, Evas_Object* box, v
   _property_add(cp, ps, box, data);
 
   if (ps->type == PROPERTY_QUAT) return;
+  if (ps->type == PROPERTY_OBJECT) return;
 
   Property *p;
   Eina_List* l;

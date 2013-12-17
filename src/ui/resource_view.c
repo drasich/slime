@@ -118,8 +118,20 @@ _scene_add(void *data,
 
   Scene* s = scene_new();
 
-  view_scene_set(rv->view, s);
+  if (eina_hash_find(resource_scenes_get(s_rm), "empty")) {
+    int index = 0;
+    char str[256] = "empty";
+    while (eina_hash_find(resource_scenes_get(s_rm), str)) {
+      sprintf(str, "empty%d", index);
+      index++;
+    }
+    s->name = eina_stringshare_add(str);
+
+  }
+
+  resource_scene_add(s_rm, s);
   resource_view_scene_add(rv, s);
+  view_scene_set(rv->view, s);
 }
 
 static Evas_Object*

@@ -14,6 +14,7 @@ struct _Player
   double my_test;
   bool rotate;
   Object* target;
+  ObjectPointer targetpointer;
 };
 
 void player_init(Component* c);
