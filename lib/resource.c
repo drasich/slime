@@ -145,7 +145,6 @@ void resource_load(ResourceManager* rm)
     s->name = eina_stringshare_add(name);
     eina_hash_add(rm->scenes, s->name, s);
     scene_post_read(s);
-    scene_objects_id_generate(s);
   }
 }
 
