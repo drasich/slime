@@ -390,50 +390,16 @@ _change_object(void *data,
 
   Property* entryproperty = evas_object_data_get(entry, "property");
 
-  //TODO undo/redo
   ObjectPointer* op = evas_object_data_get(entry, "data");
+  ObjectPointer* old = calloc(1, sizeof*old);
+  memcpy(old, op, sizeof(*old));
+
   op->object = o;
   op->id = o->id;
+  ObjectPointer* new = calloc(1, sizeof*new);
+  memcpy(new, op, sizeof(*new));
 
-  /*
-  int offset = property_offset_get(entryproperty);
-  void** theolddata  = (void*)(entrydata + offset);
-  const char* oldstr = *theolddata;
-  if (oldstr && !strcmp(oldstr, name)) {
-    return;
-  }
-  */
-
-  //set the entrydata to this object
-
-  //memcpy(&entrydata, o
-  //Object* target = entrydata;
-  /*
-  ResourceHandle* rh = entrydata;
-  ResourceHandle* old = malloc(sizeof *old);
-  ResourceHandle* new = malloc(sizeof *new);
-  memcpy(old, entrydata, sizeof(*old));
-
-  if (p->resource_type == RESOURCE_TEXTURE) {
-    resource_texture_handle_set(s_rm, rh, name);
-
-  }
-  else if( p->resource_type == RESOURCE_MESH ) {
-    resource_mesh_handle_set(s_rm, rh, name);
-  }
-  else if( p->resource_type == RESOURCE_SHADER ) {
-    resource_shader_handle_set(s_rm, rh, name);
-    property_reload_component(cp->pw, cp->component);
-  }
-  else{
-    free(old);
-    free(new);
-    return;
-  }
-  */
-
-  //memcpy(new, entrydata, sizeof(*new));
-  //control_property_change(cp->control, cp->component, entrydata, p, old, new);
+  control_property_change(cp->control, cp->component, op, p, old, new);
 }
 
 

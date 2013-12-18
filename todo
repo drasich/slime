@@ -1,7 +1,4 @@
 LATELY
-- undo/redo for reference object in change_object in component_view.c
-- scene property : camera object, set object as property.
-  - use an id to identify the object and display its name.
 - make a struct with entry/spinner data, in callbacks like entry_activate, entry_changed
   use this info to do something appropriate
 - right click for scene tree and objects,

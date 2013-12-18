@@ -162,6 +162,9 @@ _change_data(void* c, Property* p, const void *data)
         }
        }
       break;
+    case PROPERTY_OBJECT:
+      memcpy(c+p->offset, data, sizeof(ObjectPointer));
+      break;
     default:
       fprintf (stderr, "_change_data: type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
       break;

@@ -336,13 +336,13 @@ property_holder_update(void* data)
   Elm_Object_Item* i;
 
   EINA_LIST_FOREACH(ph->items, l, i) {
-    printf("I update the item %p", i);
+    printf("I update the item %p\n", i);
     elm_genlist_item_update(i);
   }
 
   Evas_Object* o;
   EINA_LIST_FOREACH(ph->objects, l, o) {
-    printf("I update the object %p", o);
+    printf("I update the object %p\n", o);
 
     //int offset = property_offset_get(ph);
     //const char** str = data + offset;
@@ -363,8 +363,18 @@ property_holder_update(void* data)
       if (old != d) {
         elm_spinner_value_set(o, d );
       }
-
     }
+    else if (ph->property->type == PROPERTY_OBJECT) {
+      ObjectPointer* op = data;
+      const char* s = elm_object_text_get(o);
+      const char* str;
+      if (!op->object) str = "none";
+      else str = op->object->name;
+
+      if (strcmp(str,s)) 
+      elm_object_text_set(o, str );
+    }
+    else printf("property not yet supported\n");
   }
 
 }
