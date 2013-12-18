@@ -8,12 +8,10 @@
 typedef struct _Scene Scene;
 
 struct _Scene {
-  //list of objects
   Eina_List* objects;
-  Object* camera;
-  const char* camera_name;
   const char* name;
   unsigned long long last_id;
+  ObjectPointer camerapointer;
 };
 
 Scene* scene_new();

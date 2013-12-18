@@ -283,14 +283,12 @@ property_holder_object_add(const void* data, const Property* p, Evas_Object* o)
 {
   PropertyHolder* ph = eina_hash_find(s_ph, &data);
   if (!ph) {
-    printf("add data'%s' %p\n", p->name, data);
     ph = calloc(1, sizeof *ph);
     eina_hash_add(s_ph, &data, ph);
   }
 
   if (!ph->property) ph->property = p;
 
-  printf("  add object %p \n", o);
   ph->objects = eina_list_append(ph->objects, o);
 }
 

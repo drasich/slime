@@ -1250,7 +1250,7 @@ _property_struct_add(ComponentProperties* cp, const Property* p, Evas_Object* bo
 static void
 _property_add(ComponentProperties* cp, const Property* p, Evas_Object* box, void* data)
 {
-  printf("property add name: %s , type: %d, offset: %d, data : %p, data add: %p\n", p->name, p->type, p->offset, data, &data);
+  //printf("property add name: %s , type: %d, offset: %d, data : %p, data add: %p\n", p->name, p->type, p->offset, data, &data);
 
   switch(p->type) {
     case EET_T_DOUBLE:

@@ -42,7 +42,7 @@ _resize_gl(Evas_Object *obj)
   GameView* gv = evas_object_data_get(obj, "gameview");
 
   Scene* s = gv->scene;
-  Object* c = s->camera;
+  Object* c = s->camerapointer.object;
   Camera* cam = object_component_get(c, "camera");
   //ccamera_set_resolution(cam, w, h);
 }
@@ -167,7 +167,7 @@ gameview_draw(GameView* v)
 {
   //Render* r = v->render;
   Scene* s = v->scene;
-  Object* c = s->camera;
+  Object* c = s->camerapointer.object;
   Camera* cam = object_component_get(c, "camera");
   //printf("camera is %s\n", c->name);
   //printf("camera pos.z %f\n", c->Position.Z);

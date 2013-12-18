@@ -61,8 +61,8 @@ scene_update(Scene* s)
 void
 scene_camera_set(Scene* s, Object* camera)
 {
-  s->camera = camera;
-  s->camera_name = camera->name;
+  s->camerapointer.id = camera->id;
+  s->camerapointer.object = camera;
 }
 
 Object*
@@ -82,24 +82,11 @@ scene_object_get(Scene* s, const char* name)
 static Eet_Data_Descriptor *_scene_descriptor;
 static Property* _object_ps;
 
+//TODO remove/handle this function
 void
 scene_descriptor_init(void)
 {
-  Eet_Data_Descriptor_Class eddc;
-
-  EET_EINA_STREAM_DATA_DESCRIPTOR_CLASS_SET(&eddc, Scene);
-  _scene_descriptor = eet_data_descriptor_stream_new(&eddc);
-
-  EET_DATA_DESCRIPTOR_ADD_BASIC(
-        _scene_descriptor,
-        Scene, "camera", camera_name, EET_T_STRING);
-
-  _object_ps = property_set_object();
-
-  EET_DATA_DESCRIPTOR_ADD_LIST
-   (_scene_descriptor, Scene, "objects", objects,
-    //object_descriptor);
-    _object_ps->descriptor);
+  property_set_scene();
 }
 
 void 
@@ -174,12 +161,8 @@ scene_post_read(Scene* s)
   Eina_List *l;
   Object *o;
   EINA_LIST_FOREACH(s->objects, l, o) {
-    if (s->camera_name && !strcmp(o->name, s->camera_name)) {
-      printf("found camera!!!! %s\n", s->camera_name);
-      s->camera = o;
-    }
-    else
-    printf("object name is %s \n", o->name);
+    if (s->camerapointer.id == o->id)
+    s->camerapointer.object = o;
 
     object_post_read(o, s);
   }
@@ -255,8 +238,19 @@ property_set_scene()
   Property* ps = s_ps_scene;
   ps->name = "scene";
   PROPERTY_SET_TYPE(ps, Scene);
+  _scene_descriptor = ps->descriptor;
 
   PROPERTY_BASIC_ADD(ps, Scene, name, EET_T_STRING);
+
+  Property *obp = property_set_object_pointer("camera");
+  PROPERTY_SUB_NESTED_ADD(ps, Scene, camerapointer, obp);
+
+  _object_ps = property_set_object();
+
+  EET_DATA_DESCRIPTOR_ADD_LIST(
+        ps->descriptor, Scene, "objects", objects,
+    //object_descriptor);
+    _object_ps->descriptor);
 
   return ps;
 }

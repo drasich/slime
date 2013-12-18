@@ -41,7 +41,7 @@ _resize_gl(Evas_Object *obj)
   GameView* gv = evas_object_data_get(obj, "gameview");
 
   Scene* s = gv->scene;
-  Object* c = s->camera;
+  Object* c = s->camerapointer.object;
   Camera* cam = object_component_get(c, "camera");
   //ccamera_set_resolution(cam, w, h);
 }
@@ -147,7 +147,7 @@ create_gameview_window(Scene* s, Evas_Object** window, Control* c)
 {
   Evas_Object *win;
   win = elm_win_util_standard_add("slime", "gameview");
-  Object* o = s->camera;
+  Object* o = s->camerapointer.object;
   Camera* cam = object_component_get(o, "camera");
   evas_object_resize(win, cam->width , cam->height);
   //evas_object_resize(win, 800/3, 400/3);
@@ -172,7 +172,7 @@ gameview_draw(GameView* v)
 {
   //Render* r = v->render;
   Scene* s = v->scene;
-  Object* c = s->camera;
+  Object* c = s->camerapointer.object;
   Camera* cam = object_component_get(c, "camera");
   //printf("camera is %s\n", c->name);
   //printf("camera pos.z %f\n", c->Position.Z);
