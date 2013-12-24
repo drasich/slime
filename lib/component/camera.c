@@ -6,7 +6,8 @@
 static void
 _camera_display(Camera* c)
 {
-  return; //TODO
+  printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!camera display\n");
+  //return; //TODO
   line_clear(c->line);
   float near = c->near;
   float far = c->far;
@@ -147,6 +148,12 @@ _camera_init(Component* component)
 {
   Camera* c = component->data;
   camera_init(c);
+  c->local_offset = vec3_zero();
+
+  c->line = create_line();
+  c->line->camera = c;
+  _camera_display(c);
+
 }
 
 void
@@ -182,9 +189,11 @@ static void
 _camera_draw_edit(Component* comp, Matrix4 world, const Matrix4 projection)
 {
   //TODO
-  return;
   Camera* c = comp->data;
   Line* l = c->line;
+  //return;
+  //shader_init_uniform(l->shader, "size_fixed", &l->uniform_size_fixed);
+  //shader_instance_
   line_prepare_draw(l, world, projection);
   line_draw(l);
 }

@@ -5,6 +5,7 @@
 #include "geometry.h"
 #include <stdbool.h>
 #include "component.h"
+#include "meshcomponent.h"
 
 struct _Camera;
 
@@ -44,6 +45,8 @@ struct _Line
   GLuint fbo;
   GLuint rb;
   struct _Camera* camera;
+
+  ShaderInstance* shader_instance;
 };
 
 void line_init(Line* line);

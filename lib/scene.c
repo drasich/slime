@@ -240,7 +240,7 @@ property_set_scene()
   PROPERTY_SET_TYPE(ps, Scene);
   _scene_descriptor = ps->descriptor;
 
-  PROPERTY_BASIC_ADD(ps, Scene, name, EET_T_STRING);
+  //PROPERTY_BASIC_ADD(ps, Scene, name, EET_T_STRING);
 
   Property *obp = property_set_object_pointer("camera");
   PROPERTY_SUB_NESTED_ADD(ps, Scene, camerapointer, obp);

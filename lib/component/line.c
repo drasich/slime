@@ -212,6 +212,15 @@ line_init(Line* l)
     GL_DYNAMIC_DRAW);
 
   l->shader = create_shader("line", "shader/line.vert", "shader/line.frag");
+
+  shader_attribute_add(l->shader, "vertex", 3, GL_FLOAT);
+  shader_attribute_add(l->shader, "color", 4, GL_FLOAT);
+  shader_uniform_add(l->shader, "matrix");
+  shader_uniform_type_add(l->shader, "texture", UNIFORM_TEXTURE, false);
+  shader_uniform_type_add(l->shader, "resolution", UNIFORM_VEC2, false);
+  shader_uniform_type_add(l->shader, "use_depth", UNIFORM_INT, false);
+  shader_uniform_type_add(l->shader, "size_fixed", UNIFORM_INT, false);
+
   shader_use(l->shader);
   shader_init_attribute(l->shader, "vertex", &l->attribute_vertex);
   shader_init_attribute(l->shader, "color", &l->attribute_color);
@@ -266,21 +275,6 @@ line_resend(Line* l)
 }
 
 void
-line_set_matrices(Line* l, Matrix4 mat, Matrix4 projection)
-{
-  shader_use(l->shader);
-
-  Matrix4 tm;
-  mat4_multiply(projection, mat, tm);
-  mat4_transpose(tm, tm);
-  mat4_to_gl(tm, l->matrix);
-  glUniformMatrix4fv(l->uniform_matrix, 1, GL_FALSE, l->matrix);
-  float width = 1200;
-  float height = 400;
-  glUniform2f(l->uniform_resolution, width, height);
-}
-
-void
 line_set_use_depth(Line* l, bool b)
 {
   l->use_depth = b;
@@ -313,8 +307,10 @@ line_prepare_draw(Line* l, Matrix4 world, const Matrix4 projection)
   }
   */
 
-  mat4_to_gl(tm, l->matrix);
-  glUniformMatrix4fv(l->uniform_matrix, 1, GL_FALSE, l->matrix);
+  shader_matrices_set(l->shader, world, projection);
+
+  //mat4_to_gl(tm, l->matrix);
+  //glUniformMatrix4fv(l->uniform_matrix, 1, GL_FALSE, l->matrix);
   float width = l->camera->width;
   float height = l->camera->height;
   glUniform2f(l->uniform_resolution, width, height);

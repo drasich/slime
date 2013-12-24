@@ -75,6 +75,7 @@ struct _Mesh
   bool is_init;
 
   Eina_Inarray* buffers;
+  GLenum mode;
 };
 
 Mesh* mesh_new();

@@ -1,4 +1,7 @@
 LATELY
+- merge mesh/line and make only shader_instance_draw(Shader, ShaderInstance, Mesh/Line) or put mesh/line in shaderinstance
+  because now shader instance is texture uniforms; but maybe we can add mesh/line info to it?
+- camera display?
 - make a struct with entry/spinner data, in callbacks like entry_activate, entry_changed
   use this info to do something appropriate
 - right click for scene tree and objects,
@@ -12,7 +15,6 @@ LATELY
 - handle all uniform types in shader instance, component view and draw shader
 - rotate dragger : display a better disk
 - patch elementary genlist tree for :
-  - multi select with pressing crtl
   - drag something just click and move, no long press
   - can move something to children (might be quite difficult)
 - display info on rotation, scale, translation
@@ -20,6 +22,9 @@ LATELY
 - use hoversel
 - fix the warnings (color) and the output
 - be able to set the relationship parent/children in the editor (just in code for now)
+
+USER FRIENDLY
+- only able to select camera if there is a camera component
 
 CLEAN
 - TODO in the code.
