@@ -373,12 +373,18 @@ _object_update_mesh_vertex(Object* o)
       translation = vec3_add(translation, t);
     }
 
-    Vec3 newpos = vec3_add(vi->position,translation);
+    Vec3f newpos = vec3d_to_vec3f(vec3_add(vi->position,translation));
     Vec3 newnor = quat_rotate_vec3(rotation, vi->normal);
 
+    /*
     mesh->vertices[i*3] = newpos.x;
     mesh->vertices[i*3+1] = newpos.y;
     mesh->vertices[i*3+2] = newpos.z;
+    */
+
+    eina_inarray_replace_at(mesh->vertices_fff, i*3, &newpos.x);
+    eina_inarray_replace_at(mesh->vertices_fff, i*3 +1, &newpos.y);
+    eina_inarray_replace_at(mesh->vertices_fff, i*3 +2, &newpos.z);
 
     mesh->normals[i*3] = newnor.x;
     mesh->normals[i*3+1] = newnor.y;

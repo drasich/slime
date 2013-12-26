@@ -63,13 +63,13 @@ struct _Mesh
 {
   const char* name;
 
-  GLfloat* vertices;
+  //GLfloat* vertices;
   GLuint* indices;
   GLfloat* normals;
   GLfloat* uvs;
   GLfloat* barycentric;
 
-  uint32_t vertices_len;
+  //uint32_t vertices_len;
   uint32_t indices_len;
   uint32_t normals_len;
   uint32_t uvs_len;

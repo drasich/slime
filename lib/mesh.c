@@ -15,15 +15,13 @@ mesh_read_file(Mesh* mesh, FILE* f)
   float x,y,z;
   int i;
 
-  mesh->vertices = calloc(count*3, sizeof(GLfloat));
-  mesh->vertices_len = count*3;
   mesh->vertices_base = eina_inarray_new(sizeof(VertexInfo), count);
-  mesh->vertices_fff = eina_inarray_new(sizeof(VertexInfoFloat), count);
+  mesh->vertices_fff = eina_inarray_new(sizeof(GLfloat), 3);
   VertexInfo vi;
   //Vec3 v;
   for (i = 0; i< count*3; ++i) {
     fread(&x, 4,1,f);
-    mesh->vertices[i] = x;
+    eina_inarray_push(mesh->vertices_fff, &x);
     if (i % 3 == 0) {
       vi.position.x = x;
       if (x > mesh->box.max.x) mesh->box.max.x = x;
@@ -39,11 +37,13 @@ mesh_read_file(Mesh* mesh, FILE* f)
       if (x > mesh->box.max.z) mesh->box.max.z = x;
       if (x < mesh->box.min.z) mesh->box.min.z = x;
       eina_inarray_push(mesh->vertices_base, &vi);
+      /*
       VertexInfoFloat vif;
       vif.position.x = (float) vi.position.x;
       vif.position.y = (float) vi.position.y;
       vif.position.z = (float) vi.position.z;
       eina_inarray_push(mesh->vertices_fff, &vif);
+      */
     }
   }
 
@@ -55,7 +55,6 @@ mesh_read_file(Mesh* mesh, FILE* f)
         mesh->vertices,
         mesh->vertices_len* sizeof(GLfloat));
   */
-  printf("mmmmmmmmmmmmmmm member size %d \n", mesh->vertices_fff->member_size);
 
   //*
   mesh_buffer_stride_add(
@@ -64,8 +63,8 @@ mesh_read_file(Mesh* mesh, FILE* f)
         GL_ARRAY_BUFFER,
         mesh->vertices_fff->members,
         mesh->vertices_fff->len * mesh->vertices_fff->member_size,
-        //mesh->vertices_fff->len,
-        mesh->vertices_fff->member_size);
+        //mesh->vertices_fff->member_size);
+        0);
   //      */
 
   //printf("bounds min : %f %f %f\n", mesh->box.min.x,mesh->box.min.y,mesh->box.min.z);

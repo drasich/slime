@@ -52,6 +52,7 @@ Vec3 vec3_sub(Vec3 v1, Vec3 v2);
 Vec3 vec3_mul(Vec3 v1, double s);
 Vec3 vec3_vec3_mul(Vec3 v1, Vec3 v2);
 Vec3 vec3_normalized(Vec3 v);
+Vec3f vec3d_to_vec3f(Vec3 v);
 
 double vec3_dot(Vec3 v1, Vec3 v2);
 Vec3 vec3_cross(Vec3 v1, Vec3 v2);

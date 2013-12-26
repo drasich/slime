@@ -6,44 +6,49 @@ create_mesh_quad(Mesh* m, int w, int h)
   m->name = "quad";
 
   uint8_t nb_vert = 6;
-  m->vertices = calloc(nb_vert*3, sizeof(GLfloat));
-  m->vertices_len = nb_vert*3;
+  m->vertices_fff = eina_inarray_new(sizeof(GLfloat), 3);
 
   uint8_t index;
   float hw = w*0.5f, hh = h*0.5f;
   m->box.max = vec3(hw, hh, 0);
   m->box.min = vec3(-hw, -hh, 0);
 
-  m->vertices[0] = -hw;
-  m->vertices[1] = hh;
-  m->vertices[2] = 0;
+  float nhw = -hw;
+  float nhh = -hh;
+  float zero = 0;
 
-  m->vertices[3] = hw;
-  m->vertices[4] = hh;
-  m->vertices[5] = 0;
+#define addvert(a) eina_inarray_push(m->vertices_fff, &a)
 
-  m->vertices[6] = hw;
-  m->vertices[7] = -hh;
-  m->vertices[8] = 0;
+  addvert(nhw);
+  addvert(hh);
+  addvert(zero);
 
-  m->vertices[9] = -hw;
-  m->vertices[10] = hh;
-  m->vertices[11] = 0;
+  addvert(hw);
+  addvert(hh);
+  addvert(zero);
 
-  m->vertices[12] = hw;
-  m->vertices[13] = -hh;
-  m->vertices[14] = 0;
+  addvert(hw);
+  addvert(nhh);
+  addvert(zero);
 
-  m->vertices[15] = -hw;
-  m->vertices[16] = -hh;
-  m->vertices[17] = 0;
+  addvert(nhw);
+  addvert(hh);
+  addvert(zero);
+
+  addvert(hw);
+  addvert(nhh);
+  addvert(zero);
+
+  addvert(nhw);
+  addvert(nhh);
+  addvert(zero);
 
   mesh_buffer_add(
         m,
         "vertex",
         GL_ARRAY_BUFFER,
-        m->vertices,
-        m->vertices_len* sizeof(GLfloat));
+        m->vertices_fff->members,
+        m->vertices_fff->len*m->vertices_fff->member_size);
 
   m->barycentric = calloc(nb_vert*3, sizeof(GLfloat));
   m->barycentric_len = nb_vert*3;
@@ -116,30 +121,28 @@ void
 quad_resize(Mesh* m, int w, int h)
 {
   float hw = w*0.5f, hh = h*0.5f;
+  float nhw = -hw;
+  float nhh = -hh;
+  float zero = 0;
 
-  m->vertices[0] = -hw;
-  m->vertices[1] = hh;
-  m->vertices[2] = 0;
+#define rep(a, b) eina_inarray_replace_at(m->vertices_fff, a, &b)
+  rep(0, nhw);
+  rep(1, hh);
 
-  m->vertices[3] = hw;
-  m->vertices[4] = hh;
-  m->vertices[5] = 0;
+  rep(3, hw);
+  rep(4, hh);
 
-  m->vertices[6] = hw;
-  m->vertices[7] = -hh;
-  m->vertices[8] = 0;
+  rep(6, hw);
+  rep(7, nhh);
 
-  m->vertices[9] = -hw;
-  m->vertices[10] = hh;
-  m->vertices[11] = 0;
+  rep(9, nhw);
+  rep(10, hh);
 
-  m->vertices[12] = hw;
-  m->vertices[13] = -hh;
-  m->vertices[14] = 0;
+  rep(12, hw);
+  rep(13, nhh);
 
-  m->vertices[15] = -hw;
-  m->vertices[16] = -hh;
-  m->vertices[17] = 0;
+  rep(15, nhw);
+  rep(16, nhh);
 
   //TODO we don't need to resend normals.
   mesh_resend(m);

@@ -395,7 +395,8 @@ shader_mesh_draw(Shader* s, struct _MeshComponent* mc)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
   else {
-    glDrawArrays(GL_TRIANGLES,0, m->vertices_len/3);
+    //glDrawArrays(GL_TRIANGLES,0, m->vertices_len/3);
+    glDrawArrays(GL_TRIANGLES,0, m->vertices_fff->len/3);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
   }
 

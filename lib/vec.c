@@ -152,3 +152,13 @@ vec4_equal(Vec4 v1, Vec4 v2)
    v1.w == v1.w;
 }
 
+Vec3f
+vec3d_to_vec3f(Vec3 v)
+{
+  Vec3f vf;
+  vf.x = (float) v.x;
+  vf.y = (float) v.y;
+  vf.z = (float) v.z;
+  return vf;
+
+}

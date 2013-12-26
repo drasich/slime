@@ -553,23 +553,11 @@ planes_is_in_object(const Plane* planes, int nb_planes, const Object* o)
 
   for (i = 0; i < m->indices_len; i+=3) {
     int id = m->indices[i];
-    Vec3 v0 = { 
-      m->vertices[id*3],
-      m->vertices[id*3 + 1],
-      m->vertices[id*3 + 2]
-    };
+    Vec3 v0 = mesh_vertex_get(m, id);
     id = m->indices[i+1];
-    Vec3 v1 = { 
-      m->vertices[id*3],
-      m->vertices[id*3 + 1],
-      m->vertices[id*3 + 2]
-    };
+    Vec3 v1 = mesh_vertex_get(m, id);
     id = m->indices[i+2];
-    Vec3 v2 = { 
-      m->vertices[id*3],
-      m->vertices[id*3 + 1],
-      m->vertices[id*3 + 2]
-    };
+    Vec3 v2 = mesh_vertex_get(m, id);
 
     v0 = vec3_vec3_mul(v0, o->scale);
     v1 = vec3_vec3_mul(v1, o->scale);
