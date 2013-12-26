@@ -5,6 +5,7 @@
 
 //#define PRINT_VEC3 
 typedef struct _Vec3 Vec3;
+typedef struct _Vec3f Vec3f;
 
 struct _Vec3 {
   double x;
@@ -12,7 +13,14 @@ struct _Vec3 {
   double z;
 };
 
+struct _Vec3f {
+  float x;
+  float y;
+  float z;
+};
+
 typedef struct _Vec4 Vec4;
+typedef struct _Vec4f Vec4f;
 
 struct _Vec4 {
   double x;
@@ -20,6 +28,14 @@ struct _Vec4 {
   double z;
   double w;
 };
+
+struct _Vec4f {
+  float x;
+  float y;
+  float z;
+  float w;
+};
+
 
 Vec3 vec3_zero();
 

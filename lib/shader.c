@@ -378,7 +378,7 @@ shader_mesh_draw(Shader* s, struct _MeshComponent* mc)
               att->size,
               att->type,
               GL_FALSE,
-              0,
+              buf->stride,
               0);
       }
     }

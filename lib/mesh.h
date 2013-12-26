@@ -27,6 +27,16 @@ struct _VertexInfo
   Eina_Inarray* weights;
 };
 
+typedef struct _VertexInfoFloat VertexInfoFloat;
+struct _VertexInfoFloat
+{
+  Vec3f position;
+  Vec3f normal;
+  Vec4f color;
+  Eina_Inarray* weights;
+};
+
+
 /*
 typedef enum {
   BUFFER_VERTEX,
@@ -44,6 +54,7 @@ struct _Buffer
   const void* data;
   int size;
   GLenum target;
+  GLsizei stride;
 };
 
 typedef struct _Mesh Mesh;
@@ -52,11 +63,11 @@ struct _Mesh
 {
   const char* name;
 
-  GLfloat*  vertices;
-  GLuint*  indices;
-  GLfloat*  normals;
-  GLfloat*  uvs;
-  GLfloat*  barycentric;
+  GLfloat* vertices;
+  GLuint* indices;
+  GLfloat* normals;
+  GLfloat* uvs;
+  GLfloat* barycentric;
 
   uint32_t vertices_len;
   uint32_t indices_len;
@@ -68,6 +79,7 @@ struct _Mesh
 
   Eina_Array* vertexgroups;
   Eina_Inarray* vertices_base;
+  Eina_Inarray* vertices_fff;
   //For animation I need original vertex and vertex to send
   
   AABox box;
@@ -86,10 +98,13 @@ void mesh_destroy(Mesh* m);
 
 Buffer* mesh_buffer_get(Mesh* m, const char* name);
 void mesh_buffer_add(Mesh* m, const char* name, GLenum target, const void* data, int size);
+void mesh_buffer_stride_add(Mesh* m, const char* name, GLenum target, const void* data, int size, GLsizei stride);
 
 VertexGroup* mesh_find_vertexgroup(Mesh* mesh, char* name);
 
 void create_mesh_quad(Mesh* m, int w, int h);
 void quad_resize(Mesh* m, int w, int h);
+
+Vec3 mesh_vertex_get(const Mesh* m, const unsigned int index);
 
 #endif

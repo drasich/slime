@@ -346,29 +346,17 @@ intersection_ray_mesh(Ray ray, Mesh* m, Vec3 position, Quat rotation, Vec3 scale
   int i;
   for (i = 0; i < m->indices_len; i+=3) {
     int id = m->indices[i];
-    Vec3 v0 = { 
-      m->vertices[id*3],
-      m->vertices[id*3 + 1],
-      m->vertices[id*3 + 2]
-    };
+    Vec3 v0 = mesh_vertex_get(m, id);
     id = m->indices[i+1];
-    Vec3 v1 = { 
-      m->vertices[id*3],
-      m->vertices[id*3 + 1],
-      m->vertices[id*3 + 2]
-    };
+    Vec3 v1 = mesh_vertex_get(m, id);
     id = m->indices[i+2];
-    Vec3 v2 = { 
-      m->vertices[id*3],
-      m->vertices[id*3 + 1],
-      m->vertices[id*3 + 2]
-    };
+    Vec3 v2 = mesh_vertex_get(m, id);
 
     v0 = vec3_vec3_mul(v0, scale);
     v1 = vec3_vec3_mul(v1, scale);
     v2 = vec3_vec3_mul(v2, scale);
 
-    Triangle tri = { v0, v1, v2};
+    Triangle tri = {v0, v1, v2};
     out = intersection_ray_triangle(newray,tri,1);
     if (out.hit) {
       //transform back

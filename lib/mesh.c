@@ -18,6 +18,7 @@ mesh_read_file(Mesh* mesh, FILE* f)
   mesh->vertices = calloc(count*3, sizeof(GLfloat));
   mesh->vertices_len = count*3;
   mesh->vertices_base = eina_inarray_new(sizeof(VertexInfo), count);
+  mesh->vertices_fff = eina_inarray_new(sizeof(VertexInfoFloat), count);
   VertexInfo vi;
   //Vec3 v;
   for (i = 0; i< count*3; ++i) {
@@ -38,15 +39,34 @@ mesh_read_file(Mesh* mesh, FILE* f)
       if (x > mesh->box.max.z) mesh->box.max.z = x;
       if (x < mesh->box.min.z) mesh->box.min.z = x;
       eina_inarray_push(mesh->vertices_base, &vi);
+      VertexInfoFloat vif;
+      vif.position.x = (float) vi.position.x;
+      vif.position.y = (float) vi.position.y;
+      vif.position.z = (float) vi.position.z;
+      eina_inarray_push(mesh->vertices_fff, &vif);
     }
   }
 
+  /*
   mesh_buffer_add(
         mesh,
         "vertex",
         GL_ARRAY_BUFFER,
         mesh->vertices,
         mesh->vertices_len* sizeof(GLfloat));
+  */
+  printf("mmmmmmmmmmmmmmm member size %d \n", mesh->vertices_fff->member_size);
+
+  //*
+  mesh_buffer_stride_add(
+        mesh,
+        "vertex",
+        GL_ARRAY_BUFFER,
+        mesh->vertices_fff->members,
+        mesh->vertices_fff->len * mesh->vertices_fff->member_size,
+        //mesh->vertices_fff->len,
+        mesh->vertices_fff->member_size);
+  //      */
 
   //printf("bounds min : %f %f %f\n", mesh->box.min.x,mesh->box.min.y,mesh->box.min.z);
   //printf("bounds max : %4.16f %4.16f %4.16f\n", mesh->box.max.x,mesh->box.max.y,mesh->box.max.z);
@@ -279,6 +299,42 @@ mesh_buffer_add(Mesh* m, const char* name, GLenum target, const void* data, int 
   b.data = data;
   b.size = size;
   b.target = target;
+  b.stride = 0;
   eina_inarray_push(m->buffers, &b);
 }
+
+void
+mesh_buffer_stride_add(Mesh* m, const char* name, GLenum target, const void* data, int size, GLsizei stride)
+{
+  Buffer b;
+  b.name = name;
+  b.data = data;
+  b.size = size;
+  b.target = target;
+  b.stride = stride;
+  eina_inarray_push(m->buffers, &b);
+}
+
+
+Vec3
+mesh_vertex_get(const Mesh* m, const unsigned int index)
+{
+  /*
+  int id = m->indices[i];
+  Vec3 v = { 
+    m->vertices[id*3],
+    m->vertices[id*3 + 1],
+    m->vertices[id*3 + 2]
+  };
+  Vec3 v = { 
+    m->vertices[index*3],
+    m->vertices[index*3 + 1],
+    m->vertices[index*3 + 2]
+  };
+  return v;
+  */
+  Vec3 v = ((VertexInfo*)m->vertices_base->members)[index].position;
+  return v;
+}
+
 
