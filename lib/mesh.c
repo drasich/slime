@@ -16,12 +16,12 @@ mesh_read_file(Mesh* mesh, FILE* f)
   int i;
 
   mesh->vertices_base = eina_inarray_new(sizeof(VertexInfo), count);
-  mesh->vertices_fff = eina_inarray_new(sizeof(GLfloat), 3);
+  mesh->vertices = eina_inarray_new(sizeof(GLfloat), 3);
   VertexInfo vi;
   //Vec3 v;
   for (i = 0; i< count*3; ++i) {
     fread(&x, 4,1,f);
-    eina_inarray_push(mesh->vertices_fff, &x);
+    eina_inarray_push(mesh->vertices, &x);
     if (i % 3 == 0) {
       vi.position.x = x;
       if (x > mesh->box.max.x) mesh->box.max.x = x;
@@ -42,7 +42,7 @@ mesh_read_file(Mesh* mesh, FILE* f)
       vif.position.x = (float) vi.position.x;
       vif.position.y = (float) vi.position.y;
       vif.position.z = (float) vi.position.z;
-      eina_inarray_push(mesh->vertices_fff, &vif);
+      eina_inarray_push(mesh->vertices, &vif);
       */
     }
   }
@@ -61,9 +61,9 @@ mesh_read_file(Mesh* mesh, FILE* f)
         mesh,
         "vertex",
         GL_ARRAY_BUFFER,
-        mesh->vertices_fff->members,
-        mesh->vertices_fff->len * mesh->vertices_fff->member_size,
-        //mesh->vertices_fff->member_size);
+        mesh->vertices->members,
+        mesh->vertices->len * mesh->vertices->member_size,
+        //mesh->vertices->member_size);
         0);
   //      */
 

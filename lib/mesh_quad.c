@@ -6,7 +6,7 @@ create_mesh_quad(Mesh* m, int w, int h)
   m->name = "quad";
 
   uint8_t nb_vert = 6;
-  m->vertices_fff = eina_inarray_new(sizeof(GLfloat), 3);
+  m->vertices = eina_inarray_new(sizeof(GLfloat), 3);
 
   uint8_t index;
   float hw = w*0.5f, hh = h*0.5f;
@@ -17,7 +17,7 @@ create_mesh_quad(Mesh* m, int w, int h)
   float nhh = -hh;
   float zero = 0;
 
-#define addvert(a) eina_inarray_push(m->vertices_fff, &a)
+#define addvert(a) eina_inarray_push(m->vertices, &a)
 
   addvert(nhw);
   addvert(hh);
@@ -47,8 +47,8 @@ create_mesh_quad(Mesh* m, int w, int h)
         m,
         "vertex",
         GL_ARRAY_BUFFER,
-        m->vertices_fff->members,
-        m->vertices_fff->len*m->vertices_fff->member_size);
+        m->vertices->members,
+        m->vertices->len*m->vertices->member_size);
 
   m->barycentric = calloc(nb_vert*3, sizeof(GLfloat));
   m->barycentric_len = nb_vert*3;
@@ -125,7 +125,7 @@ quad_resize(Mesh* m, int w, int h)
   float nhh = -hh;
   float zero = 0;
 
-#define rep(a, b) eina_inarray_replace_at(m->vertices_fff, a, &b)
+#define rep(a, b) eina_inarray_replace_at(m->vertices, a, &b)
   rep(0, nhw);
   rep(1, hh);
 

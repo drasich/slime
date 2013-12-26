@@ -382,9 +382,9 @@ _object_update_mesh_vertex(Object* o)
     mesh->vertices[i*3+2] = newpos.z;
     */
 
-    eina_inarray_replace_at(mesh->vertices_fff, i*3, &newpos.x);
-    eina_inarray_replace_at(mesh->vertices_fff, i*3 +1, &newpos.y);
-    eina_inarray_replace_at(mesh->vertices_fff, i*3 +2, &newpos.z);
+    eina_inarray_replace_at(mesh->vertices, i*3, &newpos.x);
+    eina_inarray_replace_at(mesh->vertices, i*3 +1, &newpos.y);
+    eina_inarray_replace_at(mesh->vertices, i*3 +2, &newpos.z);
 
     mesh->normals[i*3] = newnor.x;
     mesh->normals[i*3+1] = newnor.y;

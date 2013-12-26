@@ -63,13 +63,11 @@ struct _Mesh
 {
   const char* name;
 
-  //GLfloat* vertices;
   GLuint* indices;
   GLfloat* normals;
   GLfloat* uvs;
   GLfloat* barycentric;
 
-  //uint32_t vertices_len;
   uint32_t indices_len;
   uint32_t normals_len;
   uint32_t uvs_len;
@@ -79,7 +77,7 @@ struct _Mesh
 
   Eina_Array* vertexgroups;
   Eina_Inarray* vertices_base;
-  Eina_Inarray* vertices_fff;
+  Eina_Inarray* vertices;
   //For animation I need original vertex and vertex to send
   
   AABox box;
