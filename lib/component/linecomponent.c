@@ -144,7 +144,7 @@ component_line()
   if (_line_desc) return _line_desc;
 
   ComponentDesc* cd = calloc(1, sizeof *cd);
-  cd->name = "linec";
+  cd->name = "line";
   cd->create = _line_component_create;
   cd->init = _line_component_init;
   cd->draw = _line_component_draw;
@@ -155,7 +155,7 @@ component_line()
 
 
 void 
-linec_add_grid(LineComponent* l, int num, int space)
+line_add_grid(LineComponent* l, int num, int space)
 {
   Vec4 color = vec4(1,1,1,0.1);
   Vec4 xc = vec4(1.0,0.247,0.188,0.4);
@@ -166,24 +166,24 @@ linec_add_grid(LineComponent* l, int num, int space)
     Vec3 p1 = vec3(i*space, 0, -space*num);
     Vec3 p2 = vec3(i*space, 0, space*num);
     if (i == 0)
-    linec_add_color(l, p1, p2, zc);
+    line_add_color(l, p1, p2, zc);
     else
-    linec_add_color(l, p1, p2, color);
+    line_add_color(l, p1, p2, color);
   }
 
   for ( i = -num; i <= num; ++i) {
     Vec3 p1 = vec3(-space*num, 0, i*space);
     Vec3 p2 = vec3(space*num, 0, i*space);
     if (i == 0)
-    linec_add_color(l, p1, p2, xc);
+    line_add_color(l, p1, p2, xc);
     else
-    linec_add_color(l, p1, p2,color);
+    line_add_color(l, p1, p2,color);
   }
 
 }
 
 void
-linec_add_color(LineComponent* lc, Vec3 p1, Vec3 p2, Vec4 color)
+line_add_color(LineComponent* lc, Vec3 p1, Vec3 p2, Vec4 color)
 {
   Eina_Inarray* vertices = lc->mesh->vertices;
   Eina_Inarray* colors = lc->mesh->colors;
@@ -231,7 +231,7 @@ linec_add_color(LineComponent* lc, Vec3 p1, Vec3 p2, Vec4 color)
 }
 
 void 
-linec_clear(LineComponent* l)
+line_clear(LineComponent* l)
 {
   eina_inarray_free(l->mesh->vertices);
   eina_inarray_free(l->mesh->colors);

@@ -8,57 +8,57 @@ _camera_display(Camera* c)
 {
   printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!camera display\n");
   //return; //TODO
-  linec_clear(c->line);
+  line_clear(c->line);
   float near = c->near;
   float far = c->far;
   float hh = tan(c->fovy/2)*near;
   float hw = hh * c->aspect;
   Vec4 color = vec4(1,1,1,1);
-  linec_add_color(
+  line_add_color(
         c->line,
         vec3(0,0,0),
         vec3(hw,hh,-near),
         color);
 
 
-  linec_add_color(
+  line_add_color(
         c->line,
         vec3(0,0,0),
         vec3(-hw,hh,-near),
         color);
 
-  linec_add_color(
+  line_add_color(
         c->line,
         vec3(0,0,0),
         vec3(-hw,-hh,-near),
         color);
 
-  linec_add_color(
+  line_add_color(
         c->line,
         vec3(0,0,0),
         vec3(hw,-hh,-near),
         color);
 
   //rect
-  linec_add_color(
+  line_add_color(
         c->line,
         vec3(-hw,hh,-near),
         vec3(hw,hh,-near),
         color);
 
-  linec_add_color(
+  line_add_color(
         c->line,
         vec3(-hw,-hh,-near),
         vec3(hw,-hh,-near),
         color);
 
-  linec_add_color(
+  line_add_color(
         c->line,
         vec3(hw,-hh,-near),
         vec3(hw,hh,-near),
         color);
 
-  linec_add_color(
+  line_add_color(
         c->line,
         vec3(-hw,-hh,-near),
         vec3(-hw,hh,-near),
@@ -70,51 +70,51 @@ _camera_display(Camera* c)
   float hhf = hh* far/near;
 
   //lines between near and far
-  linec_add_color(
+  line_add_color(
         c->line,
         vec3(hw,hh,-near),
         vec3(hwf,hhf,-far),
         color);
 
 
-  linec_add_color(
+  line_add_color(
         c->line,
         vec3(-hw,hh,-near),
         vec3(-hwf,hhf,-far),
         color);
 
-  linec_add_color(
+  line_add_color(
         c->line,
         vec3(-hw,-hh,-near),
         vec3(-hwf,-hhf,-far),
         color);
 
-  linec_add_color(
+  line_add_color(
         c->line,
         vec3(hw,-hh,-near),
         vec3(hwf,-hhf,-far),
         color);
 
   // far rect
-  linec_add_color(
+  line_add_color(
         c->line,
         vec3(-hwf,hhf,-far),
         vec3(hwf,hhf,-far),
         color);
 
-  linec_add_color(
+  line_add_color(
         c->line,
         vec3(-hwf,-hhf,-far),
         vec3(hwf,-hhf,-far),
         color);
 
-  linec_add_color(
+  line_add_color(
         c->line,
         vec3(hwf,-hhf,-far),
         vec3(hwf,hhf,-far),
         color);
 
-  linec_add_color(
+  line_add_color(
         c->line,
         vec3(-hwf,-hhf,-far),
         vec3(-hwf,hhf,-far),

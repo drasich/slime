@@ -16,8 +16,8 @@ struct _LineComponent
 };
 
 ComponentDesc* component_line();
-void linec_add_grid(LineComponent* line, int num, int space);
-void linec_add_color(LineComponent* line, Vec3 p1, Vec3 p2, Vec4 color);
+void line_add_grid(LineComponent* line, int num, int space);
+void line_add_color(LineComponent* line, Vec3 p1, Vec3 p2, Vec4 color);
 LineComponent* line_component_create();
 void line_component_draw(LineComponent* lc, Matrix4 world, const Matrix4 projection);
 

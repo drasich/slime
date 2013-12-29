@@ -13,6 +13,7 @@
 #include "gameview.h"
 #include "texture.h"
 #include "component/dragger.h"
+#include "component/linecomponent.h"
 #define __UNUSED__
 
 static bool s_view_destroyed = false;
@@ -494,31 +495,18 @@ _mouse_wheel(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *ev
   camera_pan(v->camera, axis);
 }
 
-#include "component/linecomponent.h"
 static Object* 
 _create_repere(float u, Camera* camera)
 {
   Object* o = create_object();
   o->name = "repere";
-  /*
-  Component* comp = create_component(&line_desc);
-  object_add_component(o,comp);
-  Line* l = comp->data;
-  l->camera = camera;
-  line_add_color(l, vec3(0,0,0), vec3(u,0,0), RED);
-  line_add_color(l, vec3(0,0,0), vec3(0,u,0), GREEN);
-  line_add_color(l, vec3(0,0,0), vec3(0,0,u), BLUE);
-  line_set_use_depth(l, false);
-  */
-
   Component* comp = create_component(component_line());
   object_add_component(o, comp);
   LineComponent* l = comp->data;
   l->camera = camera;
-  linec_add_color(l, vec3(0,0,0), vec3(u,0,0), RED);
-  linec_add_color(l, vec3(0,0,0), vec3(0,u,0), GREEN);
-  linec_add_color(l, vec3(0,0,0), vec3(0,0,u), BLUE);
-  //linec_set_use_depth(l, false);
+  line_add_color(l, vec3(0,0,0), vec3(u,0,0), RED);
+  line_add_color(l, vec3(0,0,0), vec3(0,u,0), GREEN);
+  line_add_color(l, vec3(0,0,0), vec3(0,0,u), BLUE);
 
   return o;
 }
@@ -528,21 +516,13 @@ _create_grid(Camera* camera)
 {
   Object* grid = create_object();
   grid->name = "grid";
-  /*
-  Component* comp = create_component(&line_desc);
-  object_add_component(grid,comp);
-  Line* l = comp->data;
-  l->camera = camera;
-
-  line_add_grid(l, 100, 10);
-  */
 
   Component* comp = create_component(component_line());
   object_add_component(grid, comp);
   LineComponent* l = comp->data;
   l->camera = camera;
 
-  linec_add_grid(l, 100, 10);
+  line_add_grid(l, 100, 10);
   return grid;
 }
 
@@ -994,11 +974,6 @@ _create_view_objects(View* v)
   camera_pan(v->camera, p);
   Vec3 at = {0,0,0};
   camera_lookat(v->camera, at);
-
-  //v->repere = _create_repere(1, v->camera->camera_component);
-  //TODO
-  //Line* l = object_component_get(v->repere, "line");
-  //if (l) line_set_size_fixed(l, true);
 
   Quat q1 = quat_yaw_pitch_roll_deg(-90,0,0);
   Quat q2 = quat_yaw_pitch_roll_deg(0, 90,0);
@@ -1498,8 +1473,6 @@ view_draw(View* v)
   v->camera_repere->position = vec3(-cc->width/2.0 +m, -cc->height/2.0 + m, -10);
   v->camera_repere->orientation = quat_inverse(co->orientation);
   object_compute_matrix_with_quat(v->camera_repere, mo);
-  //Line* line = object_component_get(v->camera_repere, "line");
-  //if (line) line->id_texture = r->fbo_all->texture_depth_stencil_id;
 
   object_draw_edit(v->camera_repere, id4, cc->orthographic, id4);
  
