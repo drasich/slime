@@ -115,6 +115,8 @@ create_mesh_quad(Mesh* m, int w, int h)
         GL_ARRAY_BUFFER,
         m->uvs,
         m->uvs_len* sizeof(GLfloat));
+
+  m->mode = GL_TRIANGLES;
 }
    
 void

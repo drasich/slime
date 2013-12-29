@@ -66,6 +66,12 @@ struct _Shader
   //TODO uniforms texture
 };
 
+typedef struct _ShaderInstance ShaderInstance;
+struct _ShaderInstance
+{
+  Eina_Hash* textures;
+  Eina_Hash* uniforms;
+};
 
 //void load_shader(Evas_Object *gl);
 char* stringFromFile(const char* path);
@@ -82,6 +88,8 @@ void shader_init_uniform(Shader* s, char* uni_name, GLint* uni);
 void shader_use(Shader* s);
 struct _MeshComponent;
 void shader_mesh_draw(Shader* s, struct _MeshComponent* mc);
+struct _Mesh;
+void shader_mesh_nocomp_draw(Shader* s, ShaderInstance* si, struct _Mesh* m);
 
 void shader_destroy(Shader* s);
 
@@ -99,13 +107,6 @@ Uniform* shader_uniform_get(Shader* s, const char* name);
 GLint shader_uniform_location_get(Shader* s, const char* name);
 
 void shader_attribute_add(Shader* s, const char* name, GLint size, GLenum type);
-
-typedef struct _ShaderInstance ShaderInstance;
-struct _ShaderInstance
-{
-  Eina_Hash* textures;
-  Eina_Hash* uniforms;
-};
 
 ShaderInstance* shader_instance_create(Shader* s);
 void shader_instance_uniform_data_set(ShaderInstance* si, const char* name, void* data);

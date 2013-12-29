@@ -186,11 +186,18 @@ mesh_read_file(Mesh* mesh, FILE* f)
     }
   }
 
+  //TODO 
+  mesh->mode = GL_TRIANGLES;
 }
 
 void
 mesh_init(Mesh* m)
 {
+  if (!m->buffers) {
+    printf("mesh init: there are no buffers\n");
+    return;
+  }
+
   Buffer* b;
   EINA_INARRAY_FOREACH(m->buffers, b) {
     glGenBuffers(1, &b->id);
@@ -218,6 +225,19 @@ mesh_resend(Mesh* m)
           b->data);
   }
 }
+
+void
+buffer_resend(Buffer* b)
+{
+  glBindBuffer(b->target, b->id);
+  glBufferSubData(
+        b->target,
+        0,
+        b->size,
+        b->data);
+  b->need_resend = false;
+}
+
 
 Mesh*
 mesh_new()
@@ -280,6 +300,11 @@ mesh_file_set(Mesh* m, const char* filename)
 Buffer*
 mesh_buffer_get(Mesh* m, const char* name)
 {
+  if (!m->buffers) {
+    printf("buffer get :there are no buffers\n");
+    return NULL;
+  }
+
   Buffer* b;
   EINA_INARRAY_FOREACH(m->buffers, b) {
     if (!strcmp(b->name, name)) {
@@ -293,18 +318,24 @@ mesh_buffer_get(Mesh* m, const char* name)
 void
 mesh_buffer_add(Mesh* m, const char* name, GLenum target, const void* data, int size)
 {
-  Buffer b;
-  b.name = name;
-  b.data = data;
-  b.size = size;
-  b.target = target;
-  b.stride = 0;
-  eina_inarray_push(m->buffers, &b);
+  mesh_buffer_stride_add(m, name, target, data, size, 0);
 }
 
 void
 mesh_buffer_stride_add(Mesh* m, const char* name, GLenum target, const void* data, int size, GLsizei stride)
 {
+  Buffer* bb;
+  EINA_INARRAY_FOREACH(m->buffers, bb) {
+    if (!strcmp(name, bb->name)) {
+      bb->data = data;
+      bb->size = size;
+      bb->target = target;
+      bb->stride = stride;
+      bb->need_resend = true;
+      return;
+    }
+  }
+
   Buffer b;
   b.name = name;
   b.data = data;

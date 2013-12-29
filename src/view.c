@@ -494,11 +494,13 @@ _mouse_wheel(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *ev
   camera_pan(v->camera, axis);
 }
 
+#include "component/linecomponent.h"
 static Object* 
 _create_repere(float u, Camera* camera)
 {
   Object* o = create_object();
   o->name = "repere";
+  /*
   Component* comp = create_component(&line_desc);
   object_add_component(o,comp);
   Line* l = comp->data;
@@ -507,6 +509,17 @@ _create_repere(float u, Camera* camera)
   line_add_color(l, vec3(0,0,0), vec3(0,u,0), GREEN);
   line_add_color(l, vec3(0,0,0), vec3(0,0,u), BLUE);
   line_set_use_depth(l, false);
+  */
+
+  Component* comp = create_component(component_line());
+  object_add_component(o, comp);
+  LineComponent* l = comp->data;
+  l->camera = camera;
+  linec_add_color(l, vec3(0,0,0), vec3(u,0,0), RED);
+  linec_add_color(l, vec3(0,0,0), vec3(0,u,0), GREEN);
+  linec_add_color(l, vec3(0,0,0), vec3(0,0,u), BLUE);
+  //linec_set_use_depth(l, false);
+
   return o;
 }
 
@@ -515,12 +528,21 @@ _create_grid(Camera* camera)
 {
   Object* grid = create_object();
   grid->name = "grid";
+  /*
   Component* comp = create_component(&line_desc);
   object_add_component(grid,comp);
   Line* l = comp->data;
   l->camera = camera;
 
   line_add_grid(l, 100, 10);
+  */
+
+  Component* comp = create_component(component_line());
+  object_add_component(grid, comp);
+  LineComponent* l = comp->data;
+  l->camera = camera;
+
+  linec_add_grid(l, 100, 10);
   return grid;
 }
 

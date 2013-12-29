@@ -304,8 +304,22 @@ shader_read(const char* filename)
 void 
 shader_mesh_draw(Shader* s, struct _MeshComponent* mc)
 {
-  if (!mc->shader_instance) return;
+  if (!mc->shader_instance) {
+    printf("shader mesh draw, no shader instance\n");
+    return;
+  }
   Mesh* m = mesh_component_mesh_get(mc);
+
+  shader_mesh_nocomp_draw(s, mc->shader_instance, m);
+}
+
+void
+shader_mesh_nocomp_draw(Shader* s, ShaderInstance* si, struct _Mesh* m)
+{
+  if (!si) {
+    printf("shader mesh nocomp draw, no shader instance\n");
+    return;
+  }
   if (!m) {
     printf("shader mesh draw, no mesh\n");
     return;
@@ -315,7 +329,7 @@ shader_mesh_draw(Shader* s, struct _MeshComponent* mc)
   GLuint i = 0;
   EINA_INARRAY_FOREACH(s->uniforms, uni) {
     if (uni->type == UNIFORM_TEXTURE) {
-      if (!mc->shader_instance->textures) {
+      if (!si->textures) {
         continue;
       }
 
@@ -324,11 +338,11 @@ shader_mesh_draw(Shader* s, struct _MeshComponent* mc)
       //GLint uni_tex = shader_uniform_location_get(s, uniname);
       GLint uni_tex = uni->location;
       GLint tex_id = -1;
-      TextureHandle* th = shader_instance_texture_data_get(mc->shader_instance, uniname);
+      TextureHandle* th = shader_instance_texture_data_get(si, uniname);
 
       if (!th) {
         printf("%s , I didn't find the texture handle with this name: '%s' \n", __FUNCTION__, uniname);
-        shader_instance_print(mc->shader_instance);
+        shader_instance_print(si);
       }
       else if (!th->texture) {
         printf("%s , texture is not loaded, or assigned?: '%s' \n", __FUNCTION__, uniname);
@@ -351,7 +365,7 @@ shader_mesh_draw(Shader* s, struct _MeshComponent* mc)
     else {
       const char* uniname = uni->name;
       GLint uni_loc = uni->location;
-      UniformValue* uv = shader_instance_uniform_data_get(mc->shader_instance, uniname);
+      UniformValue* uv = shader_instance_uniform_data_get(si, uniname);
 
       if (uni_loc < 0 || !uv) {
         continue;
@@ -369,6 +383,8 @@ shader_mesh_draw(Shader* s, struct _MeshComponent* mc)
   EINA_INARRAY_FOREACH(s->attributes, att) {
     Buffer* buf = mesh_buffer_get(m, att->name);
     if (buf) {
+      if (buf->need_resend) buffer_resend(buf);
+
       if (buf->target == GL_ARRAY_BUFFER) {
         glBindBuffer(buf->target, buf->id);
         glEnableVertexAttribArray(att->location);
@@ -395,8 +411,10 @@ shader_mesh_draw(Shader* s, struct _MeshComponent* mc)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
   else {
-    glDrawArrays(GL_TRIANGLES,0, m->vertices->len/3);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    if (m->vertices) {
+      glDrawArrays(m->mode, 0, m->vertices->len/3);
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
   }
 
   glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -728,119 +746,6 @@ void shader_instance_init(ShaderInstance* si)
   if (si->textures)
   eina_hash_foreach(si->textures, _texture_init, NULL);
     printf("%s\n", __FUNCTION__);
-
-}
-
-
-
-
-
-
-#include "component/line.h"
-void 
-shader_line_draw(Shader* s, struct _Line* l, ShaderInstance* shader_instance)
-{
-  if (!l) {
-    printf("shader line draw, line is null\n");
-    return;
-  }
-  if (!shader_instance) return;
-
-  Uniform* uni;
-  GLuint i = 0;
-  EINA_INARRAY_FOREACH(s->uniforms, uni) {
-    if (uni->type == UNIFORM_TEXTURE) {
-      if (!shader_instance->textures) {
-        continue;
-      }
-
-      const char* uniname = uni->name;
-
-      //GLint uni_tex = shader_uniform_location_get(s, uniname);
-      GLint uni_tex = uni->location;
-      GLint tex_id = -1;
-      TextureHandle* th = shader_instance_texture_data_get(shader_instance, uniname);
-
-      if (!th) {
-        printf("%s , I didn't find the texture handle with this name: '%s' \n", __FUNCTION__, uniname);
-        shader_instance_print(shader_instance);
-      }
-      else if (!th->texture) {
-        printf("%s , texture is not loaded, or assigned?: '%s' \n", __FUNCTION__, uniname);
-        th->texture = resource_texture_get(s_rm, th->name);
-      }
-
-      if (th && th->texture) {
-        Texture* t = th->texture;
-        texture_init(t);
-        tex_id = texture_id_get(t);
-      }
-
-      if (uni_tex >= 0 && tex_id >= 0) {
-        glUniform1i(uni_tex, i);
-        glActiveTexture(GL_TEXTURE0 + i);
-        glBindTexture(GL_TEXTURE_2D, tex_id);
-        ++i;
-      }
-    }
-    else {
-      const char* uniname = uni->name;
-      GLint uni_loc = uni->location;
-      UniformValue* uv = shader_instance_uniform_data_get(shader_instance, uniname);
-
-      if (uni_loc < 0 || !uv) {
-        continue;
-      }
-
-      if (uni->type == UNIFORM_FLOAT)
-      glUniform1f(uni_loc, uv->value.f);
-      else if (uni->type == UNIFORM_VEC3)
-      glUniform3f(uni_loc, uv->value.vec3.x, uv->value.vec3.y, uv->value.vec3.z);
-    }
-
-  }
-
-  /*
-  Attribute* att;
-  EINA_INARRAY_FOREACH(s->attributes, att) {
-    Buffer* buf = mesh_buffer_get(m, att->name);
-    if (buf) {
-      if (buf->target == GL_ARRAY_BUFFER) {
-        glBindBuffer(buf->target, buf->id);
-        glEnableVertexAttribArray(att->location);
-
-        glVertexAttribPointer(
-              att->location,
-              att->size,
-              att->type,
-              GL_FALSE,
-              0,
-              0);
-      }
-    }
-  }
-
-  Buffer* buf_indices = mesh_buffer_get(m, "index");
-  if (buf_indices) {
-    glBindBuffer(buf_indices->target, buf_indices->id);
-    glDrawElements(
-          GL_TRIANGLES, 
-          m->indices_len,
-          GL_UNSIGNED_INT,
-          0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-  }
-  else {
-    glDrawArrays(GL_TRIANGLES,0, m->vertices_len/3);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-  }
-
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-  EINA_INARRAY_FOREACH(s->attributes, att) {
-    glDisableVertexAttribArray(att->location);
-  }
-  */
 
 }
 

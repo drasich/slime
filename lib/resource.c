@@ -202,6 +202,17 @@ resource_shader_create(ResourceManager* rm)
   //Shader* simple = shader_read("shader/simple.shader");
   //Shader* red = shader_read("shader/red.shader");
 
+
+  Shader* line = create_shader("line", "shader/line.vert", "shader/line.frag");
+  shader_attribute_add(line, "vertex", 3, GL_FLOAT);
+  shader_attribute_add(line, "color", 4, GL_FLOAT);
+  shader_uniform_add(line, "matrix");
+  //shader_uniform_type_add(line, "texture", UNIFORM_TEXTURE, false); //TODO uncomment
+  shader_uniform_type_add(line, "resolution", UNIFORM_VEC2, false);
+  shader_uniform_type_add(line, "use_depth", UNIFORM_INT, false);
+  shader_uniform_type_add(line, "size_fixed", UNIFORM_INT, false);
+
+  eina_hash_add(rm->shaders, line->name, line);
   eina_hash_add(rm->shaders, simple->name, simple);
   eina_hash_add(rm->shaders, diffuse->name, diffuse);
   eina_hash_add(rm->shaders, red->name, red);

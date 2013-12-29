@@ -55,6 +55,7 @@ struct _Buffer
   int size;
   GLenum target;
   GLsizei stride;
+  bool need_resend;
 };
 
 typedef struct _Mesh Mesh;
@@ -78,6 +79,7 @@ struct _Mesh
   Eina_Array* vertexgroups;
   Eina_Inarray* vertices_base;
   Eina_Inarray* vertices;
+  Eina_Inarray* colors;
   //For animation I need original vertex and vertex to send
   
   AABox box;
@@ -85,7 +87,7 @@ struct _Mesh
   bool is_init;
 
   Eina_Inarray* buffers;
-  GLenum mode;
+  GLenum mode; //TODO in here or in component?
 };
 
 Mesh* mesh_new();
@@ -93,6 +95,7 @@ void mesh_file_set(Mesh* m, const char* filename);
 void mesh_init(Mesh* mesh);
 void mesh_resend(Mesh* mesh);
 void mesh_destroy(Mesh* m);
+void buffer_resend(Buffer* b);
 
 Buffer* mesh_buffer_get(Mesh* m, const char* name);
 void mesh_buffer_add(Mesh* m, const char* name, GLenum target, const void* data, int size);
