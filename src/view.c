@@ -995,9 +995,10 @@ _create_view_objects(View* v)
   Vec3 at = {0,0,0};
   camera_lookat(v->camera, at);
 
-  v->repere = _create_repere(1, v->camera->camera_component);
-  Line* l = object_component_get(v->repere, "line");
-  if (l) line_set_size_fixed(l, true);
+  //v->repere = _create_repere(1, v->camera->camera_component);
+  //TODO
+  //Line* l = object_component_get(v->repere, "line");
+  //if (l) line_set_size_fixed(l, true);
 
   Quat q1 = quat_yaw_pitch_roll_deg(-90,0,0);
   Quat q2 = quat_yaw_pitch_roll_deg(0, 90,0);
@@ -1423,11 +1424,14 @@ view_draw(View* v)
   EINA_LIST_FOREACH(cxol, l, o) {
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
+    //TODO lines
+    /*
     Line* line = object_component_get(o, "line");
     if (line) {
       line->id_texture = r->fbo_all->texture_depth_stencil_id;
       object_draw_edit_component(o, cam_mat_inv, cc->projection , id4, "line");
     }
+    */
     repere_position = vec3_add(repere_position, object_world_position_get(o));
     repere_ori = quat_mul(repere_ori, object_world_orientation_get(o));
   }
@@ -1494,8 +1498,8 @@ view_draw(View* v)
   v->camera_repere->position = vec3(-cc->width/2.0 +m, -cc->height/2.0 + m, -10);
   v->camera_repere->orientation = quat_inverse(co->orientation);
   object_compute_matrix_with_quat(v->camera_repere, mo);
-  Line* line = object_component_get(v->camera_repere, "line");
-  if (line) line->id_texture = r->fbo_all->texture_depth_stencil_id;
+  //Line* line = object_component_get(v->camera_repere, "line");
+  //if (line) line->id_texture = r->fbo_all->texture_depth_stencil_id;
 
   object_draw_edit(v->camera_repere, id4, cc->orthographic, id4);
  

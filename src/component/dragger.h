@@ -6,7 +6,7 @@
 #include "component.h"
 #include "context.h"
 #include "intersect.h"
-#include "component/line.h"
+//#include "component/line.h"
 #include "component/meshcomponent.h"
 
 typedef enum {

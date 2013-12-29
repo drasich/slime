@@ -39,7 +39,7 @@ struct _View
   //Evas_Object* scene_entry;
   ViewCamera* camera;
   Render* render;
-  Object* repere;
+  //Object* repere;
   Object* grid;
   Object* camera_repere;
 
