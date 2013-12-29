@@ -8,57 +8,57 @@ _camera_display(Camera* c)
 {
   printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!camera display\n");
   //return; //TODO
-  line_clear(c->line);
+  linec_clear(c->line);
   float near = c->near;
   float far = c->far;
   float hh = tan(c->fovy/2)*near;
   float hw = hh * c->aspect;
   Vec4 color = vec4(1,1,1,1);
-  line_add_color(
+  linec_add_color(
         c->line,
         vec3(0,0,0),
         vec3(hw,hh,-near),
         color);
 
 
-  line_add_color(
+  linec_add_color(
         c->line,
         vec3(0,0,0),
         vec3(-hw,hh,-near),
         color);
 
-  line_add_color(
+  linec_add_color(
         c->line,
         vec3(0,0,0),
         vec3(-hw,-hh,-near),
         color);
 
-  line_add_color(
+  linec_add_color(
         c->line,
         vec3(0,0,0),
         vec3(hw,-hh,-near),
         color);
 
   //rect
-  line_add_color(
+  linec_add_color(
         c->line,
         vec3(-hw,hh,-near),
         vec3(hw,hh,-near),
         color);
 
-  line_add_color(
+  linec_add_color(
         c->line,
         vec3(-hw,-hh,-near),
         vec3(hw,-hh,-near),
         color);
 
-  line_add_color(
+  linec_add_color(
         c->line,
         vec3(hw,-hh,-near),
         vec3(hw,hh,-near),
         color);
 
-  line_add_color(
+  linec_add_color(
         c->line,
         vec3(-hw,-hh,-near),
         vec3(-hw,hh,-near),
@@ -70,51 +70,51 @@ _camera_display(Camera* c)
   float hhf = hh* far/near;
 
   //lines between near and far
-  line_add_color(
+  linec_add_color(
         c->line,
         vec3(hw,hh,-near),
         vec3(hwf,hhf,-far),
         color);
 
 
-  line_add_color(
+  linec_add_color(
         c->line,
         vec3(-hw,hh,-near),
         vec3(-hwf,hhf,-far),
         color);
 
-  line_add_color(
+  linec_add_color(
         c->line,
         vec3(-hw,-hh,-near),
         vec3(-hwf,-hhf,-far),
         color);
 
-  line_add_color(
+  linec_add_color(
         c->line,
         vec3(hw,-hh,-near),
         vec3(hwf,-hhf,-far),
         color);
 
   // far rect
-  line_add_color(
+  linec_add_color(
         c->line,
         vec3(-hwf,hhf,-far),
         vec3(hwf,hhf,-far),
         color);
 
-  line_add_color(
+  linec_add_color(
         c->line,
         vec3(-hwf,-hhf,-far),
         vec3(hwf,-hhf,-far),
         color);
 
-  line_add_color(
+  linec_add_color(
         c->line,
         vec3(hwf,-hhf,-far),
         vec3(hwf,hhf,-far),
         color);
 
-  line_add_color(
+  linec_add_color(
         c->line,
         vec3(-hwf,-hhf,-far),
         vec3(-hwf,hhf,-far),
@@ -136,7 +136,11 @@ _create_camera()
   c->height = c->height_base;
   c->local_offset = vec3_zero();
 
-  c->line = create_line();
+  //c->line = create_line();
+
+  c->line = line_component_create();
+  c->line->camera = c;
+
   ccamera_update_projection(c);
   _camera_display(c);
 
@@ -150,10 +154,10 @@ _camera_init(Component* component)
   camera_init(c);
   c->local_offset = vec3_zero();
 
-  c->line = create_line();
+  //c->line = create_line();
+  c->line = line_component_create();
   c->line->camera = c;
   _camera_display(c);
-
 }
 
 void
@@ -190,12 +194,17 @@ _camera_draw_edit(Component* comp, Matrix4 world, const Matrix4 projection)
 {
   //TODO
   Camera* c = comp->data;
-  Line* l = c->line;
-  //return;
+  LineComponent* l = c->line;
   //shader_init_uniform(l->shader, "size_fixed", &l->uniform_size_fixed);
-  //shader_instance_
-  line_prepare_draw(l, world, projection);
-  line_draw(l);
+
+  //UniformValue* uv = calloc(1, sizeof *uv);
+  //uv->type = UNIFORM_INT;
+  //uv->value.i = 1;
+  //shader_instance_uniform_data_set(mc->shader_instance, "testfloat", uv);
+  UniformValue* uv = shader_instance_uniform_data_get(l->shader_instance, "size_fixed");
+  uv->value.i = 1;
+
+  line_component_draw(c->line, world, projection);
 }
 
 ComponentDesc camera_desc = {

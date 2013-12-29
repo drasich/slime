@@ -64,11 +64,18 @@ static Eina_Bool uniform_send(
     return EINA_FALSE;
   }
 
-  //TODO data
+  UniformValue* uv = data;
   if (uni->type == UNIFORM_VEC4) {
-    Vec4* v = data;
+    Vec4* v = &uv->value.vec4;
     glUniform4f(uniloc, v->x,v->y,v->z,v->w);
   }
+  else if (uni->type == UNIFORM_INT) {
+    glUniform1i(uniloc, uv->value.i);
+  }
+  else {
+    printf("uniform send not yet \n");
+  }
+
 
   return EINA_TRUE;
 }

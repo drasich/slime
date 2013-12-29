@@ -144,8 +144,9 @@ _dragger_rotate_create(Vec3 constraint, Vec4 color, bool plane)
 
   mesh_component_mesh_set_by_name(mc, "model/dragger_rotate_quarter.mesh");
 
-  Vec4* v = calloc(1, sizeof *v);
-  shader_instance_uniform_data_set(mc->shader_instance, "color", v);
+  UniformValue* uv = calloc(1, sizeof *uv);
+  uv->type = UNIFORM_VEC4;
+  shader_instance_uniform_data_set(mc->shader_instance, "color", uv);
 
   /////////
 
@@ -156,8 +157,9 @@ _dragger_rotate_create(Vec3 constraint, Vec4 color, bool plane)
 
   mesh_component_mesh_set_by_name(mcs, "model/dragger_rotate_circle.mesh");
 
-  v = calloc(1, sizeof *v);
-  shader_instance_uniform_data_set(mcs->shader_instance, "color", v);
+  uv = calloc(1, sizeof *uv);
+  uv->type = UNIFORM_VEC4;
+  shader_instance_uniform_data_set(mcs->shader_instance, "color", uv);
 
   ////////////////
   comp = create_component(dragger_desc());
@@ -196,8 +198,9 @@ _dragger_scale_create(Vec3 constraint, Vec4 color, bool plane)
     mesh_component_mesh_set_by_name(mc, "model/dragger_scale.mesh");
   }
 
-  Vec4* v = calloc(1, sizeof *v);
-  shader_instance_uniform_data_set(mc->shader_instance, "color", v);
+  UniformValue* uv = calloc(1, sizeof *uv);
+  uv->type = UNIFORM_VEC4;
+  shader_instance_uniform_data_set(mc->shader_instance, "color", uv);
 
 
   comp = create_component(dragger_desc());
@@ -232,8 +235,9 @@ _dragger_translate_create(Vec3 constraint, Vec4 color, bool plane)
     mesh_component_mesh_set_by_name(mc, "model/dragger_arrow.mesh");
   }
 
-  Vec4* v = calloc(1, sizeof *v);
-  shader_instance_uniform_data_set(mc->shader_instance, "color", v);
+  UniformValue* uv = calloc(1, sizeof *uv);
+  uv->type = UNIFORM_VEC4;
+  shader_instance_uniform_data_set(mc->shader_instance, "color", uv);
 
   /*
   comp = create_component(&line_desc);

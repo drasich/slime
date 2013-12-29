@@ -373,8 +373,14 @@ shader_mesh_nocomp_draw(Shader* s, ShaderInstance* si, struct _Mesh* m)
 
       if (uni->type == UNIFORM_FLOAT)
       glUniform1f(uni_loc, uv->value.f);
+      else if (uni->type == UNIFORM_INT)
+      glUniform1i(uni_loc, uv->value.i);
       else if (uni->type == UNIFORM_VEC3)
       glUniform3f(uni_loc, uv->value.vec3.x, uv->value.vec3.y, uv->value.vec3.z);
+      else if (uni->type == UNIFORM_VEC4)
+      glUniform4f(uni_loc, uv->value.vec4.x, uv->value.vec4.y, uv->value.vec4.z, uv->value.vec4.w);
+      else
+      printf("Shader %s uniform not yet %d \n", s->name, uni->type);
     }
 
   }
@@ -506,7 +512,8 @@ shader_instance_create(Shader* s)
 
   Uniform* uni;
   EINA_INARRAY_FOREACH(s->uniforms, uni) {
-    if (uni->visible) {
+    //if (uni->visible) {
+     {
       //printf("shader instance create %s, uniname %s \n", s->name, uni->name);
       if (uni->type == UNIFORM_TEXTURE ) {
         //TODO another default texture

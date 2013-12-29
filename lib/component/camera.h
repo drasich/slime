@@ -4,7 +4,8 @@
 #include "quat.h"
 #include "matrix.h"
 #include "component.h"
-#include "component/line.h"
+//#include "component/line.h"
+#include "component/linecomponent.h"
 
 #define ENUM(name, ... ) \
  typedef enum { __VA_ARGS__ } name; \
@@ -38,7 +39,7 @@ struct _Camera
   Vec3 center;
 
   Vec4 clear_color;
-  Line* line;
+  LineComponent* line;
 };
 
 ComponentDesc camera_desc;

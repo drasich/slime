@@ -20,6 +20,12 @@ _line_component_create()
   return l;
 }
 
+LineComponent*
+line_component_create()
+{
+  return _line_component_create();
+}
+
 static Eina_Bool uniform_send(
       const Eina_Hash *hash,
       const void *key,
@@ -39,10 +45,16 @@ static Eina_Bool uniform_send(
     return EINA_FALSE;
   }
 
-  //TODO data
+  UniformValue* uv = data;
   if (uni->type == UNIFORM_VEC4) {
-    Vec4* v = data;
+    Vec4* v = &uv->value.vec4;
     glUniform4f(uniloc, v->x,v->y,v->z,v->w);
+  }
+  else if (uni->type == UNIFORM_INT) {
+    glUniform1i(uniloc, uv->value.i);
+  }
+  else {
+    printf("uniform send not yet \n");
   }
 
   return EINA_TRUE;
@@ -54,7 +66,18 @@ _line_component_draw(Component* c, Matrix4 world, const Matrix4 projection)
 {
   LineComponent* lc = c->data;
   if (!lc) {
-    printf("no mesh component data\n");
+    printf("no line component data\n");
+    return;
+  }
+
+  line_component_draw(lc, world, projection);
+}
+
+void
+line_component_draw(LineComponent* lc, Matrix4 world, const Matrix4 projection)
+{
+  if (!lc) {
+    printf("no line component data\n");
     return;
   }
 
@@ -205,5 +228,20 @@ linec_add_color(LineComponent* lc, Vec3 p1, Vec3 p2, Vec4 color)
         GL_ARRAY_BUFFER,
         colors->members,
         colors->len * colors->member_size);
+}
+
+void 
+linec_clear(LineComponent* l)
+{
+  eina_inarray_free(l->mesh->vertices);
+  eina_inarray_free(l->mesh->colors);
+
+  l->mesh->vertices = eina_inarray_new(sizeof(GLfloat), 3);
+  l->mesh->colors = eina_inarray_new(sizeof(GLfloat), 4);
+  
+  Buffer* b;
+  EINA_INARRAY_FOREACH(l->mesh->buffers, b) {
+    b->need_resend = true;
+  }
 }
 
