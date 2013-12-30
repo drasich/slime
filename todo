@@ -1,7 +1,5 @@
 LATELY
-- merge mesh/line and make only shader_instance_draw(Shader, ShaderInstance, Mesh/Line) or put mesh/line in shaderinstance
-  because now shader instance is texture uniforms; but maybe we can add mesh/line info to it?
-- camera display?
+- camera display? -> change to transparent mesh, so we can select it?
 - make a struct with entry/spinner data, in callbacks like entry_activate, entry_changed
   use this info to do something appropriate
 - right click for scene tree and objects,
