@@ -245,3 +245,70 @@ line_clear(LineComponent* l)
   }
 }
 
+void
+line_add_box(LineComponent* l, AABox box, Vec4 color)
+{
+  //printf("begin addbox : %d \n", l->mesh->vertices->len);
+
+  //TODO
+  Vec3 min = box.min;
+  Vec3 max = box.max;
+
+  Vec3 p1, p2;
+  
+  p1 = vec3(min.x, min.y, max.z);
+  p2 = vec3(max.x, min.y, max.z);
+  line_add_color(l, p1, p2, color);
+
+  p1 = vec3(min.x, max.y, max.z);
+  p2 = vec3(max.x, max.y, max.z);
+  line_add_color(l, p1, p2, color);
+
+  p1 = vec3(min.x, min.y, max.z);
+  p2 = vec3(min.x, max.y, max.z);
+  line_add_color(l, p1, p2, color);
+
+  p1 = vec3(max.x, min.y, max.z);
+  p2 = vec3(max.x, max.y, max.z);
+  line_add_color(l, p1, p2, color);
+
+  ////////////////
+
+  p1 = vec3(min.x, min.y, min.z);
+  p2 = vec3(max.x, min.y, min.z);
+  line_add_color(l, p1, p2, color);
+
+  p1 = vec3(min.x, max.y, min.z);
+  p2 = vec3(max.x, max.y, min.z);
+  line_add_color(l, p1, p2, color);
+
+  p1 = vec3(min.x, min.y, min.z);
+  p2 = vec3(min.x, max.y, min.z);
+  line_add_color(l, p1, p2, color);
+
+  p1 = vec3(max.x, min.y, min.z);
+  p2 = vec3(max.x, max.y, min.z);
+  line_add_color(l, p1, p2, color);
+
+  /////////////////////////
+
+  p1 = vec3(min.x, min.y, min.z);
+  p2 = vec3(min.x, min.y, max.z);
+  line_add_color(l, p1, p2, color);
+
+  p1 = vec3(min.x, max.y, min.z);
+  p2 = vec3(min.x, max.y, max.z);
+  line_add_color(l, p1, p2, color);
+
+  p1 = vec3(max.x, min.y, min.z);
+  p2 = vec3(max.x, min.y, max.z);
+  line_add_color(l, p1, p2, color);
+
+  p1 = vec3(max.x, max.y, min.z);
+  p2 = vec3(max.x, max.y, max.z);
+  line_add_color(l, p1, p2, color);
+
+  //printf("finish addbox : %d \n", l->mesh->vertices->len);
+}
+
+

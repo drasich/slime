@@ -47,6 +47,7 @@ NOT URGENT
   I do with the file... I have to rename it right...
   so add void* callback in the property struct?
 - check name of scenes? only one name for each?
+- 4 view
 
 BUG
 - focus the play and main windows alternatively(with the mouse)
