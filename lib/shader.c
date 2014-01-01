@@ -205,13 +205,13 @@ shader_attribute_add(Shader* s, const char* name, GLint size, GLenum type)
 }
 
 void
-shader_uniform_add(Shader* s, const char* name)
+shader_uniform_add(Shader* s, const char* name, bool visible)
 {
   Uniform uni;
   uni.name = name;
   uni.location = 0;
   uni.type = UNIFORM_UNKNOWN;
-  uni.visible = false;
+  uni.visible = visible;
   eina_inarray_push(s->uniforms, &uni);
 }
 
@@ -512,8 +512,7 @@ shader_instance_create(Shader* s)
 
   Uniform* uni;
   EINA_INARRAY_FOREACH(s->uniforms, uni) {
-    //if (uni->visible) {
-     {
+    if (uni->visible) {
       //printf("shader instance create %s, uniname %s \n", s->name, uni->name);
       if (uni->type == UNIFORM_TEXTURE ) {
         //TODO another default texture

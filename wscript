@@ -26,7 +26,8 @@ def configure(conf):
   conf.check_cfg(package='eina', uselib_store='eina', atleast_version='0.0.1', args='--cflags --libs', mandatory=True)
   conf.check_cfg(package='eet', uselib_store='eet', atleast_version='0.0.1', args='--cflags --libs', mandatory=True)
   conf.check_cfg(package='evas', uselib_store='eet', atleast_version='0.0.1', args='--cflags --libs', mandatory=True)
-  conf.check_cfg(package='elementary', uselib_store='elementary', atleast_version='0.0.1', args='--cflags --libs', mandatory=True)
+  #conf.check_cfg(package='efl', uselib_store='efl', atleast_version='1.8.0', args='--cflags --libs', mandatory=True)
+  conf.check_cfg(package='elementary', uselib_store='elementary', atleast_version='1.8.0', args='--cflags --libs', mandatory=True)
   #conf.check_cfg(package='protobuf', uselib_store='protobuf', atleast_version='0.0.0', mandatory=1, args='--cflags --libs')
   conf.check_cfg(package='libpng', uselib_store='png', atleast_version='0.0.0', mandatory=1, args='--cflags --libs')
 

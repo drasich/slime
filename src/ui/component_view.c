@@ -1273,6 +1273,7 @@ _property_add(ComponentProperties* cp, const Property* p, Evas_Object* box, void
       }
       break;
     case EET_G_HASH:
+      if (!data) break;
        {
         int offset = property_offset_get(p);
         const void** ptr = data + offset;

@@ -101,7 +101,7 @@ void shader_descriptor_init(void);
 GLint shader_attribute_location_get(Shader* shader, const char* name);
 void shader_matrices_set(Shader* mesh, Matrix4 mat, const Matrix4 projection);
 
-void shader_uniform_add(Shader* s, const char* name);
+void shader_uniform_add(Shader* s, const char* name, bool visible);
 void shader_uniform_type_add(Shader* s, const char* name, UniformType type, bool visible);
 Uniform* shader_uniform_get(Shader* s, const char* name);
 GLint shader_uniform_location_get(Shader* s, const char* name);

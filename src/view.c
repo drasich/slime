@@ -1178,8 +1178,8 @@ create_render()
 
   Shader* s = create_shader("stencil", "shader/stencil.vert", "shader/stencil.frag");
   shader_attribute_add(s, "vertex", 3, GL_FLOAT);
-  shader_uniform_add(s, "matrix");
-  shader_uniform_add(s, "resolution");
+  shader_uniform_add(s, "matrix", false);
+  shader_uniform_add(s, "resolution", false);
   shader_uniform_type_add(s, "texture", UNIFORM_TEXTURE, false);
   shader_uniform_type_add(s, "texture_all", UNIFORM_TEXTURE, false);
 

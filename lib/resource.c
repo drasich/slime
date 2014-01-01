@@ -173,8 +173,8 @@ resource_shader_create(ResourceManager* rm)
   shader_attribute_add(simple, "vertex", 3, GL_FLOAT);
   shader_attribute_add(simple, "normal", 3, GL_FLOAT);
   shader_attribute_add(simple, "texcoord", 2, GL_FLOAT);
-  shader_uniform_add(simple, "matrix");
-  shader_uniform_add(simple, "normal_matrix");
+  shader_uniform_add(simple, "matrix", false);
+  shader_uniform_add(simple, "normal_matrix", false);
   shader_uniform_type_add(simple, "texture", UNIFORM_TEXTURE, true);
   shader_uniform_type_add(simple, "testfloat", UNIFORM_FLOAT, true );
   shader_uniform_type_add(simple, "light", UNIFORM_VEC3, true);
@@ -182,20 +182,20 @@ resource_shader_create(ResourceManager* rm)
   Shader* diffuse = create_shader("shader/diffuse.shader","shader/diffuse.vert", "shader/diffuse.frag");
   shader_attribute_add(diffuse, "vertex", 3, GL_FLOAT);
   shader_attribute_add(diffuse, "texcoord", 2, GL_FLOAT);
-  shader_uniform_add(diffuse, "matrix");
+  shader_uniform_add(diffuse, "matrix", false);
   shader_uniform_type_add(diffuse, "texture", UNIFORM_TEXTURE, true);
 
   Shader* red = create_shader("shader/red.shader", "shader/simple.vert", "shader/red.frag");
   shader_attribute_add(red, "vertex", 3, GL_FLOAT);
   shader_attribute_add(red, "normal", 3, GL_FLOAT);
   shader_attribute_add(red, "texcoord", 2, GL_FLOAT);
-  shader_uniform_add(red, "matrix");
-  shader_uniform_add(red, "normal_matrix");
+  shader_uniform_add(red, "matrix", false);
+  shader_uniform_add(red, "normal_matrix", false);
   shader_uniform_type_add(red, "texture", UNIFORM_TEXTURE, true);
 
   Shader* dragger = create_shader("shader/dragger.shader","shader/dragger.vert", "shader/dragger.frag");
   shader_attribute_add(dragger, "vertex", 3, GL_FLOAT);
-  shader_uniform_add(dragger, "matrix");
+  shader_uniform_add(dragger, "matrix", false);
   shader_uniform_type_add(dragger, "color", UNIFORM_VEC4, false);
   shader_write(dragger);
 
@@ -206,11 +206,11 @@ resource_shader_create(ResourceManager* rm)
   Shader* line = create_shader("line", "shader/line.vert", "shader/line.frag");
   shader_attribute_add(line, "vertex", 3, GL_FLOAT);
   shader_attribute_add(line, "color", 4, GL_FLOAT);
-  shader_uniform_add(line, "matrix");
+  shader_uniform_add(line, "matrix", false);
   //shader_uniform_type_add(line, "texture", UNIFORM_TEXTURE, false); //TODO uncomment
   shader_uniform_type_add(line, "resolution", UNIFORM_VEC2, false);
-  shader_uniform_type_add(line, "use_depth", UNIFORM_INT, false);
-  shader_uniform_type_add(line, "size_fixed", UNIFORM_INT, false);
+  shader_uniform_type_add(line, "use_depth", UNIFORM_INT, true);
+  shader_uniform_type_add(line, "size_fixed", UNIFORM_INT, true);
 
   eina_hash_add(rm->shaders, line->name, line);
   eina_hash_add(rm->shaders, simple->name, simple);
