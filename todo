@@ -1,4 +1,5 @@
 LATELY
+- revoir comment rajouter un component et comment sauver
 - camera display? -> change to transparent mesh, so we can select it?
 - make a struct with entry/spinner data, in callbacks like entry_activate, entry_changed
   use this info to do something appropriate
