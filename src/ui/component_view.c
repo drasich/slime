@@ -1096,7 +1096,6 @@ _property_add_spinner_angle(
 
   evas_object_smart_callback_add(entry, "activated", _entry_activated_cb, cp);
   evas_object_smart_callback_add(entry, "focused", _entry_focused_cb, cp);
-  //evas_object_smart_callback_add(entry, "unfocused", _entry_unfocused_cb, cp);
   evas_object_smart_callback_add(entry, "unfocused", _spinner_orientation_changed_cb, cp);
 
   return en;
