@@ -106,4 +106,6 @@ void resource_mesh_handle_set(ResourceManager* rm, MeshHandle* mh, const char* n
 
 void resource_shader_handle_set(ResourceManager* rm, ShaderHandle* sh, const char* name);
 
+void resource_scenes_save();
+
 #endif

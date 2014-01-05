@@ -1064,13 +1064,13 @@ view_destroy(View* v)
   printf("destroy view\n");
   //TODO free camera
   //TODO free scene here?
+  /*
   if (!gameview_) {
-    //*
     printf("I write the scene before I destroy the scene\n");
     scene_print(v->context->scene);
     scene_write(v->context->scene, "scene/scenewrite.eet");
-    //*/
   }
+  */
 
   free(v->context);
   //TODO release control

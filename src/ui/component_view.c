@@ -24,8 +24,10 @@ _spinner_orientation_changed_cb(void *data, Evas_Object *obj, void *event)
   double v =  elm_spinner_value_get(obj);
   double saved;
   eina_value_get(&cp->saved, &saved);
+  printf("before %f, after %f \n", saved, v);
   saved = v - saved;
   Quat q = quat_identity();
+  printf("yepyep before %f, after %f \n", saved, v);
   if (!strcmp(name, "x")) {
     q = quat_angles_deg(vec3(saved,0,0));
   }
@@ -39,6 +41,9 @@ _spinner_orientation_changed_cb(void *data, Evas_Object *obj, void *event)
   cp->control->rotation = q;
 
   q = quat_mul(cp->quat_saved, q);
+  Vec3 deg = quat_to_euler_deg(q);
+  printf("new quat, angles : %f, %f, %f \n", deg.x, deg.y, deg.z);
+
   int offset = property_offset_get(p);
   memcpy(thedata + offset, &q, sizeof q);
 }
@@ -917,6 +922,7 @@ component_property_update_data(ComponentProperties* cp)
           int offset = property_offset_get(p);
           memcpy(&q, data + offset, sizeof q);
           Vec3 deg = quat_to_euler_deg(q);
+          printf("found quat, angles : %f, %f, %f \n", deg.x, deg.y, deg.z);
           const char* pname = evas_object_data_get(obj, "property_name");
           if (!strcmp(pname, "x"))
           elm_spinner_value_set(obj, deg.x );
@@ -1090,7 +1096,8 @@ _property_add_spinner_angle(
 
   evas_object_smart_callback_add(entry, "activated", _entry_activated_cb, cp);
   evas_object_smart_callback_add(entry, "focused", _entry_focused_cb, cp);
-  evas_object_smart_callback_add(entry, "unfocused", _entry_unfocused_cb, cp);
+  //evas_object_smart_callback_add(entry, "unfocused", _entry_unfocused_cb, cp);
+  evas_object_smart_callback_add(entry, "unfocused", _spinner_orientation_changed_cb, cp);
 
   return en;
 }

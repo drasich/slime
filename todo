@@ -1,5 +1,11 @@
 LATELY
-- revoir comment rajouter un component et comment sauver
+- problem with orientation... putting 0, 0, 0 is not working
+- comment sauver :
+  - sauver des fichiers tmp tte les 1 minutes et quand on quitte myscene.scene.tmp
+  - quand on revient demander si on restaure les fichiers ou pas? si on restaure myscene.scene.original
+  - pour le moment: by default restore automatically everything
+  - faire un bouton sauver pour sauver la scene, sauver toutes les scenes
+- revoir comment rajouter un component
 - camera display? -> change to transparent mesh, so we can select it?
 - make a struct with entry/spinner data, in callbacks like entry_activate, entry_changed
   use this info to do something appropriate

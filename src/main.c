@@ -441,6 +441,7 @@ elm_main(int argc, char **argv)
 
   elm_run();
   elm_shutdown();
+  resource_scenes_save();
 
   elm_config_preferred_engine_set(NULL);
 

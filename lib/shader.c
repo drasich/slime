@@ -755,4 +755,45 @@ void shader_instance_init(ShaderInstance* si)
 
 }
 
+Eina_Bool
+uniform_send(
+      const Eina_Hash *hash,
+      const void *key,
+      void *data,
+      void *fdata)
+{
+  Shader* s = fdata;
+
+  Uniform* uni = shader_uniform_get(s, key);
+  if (!uni) {
+    printf("%s : cannot find uniform '%s' \n", __FUNCTION__, key);
+    return EINA_FALSE;
+  }
+  GLint uniloc =  uni->location;
+  if (uniloc < 0) {
+    printf("no such uniform '%s' \n", key);
+    return EINA_FALSE;
+  }
+
+  UniformValue* uv = data;
+  if (uni->type == UNIFORM_VEC4) {
+    Vec4* v = &uv->value.vec4;
+    glUniform4f(uniloc, v->x,v->y,v->z,v->w);
+  }
+  else if (uni->type == UNIFORM_INT) {
+    glUniform1i(uniloc, uv->value.i);
+  }
+  else if (uni->type == UNIFORM_FLOAT) {
+    glUniform1f(uniloc, uv->value.f);
+  }
+  else if (uni->type == UNIFORM_VEC3) {
+    Vec3* v = &uv->value.vec3;
+    glUniform3f(uniloc, v->x,v->y,v->z);
+  }
+  else {
+    printf("%s: uniform send not yet \n", __FILE__);
+  }
+
+  return EINA_TRUE;
+}
 

@@ -26,6 +26,7 @@ line_component_create()
   return _line_component_create();
 }
 
+/*
 static Eina_Bool uniform_send(
       const Eina_Hash *hash,
       const void *key,
@@ -53,12 +54,20 @@ static Eina_Bool uniform_send(
   else if (uni->type == UNIFORM_INT) {
     glUniform1i(uniloc, uv->value.i);
   }
+  else if (uni->type == UNIFORM_FLOAT) {
+    glUniform1f(uniloc, uv->value.f);
+  }
+  if (uni->type == UNIFORM_VEC3) {
+    Vec3* v = &uv->value.vec3;
+    glUniform3f(uniloc, v->x,v->y,v->z);
+  }
   else {
-    printf("uniform send not yet \n");
+    printf("line component uniform send not yet \n");
   }
 
   return EINA_TRUE;
 }
+*/
 
 
 static void 

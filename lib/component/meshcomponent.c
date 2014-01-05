@@ -45,6 +45,8 @@ _mesh_component_properties()
   return ps;
 }
 
+
+/*
 static Eina_Bool uniform_send(
       const Eina_Hash *hash,
       const void *key,
@@ -73,12 +75,13 @@ static Eina_Bool uniform_send(
     glUniform1i(uniloc, uv->value.i);
   }
   else {
-    printf("uniform send not yet \n");
+    printf("mesh component uniform send not yet : %d \n", uni->type);
   }
 
 
   return EINA_TRUE;
 }
+*/
 
 
 static void 
