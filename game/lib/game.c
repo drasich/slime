@@ -11,7 +11,7 @@ create_components()
   l = eina_list_append(l, component_player());
   //l = eina_list_append(l,create_enemy());
   //l = eina_list_append(l,create_player());
-  //l = eina_list_append(l, component_core());
+  l = eina_list_append(l, component_core());
 
   return l;
 }

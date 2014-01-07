@@ -518,23 +518,30 @@ object_post_read(Object* o, struct _Scene* s)
   if (o->id > s->last_id) s->last_id = o->id;
 
   Eina_List* l;
+  Eina_List* lnext;
   Component* c;
 
-  EINA_LIST_FOREACH(o->components, l, c) {
-    c->object = o;
+  EINA_LIST_FOREACH_SAFE(o->components, l, lnext, c) {
 
-    printf("object : %s , component name : %s \n", o->name, c->name);
-    c->funcs = component_manager_desc_get(s_component_manager, c->name);//TODO find from component manager;
-    if (c->funcs) {
-      printf("component functions found, name : %s \n", c->name);
-      c->properties = c->funcs->properties();
-      if (c->funcs->init)
-      c->funcs->init(c);
+    if (!c->name) {
+      free(c);
+      o->components = eina_list_remove_list(o->components, l);
     }
     else {
-      //todo chris
-      printf("component functions NOT found, name : %s \n", c->name);
-      printf("//TODO remove this component\n");
+      printf("post read, object : %s , component name : %s \n", o->name, c->name);
+      c->funcs = component_manager_desc_get(s_component_manager, c->name);//TODO find from component manager;
+      if (c->funcs) {
+        c->object = o;
+        printf("component functions found, name : %s \n", c->name);
+        c->properties = c->funcs->properties();
+        if (c->funcs->init)
+        c->funcs->init(c);
+      }
+      else {
+        printf("component functions NOT found, name : %s \n", c->name);
+        free(c);
+        o->components = eina_list_remove_list(o->components, l);
+      }
     }
   }
 
