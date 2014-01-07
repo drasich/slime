@@ -252,8 +252,14 @@ void object_add_component_armature(Object* o, Armature* a)
   o->armature = a;
 }
 
+Object*
+object_new()
+{
+  return create_object();
+}
 
-Object* create_object()
+Object*
+create_object()
 {
   Object* o = calloc(1, sizeof(Object));
   o->name = eina_stringshare_add("new_obj");
@@ -557,6 +563,7 @@ object_child_add(Object* parent, Object* child)
 {
   parent->children = eina_list_append(parent->children, child);
   child->parent = parent;
+  //TODO update the tree
 }
 
 Vec3 object_world_position_get(Object* o)

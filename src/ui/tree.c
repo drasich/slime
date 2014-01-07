@@ -429,7 +429,8 @@ tree_object_remove(Tree* t,  Object* o)
   return;
 }
 
-void tree_scene_set(Tree* t, struct _Scene* s)
+void
+tree_scene_set(Tree* t, struct _Scene* s)
 {
   elm_genlist_clear(t->gl);
   eina_hash_free(t->objects);
@@ -441,6 +442,6 @@ void tree_scene_set(Tree* t, struct _Scene* s)
   EINA_LIST_FOREACH(s->objects, l, o) {
     tree_object_add(t,o);
   }
-
 }
+
 

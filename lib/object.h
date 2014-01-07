@@ -85,6 +85,7 @@ object_draw_edit_component2(
 void object_update(Object* o);
 
 Object* create_object();
+Object* object_new();
 Object* create_object_file(const char* file);
 
 void object_set_position(Object* o, Vec3 v);

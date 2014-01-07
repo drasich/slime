@@ -1,11 +1,8 @@
 LATELY
-- problem with orientation... putting 0, 0, 0 is not working
-- comment sauver :
-  - sauver des fichiers tmp tte les 1 minutes et quand on quitte myscene.scene.tmp
-  - quand on revient demander si on restaure les fichiers ou pas? si on restaure myscene.scene.original
-  - pour le moment: by default restore automatically everything
-  - faire un bouton sauver pour sauver la scene, sauver toutes les scenes
 - revoir comment rajouter un component
+- quand on reload les scenes, ne pas tout effacer la liste. juste updater
+  les pointeurs sur les scenes.
+- quand on instance un object dans un component, le rajouter dans le tree...
 - camera display? -> change to transparent mesh, so we can select it?
 - make a struct with entry/spinner data, in callbacks like entry_activate, entry_changed
   use this info to do something appropriate
@@ -139,6 +136,7 @@ GAMEVIEW
 - check the gl callbacks init, update, draw.... for gameview;
 
 IDEAS
+- sauver les scenes tte les 1 minutes
 - many times in unity I want to write a new component with new functions but
   with the same data/properties, but If I write a new component, I lose the
   data I set before. it sounds stupid to say that but yes must separate

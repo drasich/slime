@@ -398,6 +398,26 @@ resource_scene_del(ResourceManager* rm, Scene* s)
   s = NULL;
 }
 
+void
+resource_scene_save(const Scene* s)
+{
+  int l = strlen(s->name) + strlen("scene/") + strlen(".scene") + 1;
+  char yep[l];
+  char copy[l];
+  eina_strlcpy(yep, "scene/", strlen("scene/") + 1);
+  eina_strlcat(yep, s->name, l);
+  eina_strlcpy(copy, yep, strlen(yep) + 1);
+  eina_strlcat(yep, ".scene", l);
+  eina_strlcat(copy, ".saved", l);
+  printf("scene name : %s, yep %s, length %d, copy %s \n", s->name, yep, l, copy);
+  eina_file_copy(
+        yep,
+        copy, 
+        EINA_FILE_COPY_DATA | EINA_FILE_COPY_PERMISSION | EINA_FILE_COPY_XATTR,
+        NULL,
+        NULL);
+  scene_write(s, yep);
+}
 
 void
 resource_scenes_save()
@@ -413,22 +433,7 @@ resource_scenes_save()
       Eina_Hash_Tuple *t = data;
       //const char* name = t->key;
       const Scene* s = t->data;
-      int l = strlen(s->name) + strlen("scene/") + strlen(".scene") + 1;
-      char yep[l];
-      char copy[l];
-      eina_strlcpy(yep, "scene/", strlen("scene/") + 1);
-      eina_strlcat(yep, s->name, l);
-      eina_strlcpy(copy, yep, strlen(yep) + 1);
-      eina_strlcat(yep, ".scene", l);
-      eina_strlcat(copy, ".saved", l);
-      printf("scene name : %s, yep %s, length %d, copy %s \n", s->name, yep, l, copy);
-      eina_file_copy(
-            yep,
-            copy, 
-            EINA_FILE_COPY_DATA | EINA_FILE_COPY_PERMISSION | EINA_FILE_COPY_XATTR,
-            NULL,
-            NULL);
-      scene_write(s, yep);
+      resource_scene_save(s);
     }
     eina_iterator_free(it);
   }

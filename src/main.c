@@ -176,34 +176,6 @@ create_window()
   
   resource_view_update(rv);
 
-  /*
-   {
-    Eina_Iterator* it;
-    Eina_Hash* hash = resource_scenes_get(s_rm);
-
-    if (hash) {
-
-      it = eina_hash_iterator_tuple_new(hash);
-      void *data;
-
-      while (eina_iterator_next(it, &data)) {
-        Eina_Hash_Tuple *t = data;
-        //const char* name = t->key;
-        const Scene* s = t->data;
-        //printf("key, scene name : %s, %s\n", name, s->name);
-        //elm_menu_item_add(menu, NULL, NULL, name, _change_scene, name);
-        resource_view_scene_add(rv, s);
-      }
-      eina_iterator_free(it);
-    }
-   }
-   */
-
-
-
-
-
-
   elm_object_part_content_set(treepanes, "left", rv->gl);
   elm_object_part_content_set(treepanes, "right", tree);
 

@@ -190,6 +190,20 @@ _entry_activated_cb(void *data, Evas_Object *obj, void *event)
       control_property_change(cp->control, cp->component, thedata, p, old, new);
     }
   }
+  else if (p->type == EET_T_FLOAT) {
+    const char* s = elm_object_text_get(obj);
+    float v = atof(s);
+    float saved;
+    eina_value_get(&cp->saved, &saved);
+    if (saved != v) {
+      printf("activated send the change %f, %f\n", saved, v);
+      float *old = malloc(sizeof *old);
+      eina_value_get(&cp->saved, old);
+      float *new = malloc(sizeof *new);
+      *new = v;
+      control_property_change(cp->control, cp->component, thedata, p, old, new);
+    }
+  }
   else if (p->type == PROPERTY_QUAT) {
     Quat *old = malloc(sizeof *old);
     *old = cp->quat_saved;
@@ -484,6 +498,12 @@ _entry_focused_cb(void *data, Evas_Object *obj, void *event)
     }
 
   }
+  else if (p->type == EET_T_FLOAT) {
+    const char* s = elm_object_text_get(obj);
+    float v = atof(s);
+    eina_value_setup(&cp->saved, EINA_VALUE_TYPE_FLOAT);
+    eina_value_set(&cp->saved, v);
+  }
   else if (p->type == EET_T_STRING) {
     const char* s = elm_object_text_get(obj);
     const char* str = eina_stringshare_add(s);
@@ -523,6 +543,13 @@ _spinner_drag_stop_cb(void *data, Evas_Object *obj, void *event)
     double *old = malloc(sizeof *old);
     eina_value_get(&cp->saved, old);
     double *new = malloc(sizeof *new);
+    *new = v;
+    control_property_change(cp->control, cp->component, thedata, p, old, new);
+  }
+  else if (p->type == EET_T_FLOAT){
+    float *old = malloc(sizeof *old);
+    eina_value_get(&cp->saved, old);
+    float *new = malloc(sizeof *new);
     *new = v;
     control_property_change(cp->control, cp->component, thedata, p, old, new);
   }
@@ -638,6 +665,22 @@ _entry_unfocused_cb(void *data, Evas_Object *obj, void *event)
       double *old = malloc(sizeof *old);
       eina_value_get(&cp->saved, old);
       double *new = malloc(sizeof *new);
+      *new = v;
+      control_property_change(cp->control, cp->component, thedata, p, old, new);
+    }
+  }
+  else if (p->type == EET_T_FLOAT) {
+    const char* s = elm_object_text_get(obj);
+    float v = atof(s);
+    //double v =  elm_spinner_value_get(obj);
+    float saved;
+    eina_value_get(&cp->saved, &saved);
+    printf("entry unfocused, it's float: %f to %f\n", saved, v);
+    if (saved != v) {
+      printf("send the change %f, %f\n", saved, v);
+      float *old = malloc(sizeof *old);
+      eina_value_get(&cp->saved, old);
+      float *new = malloc(sizeof *new);
       *new = v;
       control_property_change(cp->control, cp->component, thedata, p, old, new);
     }
@@ -946,6 +989,20 @@ component_property_update_data(ComponentProperties* cp)
           }
          }
         break;
+      case EET_T_FLOAT:
+         {
+          float f;
+          int offset = property_offset_get(p);
+          //memcpy(&d, (void*)data + offset, sizeof d);
+          memcpy(&f, data + offset, sizeof f);
+          //printf("my value is : %f\n", d);
+          //printf("%f\n",d);
+          float old = elm_spinner_value_get(obj);
+          if (old != f) {
+            elm_spinner_value_set(obj, f);
+          }
+         }
+        break;
       case PROPERTY_FILENAME:
       case EET_T_STRING:
          {
@@ -1226,6 +1283,7 @@ _property_add(ComponentProperties* cp, const Property* p, Evas_Object* box, void
 
   switch(p->type) {
     case EET_T_DOUBLE:
+    case EET_T_FLOAT:
        {
         _property_add_spinner(cp, p, box, data);
        }

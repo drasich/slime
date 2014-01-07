@@ -708,6 +708,17 @@ _reload(void *data,
   v->context->scene = s;
   scene_print(s);
   */
+
+}
+
+static void
+_save(void *data,
+      Evas_Object *obj,
+      void *event_info)
+{
+  View* v = data;
+  Scene* s = context_scene_get(v->context);
+  resource_scene_save(s);
 }
 
 
@@ -896,6 +907,25 @@ _add_buttons(View* v, Evas_Object* win)
   evas_object_move(bt, 405, 15);
   evas_object_data_set(bt, "view", v);
   evas_object_smart_callback_add(bt, "clicked", _reload, v);
+
+  //////////////////////////////////////
+
+  bt = elm_button_add(win);
+  elm_object_focus_allow_set(bt, 0);
+
+  elm_object_text_set(bt, "save");
+  elm_box_pack_end(box, bt);
+  evas_object_show(bt);
+
+  evas_object_color_set(bt, r,g,b,a);
+  //evas_object_resize(bt, 50, 25);
+  //evas_object_move(bt, 405, 15);
+  evas_object_data_set(bt, "view", v);
+  evas_object_smart_callback_add(bt, "clicked", _save, v);
+
+
+
+  ////////////
 
 
   Evas_Object* tg = elm_check_add(win);

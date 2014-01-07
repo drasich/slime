@@ -111,6 +111,11 @@ static void
 _change_data(void* c, Property* p, const void *data)
 {
   switch(p->type) {
+    case EET_T_FLOAT:
+       {
+        memcpy((void*)c + p->offset, data, sizeof(float));
+       }
+      break;
     case EET_T_DOUBLE:
        {
         memcpy((void*)c + p->offset, data, sizeof(double));
