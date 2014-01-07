@@ -104,6 +104,13 @@ resource_read_path(ResourceManager* rm)
   //resource_load(rm);
 }
 
+static void 
+_scene_free_cb(void *scene)
+{
+  printf("scene free cb \n");
+  scene_del(scene);
+}
+
 ResourceManager*
 resource_manager_create()
 {
@@ -112,9 +119,43 @@ resource_manager_create()
   rm->shaders = eina_hash_string_superfast_new(NULL);
   rm->meshes_to_load = NULL;
   rm->textures = eina_hash_string_superfast_new(NULL);
-  rm->scenes = eina_hash_string_superfast_new(NULL);
+  rm->scenes = eina_hash_string_superfast_new(_scene_free_cb);
   rm->scenes_to_load = NULL;
   return rm;
+
+}
+
+void
+resource_scenes_clean()
+{
+  //eina_hash_free(s_rm->scenes);
+  //s_rm->scenes = NULL;
+  //s_rm->scenes = eina_hash_string_superfast_new(_scene_free_cb);
+
+  printf("RRRR resources scenes_clean\n");
+  eina_hash_free_buckets(s_rm->scenes);
+}
+
+void
+resource_scenes_load()
+{
+  ResourceManager* rm = s_rm;
+  Eina_List *l;
+  const char *name;
+
+  EINA_LIST_FOREACH(rm->scenes_to_load, l, name) {
+    int l = strlen(name) + strlen("scene/");
+    int l2 = l + strlen(".scene");
+    char filepath[l2 + 1];
+    eina_str_join(filepath, l + 1, '/', "scene" , name);
+    eina_str_join(filepath, l2 + 1, '.', filepath, "scene" );
+    filepath[l2] = '\0';
+
+    Scene* s = scene_read(filepath);
+    s->name = eina_stringshare_add(name);
+    eina_hash_add(rm->scenes, s->name, s);
+    scene_post_read(s);
+  }
 
 }
 
@@ -133,19 +174,7 @@ void resource_load(ResourceManager* rm)
     eina_hash_add(rm->meshes, filepath, m);
   }
 
-  EINA_LIST_FOREACH(rm->scenes_to_load, l, name) {
-    int l = strlen(name) + strlen("scene/");
-    int l2 = l + strlen(".scene");
-    char filepath[l2 + 1];
-    eina_str_join(filepath, l + 1, '/', "scene" , name);
-    eina_str_join(filepath, l2 + 1, '.', filepath, "scene" );
-    filepath[l2] = '\0';
-
-    Scene* s = scene_read(filepath);
-    s->name = eina_stringshare_add(name);
-    eina_hash_add(rm->scenes, s->name, s);
-    scene_post_read(s);
-  }
+  resource_scenes_load();
 }
 
 

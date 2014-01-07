@@ -679,17 +679,35 @@ _reload(void *data,
   if (gameview_) return; //TODO if state is play
 
   View* v = data;
-  scene_write(v->context->scene, "scenetmp.eet");
+  printf("reload 1111111111111111111111111111111111111111111111111111111 %s\n", v->context->scene->name);
+  //Scene* mys = scene_copy(v->context->scene, "mycopy");
+  //scene_write(v->context->scene, "scenetmp.eet");
+  resource_scenes_save();
+
   context_objects_clean(v->context);
-  scene_del(v->context->scene);
+  //scene_del(v->context->scene);
+  resource_scenes_clean();
+  printf("DESCRIPTOR DEL START\n");
   scene_descriptor_delete();
+  printf("DESCRIPTOR DEL DONE\n");
   component_manager_unload(s_component_manager);
   component_manager_load(s_component_manager);
   scene_descriptor_init();
-  Scene* s = scene_read("scenetmp.eet");
+  printf("DESCRIPTOR INIT DONE \n");
+  resource_scenes_load();
+  resource_view_update(v->rv);
+  view_scene_set(v, resource_scene_get(s_rm, "base"));
+  /*
+  Scene* mys = scene_read("scenetmp.eet");
+  if (!mys) {
+  printf("s is null!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! \n");
+  return;
+  }
+  Scene* s = mys;
   scene_post_read(s);
   v->context->scene = s;
   scene_print(s);
+  */
 }
 
 

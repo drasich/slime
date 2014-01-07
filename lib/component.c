@@ -78,7 +78,10 @@ create_component_manager()
 void
 component_manager_load(ComponentManager* cm)
 {
-  if (cm->libhandle) return;
+  if (cm->libhandle) {
+    printf("libhandle is not null, return \n");
+    return;
+  }
 
   cm->libhandle = dlopen("./build/libgamelib.so", RTLD_NOW);
 

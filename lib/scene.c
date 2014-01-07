@@ -79,8 +79,8 @@ scene_object_get(Scene* s, const char* name)
 
 
 
-static Eet_Data_Descriptor *_scene_descriptor;
-static Property* _object_ps;
+//static Property* _object_ps;
+static Property* s_ps_scene = NULL;
 
 //TODO remove/handle this function
 void
@@ -92,10 +92,14 @@ scene_descriptor_init(void)
 void 
 scene_descriptor_delete(void)
 {
-  free(_scene_descriptor);
-  _scene_descriptor = NULL;
+  //fix this function
   object_descriptor_delete();
-  _object_ps = NULL;
+  //_object_ps = NULL;
+
+
+  free(s_ps_scene->descriptor);
+  free(s_ps_scene);
+  s_ps_scene = NULL;
 }
 
 
@@ -112,7 +116,7 @@ scene_write(const Scene* s, const char* filename)
     return EINA_FALSE;
   }
 
-  ret = eet_data_write(ef, _scene_descriptor, SCENE_FILE_ENTRY, s, EINA_TRUE);
+  ret = eet_data_write(ef, s_ps_scene->descriptor, SCENE_FILE_ENTRY, s, EINA_TRUE);
   eet_close(ef);
   if (ret) {
     printf("return value for save looks ok \n");
@@ -144,7 +148,7 @@ scene_read(const char* filename)
     return NULL;
   }
 
-  s = eet_data_read(ef, _scene_descriptor, SCENE_FILE_ENTRY);
+  s = eet_data_read(ef, s_ps_scene->descriptor, SCENE_FILE_ENTRY);
   printf("scene read data dump\n");
   eet_data_dump(ef, SCENE_FILE_ENTRY, _output, NULL);
   printf("scene read data dump end\n");
@@ -227,7 +231,6 @@ scene_print(Scene* s)
 }
 
 
-static Property* s_ps_scene = NULL;
 
 Property*
 property_set_scene()
@@ -238,19 +241,18 @@ property_set_scene()
   Property* ps = s_ps_scene;
   ps->name = "scene";
   PROPERTY_SET_TYPE(ps, Scene);
-  _scene_descriptor = ps->descriptor;
 
   //PROPERTY_BASIC_ADD(ps, Scene, name, EET_T_STRING);
 
   Property *obp = property_set_object_pointer("camera");
   PROPERTY_SUB_NESTED_ADD(ps, Scene, camerapointer, obp);
 
-  _object_ps = property_set_object();
+  Property* object_ps = property_set_object();
 
   EET_DATA_DESCRIPTOR_ADD_LIST(
         ps->descriptor, Scene, "objects", objects,
     //object_descriptor);
-    _object_ps->descriptor);
+    object_ps->descriptor);
 
   return ps;
 }
@@ -280,12 +282,12 @@ scene_copy(const Scene* so, const char* name)
 
   int size;
   void *encoded = eet_data_descriptor_encode(
-        _scene_descriptor,
+        s_ps_scene->descriptor,
         so,
         &size);
 
   Scene* s = eet_data_descriptor_decode(
-        _scene_descriptor,
+        s_ps_scene->descriptor,
         encoded,
         size);
 

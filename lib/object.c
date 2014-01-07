@@ -523,17 +523,19 @@ object_post_read(Object* o, struct _Scene* s)
   EINA_LIST_FOREACH(o->components, l, c) {
     c->object = o;
 
-    printf("component name : %s \n", c->name);
+    printf("object : %s , component name : %s \n", o->name, c->name);
     c->funcs = component_manager_desc_get(s_component_manager, c->name);//TODO find from component manager;
-    if (c->funcs)
-    printf("component functions found, name : %s \n", c->name);
-    else
-    printf("component functions NOT found, name : %s \n", c->name);
-    c->properties = c->funcs->properties();
-
-    if (c->funcs->init)
-    c->funcs->init(c);
-
+    if (c->funcs) {
+      printf("component functions found, name : %s \n", c->name);
+      c->properties = c->funcs->properties();
+      if (c->funcs->init)
+      c->funcs->init(c);
+    }
+    else {
+      //todo chris
+      printf("component functions NOT found, name : %s \n", c->name);
+      printf("//TODO remove this component\n");
+    }
   }
 
   Object* child;

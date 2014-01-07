@@ -174,6 +174,9 @@ create_window()
 
   ResourceView* rv = resource_view_new(win, view);
   
+  resource_view_update(rv);
+
+  /*
    {
     Eina_Iterator* it;
     Eina_Hash* hash = resource_scenes_get(s_rm);
@@ -194,6 +197,7 @@ create_window()
       eina_iterator_free(it);
     }
    }
+   */
 
 
 

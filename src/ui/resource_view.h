@@ -12,7 +12,7 @@ struct _ResourceView
 
   View* view;
   //Control* control;
-  Eina_Hash* scenes;
+  //Eina_Hash* scenes;
   Elm_Object_Item* scene_group;
   Elm_Object_Item* scene_group_playing;
 };
@@ -22,6 +22,9 @@ void resource_view_scene_add(ResourceView* rv, const Scene* s);
 void resource_view_playing_scene_add(ResourceView* rv, const Scene* s);
 void resource_view_scene_del(ResourceView* rv, const Scene* s);
 void resource_view_scene_select(ResourceView* rv, const Scene* s);
+
+void resource_view_update(ResourceView* rv);
+void resource_view_scene_clean(ResourceView* rv);
 
 Elm_Object_Item* resource_view_group_add(ResourceView* rv, const char* name);
 

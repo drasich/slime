@@ -269,13 +269,23 @@ property_update_component(PropertyView* pw, const char* name)
 
 }
 
+static void
+_property_holder_free_cb(void *data)
+{
+  PropertyHolder* ph = data;
+  eina_list_free(ph->items);
+  eina_list_free(ph->objects);
+  printf("did you came in the prop holder? \n");
+  free(ph);
+}
+
 /////////////////////
 static Eina_Hash* s_ph = NULL;
 
 void
 property_holder_init()
 {
-  s_ph = eina_hash_pointer_new(NULL);
+  s_ph = eina_hash_pointer_new(_property_holder_free_cb);
 }
 
 void
@@ -305,7 +315,6 @@ void
 property_holder_del(void* data)
 {
   eina_hash_del_by_key(s_ph, &data);
-
 }
 
 void

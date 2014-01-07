@@ -224,6 +224,15 @@ _context_scene_list_msg_receive(Context* c, void* scene_list, const char* msg)
 
 
 
+/*
+static void
+_scene_free_cb(void *scene)
+{
+  property_holder_del(scene);
+  elm_genlist_clear(rv->gl);
+}
+*/
+
 
 
 static Elm_Genlist_Item_Class *itc1;
@@ -233,7 +242,7 @@ ResourceView*
 resource_view_new(Evas_Object* win, View* v)
 {
   ResourceView* rv = calloc(1, sizeof *rv);
-  rv->scenes = eina_hash_pointer_new(NULL);
+  //rv->scenes = eina_hash_pointer_new(_scene_free_cb);
   rv->view = v;
   rv->view->rv = rv;
 
@@ -307,9 +316,34 @@ resource_view_scene_add(ResourceView* rv, const Scene* s)
         rv);
 
   property_holder_genlist_item_add(&s->name, eoi);
-  printf("I add scene %s, %p, %p \n", s->name, eoi, rv->scenes);
-  eina_hash_add(rv->scenes, &s, eoi);
+  //printf("I add scene %s, %p, %p \n", s->name, eoi, rv->scenes);
+  //eina_hash_add(rv->scenes, &s, eoi);
   printf("I added scene %p \n", eoi);
+}
+
+void
+resource_view_scene_clean(ResourceView* rv)
+{
+  printf("function %s \n", __FUNCTION__);
+  elm_genlist_clear(rv->gl);
+  rv->scene_group = resource_view_group_add(rv, "Scenes");
+  rv->scene_group_playing = resource_view_group_add(rv, "Scenes(Playing)");
+  //eina_hash_free_buckets(rv->scenes);
+
+  /*
+  Elm_Object_Item* item = elm_genlist_first_item_get(rv->gl);
+
+  while (item) {
+    Elm_Object* nextitem = elm_genlist_item_next_get(item);
+    ss = elm_object_item_data_get(item);
+    property_holder_genlist_item_add(&s->name, eoi);
+  }
+
+  if (s == ss) {
+    elm_object_item_del(item);
+  }
+  */
+
 }
 
 void
@@ -326,7 +360,7 @@ resource_view_playing_scene_add(ResourceView* rv, const Scene* s)
 
   property_holder_genlist_item_add(&s->name, eoi);
   //printf("I add scene %s, %p, %p \n", s->name, eoi, rv->scenes);
-  eina_hash_add(rv->scenes, &s, eoi);
+  //eina_hash_add(rv->scenes, &s, eoi);
   //printf("I added scene %p \n", eoi);
 }
 
@@ -336,8 +370,7 @@ resource_view_scene_del(ResourceView* rv, const Scene* s)
 {
   static Elm_Object_Item* parent = NULL;
 
-  //eina_hash_del_by_key(rv->scenes, s->name);
-  eina_hash_del_by_key(rv->scenes, &s);
+  //eina_hash_del_by_key(rv->scenes, &s);
 
   Elm_Object_Item* item = elm_genlist_first_item_get(rv->gl);
   if (!item) return;
@@ -387,4 +420,29 @@ resource_view_scene_select(ResourceView* rv, const Scene* s)
   elm_genlist_item_selected_set(item, EINA_TRUE);
 }
 
+void
+resource_view_update(ResourceView* rv)
+{
+  resource_view_scene_clean(rv);
+
+  Eina_Iterator* it;
+  Eina_Hash* hash = resource_scenes_get(s_rm);
+
+  if (hash) {
+
+    it = eina_hash_iterator_tuple_new(hash);
+    void *data;
+
+    while (eina_iterator_next(it, &data)) {
+      Eina_Hash_Tuple *t = data;
+      //const char* name = t->key;
+      const Scene* s = t->data;
+      //printf("key, scene name : %s, %s\n", name, s->name);
+      //elm_menu_item_add(menu, NULL, NULL, name, _change_scene, name);
+      resource_view_scene_add(rv, s);
+    }
+    eina_iterator_free(it);
+  }
+
+}
 
