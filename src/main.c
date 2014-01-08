@@ -418,6 +418,7 @@ elm_main(int argc, char **argv)
     view->save = calloc(1, sizeof *view->save);
     view->save->scene = "base";
   }
+  
   view_scene_set(view, resource_scene_get(s_rm, view->save->scene));
 
   //build_scene();

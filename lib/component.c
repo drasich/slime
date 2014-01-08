@@ -3,10 +3,12 @@
 #include "component/camera.h"
 #include "component/meshcomponent.h"
 
+static int _component_dom = -1;
+
 Component*
 create_component(ComponentDesc *cd)
 {
-  printf("TODO creating component : calling properties function, to be changed\n");
+  EINA_LOG_DOM_WARN(_component_dom, "TODO: calling properties function, to be changed\n");
   Component* c = calloc(1, sizeof *c);
   c->funcs = cd;
   if (cd->create) c->data = cd->create();
@@ -70,8 +72,6 @@ ComponentManager*
 create_component_manager()
 {
   ComponentManager* cm = calloc(1, sizeof *cm);
-  printf("create compo manager\n");
-
   return cm;
 }
 
@@ -79,38 +79,35 @@ void
 component_manager_load(ComponentManager* cm)
 {
   if (cm->libhandle) {
-    printf("libhandle is not null, return \n");
+    EINA_LOG_DOM_INFO(_component_dom, "libhandle is not null, return.");
     return;
   }
 
   cm->libhandle = dlopen("./build/libgamelib.so", RTLD_NOW);
 
   if (!cm->libhandle) {
-    printf("Error loading DSO: %s\n", dlerror());
+    EINA_LOG_DOM_ERR(_component_dom, "Error loading DSO: %s\n", dlerror());
   }
   else 
-  printf("libsuccess\n");
+  EINA_LOG_DOM_INFO(_component_dom, "Game Component Library successfully loaded");
 
   //create_component_function  initfunc = dlsym(cm->libhandle, "create_enemy");
   create_components_function  initfunc = dlsym(cm->libhandle, "create_components");
 
   if (!initfunc) {
-    printf("Error loading init function: %s\n", dlerror());
+    EINA_LOG_DOM_ERR(_component_dom, "Error loading init function: %s\n", dlerror());
     dlclose(cm->libhandle);
   }
   else 
-    printf("symbol success\n");
+  EINA_LOG_DOM_INFO(_component_dom, "Game Component Library, symbols successfully loaded");
 
   cm->components = eina_list_append(cm->components, &camera_desc);
   cm->components = eina_list_append(cm->components, &mesh_desc);
 
   Eina_List* user_components = initfunc();
   cm->components = eina_list_merge(cm->components, user_components);
-  printf("init func done\n");
-  //_create_widgets(cm);
 
   component_descriptor_init(s_component_manager->components);
-  printf("create components end\n");
 }
 
 static Eet_Data_Descriptor *_variant_unified_descriptor;
@@ -128,7 +125,7 @@ _component_descriptor_delete(ComponentManager* cm)
 void
 component_manager_unload(ComponentManager* cm)
 {
-  printf("unload\n");
+  EINA_LOG_DOM_DBG(_component_dom, "unload");
   dlclose(cm->libhandle);
   cm->libhandle = NULL;
 
@@ -145,7 +142,7 @@ component_manager_unload(ComponentManager* cm)
 void* 
 component_property_data_get(Component* c, Property* p)
 {
-  printf("warning -- review this function %s\n", __FUNCTION__);
+  EINA_LOG_DOM_WARN(_component_dom, "review this function");
   void** data  = (void*)(c->data + p->offset);
   return *data;
 }
@@ -153,7 +150,7 @@ component_property_data_get(Component* c, Property* p)
 void
 component_property_data_set(Component* c, Property* p, const void* data)
 {
-  printf("warning -- review this function %s\n", __FUNCTION__);
+  EINA_LOG_DOM_WARN(_component_dom, "review this function");
   void* cd = c->data;
   memcpy(cd + p->offset, data, p->size);
 }
@@ -190,6 +187,8 @@ _component_type_set(
   return EINA_TRUE;
 }
 
+//#undef EINA_LOG_DOMAIN_DEFAULT
+//#define EINA_LOG_DOMAIN_DEFAULT _component_dom
 
 void
 component_descriptor_init(Eina_List* component_desc)
@@ -204,11 +203,12 @@ component_descriptor_init(Eina_List* component_desc)
   eddc.func.type_set = _component_type_set;
   _variant_unified_descriptor = eet_data_descriptor_stream_new(&eddc);
 
+  _component_dom = eina_log_domain_register("components", EINA_COLOR_CYAN);
 
   Eina_List* l;
   ComponentDesc* cd;
   EINA_LIST_FOREACH(component_desc, l, cd) {
-    printf("DESCRIPTOR component name : %s\n", cd->name);
+    EINA_LOG_DOM_INFO(_component_dom, "Component description : %s\n", cd->name);
     EET_DATA_DESCRIPTOR_ADD_MAPPING(
           _variant_unified_descriptor, cd->name, cd->properties()->descriptor);
     //TODO free cd->properties
@@ -231,7 +231,7 @@ component_manager_desc_get(const ComponentManager* cm, const char* name)
     }
   }
 
-  printf("Could not find component description %s\n", name);
+  EINA_LOG_DOM_ERR(_component_dom, "Could not find component description %s\n", name);
   return NULL;
 
 }

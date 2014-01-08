@@ -434,7 +434,7 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   int cy = ev->canvas.y - y;
 
   Ray r = ray_from_screen(v->camera, cx, cy, 1000);
-  printf("clickgl pos : %d, %d \n", cx, cy);
+  //printf("clickgl pos : %d, %d \n", cx, cy);
 
   bool found = false;
   double d;
@@ -1119,7 +1119,16 @@ view_destroy(View* v)
     scene_write(v->context->scene, "scene/scenewrite.eet");
   }
   */
-  v->save->scene = v->context->scene->name;
+
+  Scene* cs = context_scene_get(v->context);
+  if (cs == gamescene_) {
+    //TODO it's possible this scene was removed during playing...
+    if (scene_previous_)
+    v->save->scene = scene_previous_->name;
+  }
+  else
+  v->save->scene = cs->name;
+
   save_write(v->save);
 
   free(v->context);

@@ -40,7 +40,6 @@ static Direction
 _random_direction_get()
 {
   Direction dir = rand() % DIR_END;
-  printf("random dir : %d \n", dir);
   return dir;
 }
 
@@ -51,7 +50,6 @@ _core_begin(Object* owner, Core* c)
   for (i = 0; i < 10; ++i) {
     char s[2];
     eina_convert_itoa(i, &s[0]);
-    //printf("yep : %s \n", s);
     Object* o = _object_mesh_new(s);
     object_child_add(owner, o);
     //o->position.x = (i +1) * c->margin;

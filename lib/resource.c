@@ -241,11 +241,21 @@ resource_shader_create(ResourceManager* rm)
   shader_uniform_type_add(line, "use_depth", UNIFORM_INT, true);
   shader_uniform_type_add(line, "size_fixed", UNIFORM_INT, true);
 
+  Shader* cube = create_shader("shader/cube.shader","shader/simple.vert", "shader/simple.frag");
+  shader_attribute_add(cube, "vertex", 3, GL_FLOAT);
+  shader_attribute_add(cube, "normal", 3, GL_FLOAT);
+  shader_attribute_add(cube, "texcoord", 2, GL_FLOAT);
+  shader_uniform_add(cube, "matrix", false);
+  shader_uniform_add(cube, "normal_matrix", false);
+  shader_uniform_type_add(cube, "texture", UNIFORM_TEXTURE, true);
+  shader_uniform_type_add(cube, "light", UNIFORM_VEC3, true);
+
   eina_hash_add(rm->shaders, line->name, line);
   eina_hash_add(rm->shaders, simple->name, simple);
   eina_hash_add(rm->shaders, diffuse->name, diffuse);
   eina_hash_add(rm->shaders, red->name, red);
   eina_hash_add(rm->shaders, dragger->name, dragger);
+  eina_hash_add(rm->shaders, cube->name, cube);
 
 
   //shader_write(red);
