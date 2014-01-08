@@ -31,17 +31,12 @@ save_write(const Save* s)
   Eina_Bool ret;
   Eet_File *ef = eet_open(SAVE_FILE, EET_FILE_MODE_WRITE);
   if (!ef) {
-    fprintf(stderr, "error reading file %s \n", SAVE_FILE);
+    fprintf(stderr, "error reading file %s", SAVE_FILE);
     return EINA_FALSE;
   }
 
   ret = eet_data_write(ef, _save_descriptor, SAVE_FILE_ENTRY, s, EINA_TRUE);
   eet_close(ef);
-  if (ret) {
-    printf("return value for save looks ok \n");
-  }
-  else
-    printf("return value for save NOT OK \n");
 
   return ret;
 }
@@ -61,22 +56,14 @@ save_read()
 
   Eet_File *ef = eet_open(SAVE_FILE, EET_FILE_MODE_READ);
   if (!ef) {
-    fprintf(stderr, "error reading file %s \n", SAVE_FILE);
+    EINA_LOG_ERR("Error reading file %s", SAVE_FILE);
     return NULL;
   }
 
   s = eet_data_read(ef, _save_descriptor, SAVE_FILE_ENTRY);
-  printf("save read data dump\n");
-  eet_data_dump(ef, SAVE_FILE_ENTRY, _output, NULL);
-  printf("save read data dump end\n");
+  //eet_data_dump(ef, SAVE_FILE_ENTRY, _output, NULL);
   eet_close(ef);
 
-  if (s) {
-    printf("Save scene: %s \n", s->scene);
-  }
-  else
-  printf("s is null\n");
- 
   return s;  
 }
 

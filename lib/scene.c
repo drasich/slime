@@ -112,7 +112,7 @@ scene_write(const Scene* s, const char* filename)
   Eina_Bool ret;
   Eet_File *ef = eet_open(filename, EET_FILE_MODE_WRITE);
   if (!ef) {
-    EINA_LOG_DOM_ERR(log_scene_dom, "error reading file %s \n", filename);
+    EINA_LOG_DOM_ERR(log_scene_dom, "error reading file %s", filename);
     return EINA_FALSE;
   }
 
@@ -136,7 +136,7 @@ scene_read(const char* filename)
 
   Eet_File *ef = eet_open(filename, EET_FILE_MODE_READ);
   if (!ef) {
-    EINA_LOG_DOM_ERR(log_scene_dom, "error reading file '%s'.\n", filename);
+    EINA_LOG_DOM_ERR(log_scene_dom, "error reading file '%s'.", filename);
     return NULL;
   }
 
@@ -163,7 +163,7 @@ scene_post_read(Scene* s)
     object_post_read(o, s);
   }
 
-  EINA_LOG_DOM_DBG(log_scene_dom, "scene name is %s\nobjects number is %d\n", s->name, eina_list_count(s->objects));
+  EINA_LOG_DOM_DBG(log_scene_dom, "scene name is %s\nobjects number is %d", s->name, eina_list_count(s->objects));
 
 }
 

@@ -31,7 +31,7 @@ _shader_attribute_location_init(Shader* s, Attribute* att)
 {
   GLint att_tmp = glGetAttribLocation(s->program, att->name);
   if (att_tmp == -1) {
-    EINA_LOG_DOM_ERR(log_shader_dom, "Shader %s, Error in getting attribute '%s' at line %d \n", s->name, att->name, __LINE__);
+    EINA_LOG_DOM_ERR(log_shader_dom, "Shader %s, Error in getting attribute '%s' at line %d", s->name, att->name, __LINE__);
   }
   else {
      att->location = att_tmp;
@@ -43,7 +43,7 @@ _shader_uniform_location_init(Shader* s, Uniform* uni)
 {
   GLint uni_tmp = glGetUniformLocation(s->program, uni->name);
   if (uni_tmp == -1) {
-    EINA_LOG_DOM_ERR(log_shader_dom, "Error in getting uniform '%s'\n", uni->name);
+    EINA_LOG_DOM_ERR(log_shader_dom, "Error in getting uniform '%s'", uni->name);
   }
   else {
      uni->location = uni_tmp;
@@ -90,11 +90,11 @@ shader_init_string(Shader* s, const char* vert, const char* frag)
   //TODO factorize this by creating a function that get the shader id
   s->vert_shader = glCreateShader(GL_VERTEX_SHADER);
   if (s->vert_shader == 0) 
-    EINA_LOG_DOM_ERR(log_shader_dom, "there was en error creating the vertex shader.\n");
+    EINA_LOG_DOM_ERR(log_shader_dom, "there was en error creating the vertex shader.");
 
   s->frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
   if (s->frag_shader == 0) 
-    EINA_LOG_DOM_ERR(log_shader_dom, "there was en error creating the fragment shader.\n");
+    EINA_LOG_DOM_ERR(log_shader_dom, "there was en error creating the fragment shader.");
 
   glShaderSource(s->vert_shader, 1, &vert, 0);
   glCompileShader(s->vert_shader);
@@ -105,11 +105,11 @@ shader_init_string(Shader* s, const char* vert, const char* frag)
 
   glGetShaderiv(s->vert_shader, GL_COMPILE_STATUS, &status);
   if (status == GL_FALSE) {
-    EINA_LOG_DOM_ERR(log_shader_dom, "There was an error compiling the vertex shader\n");
+    EINA_LOG_DOM_ERR(log_shader_dom, "There was an error compiling the vertex shader");
     glGetShaderiv(s->vert_shader, GL_INFO_LOG_LENGTH, &info_length);
     message = malloc(info_length);
     glGetShaderInfoLog(s->vert_shader, info_length, 0, message);
-    EINA_LOG_DOM_ERR(log_shader_dom, "%s\n",message);
+    EINA_LOG_DOM_ERR(log_shader_dom, "%s",message);
     free(message);
   }
 
@@ -118,11 +118,11 @@ shader_init_string(Shader* s, const char* vert, const char* frag)
 
   glGetShaderiv(s->frag_shader, GL_COMPILE_STATUS, &status);
   if (status == GL_FALSE) {
-    EINA_LOG_DOM_ERR(log_shader_dom, "There was an error compiling the fragment shader\n");
+    EINA_LOG_DOM_ERR(log_shader_dom, "There was an error compiling the fragment shader");
     glGetShaderiv(s->frag_shader, GL_INFO_LOG_LENGTH, &info_length);
     message = malloc(info_length);
     glGetShaderInfoLog(s->frag_shader, info_length, 0, message);
-    EINA_LOG_DOM_ERR(log_shader_dom, "message : %s\n", message);
+    EINA_LOG_DOM_ERR(log_shader_dom, "message : %s", message);
     free(message);
   }
 
@@ -133,11 +133,11 @@ shader_init_string(Shader* s, const char* vert, const char* frag)
 
   glGetProgramiv(s->program, GL_LINK_STATUS, &status);
   if (status == GL_FALSE) {
-    EINA_LOG_DOM_ERR(log_shader_dom, "There was an error in linking the program\n");
+    EINA_LOG_DOM_ERR(log_shader_dom, "There was an error in linking the program");
     glGetProgramiv(s->program, GL_INFO_LOG_LENGTH, &info_length);
     message = malloc(info_length);
     glGetProgramInfoLog(s->program, info_length, 0, message);
-    EINA_LOG_DOM_ERR(log_shader_dom, "%s\n",message);
+    EINA_LOG_DOM_ERR(log_shader_dom, "%s",message);
     free(message);
   }
 
@@ -148,7 +148,7 @@ shader_init_attribute(Shader* s, char* att_name, GLuint* att)
 {
   GLint att_tmp = glGetAttribLocation(s->program, att_name);
   if (att_tmp == -1) {
-    EINA_LOG_DOM_ERR(log_shader_dom, "Error in getting attribute '%s'.\n", att_name);
+    EINA_LOG_DOM_ERR(log_shader_dom, "Error in getting attribute '%s'.", att_name);
   }
   else {
      *att = att_tmp;
@@ -160,7 +160,7 @@ shader_init_uniform(Shader* s, char* uni_name, GLint* uni)
 {
   *uni = glGetUniformLocation(s->program, uni_name);
   if (*uni == -1) 
-    EINA_LOG_DOM_ERR(log_shader_dom, "Error in getting uniform '%s'.\n", uni_name);
+    EINA_LOG_DOM_ERR(log_shader_dom, "Error in getting uniform '%s'.", uni_name);
 }
 
 void
@@ -250,7 +250,7 @@ shader_write(const Shader* s)
   Eina_Bool ret;
   Eet_File *ef = eet_open(filename, EET_FILE_MODE_WRITE);
   if (!ef) {
-    EINA_LOG_DOM_ERR(log_shader_dom, "Error reading file '%s'.\n", filename);
+    EINA_LOG_DOM_ERR(log_shader_dom, "Error reading file '%s'.", filename);
     return EINA_FALSE;
   }
 
@@ -274,7 +274,7 @@ shader_read(const char* filename)
 
   Eet_File *ef = eet_open(filename, EET_FILE_MODE_READ);
   if (!ef) {
-    EINA_LOG_DOM_ERR(log_shader_dom, "Error reading file '%s'.\n", filename);
+    EINA_LOG_DOM_ERR(log_shader_dom, "Error reading file '%s'.", filename);
     return NULL;
   }
 
@@ -291,7 +291,7 @@ void
 shader_mesh_draw(Shader* s, struct _MeshComponent* mc)
 {
   if (!mc->shader_instance) {
-    EINA_LOG_DOM_ERR(log_shader_dom, "shader mesh draw, no shader instance\n");
+    EINA_LOG_DOM_ERR(log_shader_dom, "shader mesh draw, no shader instance");
     return;
   }
 
@@ -304,11 +304,11 @@ void
 shader_mesh_nocomp_draw(Shader* s, ShaderInstance* si, struct _Mesh* m)
 {
   if (!si) {
-    EINA_LOG_DOM_ERR(log_shader_dom, "shader mesh nocomp draw, no shader instance\n");
+    EINA_LOG_DOM_ERR(log_shader_dom, "shader mesh nocomp draw, no shader instance");
     return;
   }
   if (!m) {
-    EINA_LOG_DOM_ERR(log_shader_dom, "shader mesh draw, no mesh\n");
+    EINA_LOG_DOM_ERR(log_shader_dom, "shader mesh draw, no mesh");
     return;
   }
 
@@ -328,11 +328,11 @@ shader_mesh_nocomp_draw(Shader* s, ShaderInstance* si, struct _Mesh* m)
       TextureHandle* th = shader_instance_texture_data_get(si, uniname);
 
       if (!th) {
-        EINA_LOG_DOM_ERR(log_shader_dom, "Couldn't find the texture handle with this name: '%s'.\n", uniname);
+        EINA_LOG_DOM_ERR(log_shader_dom, "Couldn't find the texture handle with this name: '%s'.", uniname);
         shader_instance_print(si);
       }
       else if (!th->texture) {
-        EINA_LOG_DOM_ERR(log_shader_dom, "Texture is not loaded, or not assigned?: '%s'.\n", uniname);
+        EINA_LOG_DOM_ERR(log_shader_dom, "Texture is not loaded, or not assigned?: '%s'.", uniname);
         th->texture = resource_texture_get(s_rm, th->name);
       }
 
@@ -367,7 +367,7 @@ shader_mesh_nocomp_draw(Shader* s, ShaderInstance* si, struct _Mesh* m)
       else if (uni->type == UNIFORM_VEC4)
       glUniform4f(uni_loc, uv->value.vec4.x, uv->value.vec4.y, uv->value.vec4.z, uv->value.vec4.w);
       else
-      EINA_LOG_DOM_WARN(log_shader_dom, "Shader %s uniform not yet %d \n", s->name, uni->type);
+      EINA_LOG_DOM_WARN(log_shader_dom, "Shader %s uniform not yet %d", s->name, uni->type);
     }
 
   }
@@ -746,12 +746,12 @@ uniform_send(
 
   Uniform* uni = shader_uniform_get(s, key);
   if (!uni) {
-    EINA_LOG_DOM_ERR(log_shader_dom, "Cannot find uniform '%s'.\n", key);
+    EINA_LOG_DOM_ERR(log_shader_dom, "Cannot find uniform '%s'.", key);
     return EINA_FALSE;
   }
   GLint uniloc =  uni->location;
   if (uniloc < 0) {
-    EINA_LOG_DOM_ERR(log_shader_dom, "No such uniform '%s'.\n", key);
+    EINA_LOG_DOM_ERR(log_shader_dom, "No such uniform '%s'.", key);
     return EINA_FALSE;
   }
 
@@ -771,7 +771,7 @@ uniform_send(
     glUniform3f(uniloc, v->x,v->y,v->z);
   }
   else {
-    EINA_LOG_DOM_WARN(log_shader_dom, "uniform send not yet implemented: %d.\n", uni->type);
+    EINA_LOG_DOM_WARN(log_shader_dom, "uniform send not yet implemented: %d.", uni->type);
   }
 
   return EINA_TRUE;

@@ -12,7 +12,7 @@ _anim(void *data)
 void
 _del(void *data __UNUSED__, Evas *evas __UNUSED__, Evas_Object *obj, void *event_info __UNUSED__)
 {
-  printf("del ani\n");
+  EINA_LOG_DBG("del ani");
   Ecore_Animator *ani = evas_object_data_get(obj, "ani");
   ecore_animator_del(ani);
 }

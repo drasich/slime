@@ -78,7 +78,7 @@ void
 dragger_highlight_set(Dragger* d, bool highlight)
 {
   if (!d->mc) {
-    EINA_LOG_ERR("no mesh component\n");
+    EINA_LOG_ERR("no mesh component");
     return;
   }
 
@@ -97,7 +97,7 @@ dragger_state_set(Dragger* d, DraggerState state)
   if (state == d->state) return;
 
   if (!d->mc) {
-    EINA_LOG_ERR("no mesh component\n");
+    EINA_LOG_ERR("no mesh component");
     return;
   }
 

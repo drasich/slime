@@ -170,7 +170,7 @@ static void
 _key_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, void *event_info)
 {
   Evas_Event_Key_Down *ev = (Evas_Event_Key_Down*)event_info;
-  printf("KEY: down, keyname: %s , key %s \n", ev->keyname, ev->key);
+  EINA_LOG_DBG("KEY: down, keyname: %s , key %s", ev->keyname, ev->key);
 
   View* v = evas_object_data_get(o, "view");
   Control* cl = v->control;
@@ -326,8 +326,6 @@ _view_select_object(View *v, Object *o)
 static void
 _makeRect(View* v, Evas_Event_Mouse_Down* ev)
 {
-  printf("make rect : \n");
-
   Evas_Object* r = v->select_rect;
 
   evas_object_resize(r, 1,1);
@@ -593,7 +591,7 @@ static Scene* scene_previous_ = NULL;
 static void
 _gameview_closed(void *data, Evas_Object *obj, void *event_info)
 {
-  printf("gameview closed\n");
+  EINA_LOG_DBG("gameview closed");
   if (s_view_destroyed) return;
 
   View* v = data;
@@ -645,7 +643,6 @@ _play(void *data,
     //scene_write(v->context->scene, "scenecur.eet");
     scene_previous_ = v->context->scene;
     Scene* s = scene_copy(v->context->scene, "gameview");
-    printf("scene to copy is name is %s\n", v->context->scene->name);
     scene_post_read(s);
     gamescene_ = s;
 
@@ -679,7 +676,6 @@ _reload(void *data,
   if (gameview_) return; //TODO if state is play
 
   View* v = data;
-  printf("reload 1111111111111111111111111111111111111111111111111111111 %s\n", v->context->scene->name);
   //Scene* mys = scene_copy(v->context->scene, "mycopy");
   //scene_write(v->context->scene, "scenetmp.eet");
   resource_scenes_save();
@@ -687,28 +683,13 @@ _reload(void *data,
   context_objects_clean(v->context);
   //scene_del(v->context->scene);
   resource_scenes_clean();
-  printf("DESCRIPTOR DEL START\n");
   scene_descriptor_delete();
-  printf("DESCRIPTOR DEL DONE\n");
   component_manager_unload(s_component_manager);
   component_manager_load(s_component_manager);
   scene_descriptor_init();
-  printf("DESCRIPTOR INIT DONE \n");
   resource_scenes_load();
   resource_view_update(v->rv);
   view_scene_set(v, resource_scene_get(s_rm, "base"));
-  /*
-  Scene* mys = scene_read("scenetmp.eet");
-  if (!mys) {
-  printf("s is null!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! \n");
-  return;
-  }
-  Scene* s = mys;
-  scene_post_read(s);
-  v->context->scene = s;
-  scene_print(s);
-  */
-
 }
 
 static void
@@ -1109,7 +1090,7 @@ view_new(Evas_Object *win)
 void
 view_destroy(View* v)
 {
-  printf("destroy view\n");
+  EINA_LOG_DBG("destroy view");
   //TODO free camera
   //TODO free scene here?
   /*

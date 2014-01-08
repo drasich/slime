@@ -322,12 +322,12 @@ property_holder_genlist_item_add(const void* data, Elm_Object_Item* i)
 {
   PropertyHolder* ph = eina_hash_find(s_ph, &data);
   if (!ph) {
-    EINA_LOG_DBG("add data %p\n", data);
+    EINA_LOG_DBG("add data %p", data);
     ph = calloc(1, sizeof *ph);
     eina_hash_add(s_ph, &data, ph);
   }
 
-  EINA_LOG_DBG("add item %p \n", i);
+  EINA_LOG_DBG("add item %p", i);
   ph->items = eina_list_append(ph->items, i);
 }
 
@@ -336,7 +336,7 @@ property_holder_update(void* data)
 {
   PropertyHolder* ph = eina_hash_find(s_ph, &data);
   if (!ph) {
-    EINA_LOG_WARN("cannot find data %p \n", data);
+    EINA_LOG_WARN("cannot find data %p", data);
     return;
   }
 
@@ -344,13 +344,13 @@ property_holder_update(void* data)
   Elm_Object_Item* i;
 
   EINA_LIST_FOREACH(ph->items, l, i) {
-    EINA_LOG_DBG("I update the item %p\n", i);
+    EINA_LOG_DBG("I update the item %p", i);
     elm_genlist_item_update(i);
   }
 
   Evas_Object* o;
   EINA_LIST_FOREACH(ph->objects, l, o) {
-    EINA_LOG_DBG("I update the object %p\n", o);
+    EINA_LOG_DBG("I update the object %p", o);
 
     //int offset = property_offset_get(ph);
     //const char** str = data + offset;
@@ -382,7 +382,7 @@ property_holder_update(void* data)
       if (strcmp(str,s)) 
       elm_object_text_set(o, str );
     }
-    else EINA_LOG_ERR("property not yet supported\n");
+    else EINA_LOG_ERR("property not yet supported");
   }
 
 }

@@ -8,7 +8,7 @@ resource_mesh_get(ResourceManager* rm, const char* name)
 {
   Mesh* m = eina_hash_find(rm->meshes, name);
   if (!m)
-  EINA_LOG_DOM_ERR(_resource_dom, "Cannot find mesh %s \n", name);
+  EINA_LOG_DOM_ERR(_resource_dom, "Cannot find mesh '%s'.", name);
 
   return m;
 }
@@ -18,7 +18,7 @@ resource_shader_get(ResourceManager* rm, const char* name)
 {
   Shader* s = eina_hash_find(rm->shaders, name);
   if (!s)
-  EINA_LOG_DOM_ERR(_resource_dom, "Cannot find shader %s \n", name);
+  EINA_LOG_DOM_ERR(_resource_dom, "Cannot find shader '%s'.", name);
 
   return s;
 }
@@ -28,7 +28,7 @@ resource_texture_get(ResourceManager* rm, const char* name)
 {
   Texture* t = eina_hash_find(rm->textures, name);
   if (!t)
-  EINA_LOG_DOM_ERR(_resource_dom, "Cannot find texture %s \n", name);
+  EINA_LOG_DOM_ERR(_resource_dom, "Cannot find texture '%s'.", name);
 
   return t;
 }
@@ -65,7 +65,7 @@ _resource_mesh_add_cb(const char *name, const char *path, void *data)
 {
   ResourceManager* rm = data;
   if (eina_str_has_extension(name,"mesh")) {
-    EINA_LOG_DOM_INFO(_resource_dom, "mesh %s in %s\n", name, path);
+    EINA_LOG_DOM_INFO(_resource_dom, "mesh %s in %s", name, path);
     rm->meshes_to_load = eina_list_append(rm->meshes_to_load, eina_stringshare_add(name));
   }
 }
@@ -395,7 +395,7 @@ resource_scene_get(ResourceManager* rm, const char* name)
 {
   Scene* s = eina_hash_find(rm->scenes, name);
   if (!s)
-  EINA_LOG_DOM_ERR(_resource_dom, "Cannot find scene %s \n", name);
+  EINA_LOG_DOM_ERR(_resource_dom, "Cannot find scene '%s'.", name);
 
   return s;
 

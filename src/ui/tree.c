@@ -49,7 +49,7 @@ Eina_Bool gl4_state_get(void *data __UNUSED__, Evas_Object *obj __UNUSED__, cons
 
 void gl4_del(void *data __UNUSED__, Evas_Object *obj __UNUSED__)
 {
-   printf("item deleted.\n");
+   //printf("item deleted.\n");
 }
 
 static void
@@ -289,7 +289,7 @@ tree_object_add(Tree* t,  Object* o)
           gl4_sel/* func */,
           t->view);
 
-    printf("I add parent %p, object pointer %p, object name pointer %p \n", eoi, o, &o->name );
+    EINA_LOG_DBG("I add parent %p, object pointer %p, object name pointer %p", eoi, o, &o->name );
     eina_hash_add(t->objects, &o, eoi);
     property_holder_genlist_item_add(&o->name, eoi);
 
@@ -307,7 +307,7 @@ tree_object_add(Tree* t,  Object* o)
           t->view);
     property_holder_genlist_item_add(&o->name, eoi);
 
-    printf("I add leaf %s, %p, object pointer %p, object name pointer %p \n", o->name, eoi, o, &o->name);
+    EINA_LOG_DBG("I add leaf %s, %p, object pointer %p, object name pointer %p", o->name, eoi, o, &o->name);
     eina_hash_add(t->objects, &o, eoi);
   }
 

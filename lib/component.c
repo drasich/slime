@@ -8,7 +8,7 @@ static int _component_dom = -1;
 Component*
 create_component(ComponentDesc *cd)
 {
-  EINA_LOG_DOM_WARN(_component_dom, "TODO: calling properties function, to be changed\n");
+  EINA_LOG_DOM_WARN(_component_dom, "TODO: calling properties function, to be changed");
   Component* c = calloc(1, sizeof *c);
   c->funcs = cd;
   if (cd->create) c->data = cd->create();
@@ -88,7 +88,7 @@ component_manager_load(ComponentManager* cm)
   cm->libhandle = dlopen("./build/libgamelib.so", RTLD_NOW);
 
   if (!cm->libhandle) {
-    EINA_LOG_DOM_ERR(_component_dom, "Error loading DSO: %s\n", dlerror());
+    EINA_LOG_DOM_ERR(_component_dom, "Error loading DSO: %s", dlerror());
   }
   else 
   EINA_LOG_DOM_INFO(_component_dom, "Game Component Library successfully loaded");
@@ -97,7 +97,7 @@ component_manager_load(ComponentManager* cm)
   create_components_function  initfunc = dlsym(cm->libhandle, "create_components");
 
   if (!initfunc) {
-    EINA_LOG_DOM_ERR(_component_dom, "Error loading init function: %s\n", dlerror());
+    EINA_LOG_DOM_ERR(_component_dom, "Error loading init function: %s", dlerror());
     dlclose(cm->libhandle);
   }
   else 
@@ -209,7 +209,7 @@ component_descriptor_init(Eina_List* component_desc)
   Eina_List* l;
   ComponentDesc* cd;
   EINA_LIST_FOREACH(component_desc, l, cd) {
-    EINA_LOG_DOM_INFO(_component_dom, "Component description : %s\n", cd->name);
+    EINA_LOG_DOM_INFO(_component_dom, "Component description : %s", cd->name);
     EET_DATA_DESCRIPTOR_ADD_MAPPING(
           _variant_unified_descriptor, cd->name, cd->properties()->descriptor);
     //TODO free cd->properties
@@ -232,7 +232,7 @@ component_manager_desc_get(const ComponentManager* cm, const char* name)
     }
   }
 
-  EINA_LOG_DOM_ERR(_component_dom, "Could not find component description %s\n", name);
+  EINA_LOG_DOM_ERR(_component_dom, "Could not find component description %s", name);
   return NULL;
 
 }

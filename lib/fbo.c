@@ -1,4 +1,5 @@
 #include "fbo.h"
+#include "log.h"
 
 Fbo* 
 create_fbo()
@@ -103,10 +104,10 @@ create_fbo()
   GLenum e = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
   if (e == GL_FRAMEBUFFER_COMPLETE) {
-    printf("---->>>>>buffer complete \n");
+    EINA_LOG_DOM_INFO(log_render_dom, "---->>>>>buffer complete");
   }
   else
-    printf("---->>>>>buffer NOOOOOOOOOOOOOOOT complete \n");
+    EINA_LOG_DOM_ERR(log_render_dom, "---->>>>>buffer NOOOOOOOOOOOOOOOT complete");
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

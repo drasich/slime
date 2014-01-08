@@ -532,22 +532,22 @@ object_post_read(Object* o, struct _Scene* s)
   EINA_LIST_FOREACH_SAFE(o->components, l, lnext, c) {
 
     if (!c->name) {
-      EINA_LOG_DOM_WARN(log_object_dom, "It seems this component does not exist anymore: %s \n==> removing component", c->name);
+      EINA_LOG_DOM_WARN(log_object_dom, "It seems this component does not exist anymore: %s\n==> removing component", c->name);
       free(c);
       o->components = eina_list_remove_list(o->components, l);
     }
     else {
-      EINA_LOG_DOM_DBG(log_object_dom, "post read, object : %s , component name : %s \n", o->name, c->name);
+      EINA_LOG_DOM_DBG(log_object_dom, "post read, object : %s , component name : %s", o->name, c->name);
       c->funcs = component_manager_desc_get(s_component_manager, c->name);//TODO find from component manager;
       if (c->funcs) {
         c->object = o;
-        EINA_LOG_DOM_DBG(log_object_dom, "component functions found, name : %s \n", c->name);
+        EINA_LOG_DOM_DBG(log_object_dom, "component functions found, name : %s", c->name);
         c->properties = c->funcs->properties();
         if (c->funcs->init)
         c->funcs->init(c);
       }
       else {
-        EINA_LOG_DOM_WARN(log_object_dom, "component functions NOT found, name: %s \n==> removing component", c->name);
+        EINA_LOG_DOM_WARN(log_object_dom, "component functions NOT found, name: %s\n==> removing component", c->name);
         free(c);
         o->components = eina_list_remove_list(o->components, l);
       }

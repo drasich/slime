@@ -426,7 +426,6 @@ elm_main(int argc, char **argv)
   //gameviewtest();
 
   elm_run();
-  printf("elm run finished\n");
   elm_shutdown();
   resource_scenes_save();
 

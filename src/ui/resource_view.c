@@ -318,7 +318,6 @@ resource_view_scene_add(ResourceView* rv, const Scene* s)
   property_holder_genlist_item_add(&s->name, eoi);
   //printf("I add scene %s, %p, %p \n", s->name, eoi, rv->scenes);
   //eina_hash_add(rv->scenes, &s, eoi);
-  printf("I added scene %p \n", eoi);
 }
 
 void
