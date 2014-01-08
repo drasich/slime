@@ -1,16 +1,16 @@
 #include <stdio.h>
 #include "mesh.h"
 #include "read.h"
+#include "log.h"
 
 static void
 mesh_read_file(Mesh* mesh, FILE* f)
 {
-  printf("mesh_read-file\n");
   mesh->name = read_name(f);
 
   uint16_t count;
   fread(&count, sizeof(count),1,f);
-  printf("size: %d\n", count);
+  EINA_LOG_DOM_DBG(log_mesh_dom, "vertices size: %d\n", count);
 
   float x,y,z;
   int i;
@@ -71,7 +71,7 @@ mesh_read_file(Mesh* mesh, FILE* f)
   //printf("bounds max : %4.16f %4.16f %4.16f\n", mesh->box.max.x,mesh->box.max.y,mesh->box.max.z);
 
   fread(&count, sizeof(count),1,f);
-  printf("faces size: %d\n", count);
+  EINA_LOG_DOM_DBG(log_mesh_dom, "faces size: %d\n", count);
   uint16_t index;
   mesh->indices = calloc(count*3, sizeof(GLuint));
   mesh->indices_len = count*3;
@@ -91,7 +91,7 @@ mesh_read_file(Mesh* mesh, FILE* f)
   }
 
   fread(&count, sizeof(count),1,f);
-  printf("normals size: %d\n", count);
+  EINA_LOG_DOM_DBG(log_mesh_dom, "normals size: %d\n", count);
 
   mesh->normals = calloc(count*3, sizeof(GLfloat));
   mesh->normals_len = count*3;
@@ -114,7 +114,7 @@ mesh_read_file(Mesh* mesh, FILE* f)
   }
 
   fread(&count, sizeof(count),1,f);
-  printf("uv size: %d\n", count);
+  EINA_LOG_DOM_DBG(log_mesh_dom, "uv size: %d\n", count);
   
   mesh->has_uv = count != 0;
   mesh->uvs_len = count*2;
@@ -140,7 +140,8 @@ mesh_read_file(Mesh* mesh, FILE* f)
   uint16_t vertex_group_count = read_uint16(f);
   mesh->vertexgroups = eina_array_new(vertex_group_count);
 
-  printf("vertex group size: %d\n", vertex_group_count);
+  EINA_LOG_DOM_DBG(log_mesh_dom, "vertex group size: %d\n", vertex_group_count);
+
   for (i = 0; i < vertex_group_count; ++i) {
     VertexGroup* vg = malloc(sizeof(VertexGroup));
     char* name = read_string(f);
@@ -165,13 +166,14 @@ mesh_read_file(Mesh* mesh, FILE* f)
 
   uint16_t vertex_weight_count = read_uint16(f);
   if (vertex_weight_count == eina_inarray_count(mesh->vertices_base)){
-    printf("ok same size\n");
+    EINA_LOG_DOM_DBG(log_mesh_dom, "ok same size\n");
   }
   else {
-    printf("Size different something wrong!!!!!!!\n");
+    EINA_LOG_DOM_ERR(log_mesh_dom, "Size different something wrong!!!!!!!\n");
   }
   //mesh->weights = eina_inarray_new(sizeof(Weight), weights_count);
-  printf("vertex weight count : %d\n", vertex_weight_count);
+  EINA_LOG_DOM_DBG(log_mesh_dom, "vertex weight count : %d\n", vertex_weight_count);
+
   for (i = 0; i < vertex_weight_count; ++i) {
     VertexInfo* vi = eina_inarray_nth(mesh->vertices_base, i);
     uint16_t weight_count = read_uint16(f);
@@ -194,7 +196,7 @@ void
 mesh_init(Mesh* m)
 {
   if (!m->buffers) {
-    printf("mesh init: there are no buffers\n");
+    EINA_LOG_DOM_ERR(log_mesh_dom, "mesh init: there are no buffers\n");
     return;
   }
 
@@ -264,7 +266,6 @@ mesh_find_vertexgroup(Mesh* mesh, char* name)
 void
 mesh_destroy(Mesh* m)
 {
-  printf("todo mesh destroy \n");
   //TODO clean non opengl data
   if (!m->is_init) return;
 
@@ -282,7 +283,7 @@ mesh_file_set(Mesh* m, const char* filename)
   FILE *f;
   f = fopen(filename, "rb");
   if (!f) {
-    printf("cannot open file '%s'\n", filename);
+    EINA_LOG_DOM_ERR(log_mesh_dom, "cannot open file '%s'\n", filename);
   }
   fseek(f, 0, SEEK_SET);
 
@@ -301,7 +302,7 @@ Buffer*
 mesh_buffer_get(Mesh* m, const char* name)
 {
   if (!m->buffers) {
-    printf("buffer get :there are no buffers\n");
+    EINA_LOG_DOM_ERR(log_mesh_dom, "buffer get :there are no buffers\n");
     return NULL;
   }
 
