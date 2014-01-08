@@ -42,6 +42,7 @@ struct _Object {
   Eina_List* children;
 
   unsigned long long id;
+  bool dirty;
 };
 
 struct _Camera;

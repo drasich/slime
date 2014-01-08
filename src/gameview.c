@@ -185,11 +185,9 @@ gameview_draw(GameView* v)
   Matrix4* projection = &cam->projection;
   Matrix4* ortho = &cam->orthographic;
 
-  //Render just selected to fbo
   Eina_List *l;
   Object *o;
 
-  //Render all objects to fbo to get depth for the lines.
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT) ;
   //glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
   //glClearStencil(0);

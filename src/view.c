@@ -1186,9 +1186,6 @@ view_update(View* v, double dt)
   Render* r = v->render;
   Scene* s = cx->scene;
 
-  Eina_List *l;
-  Object *o;
-
   Plane planes[6];
   camera_get_frustum_planes(v->camera, planes);
   Matrix4 id4;
@@ -1196,6 +1193,20 @@ view_update(View* v, double dt)
   v->render->render_objects = eina_list_free(v->render->render_objects);
   v->render->render_objects_selected = eina_list_free(v->render->render_objects_selected);
   _render_objects_add(v, id4, planes, s->objects);
+
+  Eina_List *l;
+  Object *o;
+  bool clean = false;
+  EINA_LIST_FOREACH(s->objects, l, o) {
+    if (clean) o->dirty = false;
+    else if (o->dirty) {
+      clean = true;
+      o->dirty = false;
+      //TODO just update the objects
+      tree_scene_set(v->tree, s);
+    }
+  }
+
 }
 
 #include "resource.h"

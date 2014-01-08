@@ -563,7 +563,8 @@ object_child_add(Object* parent, Object* child)
 {
   parent->children = eina_list_append(parent->children, child);
   child->parent = parent;
-  //TODO update the tree
+  parent->dirty = true;
+  child->dirty = true;
 }
 
 Vec3 object_world_position_get(Object* o)
