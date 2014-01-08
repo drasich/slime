@@ -1119,6 +1119,8 @@ view_destroy(View* v)
     scene_write(v->context->scene, "scene/scenewrite.eet");
   }
   */
+  v->save->scene = v->context->scene->name;
+  save_write(v->save);
 
   free(v->context);
   //TODO release control
@@ -1202,7 +1204,7 @@ view_update(View* v, double dt)
     else if (o->dirty) {
       clean = true;
       o->dirty = false;
-      //TODO just update the objects
+      //TODO just update the objects, don't set the scene
       tree_scene_set(v->tree, s);
     }
   }

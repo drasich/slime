@@ -1,7 +1,6 @@
 LATELY
 - put rand seed in engine_init something
-- project save: save context : last scene selected
-- for each scene, save editcamera pos, objects selected
+- project save
 - revoir comment rajouter un component
 - quand on reload les scenes, ne pas tout effacer la liste. juste updater
   les pointeurs sur les scenes.
@@ -27,6 +26,12 @@ LATELY
 - use hoversel
 - fix the warnings (color) and the output
 - be able to set the relationship parent/children in the editor (just in code for now)
+
+SAVE
+- last scene selected.
+- for each scene
+  - save editcamera pos... now the camera is same for everyone... is it better?
+  - objects selected
 
 USER FRIENDLY
 - only able to select camera if there is a camera component

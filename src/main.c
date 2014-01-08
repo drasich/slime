@@ -413,11 +413,18 @@ elm_main(int argc, char **argv)
   create_window();
   //create_window_panels();
 
-  view_scene_set(view, resource_scene_get(s_rm, "base"));
+  view->save = save_read();
+  if (!view->save) {
+    view->save = calloc(1, sizeof *view->save);
+    view->save->scene = "base";
+  }
+  view_scene_set(view, resource_scene_get(s_rm, view->save->scene));
+
   //build_scene();
   //gameviewtest();
 
   elm_run();
+  printf("elm run finished\n");
   elm_shutdown();
   resource_scenes_save();
 

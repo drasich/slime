@@ -13,7 +13,6 @@ struct _Multiple_Objects_Selection{
 typedef struct _Context Context;
 typedef void (*context_cb)(Context* c, void* listener, const char* msg);
 
-
 struct _Context{
   Eina_List* objects;
   struct _Object* object;

@@ -4,6 +4,7 @@
 #include "camera.h"
 #include "fbo.h"
 #include "ui/property_view.h"
+#include "save.h"
 //#include "ui/tree.h"
 
 
@@ -51,6 +52,7 @@ struct _View
   Eina_List* dragger_rotate;
   Eina_List* dragger_scale;
   struct _ResourceView* rv;
+  Save* save;
 };
 
 View* view_new(Evas_Object *win);
