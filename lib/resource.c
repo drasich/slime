@@ -1,12 +1,14 @@
 #include "resource.h"
 //#include "Ecore.h"
 
+static int _resource_dom = -1;
+
 Mesh*
 resource_mesh_get(ResourceManager* rm, const char* name)
 {
   Mesh* m = eina_hash_find(rm->meshes, name);
   if (!m)
-  printf("Cannot find mesh %s \n", name);
+  EINA_LOG_DOM_ERR(_resource_dom, "Cannot find mesh %s \n", name);
 
   return m;
 }
@@ -16,7 +18,7 @@ resource_shader_get(ResourceManager* rm, const char* name)
 {
   Shader* s = eina_hash_find(rm->shaders, name);
   if (!s)
-  printf("Cannot find shader %s \n", name);
+  EINA_LOG_DOM_ERR(_resource_dom, "Cannot find shader %s \n", name);
 
   return s;
 }
@@ -26,7 +28,7 @@ resource_texture_get(ResourceManager* rm, const char* name)
 {
   Texture* t = eina_hash_find(rm->textures, name);
   if (!t)
-  printf("Cannot find texture %s \n", name);
+  EINA_LOG_DOM_ERR(_resource_dom, "Cannot find texture %s \n", name);
 
   return t;
 }
@@ -63,7 +65,7 @@ _resource_mesh_add_cb(const char *name, const char *path, void *data)
 {
   ResourceManager* rm = data;
   if (eina_str_has_extension(name,"mesh")) {
-    printf("mesh %s in %s\n", name, path);
+    EINA_LOG_DOM_INFO(_resource_dom, "mesh %s in %s\n", name, path);
     rm->meshes_to_load = eina_list_append(rm->meshes_to_load, eina_stringshare_add(name));
   }
 }
@@ -107,13 +109,14 @@ resource_read_path(ResourceManager* rm)
 static void 
 _scene_free_cb(void *scene)
 {
-  printf("scene free cb \n");
   scene_del(scene);
 }
 
 ResourceManager*
 resource_manager_create()
 {
+  _resource_dom = eina_log_domain_register("resource", EINA_COLOR_YELLOW);
+
   ResourceManager* rm = calloc(1, sizeof *rm);
   rm->meshes = eina_hash_string_superfast_new(NULL);
   rm->shaders = eina_hash_string_superfast_new(NULL);
@@ -132,7 +135,6 @@ resource_scenes_clean()
   //s_rm->scenes = NULL;
   //s_rm->scenes = eina_hash_string_superfast_new(_scene_free_cb);
 
-  printf("RRRR resources scenes_clean\n");
   eina_hash_free_buckets(s_rm->scenes);
 }
 
@@ -372,7 +374,6 @@ resource_shader_handle_set(ResourceManager* rm, ShaderHandle* sh, const char* na
 {
   //TODO choose between this state or the callback or both
   sh->state = RESOURCE_STATE_CHANGED;
-  printf("resource shader handle set\n");
   if (sh->cb) sh->cb(sh->name, name, sh->data);
 
   sh->name = name;
@@ -394,7 +395,7 @@ resource_scene_get(ResourceManager* rm, const char* name)
 {
   Scene* s = eina_hash_find(rm->scenes, name);
   if (!s)
-  printf("Cannot find scene %s \n", name);
+  EINA_LOG_DOM_ERR(_resource_dom, "Cannot find scene %s \n", name);
 
   return s;
 
@@ -419,13 +420,14 @@ resource_scene_save(const Scene* s)
   eina_strlcpy(copy, yep, strlen(yep) + 1);
   eina_strlcat(yep, ".scene", l);
   eina_strlcat(copy, ".saved", l);
-  printf("scene name : %s, yep %s, length %d, copy %s \n", s->name, yep, l, copy);
+
   eina_file_copy(
         yep,
         copy, 
         EINA_FILE_COPY_DATA | EINA_FILE_COPY_PERMISSION | EINA_FILE_COPY_XATTR,
         NULL,
         NULL);
+
   scene_write(s, yep);
 }
 

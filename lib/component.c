@@ -71,6 +71,8 @@ _create_widgets(ComponentManager* cm)
 ComponentManager* 
 create_component_manager()
 {
+  _component_dom = eina_log_domain_register("component", EINA_COLOR_CYAN);
+
   ComponentManager* cm = calloc(1, sizeof *cm);
   return cm;
 }
@@ -203,7 +205,6 @@ component_descriptor_init(Eina_List* component_desc)
   eddc.func.type_set = _component_type_set;
   _variant_unified_descriptor = eet_data_descriptor_stream_new(&eddc);
 
-  _component_dom = eina_log_domain_register("components", EINA_COLOR_CYAN);
 
   Eina_List* l;
   ComponentDesc* cd;
