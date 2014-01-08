@@ -390,6 +390,8 @@ elm_main(int argc, char **argv)
 {
   eina_init();
   eet_init();
+  srand (time(NULL));
+
   property_holder_init();
 
   s_component_manager = create_component_manager(); //TODO

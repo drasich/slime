@@ -1,4 +1,7 @@
 LATELY
+- put rand seed in engine_init something
+- project save: save context : last scene selected
+- for each scene, save editcamera pos, objects selected
 - revoir comment rajouter un component
 - quand on reload les scenes, ne pas tout effacer la liste. juste updater
   les pointeurs sur les scenes.
