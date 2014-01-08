@@ -390,6 +390,7 @@ elm_main(int argc, char **argv)
 {
   eina_init();
   eet_init();
+  log_domains_register();
   srand (time(NULL));
 
   property_holder_init();
