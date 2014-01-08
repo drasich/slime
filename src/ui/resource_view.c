@@ -324,7 +324,6 @@ resource_view_scene_add(ResourceView* rv, const Scene* s)
 void
 resource_view_scene_clean(ResourceView* rv)
 {
-  printf("function %s \n", __FUNCTION__);
   elm_genlist_clear(rv->gl);
   rv->scene_group = resource_view_group_add(rv, "Scenes");
   rv->scene_group_playing = resource_view_group_add(rv, "Scenes(Playing)");

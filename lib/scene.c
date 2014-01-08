@@ -1,5 +1,6 @@
 #include "scene.h"
 #include "gl.h"
+#include "log.h"
 
 Scene*
 scene_new()
@@ -108,25 +109,17 @@ static const char SCENE_FILE_ENTRY[] = "scene";
 Eina_Bool
 scene_write(const Scene* s, const char* filename)
 {
-  printf("going to print scene %s \n", s->name);
   Eina_Bool ret;
   Eet_File *ef = eet_open(filename, EET_FILE_MODE_WRITE);
   if (!ef) {
-    fprintf(stderr, "error reading file %s \n", filename);
+    EINA_LOG_DOM_ERR(log_scene_dom, "error reading file %s \n", filename);
     return EINA_FALSE;
   }
 
   ret = eet_data_write(ef, s_ps_scene->descriptor, SCENE_FILE_ENTRY, s, EINA_TRUE);
   eet_close(ef);
-  if (ret) {
-    printf("return value for save looks ok \n");
-  }
-  else
-    printf("return value for save NOT OK \n");
 
   return ret;
-
-
 }
 
 static void 
@@ -139,19 +132,18 @@ _output(void *data, const char *string)
 Scene*
 scene_read(const char* filename)
 {
-  printf("scene read start\n");
   Scene* s;
 
   Eet_File *ef = eet_open(filename, EET_FILE_MODE_READ);
   if (!ef) {
-    fprintf(stderr, "error reading file %s \n", filename);
+    EINA_LOG_DOM_ERR(log_scene_dom, "error reading file '%s'.\n", filename);
     return NULL;
   }
 
   s = eet_data_read(ef, s_ps_scene->descriptor, SCENE_FILE_ENTRY);
-  printf("scene read data dump\n");
-  eet_data_dump(ef, SCENE_FILE_ENTRY, _output, NULL);
-  printf("scene read data dump end\n");
+  //printf("scene read data dump\n");
+  //eet_data_dump(ef, SCENE_FILE_ENTRY, _output, NULL);
+  //printf("scene read data dump end\n");
   eet_close(ef);
  
   return s;  
@@ -171,8 +163,7 @@ scene_post_read(Scene* s)
     object_post_read(o, s);
   }
 
-  printf("scene name is %s\n", s->name);
-  printf("objects number is %d\n", eina_list_count(s->objects));
+  EINA_LOG_DOM_DBG(log_scene_dom, "scene name is %s\nobjects number is %d\n", s->name, eina_list_count(s->objects));
 
 }
 
