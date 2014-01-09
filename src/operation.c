@@ -163,7 +163,7 @@ _change_data(void* c, Property* p, const void *data)
           uv->value.vec3 = *v;
         }
         else {
-          fprintf (stderr, "_change_data: uniform not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
+          EINA_LOG_ERR("_change_data: uniform not yet implemented: %d\n", p->type);
         }
        }
       break;
@@ -171,7 +171,7 @@ _change_data(void* c, Property* p, const void *data)
       memcpy(c+p->offset, data, sizeof(ObjectPointer));
       break;
     default:
-      fprintf (stderr, "_change_data: type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
+      EINA_LOG_ERR("_change_data: type not yet implemented: %d\n", p->type);
       break;
    }
 }

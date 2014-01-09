@@ -106,7 +106,7 @@ _spinner_changed_cb(void *data, Evas_Object *obj, void *event)
        }
       break;
     default:
-      fprintf (stderr, "type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
+      EINA_LOG_ERR("type not yet implemented: %d", type);
       break;
    }
 
@@ -144,7 +144,7 @@ _entry_changed_cb(void *data, Evas_Object *obj, void *event)
        }
       break;
     default:
-      fprintf (stderr, "type not yet implemented: at %s, line %d\n",__FILE__, __LINE__);
+      EINA_LOG_ERR("type not yet implemented: %d", p->type);
       break;
    }
 
@@ -965,7 +965,7 @@ component_property_update_data(ComponentProperties* cp)
           int offset = property_offset_get(p);
           memcpy(&q, data + offset, sizeof q);
           Vec3 deg = quat_to_euler_deg(q);
-          printf("found quat, angles : %f, %f, %f \n", deg.x, deg.y, deg.z);
+          //EINA_LOG_DBG("found quat, angles : %f, %f, %f \n", deg.x, deg.y, deg.z);
           const char* pname = evas_object_data_get(obj, "property_name");
           if (!strcmp(pname, "x"))
           elm_spinner_value_set(obj, deg.x );
@@ -1381,7 +1381,7 @@ _property_add(ComponentProperties* cp, const Property* p, Evas_Object* box, void
     case PROPERTY_ROOT:
       break;
     default:
-      fprintf (stderr, "type '%d' not yet implemented: at %s, line %d\n", p->type, __FILE__, __LINE__);
+      EINA_LOG_ERR("type '%d' not yet implemented.\n", p->type);
       break;
   }
 
