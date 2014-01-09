@@ -23,7 +23,7 @@ _object_mesh_new(const char* name)
   o->name = eina_stringshare_add(name);
   Component* meshcomp = create_component(&mesh_desc);
   MeshComponent* mc = meshcomp->data;
-  mesh_component_shader_set_by_name(mc,"shader/diffuse.shader");
+  mesh_component_shader_set_by_name(mc,"shader/cube.shader");
 
   TextureHandle* t = resource_texture_handle_new(s_rm, "model/ceil.png");
   shader_instance_texture_data_set(mc->shader_instance, "texture", t);
