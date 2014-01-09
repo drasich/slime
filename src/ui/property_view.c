@@ -382,7 +382,7 @@ property_holder_update(void* data)
       if (strcmp(str,s)) 
       elm_object_text_set(o, str );
     }
-    else EINA_LOG_ERR("property not yet supported");
+    else EINA_LOG_ERR("property not yet supported: %d", ph->property->type);
   }
 
 }

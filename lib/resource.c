@@ -243,7 +243,7 @@ resource_shader_create(ResourceManager* rm)
   shader_uniform_type_add(line, "use_depth", UNIFORM_INT, true);
   shader_uniform_type_add(line, "size_fixed", UNIFORM_INT, true);
 
-  Shader* cube = create_shader("shader/cube.shader","shader/simple.vert", "shader/simple.frag");
+  Shader* cube = create_shader("shader/cube.shader","shader/cube.vert", "shader/cube.frag");
   shader_attribute_add(cube, "vertex", 3, GL_FLOAT);
   shader_attribute_add(cube, "normal", 3, GL_FLOAT);
   shader_attribute_add(cube, "texcoord", 2, GL_FLOAT);
