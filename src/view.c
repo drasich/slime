@@ -822,7 +822,11 @@ _add_buttons(View* v, Evas_Object* win)
   elm_box_pack_end(box, bt);
 
   evas_object_color_get(bt, &r,&g,&b,&a);
-  a = 150;
+  float f = 0.7f;
+  r *= f;
+  g *= f;
+  b *= f;
+  a *= f;
 
   evas_object_color_set(bt, r,g,b,a);
   evas_object_resize(bt, 100, 25);
