@@ -15,8 +15,8 @@ static char*
 gl_prefab_text_get(void *data, Evas_Object *obj __UNUSED__, const char *part __UNUSED__)
 {
   char buf[256];
-  Object* o = (Object*) data;
-  snprintf(buf, sizeof(buf), "%s", o->name);
+  Prefab* p = data;
+  snprintf(buf, sizeof(buf), "%s", p->prefab->name);
   return strdup(buf);
 }
 
@@ -213,9 +213,9 @@ gl_item_prefab_sel(void *data, Evas_Object *obj __UNUSED__, void *event_info)
    //printf("expanded depth for selected item is %d", depth);
 
    ResourceView* rv = data;
-   Object* o =  elm_object_item_data_get(glit);
+   Prefab* p =  elm_object_item_data_get(glit);
    //view_scene_set(rv->view, s);
-   property_prefab_show(rv->view->property, o);
+   property_prefab_show(rv->view->property, p);
 }
 
 
@@ -467,7 +467,7 @@ resource_view_update(ResourceView* rv)
         resource_view_scene_add(rv, s);
       }
       else if (rv->resource_type == RESOURCE_PREFAB) {
-        const Object* p = t->data;
+        const Prefab* p = t->data;
         //printf("key, scene name : %s, %s\n", name, s->name);
         //elm_menu_item_add(menu, NULL, NULL, name, _change_scene, name);
         resource_view_prefab_add(rv, p);
@@ -479,17 +479,17 @@ resource_view_update(ResourceView* rv)
 }
 
 void
-resource_view_prefab_add(ResourceView* rv, const Object* o)
+resource_view_prefab_add(ResourceView* rv, const Prefab* p)
 {
   Elm_Object_Item* eoi = elm_genlist_item_append(
         rv->gl,
         class_prefab,
-        o,
+        p,
         rv->group,
         ELM_GENLIST_ITEM_NONE,
         gl_item_prefab_sel,
         rv);
 
-  property_holder_genlist_item_add(&o->name, eoi);
+  property_holder_genlist_item_add(&p->prefab->name, eoi);
 }
 

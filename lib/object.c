@@ -653,7 +653,11 @@ object_copy(const Object* oo)
 Property*
 property_set_object_pointer(const char* name)
 {
-  Property* ps = property_set_new();
+  static Property* ps = NULL;
+  if (ps) {
+    return ps;
+  }
+  ps = property_set_new();
   PROPERTY_SET_TYPE(ps, ObjectPointer);
   ps->name = name;
   ps->type = PROPERTY_OBJECT;

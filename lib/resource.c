@@ -136,7 +136,7 @@ _scene_free_cb(void *scene)
 static void 
 _prefab_free_cb(void *prefab)
 {
-  object_destroy(prefab);
+  prefab_del(prefab);
 }
 
 
@@ -208,10 +208,10 @@ resource_prefabs_load()
     eina_str_join(filepath, l2 + 1, '.', filepath, "prefab" );
     filepath[l2] = '\0';
 
-    Object* p = object_read(filepath);
-    p->name = eina_stringshare_add(name);
-    eina_hash_add(rm->prefabs, p->name, p);
-    object_post_read(p, NULL);
+    Prefab* p = prefab_read(filepath);
+    p->prefab->name = eina_stringshare_add(name);
+    eina_hash_add(rm->prefabs, p->prefab->name, p);
+    object_post_read(p->prefab, NULL);
   }
 
 }
@@ -245,9 +245,9 @@ resource_scene_add(ResourceManager* rm, Scene* s)
 }
 
 bool
-resource_prefab_add(ResourceManager* rm, Object* p)
+resource_prefab_add(ResourceManager* rm, Prefab* p)
 {
-  return eina_hash_add(rm->prefabs, p->name, p);
+  return eina_hash_add(rm->prefabs, p->prefab->name, p);
 }
 
 
@@ -496,13 +496,13 @@ resource_scene_save(const Scene* s)
 }
 
 void
-resource_prefab_save(const Object* p)
+resource_prefab_save(const Prefab* p)
 {
-  int l = strlen(p->name) + strlen("prefab/") + strlen(".prefab") + 1;
+  int l = strlen(p->prefab->name) + strlen("prefab/") + strlen(".prefab") + 1;
   char yep[l];
   char copy[l];
   eina_strlcpy(yep, "prefab/", strlen("prefab/") + 1);
-  eina_strlcat(yep, p->name, l);
+  eina_strlcat(yep, p->prefab->name, l);
   eina_strlcpy(copy, yep, strlen(yep) + 1);
   eina_strlcat(yep, ".prefab", l);
   eina_strlcat(copy, ".saved", l);
@@ -514,7 +514,7 @@ resource_prefab_save(const Object* p)
         NULL,
         NULL);
 
-  object_write(p, yep);
+  prefab_write(p, yep);
 }
 
 
@@ -551,7 +551,7 @@ resource_prefabs_save()
     while (eina_iterator_next(it, &data)) {
       Eina_Hash_Tuple *t = data;
       //const char* name = t->key;
-      const Object* p = t->data;
+      const Prefab* p = t->data;
       resource_prefab_save(p);
     }
     eina_iterator_free(it);

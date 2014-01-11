@@ -40,6 +40,7 @@ struct _Object {
 
   Object* parent;
   Eina_List* children;
+  struct _Prefab* prefab;
 
   unsigned long long id;
   bool dirty;

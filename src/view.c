@@ -366,8 +366,7 @@ _prefab_add(void* data, Evas_Object* o, void* event_info)
   Eina_List* l;
   Object* obj;
   EINA_LIST_FOREACH(objects, l, obj) {
-    Object* prefab = object_copy(obj);
-    object_post_read(prefab, obj->scene);
+    Prefab* prefab = prefab_new(obj);
     resource_prefab_add(s_rm, prefab);
     resource_view_prefab_add(v->rv_prefab, prefab);
     //Eina_List* lc;

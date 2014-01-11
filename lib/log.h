@@ -6,6 +6,7 @@ int log_mesh_dom;
 int log_scene_dom;
 int log_object_dom;
 int log_render_dom;
+int log_prefab_dom;
 
 void log_domains_register();
 #endif

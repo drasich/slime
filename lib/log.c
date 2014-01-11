@@ -9,4 +9,5 @@ log_domains_register()
   log_scene_dom = eina_log_domain_register("scene", EINA_COLOR_LIGHTCYAN);
   log_object_dom = eina_log_domain_register("object", EINA_COLOR_GREEN);
   log_render_dom = eina_log_domain_register("render", EINA_COLOR_ORANGE);
+  log_prefab_dom = eina_log_domain_register("prefab", EINA_COLOR_ORANGE);
 }

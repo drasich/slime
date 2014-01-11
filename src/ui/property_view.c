@@ -387,8 +387,8 @@ property_holder_update(void* data)
 }
 
 void
-property_prefab_show(PropertyView* pw, Object* o)
+property_prefab_show(PropertyView* pw, Prefab* p)
 {
-  property_object_show(pw, o);
+  property_object_show(pw, p->prefab);
 }
 

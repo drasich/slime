@@ -26,7 +26,7 @@ void resource_view_scene_select(ResourceView* rv, const Scene* s);
 void resource_view_update(ResourceView* rv);
 void resource_view_clean(ResourceView* rv);
 
-void resource_view_prefab_add(ResourceView* rv, const Object* o);
+void resource_view_prefab_add(ResourceView* rv, const Prefab* o);
 
 Elm_Object_Item* resource_view_group_add(ResourceView* rv, const char* name);
 

@@ -4,6 +4,7 @@
 #include "context.h"
 #include "control.h"
 #include "component_view.h"
+#include "prefab.h"
 
 typedef struct _PropertyView PropertyView;
 
@@ -34,7 +35,7 @@ void property_update_component(PropertyView* pw, const char* name);
 void property_reload_component(PropertyView* pw, Component* c);
 
 void property_scene_show(PropertyView* pw, Scene* s);
-void property_prefab_show(PropertyView* pw, Object* o);
+void property_prefab_show(PropertyView* pw, Prefab* p);
 
 typedef struct _PropertyHolder PropertyHolder;
 struct _PropertyHolder

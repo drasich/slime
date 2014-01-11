@@ -5,6 +5,7 @@
 #include "shader.h"
 #include "texture.h"
 #include "scene.h"
+#include "prefab.h"
 
 typedef struct _ResourceManager ResourceManager;
 
@@ -45,7 +46,7 @@ Eina_Hash* resource_scenes_get(ResourceManager* rm);
 Eina_Hash* resource_prefabs_get(ResourceManager* rm);
 
 bool resource_scene_add(ResourceManager* rm, Scene* s);
-bool resource_prefab_add(ResourceManager* rm, Object* p);
+bool resource_prefab_add(ResourceManager* rm, Prefab* p);
 
 ResourceManager* resource_manager_create();
 
