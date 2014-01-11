@@ -11,6 +11,16 @@ gl_scene_text_get(void *data, Evas_Object *obj __UNUSED__, const char *part __UN
   return strdup(buf);
 }
 
+static char*
+gl_prefab_text_get(void *data, Evas_Object *obj __UNUSED__, const char *part __UNUSED__)
+{
+  char buf[256];
+  Object* o = (Object*) data;
+  snprintf(buf, sizeof(buf), "%s", o->name);
+  return strdup(buf);
+}
+
+
 
 static void
 _gl_double_clicked(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info)
@@ -195,6 +205,20 @@ gl_item_sel(void *data, Evas_Object *obj __UNUSED__, void *event_info)
    view_scene_set(rv->view, s);
 }
 
+static void
+gl_item_prefab_sel(void *data, Evas_Object *obj __UNUSED__, void *event_info)
+{
+   Elm_Object_Item *glit = event_info;
+   //int depth = elm_genlist_item_expanded_depth_get(glit);
+   //printf("expanded depth for selected item is %d", depth);
+
+   ResourceView* rv = data;
+   Object* o =  elm_object_item_data_get(glit);
+   //view_scene_set(rv->view, s);
+   property_prefab_show(rv->view->property, o);
+}
+
+
 static char *gl_group_text_get(
       void *data,
       Evas_Object *obj EINA_UNUSED,
@@ -202,17 +226,7 @@ static char *gl_group_text_get(
 {
   ResourceGroup* rg = data;
   return strdup(rg->name);
-  /*
-   char buf[256];
-   int* d = malloc(sizeof *d);
-   *d = 5;
-   snprintf(buf, sizeof(buf), "Group Index # %i (Item # %i)",  (int)((uintptr_t)d / 10), (int)(uintptr_t)d);
-   free(d);
-   return strdup(buf);
-   */
-   return strdup("Scenes");
 }
-
 
 static void
 _context_scene_list_msg_receive(Context* c, void* scene_list, const char* msg)
@@ -222,29 +236,35 @@ _context_scene_list_msg_receive(Context* c, void* scene_list, const char* msg)
   }
 }
 
-
-
-/*
 static void
-_scene_free_cb(void *scene)
+_resource_view_groups_add(ResourceView* rv)
 {
-  property_holder_del(scene);
-  elm_genlist_clear(rv->gl);
+  if (rv->resource_type == RESOURCE_SCENE) {
+    rv->group = resource_view_group_add(rv, "Scenes");
+    rv->scene_group_playing = resource_view_group_add(rv, "Scenes(Playing)");
+  }
+  else if (rv->resource_type == RESOURCE_PREFAB) {
+    rv->group = resource_view_group_add(rv, "Prefab");
+  }
 }
-*/
 
-
-
-static Elm_Genlist_Item_Class *itc1;
-static Elm_Genlist_Item_Class *_group;
+static Elm_Genlist_Item_Class *class_scene = NULL;
+static Elm_Genlist_Item_Class *class_group = NULL;
+static Elm_Genlist_Item_Class *class_prefab = NULL;
 
 ResourceView*
-resource_view_new(Evas_Object* win, View* v)
+resource_view_new(Evas_Object* win, View* v, ResourceType type)
 {
   ResourceView* rv = calloc(1, sizeof *rv);
   //rv->scenes = eina_hash_pointer_new(_scene_free_cb);
   rv->view = v;
-  rv->view->rv = rv;
+  if (type == RESOURCE_SCENE){
+    rv->view->rv = rv;
+  }
+  else if (type == RESOURCE_PREFAB) {
+    rv->view->rv_prefab = rv;
+  }
+  rv->resource_type = type;
 
   Evas_Object* gl;
 
@@ -261,21 +281,32 @@ resource_view_new(Evas_Object* win, View* v)
 
   elm_genlist_homogeneous_set(gl, EINA_TRUE);
 
-  itc1 = elm_genlist_item_class_new();
-  itc1->item_style     = "default";
-  itc1->func.text_get = gl_scene_text_get;
-  //itc1->func.content_get  = gl4_content_get;
-  //itc1->func.state_get = gl4_state_get;
-  //itc1->func.del       = gl4_del;
+  if (!class_scene) {
+    class_scene = elm_genlist_item_class_new();
+    class_scene->item_style     = "default";
+    class_scene->func.text_get = gl_scene_text_get;
+    //class_scene->func.content_get  = gl4_content_get;
+    //class_scene->func.state_get = gl4_state_get;
+    //class_scene->func.del       = gl4_del;
+  }
 
-  _group = elm_genlist_item_class_new();
-  _group->item_style     = "group_index";
-  _group->func.text_get = gl_group_text_get;
+  if (!class_prefab) {
+    class_prefab = elm_genlist_item_class_new();
+    class_prefab->item_style     = "default";
+    class_prefab->func.text_get = gl_prefab_text_get;
+  }
 
-  rv->scene_group = resource_view_group_add(rv, "Scenes");
-  rv->scene_group_playing = resource_view_group_add(rv, "Scenes(Playing)");
+  if (!class_group) {
+    class_group = elm_genlist_item_class_new();
+    class_group->item_style = "group_index";
+    class_group->func.text_get = gl_group_text_get;
+  }
 
+  _resource_view_groups_add(rv);
+  if (type == RESOURCE_SCENE)
   context_add_callback(v->context, _context_scene_list_msg_receive, rv);
+
+  elm_genlist_select_mode_set(gl, ELM_OBJECT_SELECT_MODE_ALWAYS);
 
   return rv;
 }
@@ -289,7 +320,7 @@ resource_view_group_add(ResourceView* rv, const char* name)
 
   Elm_Object_Item* gli = elm_genlist_item_append(
         rv->gl,
-        _group,
+        class_group,
         rg,//(void *)(uintptr_t)i/* item data */,
         NULL/* parent */,
         ELM_GENLIST_ITEM_GROUP,
@@ -308,25 +339,21 @@ resource_view_scene_add(ResourceView* rv, const Scene* s)
 {
   Elm_Object_Item* eoi = elm_genlist_item_append(
         rv->gl,
-        itc1,
+        class_scene,
         s,
-        rv->scene_group,//NULL,
+        rv->group,//NULL,
         ELM_GENLIST_ITEM_NONE,
         gl_item_sel,
         rv);
 
   property_holder_genlist_item_add(&s->name, eoi);
-  //printf("I add scene %s, %p, %p \n", s->name, eoi, rv->scenes);
-  //eina_hash_add(rv->scenes, &s, eoi);
 }
 
 void
-resource_view_scene_clean(ResourceView* rv)
+resource_view_clean(ResourceView* rv)
 {
   elm_genlist_clear(rv->gl);
-  rv->scene_group = resource_view_group_add(rv, "Scenes");
-  rv->scene_group_playing = resource_view_group_add(rv, "Scenes(Playing)");
-  //eina_hash_free_buckets(rv->scenes);
+  _resource_view_groups_add(rv);
 
   /*
   Elm_Object_Item* item = elm_genlist_first_item_get(rv->gl);
@@ -349,7 +376,7 @@ resource_view_playing_scene_add(ResourceView* rv, const Scene* s)
 {
   Elm_Object_Item* eoi = elm_genlist_item_append(
         rv->gl,
-        itc1,
+        class_scene,
         s,
         rv->scene_group_playing,//NULL,
         ELM_GENLIST_ITEM_NONE,
@@ -357,9 +384,6 @@ resource_view_playing_scene_add(ResourceView* rv, const Scene* s)
         rv);
 
   property_holder_genlist_item_add(&s->name, eoi);
-  //printf("I add scene %s, %p, %p \n", s->name, eoi, rv->scenes);
-  //eina_hash_add(rv->scenes, &s, eoi);
-  //printf("I added scene %p \n", eoi);
 }
 
 
@@ -367,8 +391,6 @@ void
 resource_view_scene_del(ResourceView* rv, const Scene* s)
 {
   static Elm_Object_Item* parent = NULL;
-
-  //eina_hash_del_by_key(rv->scenes, &s);
 
   Elm_Object_Item* item = elm_genlist_first_item_get(rv->gl);
   if (!item) return;
@@ -421,26 +443,53 @@ resource_view_scene_select(ResourceView* rv, const Scene* s)
 void
 resource_view_update(ResourceView* rv)
 {
-  resource_view_scene_clean(rv);
+  resource_view_clean(rv);
 
-  Eina_Iterator* it;
-  Eina_Hash* hash = resource_scenes_get(s_rm);
+  Eina_Hash* hash = NULL;
+
+  if (rv->resource_type == RESOURCE_SCENE)
+  hash = resource_scenes_get(s_rm);
+  else if (rv->resource_type == RESOURCE_PREFAB)
+  hash = resource_prefabs_get(s_rm);
+
 
   if (hash) {
-
-    it = eina_hash_iterator_tuple_new(hash);
+    Eina_Iterator* it = eina_hash_iterator_tuple_new(hash);
     void *data;
 
     while (eina_iterator_next(it, &data)) {
       Eina_Hash_Tuple *t = data;
       //const char* name = t->key;
-      const Scene* s = t->data;
-      //printf("key, scene name : %s, %s\n", name, s->name);
-      //elm_menu_item_add(menu, NULL, NULL, name, _change_scene, name);
-      resource_view_scene_add(rv, s);
+      if (rv->resource_type == RESOURCE_SCENE) {
+        const Scene* s = t->data;
+        //printf("key, scene name : %s, %s\n", name, s->name);
+        //elm_menu_item_add(menu, NULL, NULL, name, _change_scene, name);
+        resource_view_scene_add(rv, s);
+      }
+      else if (rv->resource_type == RESOURCE_PREFAB) {
+        const Object* p = t->data;
+        //printf("key, scene name : %s, %s\n", name, s->name);
+        //elm_menu_item_add(menu, NULL, NULL, name, _change_scene, name);
+        resource_view_prefab_add(rv, p);
+      }
     }
     eina_iterator_free(it);
   }
 
+}
+
+void
+resource_view_prefab_add(ResourceView* rv, const Object* o)
+{
+  Elm_Object_Item* eoi = elm_genlist_item_append(
+        rv->gl,
+        class_prefab,
+        o,
+        rv->group,
+        ELM_GENLIST_ITEM_NONE,
+        gl_item_prefab_sel,
+        rv);
+
+  property_holder_genlist_item_add(&o->name, eoi);
 }
 

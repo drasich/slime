@@ -16,7 +16,9 @@ typedef enum _ResourceType ResourceType;
 enum _ResourceType{
   RESOURCE_TEXTURE,
   RESOURCE_MESH,
-  RESOURCE_SHADER
+  RESOURCE_SHADER,
+  RESOURCE_SCENE,
+  RESOURCE_PREFAB
 };
 
 struct _Property

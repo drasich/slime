@@ -14,6 +14,7 @@
 #include "texture.h"
 #include "component/dragger.h"
 #include "component/linecomponent.h"
+#include "ui/resource_view.h"
 #define __UNUSED__
 
 static bool s_view_destroyed = false;
@@ -342,7 +343,6 @@ _object_duplicate(void* data, Evas_Object* o, void* event_info)
   Eina_List* objects = context_objects_get(v->context);
   Scene* s = context_scene_get(v->context);
 
-
   Eina_List* newobj = NULL;
   Eina_List* l;
   Object* obj;
@@ -355,6 +355,34 @@ _object_duplicate(void* data, Evas_Object* o, void* event_info)
   control_objects_add(v->control, s, newobj);
   context_objects_set(v->context, newobj);
 }
+
+static void
+_prefab_add(void* data, Evas_Object* o, void* event_info)
+{
+  View* v = data;
+  Eina_List* objects = context_objects_get(v->context);
+  Scene* s = context_scene_get(v->context);
+
+  Eina_List* l;
+  Object* obj;
+  EINA_LIST_FOREACH(objects, l, obj) {
+    Object* prefab = object_copy(obj);
+    object_post_read(prefab, obj->scene);
+    resource_prefab_add(s_rm, prefab);
+    resource_view_prefab_add(v->rv_prefab, prefab);
+    //Eina_List* lc;
+    //Component* comp;
+    //EINA_LIST_FOREACH(prefab->components, lc, comp)
+    // printf("PREFAB Component name: %s\n", comp->name);
+    //prefab_add(prefab);
+    //pas ici mais quand on rajoute une prefab:
+    //Object* myobj = object_copy(prefab);
+    //prefab_instance_add(prefab,  myobj);
+  }
+
+  //control_objects_add(v->control, s, newobj);
+}
+
 
 static Evas_Object*
 _context_menu_create(Evas_Object* win, View* v)
@@ -380,6 +408,7 @@ _context_menu_create(Evas_Object* win, View* v)
     elm_menu_item_add(menu, NULL, NULL, "Duplicate", _object_duplicate, v);
     elm_menu_item_add(menu, NULL, NULL, "Remove", NULL, NULL);
     elm_menu_item_add(menu, NULL, NULL, "Add Component", NULL, NULL);
+    elm_menu_item_add(menu, NULL, NULL, "Add as a prefab", _prefab_add, v);
   }
 
 

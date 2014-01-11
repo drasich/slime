@@ -166,17 +166,23 @@ create_window()
   elm_win_resize_object_add(win, panes);
   Evas_Object* hpanes = create_panes(win, false);
   Evas_Object* treepanes = create_panes(win, false);
+  Evas_Object* resourcepanes = create_panes(win, true);
   view = view_new(win);
   //view->scene_entry = scene_entry;
   Evas_Object* glview = view->glview;
   Evas_Object* property = view->property->root;
   Evas_Object* tree = view->tree->root;
 
-  ResourceView* rv = resource_view_new(win, view);
-  
+  ResourceView* rv = resource_view_new(win, view, RESOURCE_SCENE);
   resource_view_update(rv);
+  ResourceView* rv_prefab = resource_view_new(win, view, RESOURCE_PREFAB);
+  resource_view_update(rv_prefab);
 
-  elm_object_part_content_set(treepanes, "left", rv->gl);
+  elm_object_part_content_set(resourcepanes, "left", rv->gl);
+  elm_object_part_content_set(resourcepanes, "right", rv_prefab->gl);
+
+  //elm_object_part_content_set(treepanes, "left", rv->gl);
+  elm_object_part_content_set(treepanes, "left", resourcepanes);
   elm_object_part_content_set(treepanes, "right", tree);
 
 
@@ -408,7 +414,7 @@ elm_main(int argc, char **argv)
   resource_texture_create(s_rm);
   resource_load(s_rm);
 
-  elm_config_preferred_engine_set("opengl_x11");
+  //elm_config_preferred_engine_set("opengl_x11");
   //elm_config_focus_highlight_animate_set(EINA_TRUE);
   //elm_config_focus_highlight_enabled_set(EINA_TRUE);
   create_window();
@@ -428,6 +434,7 @@ elm_main(int argc, char **argv)
   elm_run();
   elm_shutdown();
   resource_scenes_save();
+  resource_prefabs_save();
 
   elm_config_preferred_engine_set(NULL);
 

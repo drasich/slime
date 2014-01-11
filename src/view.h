@@ -52,6 +52,7 @@ struct _View
   Eina_List* dragger_rotate;
   Eina_List* dragger_scale;
   struct _ResourceView* rv;
+  struct _ResourceView* rv_prefab;
   Save* save;
 };
 

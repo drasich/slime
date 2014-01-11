@@ -58,6 +58,13 @@ resource_scenes_get(ResourceManager* rm)
   return rm->scenes;
 }
 
+Eina_Hash*
+resource_prefabs_get(ResourceManager* rm)
+{
+  return rm->prefabs;
+}
+
+
 
 
 static void
@@ -80,6 +87,20 @@ _resource_scene_add_cb(const char *name, const char *path, void *data)
     memcpy(shortname, name, len);
     shortname[len] = '\0';
     rm->scenes_to_load = eina_list_append(rm->scenes_to_load, eina_stringshare_add(shortname));
+  }
+}
+
+static void
+_resource_prefab_add_cb(const char *name, const char *path, void *data)
+{
+  Eina_List** pfl = data;
+  if (eina_str_has_extension(name, "prefab")) {
+    int len = strlen(name) - strlen(".prefab");
+    char shortname[len+1];
+    memcpy(shortname, name, len);
+    shortname[len] = '\0';
+    //rm->scenes_to_load = eina_list_append(rm->scenes_to_load, eina_stringshare_add(shortname));
+    *pfl = eina_list_append(*pfl, eina_stringshare_add(shortname));
   }
 }
 
@@ -112,6 +133,13 @@ _scene_free_cb(void *scene)
   scene_del(scene);
 }
 
+static void 
+_prefab_free_cb(void *prefab)
+{
+  object_destroy(prefab);
+}
+
+
 ResourceManager*
 resource_manager_create()
 {
@@ -124,6 +152,7 @@ resource_manager_create()
   rm->textures = eina_hash_string_superfast_new(NULL);
   rm->scenes = eina_hash_string_superfast_new(_scene_free_cb);
   rm->scenes_to_load = NULL;
+  rm->prefabs = eina_hash_string_superfast_new(_prefab_free_cb);
   return rm;
 
 }
@@ -161,6 +190,33 @@ resource_scenes_load()
 
 }
 
+void
+resource_prefabs_load()
+{
+  Eina_List* pfl = NULL;
+  eina_file_dir_list("prefab", EINA_FALSE, _resource_prefab_add_cb, &pfl);
+
+  ResourceManager* rm = s_rm;
+  Eina_List *l;
+  const char *name;
+
+  EINA_LIST_FOREACH(pfl, l, name) {
+    int l = strlen(name) + strlen("prefab/");
+    int l2 = l + strlen(".prefab");
+    char filepath[l2 + 1];
+    eina_str_join(filepath, l + 1, '/', "prefab" , name);
+    eina_str_join(filepath, l2 + 1, '.', filepath, "prefab" );
+    filepath[l2] = '\0';
+
+    Object* p = object_read(filepath);
+    p->name = eina_stringshare_add(name);
+    eina_hash_add(rm->prefabs, p->name, p);
+    object_post_read(p, NULL);
+  }
+
+}
+
+
 void resource_load(ResourceManager* rm)
 {
   Eina_List *l;
@@ -177,6 +233,7 @@ void resource_load(ResourceManager* rm)
   }
 
   resource_scenes_load();
+  resource_prefabs_load();
 }
 
 
@@ -186,6 +243,13 @@ resource_scene_add(ResourceManager* rm, Scene* s)
   //if (eina_hash_find
   return eina_hash_add(rm->scenes, s->name, s);
 }
+
+bool
+resource_prefab_add(ResourceManager* rm, Object* p)
+{
+  return eina_hash_add(rm->prefabs, p->name, p);
+}
+
 
 void
 resource_simple_mesh_create(ResourceManager* rm)
@@ -432,6 +496,29 @@ resource_scene_save(const Scene* s)
 }
 
 void
+resource_prefab_save(const Object* p)
+{
+  int l = strlen(p->name) + strlen("prefab/") + strlen(".prefab") + 1;
+  char yep[l];
+  char copy[l];
+  eina_strlcpy(yep, "prefab/", strlen("prefab/") + 1);
+  eina_strlcat(yep, p->name, l);
+  eina_strlcpy(copy, yep, strlen(yep) + 1);
+  eina_strlcat(yep, ".prefab", l);
+  eina_strlcat(copy, ".saved", l);
+
+  eina_file_copy(
+        yep,
+        copy, 
+        EINA_FILE_COPY_DATA | EINA_FILE_COPY_PERMISSION | EINA_FILE_COPY_XATTR,
+        NULL,
+        NULL);
+
+  object_write(p, yep);
+}
+
+
+void
 resource_scenes_save()
 {
   Eina_Iterator* it;
@@ -446,6 +533,26 @@ resource_scenes_save()
       //const char* name = t->key;
       const Scene* s = t->data;
       resource_scene_save(s);
+    }
+    eina_iterator_free(it);
+  }
+}
+
+void
+resource_prefabs_save()
+{
+  Eina_Iterator* it;
+  Eina_Hash* hash = resource_prefabs_get(s_rm);
+
+  if (hash) {
+    it = eina_hash_iterator_tuple_new(hash);
+    void *data;
+
+    while (eina_iterator_next(it, &data)) {
+      Eina_Hash_Tuple *t = data;
+      //const char* name = t->key;
+      const Object* p = t->data;
+      resource_prefab_save(p);
     }
     eina_iterator_free(it);
   }

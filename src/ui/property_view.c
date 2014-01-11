@@ -74,7 +74,7 @@ property_update(PropertyView* pw, Eina_List* objects)
   if (nb == 1) {
     if (last != pw->object) {
       pw->object = last;
-      property_object_display(pw, last);
+      property_object_show(pw, last);
     }
   }
   else {
@@ -233,7 +233,7 @@ create_property(Evas_Object* win, Context* context, Control* control)
 }
 
 void
-property_object_display(PropertyView* pw, Object* o)
+property_object_show(PropertyView* pw, Object* o)
 {
   property_clear_components(pw);
 
@@ -384,5 +384,11 @@ property_holder_update(void* data)
     }
     else EINA_LOG_ERR("property not yet supported: %d", ph->property->type);
   }
-
 }
+
+void
+property_prefab_show(PropertyView* pw, Object* o)
+{
+  property_object_show(pw, o);
+}
+

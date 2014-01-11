@@ -1154,7 +1154,7 @@ control_component_remove(Control* c, Object* o, Component* comp)
 void control_on_object_components_changed(Control* c, Object* o)
 {
   if (context_object_get(c->view->context) == o)
-    property_object_display(c->view->property, o);
+    property_object_show(c->view->property, o);
 
 }
 

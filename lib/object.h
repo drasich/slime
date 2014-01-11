@@ -128,6 +128,9 @@ Eina_List* object_parents_path_get(Object* o);
 
 Object* object_copy(const Object* o);
 
+Eina_Bool object_write(const Object* o, const char* filename);
+Object* object_read(const char* filename);
+
 Property* property_set_object_pointer(const char* name);
 
 typedef struct _ObjectPointer ObjectPointer;

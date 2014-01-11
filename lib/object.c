@@ -523,7 +523,10 @@ object_post_read(Object* o, struct _Scene* s)
   }
 
   o->scene = s;
-  if (o->id > s->last_id) s->last_id = o->id;
+  if (s) {
+    if (o->id > s->last_id)
+    s->last_id = o->id;
+  }
 
   Eina_List* l;
   Eina_List* lnext;
@@ -661,5 +664,44 @@ property_set_object_pointer(const char* name)
         ObjectPointer, "id", id, EET_T_ULONG_LONG);
 
   return ps;
+}
+
+
+static const char OBJECT_FILE_ENTRY[] = "object";
+
+Eina_Bool
+object_write(const Object* o, const char* filename)
+{
+  Eina_Bool ret;
+  Eet_File *ef = eet_open(filename, EET_FILE_MODE_WRITE);
+  if (!ef) {
+    EINA_LOG_DOM_ERR(log_object_dom, "error reading file %s", filename);
+    return EINA_FALSE;
+  }
+
+  ret = eet_data_write(ef, s_ps_obj->descriptor, OBJECT_FILE_ENTRY, o, EINA_TRUE);
+  eet_close(ef);
+
+  return ret;
+}
+
+Object*
+object_read(const char* filename)
+{
+  Object* o;
+
+  Eet_File *ef = eet_open(filename, EET_FILE_MODE_READ);
+  if (!ef) {
+    EINA_LOG_DOM_ERR(log_object_dom, "error reading file '%s'.", filename);
+    return NULL;
+  }
+
+  o = eet_data_read(ef, s_ps_obj->descriptor, OBJECT_FILE_ENTRY);
+  //printf("scene read data dump\n");
+  //eet_data_dump(ef, SCENE_FILE_ENTRY, _output, NULL);
+  //printf("scene read data dump end\n");
+  eet_close(ef);
+ 
+  return o;  
 }
 
