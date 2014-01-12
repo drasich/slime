@@ -610,8 +610,69 @@ _new_empty(void *data,
 
   context_objects_clean(v->context);
   context_object_add(v->context, yep);
-
 }
+
+static void
+_menu_prefab_object_add(void *data,
+      Evas_Object *obj,
+      void *event_info)
+{
+  View* v = evas_object_data_get(obj, "view");
+
+  Prefab* p = data;
+  Object* yep = prefab_object_new(p);
+
+  Vec3 cp = v->camera->object->position;
+  Vec3 direction = quat_rotate_vec3(v->camera->object->orientation, vec3(0,0,-1));
+  cp = vec3_add(
+        cp,
+        vec3_mul(direction, 30));
+
+  object_set_position(yep, cp);
+  control_object_add(v->control, v->context->scene, yep);
+
+  context_objects_clean(v->context);
+  context_object_add(v->context, yep);
+}
+
+
+static Evas_Object*
+_create_prefab_menu(Evas_Object* win, Eina_Hash* prefabs)
+{
+  Evas_Object* menu = elm_menu_add(win);
+
+  Eina_Iterator* it = eina_hash_iterator_tuple_new(prefabs);
+  void *data;
+
+  while (eina_iterator_next(it, &data)) {
+    Eina_Hash_Tuple *t = data;
+    const char* name = t->key;
+    //printf("key, mesh name : %s, %s\n", name, m->name);
+    //elm_menu_item_add(menu, NULL, NULL, name, _menu_prefab_object_add, name);
+    elm_menu_item_add(menu, NULL, NULL, name, _menu_prefab_object_add, t->data);
+  }
+  eina_iterator_free(it);
+
+  return menu;
+}
+
+static void
+_new_object_prefab(void *data,
+      Evas_Object *obj,
+      void *event_info)
+{
+  View* v = data;
+
+  Evas_Object* win = evas_object_top_get (evas_object_evas_get(obj));
+  Evas_Object* menu = _create_prefab_menu(win, resource_prefabs_get(s_rm));
+  evas_object_data_set(menu, "view", v);
+  evas_object_show(menu);
+
+  Evas_Coord x,y,w,h;
+  evas_object_geometry_get(obj, &x, &y, &w, &h);
+  elm_menu_move(menu, x, y);
+}
+
 
 #include "ui/resource_view.h" //TODO chris
 static Scene* gamescene_ = NULL;
@@ -759,10 +820,7 @@ _addcomp(void *data,
 static Evas_Object*
 _create_component_menu(Evas_Object* win, Eina_List* components)
 {
-  Evas_Object* menu;
-  Elm_Object_Item *menu_it,*menu_it1;
-
-  menu = elm_menu_add(win);
+  Evas_Object* menu = elm_menu_add(win);
 
   Eina_List* l;
   ComponentDesc* c;
@@ -864,6 +922,19 @@ _add_buttons(View* v, Evas_Object* win)
   //view->addObjectToHide(bt);
   //view->addObjectToHide(fs_bt);
 
+  /////////////////////////////////////////////////////////
+
+  bt = elm_button_add(win);
+  elm_object_focus_allow_set(bt, 0);
+  elm_object_text_set(bt, "Add prefab");
+  evas_object_show(bt);
+  elm_box_pack_end(box, bt);
+
+  evas_object_color_set(bt, r,g,b,a);
+  evas_object_data_set(bt, "view", v);
+  evas_object_smart_callback_add(bt, "clicked", _new_object_prefab, v);
+
+  /////////////////////////////////////////////////////////
 
   bt = elm_button_add(win);
   elm_object_focus_allow_set(bt, 0);

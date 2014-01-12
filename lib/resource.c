@@ -64,9 +64,6 @@ resource_prefabs_get(ResourceManager* rm)
   return rm->prefabs;
 }
 
-
-
-
 static void
 _resource_mesh_add_cb(const char *name, const char *path, void *data)
 {
@@ -462,8 +459,18 @@ resource_scene_get(ResourceManager* rm, const char* name)
   EINA_LOG_DOM_ERR(_resource_dom, "Cannot find scene '%s'.", name);
 
   return s;
-
 }
+
+Prefab*
+resource_prefab_get(ResourceManager* rm, const char* name)
+{
+  Prefab* p = eina_hash_find(rm->prefabs, name);
+  if (!p)
+  EINA_LOG_DOM_ERR(_resource_dom, "Cannot find prefab '%s'.", name);
+
+  return p;
+}
+
 
 void
 resource_scene_del(ResourceManager* rm, Scene* s)

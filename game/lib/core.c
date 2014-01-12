@@ -15,27 +15,6 @@ typedef enum {
   COLOR_BLUE, COLOR_RED, COLOR_YELLOW, COLLOR_VIOLET, COLOR_END
 } Color;
 
-
-static Object*
-_object_mesh_new(const char* name)
-{
-  Object* o = object_new();
-  o->name = eina_stringshare_add(name);
-  Component* meshcomp = create_component(&mesh_desc);
-  MeshComponent* mc = meshcomp->data;
-  mesh_component_shader_set_by_name(mc,"shader/cube.shader");
-
-  TextureHandle* t = resource_texture_handle_new(s_rm, "model/ceil.png");
-  shader_instance_texture_data_set(mc->shader_instance, "texture", t);
-
-  mesh_component_mesh_set_by_name(mc, "model/Core.mesh");
-
-  object_add_component(o, meshcomp);
-
-  return o;
-}
-
-
 static Direction
 _random_direction_get()
 {
@@ -50,7 +29,8 @@ _core_begin(Object* owner, Core* c)
   for (i = 0; i < 10; ++i) {
     char s[2];
     eina_convert_itoa(i, &s[0]);
-    Object* o = _object_mesh_new(s);
+    Object* o = prefab_object_new_by_name("core");
+    o->name = eina_stringshare_add(s);
     object_child_add(owner, o);
     //o->position.x = (i +1) * c->margin;
     Direction dir = _random_direction_get();

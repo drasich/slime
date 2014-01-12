@@ -28,6 +28,7 @@ Mesh* resource_mesh_get(ResourceManager* rm, const char* name);
 Shader* resource_shader_get(ResourceManager* rm, const char* name);
 Texture* resource_texture_get(ResourceManager* rm, const char* name);
 Scene* resource_scene_get(ResourceManager* rm, const char* name);
+Prefab* resource_prefab_get(ResourceManager* rm, const char* name);
 
 //TODO do something like:?
 void* resource_get(ResourceManager* rm, const char* group, const char* name);

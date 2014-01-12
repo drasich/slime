@@ -1,5 +1,6 @@
 #include "prefab.h"
 #include "log.h"
+#include "resource.h"
 
 void
 prefab_del(Prefab* p)
@@ -83,3 +84,19 @@ prefab_new(const Object* o)
   return prefab;
 }
 
+Object*
+prefab_object_new(Prefab* p)
+{
+  Object* copy = object_copy(p->prefab);
+  object_post_read(copy, NULL);
+  copy->prefab = p;
+  p->objects = eina_list_append(p->objects, copy);
+  return copy;
+}
+
+Object*
+prefab_object_new_by_name(const char* name)
+{
+  Prefab* p = resource_prefab_get(s_rm, name);
+  return prefab_object_new(p);
+}

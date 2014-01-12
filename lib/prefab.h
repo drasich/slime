@@ -3,12 +3,6 @@
 #include "Eina.h"
 #include "object.h"
 
-typedef struct _PrefabManager PrefabManager;
-struct _PrefabManager
-{
-  Eina_Hash* prefabs;
-};
-
 typedef struct _Prefab Prefab;
 struct _Prefab
 {
@@ -22,5 +16,8 @@ Property* property_set_prefab();
 
 Eina_Bool prefab_write(const Prefab* p, const char* filename);
 Prefab* prefab_read(const char* filename);
+
+Object* prefab_object_new(Prefab* p);
+Object* prefab_object_new_by_name(const char* name);
 
 #endif

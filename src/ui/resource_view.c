@@ -20,8 +20,6 @@ gl_prefab_text_get(void *data, Evas_Object *obj __UNUSED__, const char *part __U
   return strdup(buf);
 }
 
-
-
 static void
 _gl_double_clicked(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info)
 {
