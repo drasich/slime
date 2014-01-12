@@ -20,6 +20,7 @@ struct _ComponentDesc {
   void (*draw)(Component* c, Matrix4 world, const Matrix4 projection); 
   void (*on_property_changed)(Component* c); 
   void (*draw_edit)(Component* c, Matrix4 world, const Matrix4 projection); 
+  void (*del)(Component* c); 
 };
 
 typedef Component* (*create_component_function)(); 
@@ -57,5 +58,7 @@ void component_manager_destroy(ComponentManager* cm);
 
 const ComponentDesc* component_manager_desc_get(const ComponentManager* cm, const char* name);
 ComponentManager* s_component_manager;
+
+void components_del(Eina_List* components);
 
 #endif

@@ -5,7 +5,8 @@
 void
 prefab_del(Prefab* p)
 {
-  object_destroy(p->prefab);
+  object_del(p->prefab);
+
   //TODO unlink the other objects
 
   Eina_List* l;

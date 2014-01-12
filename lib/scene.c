@@ -36,7 +36,7 @@ scene_del(Scene* s)
   Object *o;
 
   EINA_LIST_FREE(s->objects, o) {
-    object_destroy(o);
+    object_del(o);
   }
 
   free(s);

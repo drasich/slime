@@ -7,6 +7,7 @@ typedef struct _Prefab Prefab;
 struct _Prefab
 {
   Object* prefab;
+  Eina_List* components;
   Eina_List* objects;
 };
 

@@ -49,7 +49,7 @@ struct _Object {
 struct _Camera;
 
 void object_init(Object* o);
-void object_destroy(Object* o);
+void object_del(Object* o);
 void object_draw(
       Object* o,
       const Matrix4 cam_inv,

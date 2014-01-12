@@ -242,3 +242,13 @@ component_manager_destroy(ComponentManager* cm)
 {
   free(cm);
 }
+
+void
+components_del(Eina_List* components)
+{
+  Component* c;
+  EINA_LIST_FREE(components, c) {
+    if (c->funcs->del)
+    c->funcs->del(c);
+  }
+}

@@ -33,7 +33,6 @@ _objects_center(Eina_List* objects)
   return v;
 }
 
-
 static Vec3
 _control_move_prepare(Control* c, Eina_List* objects)
 {

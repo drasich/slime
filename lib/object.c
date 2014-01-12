@@ -15,10 +15,10 @@ object_init(Object* o)
 }
 
 void
-object_destroy(Object* o)
+object_del(Object* o)
 {
   //TODO clean armature
-  //TODO clean components
+  components_del(o->components);
 }
 
 void

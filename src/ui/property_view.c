@@ -16,7 +16,7 @@ void property_clear_components(PropertyView* pw)
 
   pw->component_widgets = eina_list_free(pw->component_widgets);
   //TODO clean the components here
-  printf("TODO clean components here\n");
+  printf("TODO clean components view here\n");
 }
 
 void property_reload_component(PropertyView* pw, Component* c)
