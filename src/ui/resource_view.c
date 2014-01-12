@@ -16,7 +16,7 @@ gl_prefab_text_get(void *data, Evas_Object *obj __UNUSED__, const char *part __U
 {
   char buf[256];
   Prefab* p = data;
-  snprintf(buf, sizeof(buf), "%s", p->prefab->name);
+  snprintf(buf, sizeof(buf), "%s", p->name);
   return strdup(buf);
 }
 
@@ -488,6 +488,6 @@ resource_view_prefab_add(ResourceView* rv, const Prefab* p)
         gl_item_prefab_sel,
         rv);
 
-  property_holder_genlist_item_add(&p->prefab->name, eoi);
+  property_holder_genlist_item_add(&p->name, eoi);
 }
 

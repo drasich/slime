@@ -37,6 +37,7 @@ USER FRIENDLY
 - only able to select camera if there is a camera component
 
 CLEAN
+- for each component, right the del function
 - TODO in the code.
 - fix functions name -> put the verb at the end
 - clean the scene when?

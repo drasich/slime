@@ -246,7 +246,9 @@ property_object_show(PropertyView* pw, Object* o)
   cp->component = o->component;
   component_property_update_data(cp);
 
-  EINA_LIST_FOREACH(o->components, l, c) {
+  Eina_List** components = object_components_get(o);
+
+  EINA_LIST_FOREACH(*components, l, c) {
     cp = create_component_properties(c, pw, true);
     property_add_component(pw, cp);
     cp->component = c;
@@ -389,6 +391,25 @@ property_holder_update(void* data)
 void
 property_prefab_show(PropertyView* pw, Prefab* p)
 {
-  property_object_show(pw, p->prefab);
+  property_clear_components(pw);
+
+  ComponentProperties* cp;
+  Component* c;
+  Eina_List* l;
+  /*
+
+  cp = create_component_properties(o->component, pw, false);
+  property_add_component(pw, cp);
+  cp->component = o->component;
+  component_property_update_data(cp);
+  */
+
+  EINA_LIST_FOREACH(p->components, l, c) {
+    cp = create_component_properties(c, pw, true);
+    property_add_component(pw, cp);
+    cp->component = c;
+    component_property_update_data(cp);
+  }
+
 }
 

@@ -8,6 +8,7 @@
 #include "texture.h"
 #include "component/meshcomponent.h"
 #include "ui/resource_view.h"
+#include "log.h"
 #define __UNUSED__
 
 //TODO put these in application

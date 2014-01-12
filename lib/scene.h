@@ -1,6 +1,7 @@
 #ifndef __scene__
 #define __scene__
 #include <Eina.h>
+#include "object_pointer.h"
 #include "object.h"
 //#include "camera.h"
 #include "fbo.h"

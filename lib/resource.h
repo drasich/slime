@@ -56,46 +56,6 @@ ResourceManager* s_rm;
 
 void resource_scene_del(ResourceManager* rm, Scene* s);
 
-//////////////////
-
-/*
-typedef struct _Resource Resource;
-struct _Resource {
-  const char* name;
-  int type;
-  void* data;
-  bool is_loaded;
-};
-*/
-
-typedef enum _ResourceHandleState ResourceHandleState;
-enum _ResourceHandleState{
-  RESOURCE_STATE_OK,
-  RESOURCE_STATE_CHANGED,
-  RESOURCE_STATE_LOADING,
-};
-
-typedef void (*resource_changed_cb)(const char* oldname, const char* newname, void* data);
-
-typedef struct _ResourceHandle ResourceHandle;
-struct _ResourceHandle {
-  const char* name;
-  union {
-    Mesh* mesh;
-    Texture* texture;
-    Shader* shader;
-  };
-  ResourceHandleState state;
-  void* data;
-  resource_changed_cb cb;
-};
-
-typedef struct _ResourceHandle MeshHandle;
-typedef struct _ResourceHandle TextureHandle;
-typedef struct _ResourceHandle ShaderHandle;
-
-TextureHandle* texture_handle_new();
-
 void resource_handle_change(ResourceManager* rm, ResourceHandle* rh, const char* name);
 
 typedef struct _ResourceWaiting ResourceWaiting;
@@ -112,9 +72,23 @@ void resource_mesh_handle_set(ResourceManager* rm, MeshHandle* mh, const char* n
 
 void resource_shader_handle_set(ResourceManager* rm, ShaderHandle* sh, const char* name);
 
+
+//////////////////
+
+/*
+typedef struct _Resource Resource;
+struct _Resource {
+  const char* name;
+  int type;
+  void* data;
+  bool is_loaded;
+};
+*/
+
 void resource_scene_save(const Scene* s);
 void resource_scenes_save();
 void resource_scenes_load();
 void resource_scenes_clean();
+void resource_prefabs_save();
 
 #endif

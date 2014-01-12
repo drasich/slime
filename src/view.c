@@ -367,6 +367,7 @@ _prefab_add(void* data, Evas_Object* o, void* event_info)
   Object* obj;
   EINA_LIST_FOREACH(objects, l, obj) {
     Prefab* prefab = prefab_new(obj);
+    prefab_post_read(prefab);
     resource_prefab_add(s_rm, prefab);
     resource_view_prefab_add(v->rv_prefab, prefab);
     //Eina_List* lc;
@@ -621,6 +622,7 @@ _menu_prefab_object_add(void *data,
 
   Prefab* p = data;
   Object* yep = prefab_object_new(p);
+  object_post_read(yep, v->context->scene);
 
   Vec3 cp = v->camera->object->position;
   Vec3 direction = quat_rotate_vec3(v->camera->object->orientation, vec3(0,0,-1));

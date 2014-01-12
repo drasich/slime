@@ -2,7 +2,7 @@
 #define __component_core__
 #include "stdbool.h"
 #include "component.h"
-#include "object.h"
+#include "object_pointer.h"
 
 typedef struct _Core Core;
 

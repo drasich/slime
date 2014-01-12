@@ -61,4 +61,13 @@ ComponentManager* s_component_manager;
 
 void components_del(Eina_List* components);
 
+typedef struct _ComponentList ComponentList;
+struct _ComponentList
+{
+  Eina_List* list;
+};
+
+//TODO put const
+ComponentList* components_copy(Eina_List* components);
+
 #endif

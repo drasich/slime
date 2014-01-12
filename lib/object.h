@@ -8,6 +8,7 @@
 #include "animation.h"
 #include "component/transform.h"
 #include "component.h"
+#include "resource_handle.h"
 
 typedef enum {
   ORIENTATION_QUAT,
@@ -40,7 +41,7 @@ struct _Object {
 
   Object* parent;
   Eina_List* children;
-  struct _Prefab* prefab;
+  PrefabHandle prefab;
 
   unsigned long long id;
   bool dirty;
@@ -132,14 +133,6 @@ Object* object_copy(const Object* o);
 Eina_Bool object_write(const Object* o, const char* filename);
 Object* object_read(const char* filename);
 
-Property* property_set_object_pointer(const char* name);
-
-typedef struct _ObjectPointer ObjectPointer;
-
-struct _ObjectPointer {
-  Object* object;
-  unsigned long long id;
-  //Scene* s;
-};
+Eina_List** object_components_get(const Object* o);
 
 #endif

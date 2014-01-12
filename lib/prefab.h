@@ -6,9 +6,10 @@
 typedef struct _Prefab Prefab;
 struct _Prefab
 {
-  Object* prefab;
+  const char* name;
+  //Object* prefab;
   Eina_List* components;
-  Eina_List* objects;
+  //Eina_List* objects;
 };
 
 Prefab* prefab_new(const Object* o);
@@ -20,5 +21,6 @@ Prefab* prefab_read(const char* filename);
 
 Object* prefab_object_new(Prefab* p);
 Object* prefab_object_new_by_name(const char* name);
+void prefab_post_read(Prefab* p);
 
 #endif

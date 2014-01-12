@@ -3,6 +3,8 @@
 #include "read.h"
 #include "scene.h"
 #include "log.h"
+#include "prefab.h"
+#include "resource.h"
 
 void
 object_init(Object* o)
@@ -39,7 +41,9 @@ object_draw(
   Eina_List* l;
   Component* c;
 
-  EINA_LIST_FOREACH(o->components, l, c) {
+  Eina_List** components = object_components_get(o);
+
+  EINA_LIST_FOREACH(*components, l, c) {
     if (c->funcs->draw)
     c->funcs->draw(c, mo, projection);
   }
@@ -69,7 +73,9 @@ object_draw_edit(
   Eina_List* l;
   Component* c;
 
-  EINA_LIST_FOREACH(o->components, l, c) {
+  Eina_List** components = object_components_get(o);
+
+  EINA_LIST_FOREACH(*components, l, c) {
     if (c->funcs->draw)
     c->funcs->draw(c, mo, projection);
     if (c->funcs->draw_edit)
@@ -98,7 +104,9 @@ object_draw_edit2(
   Eina_List* l;
   Component* c;
 
-  EINA_LIST_FOREACH(o->components, l, c) {
+  Eina_List** components = object_components_get(o);
+
+  EINA_LIST_FOREACH(*components, l, c) {
     if (c->funcs->draw)
     c->funcs->draw(c, mo, projection);
     if (c->funcs->draw_edit)
@@ -120,7 +128,9 @@ object_draw_edit_component2(
   Eina_List* l;
   Component* c;
 
-  EINA_LIST_FOREACH(o->components, l, c) {
+  Eina_List** components = object_components_get(o);
+
+  EINA_LIST_FOREACH(*components, l, c) {
     if (strcmp(c->name, name)) continue;
 
     if (c->funcs->draw)
@@ -151,7 +161,9 @@ object_draw_edit_component(
   Eina_List* l;
   Component* c;
 
-  EINA_LIST_FOREACH(o->components, l, c) {
+  Eina_List** components = object_components_get(o);
+
+  EINA_LIST_FOREACH(*components, l, c) {
     if (strcmp(c->name, name)) continue;
 
     if (c->funcs->draw)
@@ -240,7 +252,9 @@ object_update(Object* o)
   Eina_List* l;
   Component* c;
 
-  EINA_LIST_FOREACH(o->components, l, c) {
+  Eina_List** components = object_components_get(o);
+
+  EINA_LIST_FOREACH(*components, l, c) {
     if (c->funcs->update)
     c->funcs->update(c, 0.01f);
   }
@@ -422,7 +436,9 @@ object_play_animation(Object* o, char* action_name)
 void
 object_add_component(Object* o, Component* c)
 {
-  o->components = eina_list_append(o->components, c);
+  Eina_List** components = object_components_get(o);
+  *components = eina_list_append(*components, c);
+  //o->components = eina_list_append(o->components, c);
   c->object = o;
   if (!strcmp(c->name, "mesh")) {
     //TODO
@@ -434,7 +450,8 @@ object_add_component(Object* o, Component* c)
 void
 object_remove_component(Object* o, Component* c)
 {
-  o->components = eina_list_remove(o->components, c);
+  Eina_List** components = object_components_get(o);
+  *components = eina_list_remove(*components, c);
 }
 
 void*
@@ -443,7 +460,9 @@ object_component_get(const Object* o, const char* name)
   Eina_List* l;
   Component* c;
 
-  EINA_LIST_FOREACH(o->components, l, c) {
+  Eina_List** components = object_components_get(o);
+
+  EINA_LIST_FOREACH(*components, l, c) {
     if ( c->name && !strcmp(c->name, name))
     return c->data;
   }
@@ -463,7 +482,6 @@ property_set_object()
   Property* ps = s_ps_obj;
   ps->name = "objectblablabla";
   PROPERTY_SET_TYPE(ps, Object);
-
 
   PROPERTY_BASIC_ADD(ps, Object, name, EET_T_STRING);
   PROPERTY_BASIC_ADD(ps, Object, id, EET_T_ULONG_LONG);
@@ -493,6 +511,10 @@ property_set_object()
   EET_DATA_DESCRIPTOR_ADD_LIST
    (ob_descriptor, Object, "children", children,
     ob_descriptor);
+
+  Property* prefab = property_set_resource_handle(RESOURCE_PREFAB);
+  EET_DATA_DESCRIPTOR_ADD_SUB_NESTED(
+        ob_descriptor, Object, "prefab", prefab, prefab->descriptor);
 
   return ps;
 }
@@ -528,16 +550,22 @@ object_post_read(Object* o, struct _Scene* s)
     s->last_id = o->id;
   }
 
+  if (o->prefab.name) {
+    o->prefab.prefab = resource_prefab_get(s_rm, o->prefab.name);
+  }
+
   Eina_List* l;
   Eina_List* lnext;
   Component* c;
 
-  EINA_LIST_FOREACH_SAFE(o->components, l, lnext, c) {
+  Eina_List** components = object_components_get(o);
+
+  EINA_LIST_FOREACH_SAFE(*components, l, lnext, c) {
 
     if (!c->name) {
       EINA_LOG_DOM_WARN(log_object_dom, "It seems this component does not exist anymore: %s\n==> removing component", c->name);
       free(c);
-      o->components = eina_list_remove_list(o->components, l);
+      *components = eina_list_remove_list(*components, l);
     }
     else {
       EINA_LOG_DOM_DBG(log_object_dom, "post read, object : %s , component name : %s", o->name, c->name);
@@ -552,7 +580,7 @@ object_post_read(Object* o, struct _Scene* s)
       else {
         EINA_LOG_DOM_WARN(log_object_dom, "component functions NOT found, name: %s\n==> removing component", c->name);
         free(c);
-        o->components = eina_list_remove_list(o->components, l);
+        *components = eina_list_remove_list(*components, l);
       }
     }
   }
@@ -650,27 +678,6 @@ object_copy(const Object* oo)
   return o;
 }
 
-Property*
-property_set_object_pointer(const char* name)
-{
-  static Property* ps = NULL;
-  if (ps) {
-    return ps;
-  }
-  ps = property_set_new();
-  PROPERTY_SET_TYPE(ps, ObjectPointer);
-  ps->name = name;
-  ps->type = PROPERTY_OBJECT;
-
-  //Serialize the id with the descriptor only
-  EET_DATA_DESCRIPTOR_ADD_BASIC(
-        ps->descriptor,
-        ObjectPointer, "id", id, EET_T_ULONG_LONG);
-
-  return ps;
-}
-
-
 static const char OBJECT_FILE_ENTRY[] = "object";
 
 Eina_Bool
@@ -709,3 +716,12 @@ object_read(const char* filename)
   return o;  
 }
 
+Eina_List**
+object_components_get(const Object* o)
+{
+  if (o->prefab.prefab) {
+    return (Eina_List**) &o->prefab.prefab->components;
+  }
+
+  return (Eina_List**) &o->components;
+}

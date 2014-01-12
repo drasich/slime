@@ -1,14 +1,18 @@
 #include "prefab.h"
 #include "log.h"
 #include "resource.h"
+#include "Eet.h"
+#include "component.h"
 
 void
 prefab_del(Prefab* p)
 {
-  object_del(p->prefab);
+  //object_del(p->prefab);
+  components_del(p->components);
 
   //TODO unlink the other objects
 
+  /*
   Eina_List* l;
   ObjectPointer* op;
   EINA_LIST_FOREACH(p->objects, l, op) {
@@ -16,6 +20,7 @@ prefab_del(Prefab* p)
   }
 
   eina_list_free(p->objects);
+  */
 }
 
 Property*
@@ -28,16 +33,27 @@ property_set_prefab()
   ps->name = "prefab";
   PROPERTY_SET_TYPE(ps, Prefab);
 
+  /*
   Property* object_ps = property_set_object();
   EET_DATA_DESCRIPTOR_ADD_SUB(
         ps->descriptor, Prefab, "prefab", prefab,
         object_ps->descriptor);
+        */
 
+  EET_DATA_DESCRIPTOR_ADD_BASIC(
+        ps->descriptor, Prefab, "name", name, EET_T_STRING);
+
+  EET_DATA_DESCRIPTOR_ADD_LIST(
+        ps->descriptor, Prefab, "components", components,
+        component_descriptor);
+
+  /*
   Property *obp = property_set_object_pointer("objects");
 
   EET_DATA_DESCRIPTOR_ADD_LIST(
         ps->descriptor, Prefab, "objects", objects,
         obp->descriptor);
+        */
 
   return ps;
 }
@@ -78,21 +94,25 @@ prefab_read(const char* filename)
 Prefab* 
 prefab_new(const Object* o)
 {
-  Object* copy = object_copy(o);
-  object_post_read(copy, NULL);
+  //Object* copy = object_copy(o);
+  ComponentList* cl = components_copy(o->components);
+  //object_post_read(copy, NULL);
   Prefab* prefab = calloc(1, sizeof *prefab);
-  prefab->prefab = copy;
+  prefab->components = cl->list;
+  prefab->name = o->name;
+  free(cl);
   return prefab;
 }
 
 Object*
 prefab_object_new(Prefab* p)
 {
-  Object* copy = object_copy(p->prefab);
-  object_post_read(copy, NULL);
-  copy->prefab = p;
-  p->objects = eina_list_append(p->objects, copy);
-  return copy;
+  Object* o = object_new();
+  o->prefab.name = p->name;
+  o->prefab.prefab = p;
+  //o->components = p->components;
+  //p->objects = eina_list_append(p->objects, copy);
+  return o;
 }
 
 Object*
@@ -101,3 +121,43 @@ prefab_object_new_by_name(const char* name)
   Prefab* p = resource_prefab_get(s_rm, name);
   return prefab_object_new(p);
 }
+
+void 
+prefab_post_read(Prefab* p)
+{
+  Eina_List* l;
+  Eina_List* lnext;
+  Component* c;
+
+  EINA_LIST_FOREACH_SAFE(p->components, l, lnext, c) {
+    if (!c->name) {
+      EINA_LOG_DOM_WARN(log_object_dom, "It seems this component does not exist anymore: %s\n==> removing component", c->name);
+      free(c);
+      p->components = eina_list_remove_list(p->components, l);
+    }
+    else {
+      EINA_LOG_DOM_DBG(log_object_dom, "post read, prefab : %s , component name : %s", p->name, c->name);
+      c->funcs = component_manager_desc_get(s_component_manager, c->name);//TODO find from component manager;
+      if (c->funcs) {
+        EINA_LOG_DOM_DBG(log_object_dom, "component functions found, name : %s", c->name);
+        c->properties = c->funcs->properties();
+        //if (c->funcs->init)
+        //c->funcs->init(c);
+      }
+      else {
+        EINA_LOG_DOM_WARN(log_object_dom, "component functions NOT found, name: %s\n==> removing component", c->name);
+        free(c);
+        p->components = eina_list_remove_list(p->components, l);
+      }
+    }
+  }
+
+  /*
+  Object* child;
+  EINA_LIST_FOREACH(o->children, l, child) {
+    object_post_read(child, s);
+    child->parent = o;
+  }
+  */
+}
+

@@ -204,7 +204,7 @@ _dragger_scale_create(Vec3 constraint, Vec4 color, bool plane)
 
 
   comp = create_component(dragger_desc());
-  object_add_component(o,comp);
+  object_add_component(o, comp);
   Dragger* d = comp->data;
   //d->box = mc->mesh->box;
   Mesh* m = mesh_component_mesh_get(mc);

@@ -252,3 +252,48 @@ components_del(Eina_List* components)
     c->funcs->del(c);
   }
 }
+
+Eet_Data_Descriptor*
+component_list_descriptor()
+{
+  static Eet_Data_Descriptor* edd = NULL;
+  if (edd) {
+    printf("component list descriptor already good!\n");
+    return edd;
+  }
+
+  printf("component list descriptor going to create!\n");
+
+  Eet_Data_Descriptor_Class eddc;
+
+  EET_EINA_STREAM_DATA_DESCRIPTOR_CLASS_SET(&eddc, ComponentList);
+  edd = eet_data_descriptor_stream_new(&eddc);
+
+  EET_DATA_DESCRIPTOR_ADD_LIST(
+    edd, ComponentList, "list", list,
+    component_descriptor);
+
+  return edd;
+}
+
+
+
+ComponentList*
+components_copy(Eina_List* components)
+{
+  ComponentList cl = {.list = components};
+
+  int size;
+  void *encoded = eet_data_descriptor_encode(
+        component_list_descriptor(),
+        &cl,
+        &size);
+
+  ComponentList* clnew = eet_data_descriptor_decode(
+        component_list_descriptor(),
+        encoded,
+        size);
+
+  return clnew;
+}
+

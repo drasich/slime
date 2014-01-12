@@ -441,6 +441,8 @@ _create_resource_menu(Evas_Object* win, ResourceType resource_type)
     case RESOURCE_TEXTURE:
       hash = resource_textures_get(s_rm);
       break;
+    default:
+      break;
   }
 
   if (!hash) return NULL;
@@ -1378,7 +1380,7 @@ _property_add(ComponentProperties* cp, const Property* p, Evas_Object* box, void
     case PROPERTY_ROOT:
       break;
     default:
-      EINA_LOG_ERR("type '%d' not yet implemented.\n", p->type);
+      EINA_LOG_ERR("type '%d' not yet implemented.", p->type);
       break;
   }
 

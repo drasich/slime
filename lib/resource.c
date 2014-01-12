@@ -206,9 +206,9 @@ resource_prefabs_load()
     filepath[l2] = '\0';
 
     Prefab* p = prefab_read(filepath);
-    p->prefab->name = eina_stringshare_add(name);
-    eina_hash_add(rm->prefabs, p->prefab->name, p);
-    object_post_read(p->prefab, NULL);
+    p->name = eina_stringshare_add(name);
+    eina_hash_add(rm->prefabs, p->name, p);
+    prefab_post_read(p);
   }
 
 }
@@ -229,8 +229,8 @@ void resource_load(ResourceManager* rm)
     eina_hash_add(rm->meshes, filepath, m);
   }
 
-  resource_scenes_load();
   resource_prefabs_load();
+  resource_scenes_load();
 }
 
 
@@ -244,7 +244,7 @@ resource_scene_add(ResourceManager* rm, Scene* s)
 bool
 resource_prefab_add(ResourceManager* rm, Prefab* p)
 {
-  return eina_hash_add(rm->prefabs, p->prefab->name, p);
+  return eina_hash_add(rm->prefabs, p->name, p);
 }
 
 
@@ -377,10 +377,118 @@ resource_handle_change(ResourceManager* rm, ResourceHandle* rh, const char* name
 }
 */
 
-TextureHandle* texture_handle_new()
+Scene*
+resource_scene_get(ResourceManager* rm, const char* name)
 {
-  TextureHandle* th = calloc(1, sizeof *th);
-  return th;
+  Scene* s = eina_hash_find(rm->scenes, name);
+  if (!s)
+  EINA_LOG_DOM_ERR(_resource_dom, "Cannot find scene '%s'.", name);
+
+  return s;
+}
+
+Prefab*
+resource_prefab_get(ResourceManager* rm, const char* name)
+{
+  Prefab* p = eina_hash_find(rm->prefabs, name);
+  if (!p)
+  EINA_LOG_DOM_ERR(_resource_dom, "Cannot find prefab '%s'.", name);
+
+  return p;
+}
+
+
+void
+resource_scene_del(ResourceManager* rm, Scene* s)
+{
+  eina_hash_del_by_key(rm->scenes, s->name);
+  scene_del(s);
+  s = NULL;
+}
+
+void
+resource_scene_save(const Scene* s)
+{
+  int l = strlen(s->name) + strlen("scene/") + strlen(".scene") + 1;
+  char yep[l];
+  char copy[l];
+  eina_strlcpy(yep, "scene/", strlen("scene/") + 1);
+  eina_strlcat(yep, s->name, l);
+  eina_strlcpy(copy, yep, strlen(yep) + 1);
+  eina_strlcat(yep, ".scene", l);
+  eina_strlcat(copy, ".saved", l);
+
+  eina_file_copy(
+        yep,
+        copy, 
+        EINA_FILE_COPY_DATA | EINA_FILE_COPY_PERMISSION | EINA_FILE_COPY_XATTR,
+        NULL,
+        NULL);
+
+  scene_write(s, yep);
+}
+
+void
+resource_prefab_save(const Prefab* p)
+{
+  int l = strlen(p->name) + strlen("prefab/") + strlen(".prefab") + 1;
+  char yep[l];
+  char copy[l];
+  eina_strlcpy(yep, "prefab/", strlen("prefab/") + 1);
+  eina_strlcat(yep, p->name, l);
+  eina_strlcpy(copy, yep, strlen(yep) + 1);
+  eina_strlcat(yep, ".prefab", l);
+  eina_strlcat(copy, ".saved", l);
+
+  eina_file_copy(
+        yep,
+        copy, 
+        EINA_FILE_COPY_DATA | EINA_FILE_COPY_PERMISSION | EINA_FILE_COPY_XATTR,
+        NULL,
+        NULL);
+
+  prefab_write(p, yep);
+}
+
+
+void
+resource_scenes_save()
+{
+  Eina_Iterator* it;
+  Eina_Hash* hash = resource_scenes_get(s_rm);
+
+  if (hash) {
+    it = eina_hash_iterator_tuple_new(hash);
+    void *data;
+
+    while (eina_iterator_next(it, &data)) {
+      Eina_Hash_Tuple *t = data;
+      //const char* name = t->key;
+      const Scene* s = t->data;
+      resource_scene_save(s);
+    }
+    eina_iterator_free(it);
+  }
+}
+
+void
+resource_prefabs_save()
+{
+  Eina_Iterator* it;
+  Eina_Hash* hash = resource_prefabs_get(s_rm);
+
+  if (hash) {
+    it = eina_hash_iterator_tuple_new(hash);
+    void *data;
+
+    while (eina_iterator_next(it, &data)) {
+      Eina_Hash_Tuple *t = data;
+      //const char* name = t->key;
+      const Prefab* p = t->data;
+      resource_prefab_save(p);
+    }
+    eina_iterator_free(it);
+  }
 }
 
 TextureHandle* resource_texture_handle_new(ResourceManager* rm, const char* name)
@@ -449,119 +557,5 @@ resource_shader_handle_set(ResourceManager* rm, ShaderHandle* sh, const char* na
     */
   }
 
-}
-
-Scene*
-resource_scene_get(ResourceManager* rm, const char* name)
-{
-  Scene* s = eina_hash_find(rm->scenes, name);
-  if (!s)
-  EINA_LOG_DOM_ERR(_resource_dom, "Cannot find scene '%s'.", name);
-
-  return s;
-}
-
-Prefab*
-resource_prefab_get(ResourceManager* rm, const char* name)
-{
-  Prefab* p = eina_hash_find(rm->prefabs, name);
-  if (!p)
-  EINA_LOG_DOM_ERR(_resource_dom, "Cannot find prefab '%s'.", name);
-
-  return p;
-}
-
-
-void
-resource_scene_del(ResourceManager* rm, Scene* s)
-{
-  eina_hash_del_by_key(rm->scenes, s->name);
-  scene_del(s);
-  s = NULL;
-}
-
-void
-resource_scene_save(const Scene* s)
-{
-  int l = strlen(s->name) + strlen("scene/") + strlen(".scene") + 1;
-  char yep[l];
-  char copy[l];
-  eina_strlcpy(yep, "scene/", strlen("scene/") + 1);
-  eina_strlcat(yep, s->name, l);
-  eina_strlcpy(copy, yep, strlen(yep) + 1);
-  eina_strlcat(yep, ".scene", l);
-  eina_strlcat(copy, ".saved", l);
-
-  eina_file_copy(
-        yep,
-        copy, 
-        EINA_FILE_COPY_DATA | EINA_FILE_COPY_PERMISSION | EINA_FILE_COPY_XATTR,
-        NULL,
-        NULL);
-
-  scene_write(s, yep);
-}
-
-void
-resource_prefab_save(const Prefab* p)
-{
-  int l = strlen(p->prefab->name) + strlen("prefab/") + strlen(".prefab") + 1;
-  char yep[l];
-  char copy[l];
-  eina_strlcpy(yep, "prefab/", strlen("prefab/") + 1);
-  eina_strlcat(yep, p->prefab->name, l);
-  eina_strlcpy(copy, yep, strlen(yep) + 1);
-  eina_strlcat(yep, ".prefab", l);
-  eina_strlcat(copy, ".saved", l);
-
-  eina_file_copy(
-        yep,
-        copy, 
-        EINA_FILE_COPY_DATA | EINA_FILE_COPY_PERMISSION | EINA_FILE_COPY_XATTR,
-        NULL,
-        NULL);
-
-  prefab_write(p, yep);
-}
-
-
-void
-resource_scenes_save()
-{
-  Eina_Iterator* it;
-  Eina_Hash* hash = resource_scenes_get(s_rm);
-
-  if (hash) {
-    it = eina_hash_iterator_tuple_new(hash);
-    void *data;
-
-    while (eina_iterator_next(it, &data)) {
-      Eina_Hash_Tuple *t = data;
-      //const char* name = t->key;
-      const Scene* s = t->data;
-      resource_scene_save(s);
-    }
-    eina_iterator_free(it);
-  }
-}
-
-void
-resource_prefabs_save()
-{
-  Eina_Iterator* it;
-  Eina_Hash* hash = resource_prefabs_get(s_rm);
-
-  if (hash) {
-    it = eina_hash_iterator_tuple_new(hash);
-    void *data;
-
-    while (eina_iterator_next(it, &data)) {
-      Eina_Hash_Tuple *t = data;
-      //const char* name = t->key;
-      const Prefab* p = t->data;
-      resource_prefab_save(p);
-    }
-    eina_iterator_free(it);
-  }
 }
 
