@@ -726,3 +726,18 @@ object_components_get(const Object* o)
 
   return (Eina_List**) &o->components;
 }
+
+void object_prefab_unlink(Object* o)
+{
+  Prefab* p = o->prefab.prefab;
+  if (p) {
+    ComponentList* cl = components_copy(p->components);
+    o->components = cl->list;
+    free(cl);
+    o->prefab.prefab = NULL;
+    //o->prefab.name = "";
+    o->prefab.name = NULL;
+    object_post_read(o);
+  }
+
+}

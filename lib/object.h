@@ -134,5 +134,6 @@ Eina_Bool object_write(const Object* o, const char* filename);
 Object* object_read(const char* filename);
 
 Eina_List** object_components_get(const Object* o);
+void object_prefab_unlink(Object* o);
 
 #endif

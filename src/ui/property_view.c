@@ -186,7 +186,7 @@ _property_entry_free_cb(void *data)
 }
 
 static Evas_Object*
-_prefab_prop_create(Evas_Object* bx)
+_prefab_prop_create(PropertyView* pw, Evas_Object* bx)
 {
   Evas_Object *en, *bx2, *label;
 
@@ -217,6 +217,13 @@ _prefab_prop_create(Evas_Object* bx)
   evas_object_show(bx2);
 
   evas_object_data_set(bx, "entry", en);
+
+  Evas_Object* bt = elm_button_add(bx);
+  elm_object_text_set(bt, "unlink");
+  evas_object_show(bt);
+  elm_box_pack_end(bx2, bt);
+  evas_object_data_set(bx, "button", bt);
+  evas_object_data_set(bt, "propertyview", pw);
 
   //property_holder_object_add(data + p->offset, p, en);
 
@@ -261,7 +268,7 @@ create_property(Evas_Object* win, Context* context, Control* control)
   elm_box_align_set(bx, 0.0, 0.0);
   p->box_prefab_info = bx;
   //fill box with stuff
-  _prefab_prop_create(bx);
+  _prefab_prop_create(p, bx);
 
   //elm_box_pack_end(pbx, p->box_prefab_info);
   //evas_object_show(bx);
@@ -291,6 +298,20 @@ create_property(Evas_Object* win, Context* context, Control* control)
   return p;
 }
 
+static void
+_prefab_unlink(
+      void *data,
+      Evas_Object *obj,
+      void *event_info)
+{
+  Object* o = data;
+  object_prefab_unlink(o);
+  EINA_LOG_ERR("TODO: unlink in a better way: don't recreate widgets, just update the components pointer (and data...but should be the same)");
+  PropertyView* pw = evas_object_data_get(obj, "propertyview");
+  property_object_show(pw, o);
+}
+
+
 void
 property_object_show(PropertyView* pw, Object* o)
 {
@@ -302,6 +323,8 @@ property_object_show(PropertyView* pw, Object* o)
     evas_object_show(pw->box_prefab_info);
     Evas_Object* en = evas_object_data_get(pw->box_prefab_info, "entry");
     elm_object_text_set(en, o->prefab.name);
+    Evas_Object* bt = evas_object_data_get(pw->box_prefab_info, "button");
+    evas_object_smart_callback_add(bt, "clicked", _prefab_unlink, o);
   }
   else
   evas_object_hide(pw->box_prefab_info);
