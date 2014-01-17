@@ -185,6 +185,45 @@ _property_entry_free_cb(void *data)
    //free(data);
 }
 
+static Evas_Object*
+_prefab_prop_create(Evas_Object* bx)
+{
+  Evas_Object *en, *bx2, *label;
+
+  bx2 = elm_box_add(bx);
+  elm_box_horizontal_set(bx2, EINA_TRUE);
+  evas_object_size_hint_weight_set(bx2, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(bx2, EVAS_HINT_FILL, EVAS_HINT_FILL);
+
+  label = elm_label_add(bx);
+  elm_object_text_set(label, "<b> Prefab linked </b> : ");
+  evas_object_show(label);
+  elm_box_pack_end(bx2, label);
+
+  en = elm_entry_add(bx);
+  elm_entry_scrollable_set(en, EINA_TRUE);
+  evas_object_size_hint_weight_set(en, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(en, EVAS_HINT_FILL, 0.5);
+  elm_object_text_set(en, "none");
+  //elm_entry_scrollbar_policy_set(en, 
+  //      ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_OFF);
+  elm_entry_single_line_set(en, EINA_TRUE);
+  //elm_entry_select_all(en);
+  evas_object_show(en);
+  elm_box_pack_end(bx2, en);
+  elm_entry_editable_set(en, EINA_FALSE);
+
+  elm_box_pack_end(bx, bx2);
+  evas_object_show(bx2);
+
+  evas_object_data_set(bx, "entry", en);
+
+  //property_holder_object_add(data + p->offset, p, en);
+
+  return en;
+
+}
+
 
 PropertyView* 
 create_property(Evas_Object* win, Context* context, Control* control)
@@ -207,13 +246,25 @@ create_property(Evas_Object* win, Context* context, Control* control)
 
   //elm_scroller_policy_set(scroller, ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_ON);
 
-
   Evas_Object* pbx = elm_box_add(win);
-  evas_object_size_hint_weight_set(pbx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  //evas_object_size_hint_weight_set(pbx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_weight_set(pbx, EVAS_HINT_EXPAND, 0);
   evas_object_size_hint_fill_set(pbx, EVAS_HINT_FILL, EVAS_HINT_FILL);
   elm_box_align_set(pbx, 0.0, 0.0);
   elm_object_content_set(p->scroller, pbx);
   evas_object_show(pbx);
+  p->box_parent = pbx;
+
+  bx = elm_box_add(win);
+  evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_fill_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  elm_box_align_set(bx, 0.0, 0.0);
+  p->box_prefab_info = bx;
+  //fill box with stuff
+  _prefab_prop_create(bx);
+
+  //elm_box_pack_end(pbx, p->box_prefab_info);
+  //evas_object_show(bx);
 
   bx = elm_box_add(win);
   evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -237,7 +288,6 @@ create_property(Evas_Object* win, Context* context, Control* control)
   */
   p->root = scroller;
 
-
   return p;
 }
 
@@ -245,6 +295,19 @@ void
 property_object_show(PropertyView* pw, Object* o)
 {
   property_clear_components(pw);
+  elm_box_unpack_all(pw->box_parent);
+
+  if (o->prefab.prefab) {
+    elm_box_pack_end(pw->box_parent, pw->box_prefab_info);
+    evas_object_show(pw->box_prefab_info);
+    Evas_Object* en = evas_object_data_get(pw->box_prefab_info, "entry");
+    elm_object_text_set(en, o->prefab.name);
+  }
+  else
+  evas_object_hide(pw->box_prefab_info);
+
+  elm_box_pack_end(pw->box_parent, pw->box);
+  evas_object_show(pw->box);
 
   ComponentProperties* cp;
   Component* c;
@@ -263,7 +326,6 @@ property_object_show(PropertyView* pw, Object* o)
     cp->component = c;
     component_property_update_data(cp);
   }
-
 }
 
 void

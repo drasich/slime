@@ -13,6 +13,7 @@ struct _PropertyView
   Evas_Object* root;
   Evas_Object* box;
   Evas_Object* box_prefab_info;
+  Evas_Object* box_parent;
 
   Context *context;
   Control *control;
