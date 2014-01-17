@@ -257,10 +257,7 @@ Eet_Data_Descriptor*
 component_list_descriptor()
 {
   static Eet_Data_Descriptor* edd = NULL;
-  if (edd) {
-    printf("component list descriptor already good!\n");
-    return edd;
-  }
+  if (edd) return edd;
 
   printf("component list descriptor going to create!\n");
 
