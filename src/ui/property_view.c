@@ -207,12 +207,21 @@ create_property(Evas_Object* win, Context* context, Control* control)
 
   //elm_scroller_policy_set(scroller, ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_ON);
 
+
+  Evas_Object* pbx = elm_box_add(win);
+  evas_object_size_hint_weight_set(pbx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_size_hint_fill_set(pbx, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  elm_box_align_set(pbx, 0.0, 0.0);
+  elm_object_content_set(p->scroller, pbx);
+  evas_object_show(pbx);
+
   bx = elm_box_add(win);
   evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   evas_object_size_hint_fill_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
   elm_box_align_set(bx, 0.0, 0.0);
   p->box = bx;
-  elm_object_content_set(p->scroller, p->box);
+  //elm_object_content_set(p->scroller, p->box);
+  elm_box_pack_end(pbx, p->box);
   evas_object_show(bx);
 
   /*

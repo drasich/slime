@@ -61,6 +61,11 @@ NOT URGENT
   so add void* callback in the property struct?
 - check name of scenes? only one name for each?
 - 4 view
+- shader information 
+  check http://www.khronos.org/opengles/sdk/tools/Reference-Compiler/
+  to get information like uniforms, attributes informations on shader..
+  last time I tried I had to get bison 2.7 and make some modifications
+  the code is in code/glslang
 
 BUG
 - focus the play and main windows alternatively(with the mouse)

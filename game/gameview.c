@@ -20,6 +20,7 @@ _init_gl(Evas_Object *obj)
 
   GameView* gv = evas_object_data_get(obj, "gameview");
   scene_init(gv->scene);
+  //scene_objects_prefab_copy(gv->scene);
 }
 
 static void

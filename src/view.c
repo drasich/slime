@@ -348,7 +348,7 @@ _object_duplicate(void* data, Evas_Object* o, void* event_info)
   Object* obj;
   EINA_LIST_FOREACH(objects, l, obj) {
     Object* copy = object_copy(obj);
-    object_post_read(copy, obj->scene);
+    object_post_read(copy);
     newobj = eina_list_append(newobj, copy);
   }
 
@@ -621,8 +621,8 @@ _menu_prefab_object_add(void *data,
   View* v = evas_object_data_get(obj, "view");
 
   Prefab* p = data;
-  Object* yep = prefab_object_new(p);
-  object_post_read(yep, v->context->scene);
+  Object* yep = prefab_linked_object_new(p);
+  object_post_read(yep);
 
   Vec3 cp = v->camera->object->position;
   Vec3 direction = quat_rotate_vec3(v->camera->object->orientation, vec3(0,0,-1));

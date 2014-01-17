@@ -29,7 +29,7 @@ _core_begin(Object* owner, Core* c)
   for (i = 0; i < 10; ++i) {
     char s[2];
     eina_convert_itoa(i, &s[0]);
-    Object* o = prefab_object_new_by_name("core");
+    Object* o = prefab_copied_object_new_by_name("core");
     o->name = eina_stringshare_add(s);
     object_child_add(owner, o);
     //o->position.x = (i +1) * c->margin;

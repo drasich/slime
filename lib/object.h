@@ -115,7 +115,7 @@ void* object_component_get(const Object* o, const char* name);
 ComponentDesc object_desc;
 Property* property_set_object();
 
-void object_post_read(Object* o, struct _Scene* s);
+void object_post_read(Object* o);
 void object_descriptor_delete();
 
 void object_child_add(Object* parent, Object* child);

@@ -536,7 +536,7 @@ ComponentDesc object_desc = {
 };
 
 void 
-object_post_read(Object* o, struct _Scene* s)
+object_post_read(Object* o)
 {
   if (!o->component) {
     o->component =  create_component(&object_desc);
@@ -544,11 +544,13 @@ object_post_read(Object* o, struct _Scene* s)
     o->component->object = o;
   }
 
+  /*
   o->scene = s;
   if (s) {
     if (o->id > s->last_id)
     s->last_id = o->id;
   }
+  */
 
   if (o->prefab.name) {
     o->prefab.prefab = resource_prefab_get(s_rm, o->prefab.name);
@@ -587,7 +589,7 @@ object_post_read(Object* o, struct _Scene* s)
 
   Object* child;
   EINA_LIST_FOREACH(o->children, l, child) {
-    object_post_read(child, s);
+    object_post_read(child);
     child->parent = o;
   }
 }

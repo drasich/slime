@@ -105,21 +105,39 @@ prefab_new(const Object* o)
 }
 
 Object*
-prefab_object_new(Prefab* p)
+prefab_linked_object_new(Prefab* p)
 {
   Object* o = object_new();
   o->prefab.name = p->name;
   o->prefab.prefab = p;
-  //o->components = p->components;
-  //p->objects = eina_list_append(p->objects, copy);
   return o;
 }
 
 Object*
-prefab_object_new_by_name(const char* name)
+prefab_copied_object_new(Prefab* p)
+{
+  Object* o = object_new();
+  //o->prefab.name = p->name;
+  //o->prefab.prefab = p;
+  ComponentList* cl = components_copy(p->components);
+  o->components = cl->list;
+  object_post_read(o);
+  return o;
+}
+
+
+Object*
+prefab_linked_object_new_by_name(const char* name)
 {
   Prefab* p = resource_prefab_get(s_rm, name);
-  return prefab_object_new(p);
+  return prefab_linked_object_new(p);
+}
+
+Object*
+prefab_copied_object_new_by_name(const char* name)
+{
+  Prefab* p = resource_prefab_get(s_rm, name);
+  return prefab_copied_object_new(p);
 }
 
 void 

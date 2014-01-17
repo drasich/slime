@@ -1,6 +1,7 @@
 #include "scene.h"
 #include "gl.h"
 #include "log.h"
+#include "prefab.h"
 
 Scene*
 scene_new()
@@ -160,7 +161,11 @@ scene_post_read(Scene* s)
     if (s->camerapointer.id == o->id)
     s->camerapointer.object = o;
 
-    object_post_read(o, s);
+    o->scene = s;
+    if (o->id > s->last_id)
+    s->last_id = o->id;
+
+    object_post_read(o);
   }
 
   EINA_LOG_DOM_DBG(log_scene_dom, "scene name is %s\nobjects number is %d", s->name, eina_list_count(s->objects));
@@ -170,7 +175,22 @@ scene_post_read(Scene* s)
 void
 scene_init(Scene* s)
 {
-  scene_post_read(s);
+  Eina_List *l;
+  Object *o;
+  EINA_LIST_FOREACH(s->objects, l, o) {
+    if (s->camerapointer.id == o->id)
+    s->camerapointer.object = o;
+
+    if (o->prefab.prefab) {
+      ComponentList* cl = components_copy(o->prefab.prefab->components);
+      o->components = cl->list;
+      o->prefab.name = "";
+      object_post_read(o);
+      o->prefab.prefab = NULL;
+      o->prefab.name = "";
+      free(cl);
+    }
+  }
 }
 
 #include "component/meshcomponent.h"
