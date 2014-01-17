@@ -575,8 +575,8 @@ object_post_read(Object* o)
         c->object = o;
         EINA_LOG_DOM_DBG(log_object_dom, "component functions found, name : %s", c->name);
         c->properties = c->funcs->properties();
-        if (c->funcs->init)
-        c->funcs->init(c);
+        if (c->funcs->init_edit)
+        c->funcs->init_edit(c);
       }
       else {
         EINA_LOG_DOM_WARN(log_object_dom, "component functions NOT found, name: %s\n==> removing component", c->name);

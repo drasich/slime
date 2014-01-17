@@ -269,7 +269,7 @@ _object_mesh_create(const char* file)
 {
   Object* o = create_object();
   o->name = file;
-  Component* meshcomp = create_component(&mesh_desc);
+  Component* meshcomp = create_component(component_mesh_desc());
   MeshComponent* mc = meshcomp->data;
   mesh_component_shader_set_by_name(mc,"shader/simple.shader");
 
@@ -322,7 +322,7 @@ populate_scene(Control* c, Scene* s)
     cam->name = eina_stringshare_add("cameratest");
     Vec3 campos = {0,0,20};
     cam->position = campos;
-    Component* compcam = create_component(&camera_desc);
+    Component* compcam = create_component(component_camera_desc());
     object_add_component(cam, compcam);
 
     control_object_add(c,s,cam);
@@ -333,7 +333,7 @@ populate_scene(Control* c, Scene* s)
     Object* empty = create_object();
     empty->name = eina_stringshare_add("child");
 
-    Component* meshcomp = create_component(&mesh_desc);
+    Component* meshcomp = create_component(component_mesh_desc());
     MeshComponent* mc = meshcomp->data;
     mesh_component_shader_set_by_name(mc,"shader/simple.shader");
 

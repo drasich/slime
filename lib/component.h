@@ -19,8 +19,10 @@ struct _ComponentDesc {
   void (*update)(Component* c, double dt); 
   void (*draw)(Component* c, Matrix4 world, const Matrix4 projection); 
   void (*on_property_changed)(Component* c); 
-  void (*draw_edit)(Component* c, Matrix4 world, const Matrix4 projection); 
   void (*del)(Component* c); 
+
+  void (*init_edit)(Component* c); 
+  void (*draw_edit)(Component* c, Matrix4 world, const Matrix4 projection); 
 };
 
 typedef Component* (*create_component_function)(); 

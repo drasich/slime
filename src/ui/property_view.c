@@ -306,7 +306,8 @@ _prefab_unlink(
 {
   Object* o = data;
   object_prefab_unlink(o);
-  EINA_LOG_ERR("TODO: unlink in a better way: don't recreate widgets, just update the components pointer (and data...but should be the same)");
+  EINA_LOG_ERR("TODO: unlink in a better way: don't recreate widgets,"
+        " just update the components pointer (and data...but should be the same)");
   PropertyView* pw = evas_object_data_get(obj, "propertyview");
   property_object_show(pw, o);
 }

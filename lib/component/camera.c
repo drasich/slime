@@ -205,6 +205,7 @@ _camera_draw_edit(Component* comp, Matrix4 world, const Matrix4 projection)
   line_component_draw(c->line, world, projection);
 }
 
+/*
 ComponentDesc camera_desc = {
   "camera",
   _create_camera,
@@ -215,6 +216,24 @@ ComponentDesc camera_desc = {
   _camera_on_property_changed,
   _camera_draw_edit
 };
+*/
+
+ComponentDesc*
+component_camera_desc()
+{
+  static ComponentDesc* cd = NULL;
+  if (cd) return cd;
+
+  cd = calloc(1, sizeof * cd);
+  cd->name = "camera";
+  cd->create = _create_camera;
+  cd->properties = _camera_properties;
+  cd->init_edit = _camera_init;
+  cd->on_property_changed = _camera_on_property_changed;
+  cd->draw_edit = _camera_draw_edit;
+  return cd;
+}
+
 
 
 void

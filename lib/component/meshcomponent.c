@@ -165,16 +165,22 @@ _mesh_component_init(Component* c)
   shader_instance_init(mc->shader_instance);
 }
 
-ComponentDesc mesh_desc = {
-  "mesh",
-  _mesh_component_create,
-  _mesh_component_properties,
-  _mesh_component_init,
-  NULL,
-  _mesh_component_draw,
-  NULL,
-  NULL,
-};
+ComponentDesc*
+component_mesh_desc()
+{
+  static ComponentDesc* cd = NULL;
+  if (cd) return cd;
+
+  cd = calloc(1, sizeof * cd);
+  cd->name = "mesh";
+  cd->create = _mesh_component_create;
+  cd->properties = _mesh_component_properties;
+  cd->init_edit = _mesh_component_init;
+  cd->init = _mesh_component_init;
+  cd->draw = _mesh_component_draw;
+  return cd;
+}
+
 
 Shader*
 mesh_component_shader_get(MeshComponent* mc)

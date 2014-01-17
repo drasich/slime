@@ -1317,7 +1317,7 @@ create_render()
 
   r->quad_outline = create_object();
   r->quad_outline->name = "outline";
-  Component* comp = create_component(&mesh_desc);
+  Component* comp = create_component(component_mesh_desc());
   MeshComponent* mc = comp->data;
   mesh_component_mesh_set_by_name(mc, "quad");
 

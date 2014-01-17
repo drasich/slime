@@ -103,8 +103,8 @@ component_manager_load(ComponentManager* cm)
   else 
   EINA_LOG_DOM_INFO(_component_dom, "Game Component Library, symbols successfully loaded");
 
-  cm->components = eina_list_append(cm->components, &camera_desc);
-  cm->components = eina_list_append(cm->components, &mesh_desc);
+  cm->components = eina_list_append(cm->components, component_camera_desc());
+  cm->components = eina_list_append(cm->components, component_mesh_desc());
 
   Eina_List* user_components = initfunc();
   cm->components = eina_list_merge(cm->components, user_components);

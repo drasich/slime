@@ -15,7 +15,7 @@ struct _MeshComponent
   Eina_Hash* shader_instance_hash;
 };
 
-ComponentDesc mesh_desc;
+ComponentDesc* component_mesh_desc();
 
 Shader* mesh_component_shader_get(MeshComponent* mc);
 void mesh_component_shader_set(MeshComponent* mc, Shader* s);

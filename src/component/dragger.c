@@ -137,7 +137,7 @@ _dragger_rotate_create(Vec3 constraint, Vec4 color, bool plane)
   Object* o = create_object();
   o->name = "rotate";
   ///////////
-  Component* comp = create_component(&mesh_desc);
+  Component* comp = create_component(component_mesh_desc());
   object_add_component(o, comp);
   MeshComponent* mc = comp->data;
   mesh_component_shader_set_by_name(mc, "shader/dragger.shader");
@@ -150,7 +150,7 @@ _dragger_rotate_create(Vec3 constraint, Vec4 color, bool plane)
 
   /////////
 
-  comp = create_component(&mesh_desc);
+  comp = create_component(component_mesh_desc());
   object_add_component(o, comp);
   MeshComponent* mcs = comp->data;
   mesh_component_shader_set_by_name(mcs, "shader/dragger.shader");
@@ -186,7 +186,7 @@ _dragger_scale_create(Vec3 constraint, Vec4 color, bool plane)
 {
   Object* o = create_object();
   o->name = "scale";
-  Component* comp = create_component(&mesh_desc);
+  Component* comp = create_component(component_mesh_desc());
   object_add_component(o, comp);
   MeshComponent* mc = comp->data;
   mesh_component_shader_set_by_name(mc, "shader/dragger.shader");
@@ -223,7 +223,7 @@ _dragger_translate_create(Vec3 constraint, Vec4 color, bool plane)
 {
   Object* o = create_object();
   o->name = "translate";
-  Component* comp = create_component(&mesh_desc);
+  Component* comp = create_component(component_mesh_desc());
   object_add_component(o, comp);
   MeshComponent* mc = comp->data;
   mesh_component_shader_set_by_name(mc, "shader/dragger.shader");

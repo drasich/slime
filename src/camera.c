@@ -6,7 +6,7 @@ view_camera_new()
   ViewCamera* c = calloc(1,sizeof *c);
   c->object = create_object();
   c->object->name = "viewcamera";
-  Component* comp = create_component(&camera_desc);
+  Component* comp = create_component(component_camera_desc());
   object_add_component(c->object,comp);
   c->camera_component = comp->data;
   return c;

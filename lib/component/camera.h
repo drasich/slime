@@ -42,7 +42,8 @@ struct _Camera
   LineComponent* line;
 };
 
-ComponentDesc camera_desc;
+//ComponentDesc camera_desc;
+ComponentDesc* component_camera_desc();
 
 void ccamera_recalculate_origin(Component* comp);
 void ccamera_set_resolution(Camera* c, int w, int h);
