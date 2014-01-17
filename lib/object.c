@@ -282,13 +282,7 @@ create_object()
   //eina_value_setup(&o->data_position, EINA_VALUE_TYPE_DOUBLE);
   //eina_value_set(&o->data_position, 777);
 
-  //TODO put in a transform component or don't add in the list...
-  /*
-  Component *oc =  create_component(&object_desc);
-  oc->data = o;
-  object_add_component(o, oc);
-  */
-  o->component =  create_component(&object_desc);
+  o->component =  create_component(component_object_desc());
   o->component->data = o;
   o->component->object = o;
   
@@ -528,18 +522,23 @@ object_descriptor_delete()
   //TODO also free the array
 }
 
+ComponentDesc* component_object_desc()
+{
+  static ComponentDesc* cd = NULL;
+  if (cd) return cd;
 
-ComponentDesc object_desc = {
-  "object",
-  NULL,
-  property_set_object
-};
+  cd = calloc(1, sizeof * cd);
+  cd->name = "object";
+  cd->properties = property_set_object;
+  return cd;
+}
+
 
 void 
 object_post_read(Object* o)
 {
   if (!o->component) {
-    o->component =  create_component(&object_desc);
+    o->component =  create_component(component_object_desc());
     o->component->data = o;
     o->component->object = o;
   }
