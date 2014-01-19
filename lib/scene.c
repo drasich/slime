@@ -9,8 +9,7 @@ scene_new()
   Scene* s = calloc(1, sizeof(Scene));
   s->objects = NULL;
   s->name = "empty";
-  eina_init();
-
+  s->clear_color = vec4(0.2,0.2,0.2,1);
   return s;
 }
 
@@ -257,6 +256,9 @@ property_set_scene()
 
   Property *obp = property_set_object_pointer("camera");
   PROPERTY_SUB_NESTED_ADD(ps, Scene, camerapointer, obp);
+
+  Property* vec4 = property_set_vec4();
+  PROPERTY_SUB_NESTED_ADD(ps, Scene, clear_color, vec4);
 
   Property* object_ps = property_set_object();
 

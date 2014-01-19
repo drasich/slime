@@ -52,18 +52,20 @@ static void
 _draw_gl(Evas_Object *obj)
 {
   int w, h;
+  GameView* gv = evas_object_data_get(obj, "gameview");
 
   elm_glview_size_get(obj, &w, &h);
 
   glViewport(0, 0, w, h);
   //glClearColor(1.0,0.8,0.3,1);
-  glClearColor(0.2,0.2,0.2,1);
+  Vec4 c = gv->scene->clear_color;
+  //glClearColor(0.2,0.2,0.2,1);
+  glClearColor(c.x, c.y, c.z, c.w);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glEnable(GL_BLEND);
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  GameView* gv = evas_object_data_get(obj, "gameview");
   scene_update(gv->scene);
   gameview_draw(gv);
 

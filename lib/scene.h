@@ -13,6 +13,7 @@ struct _Scene {
   const char* name;
   unsigned long long last_id;
   ObjectPointer camerapointer;
+  Vec4 clear_color;
 };
 
 Scene* scene_new();
