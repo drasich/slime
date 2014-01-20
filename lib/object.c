@@ -551,7 +551,8 @@ object_post_read(Object* o)
   }
   */
 
-  if (o->prefab.name) {
+  if (o->prefab.name && strcmp(o->prefab.name,"")) {
+  //if (o->prefab.name) {
     o->prefab.prefab = resource_prefab_get(s_rm, o->prefab.name);
   }
 
@@ -720,7 +721,7 @@ object_read(const char* filename)
 Eina_List**
 object_components_get(const Object* o)
 {
-  if (o->prefab.prefab) {
+  if (o->prefab.name && strcmp(o->prefab.name,"")) {
     return (Eina_List**) &o->prefab.prefab->components;
   }
 
