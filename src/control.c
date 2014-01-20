@@ -960,7 +960,8 @@ control_key_down(Control* c, Evas_Event_Key_Down *e)
   const Evas_Modifier * mods = e->modifiers;
 
   if (c->state == CONTROL_IDLE) {
-    if (!strcmp(e->keyname, "Escape")) {
+    if (!strcmp(e->keyname, "q") 
+          && evas_key_modifier_is_set(mods, "Control")) {
       view_destroy(c->view);
       elm_exit();
     } else if (!strcmp(e->keyname, "g") && o!= NULL) {

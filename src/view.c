@@ -740,9 +740,9 @@ _play(void *data,
     resource_view_playing_scene_add(v->rv, s);
     view_scene_set(v, s);
 
-    //gameview_ = create_gameview_window(v->context->scene, &gameview_, v->control );
     gameview_ = create_gameview_window(s, &gameview_, v->control );
     evas_object_smart_callback_add(gameview_, "delete,request", _gameview_closed, v);
+    evas_object_smart_callback_add(gameview_, "gameview,close", _gameview_closed, v);
   }
   else {
     evas_object_show(gameview_);

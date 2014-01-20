@@ -70,12 +70,17 @@ _draw_gl(Evas_Object *obj)
 }
 
 static void
+_gameview_close(GameView* gv)
+{
+  evas_object_smart_callback_call(*gv->window, "gameview,close", NULL);
+  evas_object_del(*gv->window);
+}
+
+static void
 _gameview_del(void *data __UNUSED__, Evas *evas __UNUSED__, Evas_Object *obj, void *event_info __UNUSED__)
 {
   Ecore_Animator *ani = evas_object_data_get(obj, "ani");
   ecore_animator_del(ani);
-  //GameView* gv = evas_object_data_get(obj, "gameview");
-  printf("gameview_del\n");
 
   GameView* gv = evas_object_data_get(obj, "gameview");
   *gv->window = NULL;
@@ -83,8 +88,23 @@ _gameview_del(void *data __UNUSED__, Evas *evas __UNUSED__, Evas_Object *obj, vo
 }
 
 static void
-_set_callbacks(Evas_Object* glview)
+_key_down(void *data, Evas *e __UNUSED__, Evas_Object *o __UNUSED__, void *event_info)
 {
+  Evas_Event_Key_Down *ev = (Evas_Event_Key_Down*)event_info;
+  EINA_LOG_DBG("KEY: down, keyname: %s , key %s", ev->keyname, ev->key);
+
+  if (!strcmp(ev->keyname, "Escape")) {
+    GameView* gv = data;
+    _gameview_close(gv);
+  }
+}
+
+
+static void
+_set_callbacks(GameView* gv)
+{
+  Evas_Object* glview = gv->glview;
+
   Ecore_Animator *ani;
   ani = ecore_animator_add(_anim, glview);
   evas_object_data_set(glview, "ani", ani);
@@ -95,8 +115,8 @@ _set_callbacks(Evas_Object* glview)
   elm_glview_render_func_set(glview, _draw_gl);
 
   evas_object_event_callback_add(glview, EVAS_CALLBACK_DEL, _gameview_del, glview);
+  evas_object_event_callback_add(glview, EVAS_CALLBACK_KEY_DOWN, _key_down, gv);
   /*
-  evas_object_event_callback_add(glview, EVAS_CALLBACK_KEY_DOWN, _key_down, NULL);
   evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_MOVE, _mouse_move, NULL);
   evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_DOWN, _mouse_down, NULL);
   evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_UP, _mouse_up, NULL);
@@ -119,7 +139,7 @@ create_gameview(Evas_Object *win)
   view->glview = _create_glview(win);
   elm_box_pack_end(view->box, view->glview);
   evas_object_data_set(view->glview, "gameview", view);
-  _set_callbacks(view->glview);
+  _set_callbacks(view);
   //evas_object_show(view->glview);
 
   /*
