@@ -92,6 +92,11 @@ void
 property_scene_show(PropertyView* pw, Scene* s)
 {
   property_clear_components(pw);
+  elm_box_unpack_all(pw->box_parent);
+  evas_object_hide(pw->box_prefab_info);
+  elm_box_pack_end(pw->box_parent, pw->box);
+  evas_object_show(pw->box);
+
 
   ComponentProperties* cp = create_data_properties(s, property_set_scene(), pw, false);
   property_add_component(pw, cp);
