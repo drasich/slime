@@ -4,6 +4,7 @@
 #include "component/meshcomponent.h"
 
 static int _component_dom = -1;
+static Eet_Data_Descriptor* _component_list_descriptor = NULL;
 
 Component*
 create_component(ComponentDesc *cd)
@@ -110,6 +111,7 @@ component_manager_load(ComponentManager* cm)
   cm->components = eina_list_merge(cm->components, user_components);
 
   component_descriptor_init(s_component_manager->components);
+  //component_list_descriptor();
 }
 
 static Eet_Data_Descriptor *_variant_unified_descriptor;
@@ -117,10 +119,17 @@ static Eet_Data_Descriptor *_variant_unified_descriptor;
 static void
 _component_descriptor_delete(ComponentManager* cm)
 {
+  prefab_property_free();
+
+  free(_component_list_descriptor);
+  _component_list_descriptor = NULL;
+
   free(_variant_unified_descriptor);
   _variant_unified_descriptor = NULL;
+
   free(component_descriptor);
   component_descriptor = NULL;
+
 }
 
 
@@ -256,7 +265,7 @@ components_del(Eina_List* components)
 Eet_Data_Descriptor*
 component_list_descriptor()
 {
-  static Eet_Data_Descriptor* edd = NULL;
+  Eet_Data_Descriptor* edd = _component_list_descriptor;
   if (edd) return edd;
 
   printf("component list descriptor going to create!\n");
@@ -269,6 +278,9 @@ component_list_descriptor()
   EET_DATA_DESCRIPTOR_ADD_LIST(
     edd, ComponentList, "list", list,
     component_descriptor);
+
+
+  _component_list_descriptor = edd;
 
   return edd;
 }

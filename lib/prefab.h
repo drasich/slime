@@ -13,6 +13,7 @@ struct _Prefab
 Prefab* prefab_new(const Object* o);
 void prefab_del(Prefab* p);
 Property* property_set_prefab();
+void prefab_property_free();
 
 Eina_Bool prefab_write(const Prefab* p, const char* filename);
 Prefab* prefab_read(const char* filename);

@@ -554,6 +554,7 @@ object_post_read(Object* o)
   if (o->prefab.name && strcmp(o->prefab.name,"")) {
   //if (o->prefab.name) {
     o->prefab.prefab = resource_prefab_get(s_rm, o->prefab.name);
+    if (!o->prefab.prefab) o->prefab.name = NULL;
   }
 
   Eina_List* l;

@@ -4,6 +4,8 @@
 #include "Eet.h"
 #include "component.h"
 
+static Property* _prefab_property = NULL;
+
 void
 prefab_del(Prefab* p)
 {
@@ -26,7 +28,8 @@ prefab_del(Prefab* p)
 Property*
 property_set_prefab()
 {
-  static Property* ps = NULL;
+  //static Property* ps = NULL;
+  Property* ps = _prefab_property;
   if (ps) return ps;
 
   ps = property_set_new();
@@ -56,6 +59,13 @@ property_set_prefab()
         */
 
   return ps;
+}
+
+void
+prefab_property_free()
+{
+  free(_prefab_property);
+  _prefab_property = NULL;
 }
 
 static const char PREFAB_FILE_ENTRY[] = "prefab";
@@ -122,6 +132,7 @@ prefab_copied_object_new(Prefab* p)
   ComponentList* cl = components_copy(p->components);
   o->components = cl->list;
   object_post_read(o);
+  free(cl);
   return o;
 }
 
