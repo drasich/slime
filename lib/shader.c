@@ -679,6 +679,9 @@ property_set_uniform()
    Property* psv3 = property_set_vec3();
    EET_DATA_DESCRIPTOR_ADD_MAPPING(
      _uniform_unified_descriptor, "vec3", psv3->descriptor);
+   Property* psv4 = property_set_vec4();
+   EET_DATA_DESCRIPTOR_ADD_MAPPING(
+     _uniform_unified_descriptor, "vec4", psv4->descriptor);
 
    EET_DATA_DESCRIPTOR_ADD_UNION(
      ps->descriptor, UniformValue, "value", value, type,
@@ -700,6 +703,9 @@ static Eina_Bool _uniform_print(
   else if (uv->type == UNIFORM_VEC3)
   printf ("                       uniform value vec3 : %f, %f, %f \n", uv->value.vec3.x, uv->value.vec3.y,
         uv->value.vec3.z);
+  else if (uv->type == UNIFORM_VEC4)
+  printf ("                       uniform value vec4 : %f, %f, %f, %f \n", uv->value.vec4.x, uv->value.vec4.y,
+        uv->value.vec4.z, uv->value.vec4.w);
   return EINA_TRUE;
 }
 
@@ -763,11 +769,7 @@ uniform_send(
   }
 
   UniformValue* uv = data;
-  if (uni->type == UNIFORM_VEC4) {
-    Vec4* v = &uv->value.vec4;
-    glUniform4f(uniloc, v->x,v->y,v->z,v->w);
-  }
-  else if (uni->type == UNIFORM_INT) {
+  if (uni->type == UNIFORM_INT) {
     glUniform1i(uniloc, uv->value.i);
   }
   else if (uni->type == UNIFORM_FLOAT) {
@@ -776,6 +778,10 @@ uniform_send(
   else if (uni->type == UNIFORM_VEC3) {
     Vec3* v = &uv->value.vec3;
     glUniform3f(uniloc, v->x,v->y,v->z);
+  }
+  else if (uni->type == UNIFORM_VEC4) {
+    Vec4* v = &uv->value.vec4;
+    glUniform4f(uniloc, v->x,v->y,v->z,v->w);
   }
   else {
     EINA_LOG_DOM_WARN(log_shader_dom, "uniform send not yet implemented: %d.", uni->type);
