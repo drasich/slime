@@ -136,5 +136,6 @@ void shader_instance_print(ShaderInstance* si);
 void shader_instance_init(ShaderInstance* si);
 
 Eina_Bool uniform_send(const Eina_Hash *hash, const void *key, void *data, void *fdata);
+void shader_instance_update(ShaderInstance* si, Shader* s);
 
 #endif

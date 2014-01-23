@@ -23,6 +23,7 @@ struct _ComponentDesc {
 
   void (*init_edit)(Component* c); 
   void (*draw_edit)(Component* c, Matrix4 world, const Matrix4 projection); 
+  void (*post_read)(Component* c); 
 };
 
 typedef Component* (*create_component_function)(); 

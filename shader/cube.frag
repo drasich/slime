@@ -1,7 +1,8 @@
-varying vec4 diffuse, ambient;
+varying vec4 diffuse;//, ambient;
 varying vec3 eye_normal, light_dir, halfway;
 varying vec2 f_texcoord;
 uniform sampler2D texture;
+uniform vec4 color;
 
 void main (void)
 {
@@ -9,7 +10,7 @@ void main (void)
 	float NdotL, NdotHV;
   vec4 specular = vec4(1.0,1.0,1.0,1);
 
-	vec4 color = ambient;
+	vec4 c = color;//ambient;
   vec4 diffuse_tex = texture2D(texture, f_texcoord);
   //vec4 diffuse_tex = texture2D(texture, vec2(0.5,0.5));
   //vec4 diffuse_tex = vec4(0.2, 0.2, 0.8,1);
@@ -20,12 +21,12 @@ void main (void)
   float shininess = 100.0;
 
   if (NdotL > 0.0) {
-    color += diffuse_tex * NdotL;
+    c += diffuse_tex * NdotL;
     halfv = normalize(halfway);
     NdotHV = max(dot(n, halfv),0.0);
-    color += specular * pow(NdotHV, shininess);
+    c += specular * pow(NdotHV, shininess);
   }
 
-  gl_FragColor = color;
+  gl_FragColor = c;
 }
 

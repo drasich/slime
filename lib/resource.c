@@ -312,6 +312,7 @@ resource_shader_create(ResourceManager* rm)
   shader_uniform_add(cube, "normal_matrix", false);
   shader_uniform_type_add(cube, "texture", UNIFORM_TEXTURE, true);
   shader_uniform_type_add(cube, "light", UNIFORM_VEC3, true);
+  shader_uniform_type_add(cube, "color", UNIFORM_VEC4, true);
 
   eina_hash_add(rm->shaders, line->name, line);
   eina_hash_add(rm->shaders, simple->name, simple);

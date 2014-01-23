@@ -490,6 +490,24 @@ shader_uniform_type_add(Shader* s, const char* name, UniformType type, bool visi
   eina_inarray_push(s->uniforms, &uni);
 }
 
+static void
+_shader_instance_uniform_default_value_add(ShaderInstance* si, Uniform* uni)
+{
+  if (!uni->visible)
+  return;
+
+  if (uni->type == UNIFORM_TEXTURE ) {
+    //TODO another default texture
+    TextureHandle* t = resource_texture_handle_new(s_rm, "model/ceil.png");
+    eina_hash_add(si->textures, uni->name, t);
+  }
+  else {
+    UniformValue* uv = calloc(1, sizeof *uv);
+    uv->type = uni->type;
+    eina_hash_add(si->uniforms, uni->name, uv);
+  }
+}
+
 ShaderInstance*
 shader_instance_create(Shader* s)
 {
@@ -499,18 +517,7 @@ shader_instance_create(Shader* s)
 
   Uniform* uni;
   EINA_INARRAY_FOREACH(s->uniforms, uni) {
-    if (uni->visible) {
-      if (uni->type == UNIFORM_TEXTURE ) {
-        //TODO another default texture
-        TextureHandle* t = resource_texture_handle_new(s_rm, "model/ceil.png");
-        eina_hash_add(si->textures, uni->name, t);
-      }
-      else {
-        UniformValue* uv = calloc(1, sizeof *uv);
-        uv->type = uni->type;
-        eina_hash_add(si->uniforms, uni->name, uv);
-      }
-    }
+    _shader_instance_uniform_default_value_add(si, uni);
   }
 
   return si;
@@ -777,3 +784,19 @@ uniform_send(
   return EINA_TRUE;
 }
 
+void
+shader_instance_update(ShaderInstance* si, Shader* s)
+{
+  Uniform* uni;
+  EINA_INARRAY_FOREACH(s->uniforms, uni) {
+    if (uni->type == UNIFORM_TEXTURE ) {
+      TextureHandle* th = eina_hash_find(si->textures, uni->name);
+      if (!th) _shader_instance_uniform_default_value_add(si, uni);
+    }
+    else {
+      UniformValue* uv = eina_hash_find(si->uniforms, uni->name);
+      if (!uv) _shader_instance_uniform_default_value_add(si, uni);
+    }
+  }
+
+}

@@ -6,7 +6,7 @@ uniform mat4 matrix;
 uniform mat3 normal_matrix;
 uniform vec3 light;
 
-varying vec4 diffuse, ambient;
+varying vec4 diffuse;//, ambient;
 varying vec3 eye_normal, light_dir, halfway;
 varying vec2 f_texcoord;
 varying vec3 bc;
@@ -20,7 +20,7 @@ void main(void)
   //light_dir = normalize(vec3(1,-1,-1));
 
   diffuse = vec4(0.4,0.4,0.9,1);
-  ambient = vec4(0.01,0.01,0.02,1);
+  //ambient = vec4(0.01,0.01,0.02,1);
 
   halfway = normalize(-light_dir + eye_normal);
 

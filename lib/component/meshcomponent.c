@@ -165,6 +165,19 @@ _mesh_component_init(Component* c)
   shader_instance_init(mc->shader_instance);
 }
 
+static void
+_mesh_component_post_read(Component* c)
+{
+  printf("mesh post read\n");
+  //TODO
+  _mesh_component_init(c);
+
+  MeshComponent* mc = c->data; 
+  ShaderHandle* sh = &mc->shader_handle;
+  if (mc->shader_instance && sh->shader)
+  shader_instance_update(mc->shader_instance, sh->shader);
+}
+
 ComponentDesc*
 component_mesh_desc()
 {
@@ -178,6 +191,7 @@ component_mesh_desc()
   cd->init_edit = _mesh_component_init;
   cd->init = _mesh_component_init;
   cd->draw = _mesh_component_draw;
+  cd->post_read = _mesh_component_post_read;
   return cd;
 }
 

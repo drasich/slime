@@ -1358,7 +1358,7 @@ _property_add(ComponentProperties* cp, const Property* p, Evas_Object* box, void
        {
         int offset = property_offset_get(p);
         UniformValue* uv = data + offset;
-        if (!uv) break;
+        if (!uv) {printf("there is no value for this uniform\n");break;}
         //printf("this is a uniform, type is %d \n", uv->type);
         if (uv->type == UNIFORM_FLOAT) { 
           //printf("this is a uniform, type is float !! %d \n", uv->type);
@@ -1368,6 +1368,9 @@ _property_add(ComponentProperties* cp, const Property* p, Evas_Object* box, void
           //printf("this is a uniform, type is vec3 !! %d \n", uv->type);
           _property_vec3_add(cp, p, box, data);
           //_property_add_spinner(cp, p, box, data);
+        }
+        else {
+          EINA_LOG_ERR("uniform type '%d' not yet implemented.", uv->type);
         }
        }
       break;
