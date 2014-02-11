@@ -168,8 +168,6 @@ _mesh_component_init(Component* c)
 static void
 _mesh_component_post_read(Component* c)
 {
-  printf("mesh post read\n");
-  //TODO
   _mesh_component_init(c);
 
   MeshComponent* mc = c->data; 

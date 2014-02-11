@@ -10,11 +10,6 @@ enum _Direction {
   DIR_LEFT, DIR_RIGHT, DIR_UP, DIR_DOWN, DIR_END
 };
 
-//typedef enum _Color Color;
-typedef enum {
-  COLOR_BLUE, COLOR_RED, COLOR_YELLOW, COLLOR_VIOLET, COLOR_END
-} Color;
-
 static Direction
 _random_direction_get()
 {
@@ -73,6 +68,7 @@ _core_properties(ComponentDesc* desc)
   PROPERTY_BASIC_ADD(ps, Core, name, EET_T_STRING);
   PROPERTY_BASIC_ADD(ps, Core, rotation_speed, EET_T_DOUBLE);
   PROPERTY_BASIC_ADD(ps, Core, margin, EET_T_FLOAT );
+  PROPERTY_BASIC_ADD(ps, Core, zzz, EET_T_FLOAT );
 
   //Property *obp = property_set_object_pointer("target");
   //PROPERTY_SUB_NESTED_ADD(ps, Player, targetpointer, obp);

@@ -4,8 +4,13 @@
 #include "component.h"
 #include "object_pointer.h"
 
-typedef struct _Core Core;
+//typedef enum _Color Color;
+typedef enum {
+  COLOR_BLUE, COLOR_RED, COLOR_YELLOW, COLLOR_VIOLET, COLOR_END
+} Color;
 
+
+typedef struct _Core Core;
 struct _Core
 {
   const char* name;
@@ -13,6 +18,9 @@ struct _Core
   double rotation_speed;
   ObjectPointer targetpointer;
   float margin;
+  float zzz;
+  Color color;
+
 };
 
 void core_init(Component* c);

@@ -403,7 +403,6 @@ void
 resource_scene_del(ResourceManager* rm, Scene* s)
 {
   eina_hash_del_by_key(rm->scenes, s->name);
-  scene_del(s);
   s = NULL;
 }
 

@@ -39,6 +39,8 @@ scene_del(Scene* s)
     object_del(o);
   }
 
+  printf("going to delete scene\n");
+
   free(s);
 }
 
@@ -252,7 +254,7 @@ property_set_scene()
   ps->name = "scene";
   PROPERTY_SET_TYPE(ps, Scene);
 
-  //PROPERTY_BASIC_ADD(ps, Scene, name, EET_T_STRING);
+  PROPERTY_BASIC_ADD(ps, Scene, name, EET_T_STRING);
 
   Property *obp = property_set_object_pointer("camera");
   PROPERTY_SUB_NESTED_ADD(ps, Scene, camerapointer, obp);
