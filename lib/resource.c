@@ -353,6 +353,11 @@ resource_texture_create(ResourceManager* rm)
   tex->filename = "model/base_skeleton_col.png";
   texture_png_read(tex);
   eina_hash_add(rm->textures, tex->filename, tex);
+
+  tex = texture_new();
+  tex->filename = "model/tex_ground.png";
+  texture_png_read(tex);
+  eina_hash_add(rm->textures, tex->filename, tex);
 }
 
 /*
