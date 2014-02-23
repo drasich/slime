@@ -6,6 +6,21 @@ FILE stuff
   => to be able to change the name. when changing the name: rename the file and check if there isn't another file with the same name
 TO be able to handle these: make a new struct type? filename
 
+- file monitor:
+  - shaders: 
+    - vert,frag,... :
+      - modified: update the shader,program
+      - new, delete: add/remove in material editor
+    - .shader(program)
+      - delete keep the name and assign default shader to those using it.
+    - how to create program : in the application there is a material editor
+  - textures, mesh : 
+    - modified : update
+    - del, add : del/add in resource manager
+  - scene : del/add in scene manager
+  - prefab : del/add in scene manager
+
+
 - put rand seed in engine_init something
 - project save
 - revoir comment rajouter un component

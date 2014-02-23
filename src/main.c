@@ -9,6 +9,7 @@
 #include "component/meshcomponent.h"
 #include "ui/resource_view.h"
 #include "log.h"
+#include "filemonitor.h"
 #define __UNUSED__
 
 //TODO put these in application
@@ -400,6 +401,7 @@ elm_main(int argc, char **argv)
   log_domains_register();
   srand (time(NULL));
 
+  filemonitor_init();
   property_holder_init();
 
   s_component_manager = create_component_manager(); //TODO
