@@ -91,4 +91,6 @@ void resource_scenes_load();
 void resource_scenes_clean();
 void resource_prefabs_save();
 
+void resource_shader_update(ResourceManager* rm, const char* filename);
+
 #endif

@@ -564,3 +564,27 @@ resource_shader_handle_set(ResourceManager* rm, ShaderHandle* sh, const char* na
 
 }
 
+void
+resource_shader_update(ResourceManager* rm, const char* filename)
+{
+  Eina_Iterator* it;
+  Eina_Hash* hash = resource_shaders_get(s_rm);
+
+  if (!hash) return;
+
+  it = eina_hash_iterator_tuple_new(hash);
+  void *data;
+
+  while (eina_iterator_next(it, &data)) {
+    Eina_Hash_Tuple *t = data;
+    //const char* name = t->key;
+    Shader* s = t->data;
+    if (!strcmp(filename, s->frag_path) ||
+        !strcmp(filename, s->vert_path)){
+        s->is_init = false;
+     }
+  }
+
+  eina_iterator_free(it);
+}
+

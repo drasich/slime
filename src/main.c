@@ -202,6 +202,7 @@ create_window()
   //evas_object_resize(win, 800/3, 400/3);
   //evas_object_resize(win, 800, 200);
   evas_object_resize(win, 1600, 600);
+  evas_object_resize(win, 16, 6);
   evas_object_show(win);
 
 
@@ -401,7 +402,6 @@ elm_main(int argc, char **argv)
   log_domains_register();
   srand (time(NULL));
 
-  filemonitor_init();
   property_holder_init();
 
   s_component_manager = create_component_manager(); //TODO
@@ -416,6 +416,8 @@ elm_main(int argc, char **argv)
   resource_shader_create(s_rm);
   resource_texture_create(s_rm);
   resource_load(s_rm);
+
+  filemonitor_init(s_rm);
 
   elm_config_preferred_engine_set("opengl_x11");
   //elm_config_focus_highlight_animate_set(EINA_TRUE);

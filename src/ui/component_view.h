@@ -4,10 +4,10 @@
 #include "context.h"
 #include "control.h"
 
-typedef struct _ComponentProperties ComponentProperties;
+typedef struct _DataView ComponentProperties;
 
 typedef void (*property_changed)(Control* control, void* data, Property* p);
-struct _ComponentProperties
+struct _DataView
 {
   Evas_Object* win;
   Evas_Object* box;
