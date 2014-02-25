@@ -13,12 +13,18 @@ void monitor_shader(void *data, Ecore_File_Monitor *em, Ecore_File_Event event, 
   resource_shader_update(data, path);
 }
 
+void monitor_texture(void *data, Ecore_File_Monitor *em, Ecore_File_Event event, const char *path)
+{
+  printf("texture event : %d, path %s \n", event, path);
+  resource_texture_update(data, path);
+}
+
 
 void
 filemonitor_init(ResourceManager* rm)
 {
   ecore_file_init(); //TODO ecore_file_shutdown
-  const char* path = "model";
+  const char* path = "test";
   Ecore_File_Monitor * efm = ecore_file_monitor_add( path,
         monitor_model,
         NULL
@@ -27,6 +33,12 @@ filemonitor_init(ResourceManager* rm)
   path = "shader";
   efm = ecore_file_monitor_add( path,
         monitor_shader,
+        rm
+        );
+
+  path = "model";
+  efm = ecore_file_monitor_add( path,
+        monitor_texture,
         rm
         );
 }

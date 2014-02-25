@@ -1,5 +1,5 @@
 #include "resource.h"
-//#include "Ecore.h"
+//#include "Ecore_File.h"
 
 static int _resource_dom = -1;
 
@@ -567,8 +567,12 @@ resource_shader_handle_set(ResourceManager* rm, ShaderHandle* sh, const char* na
 void
 resource_shader_update(ResourceManager* rm, const char* filename)
 {
+  if (!eina_str_has_extension(filename, ".frag") &&
+        !eina_str_has_extension(filename, ".vert"))
+  return;
+
   Eina_Iterator* it;
-  Eina_Hash* hash = resource_shaders_get(s_rm);
+  Eina_Hash* hash = resource_shaders_get(rm);
 
   if (!hash) return;
 
@@ -587,4 +591,44 @@ resource_shader_update(ResourceManager* rm, const char* filename)
 
   eina_iterator_free(it);
 }
+
+void
+resource_texture_update(ResourceManager* rm, const char* filename)
+{
+  if (!eina_str_has_extension(filename, ".png"))
+  return;
+
+  Eina_Iterator* it;
+  Eina_Hash* hash = resource_textures_get(rm);
+
+  if (!hash) return;
+
+  it = eina_hash_iterator_tuple_new(hash);
+  void *data;
+
+  bool find = false;
+
+  while (eina_iterator_next(it, &data)) {
+    Eina_Hash_Tuple *tuple = data;
+    const char* name = tuple->key;
+    Texture* tex = tuple->data;
+    if (!strcmp(filename, name)) {
+      texture_png_read(tex);
+      tex->is_init = false;
+      find = true;
+    }
+  }
+
+  eina_iterator_free(it);
+
+  if (find) return;
+
+  Texture* tex = texture_new();
+  tex->filename = filename;
+  texture_png_read(tex);
+  eina_hash_add(rm->textures, filename, tex);
+
+  
+}
+
 
