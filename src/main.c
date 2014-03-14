@@ -414,7 +414,7 @@ elm_main(int argc, char **argv)
 
   resource_simple_mesh_create(s_rm);
   resource_shader_create(s_rm);
-  resource_texture_create(s_rm);
+  //resource_texture_create(s_rm);
   resource_load(s_rm);
 
   filemonitor_init(s_rm);

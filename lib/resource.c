@@ -26,6 +26,30 @@ resource_shader_get(ResourceManager* rm, const char* name)
 Texture*
 resource_texture_get(ResourceManager* rm, const char* name)
 {
+  char newpath[strlen(name)+1];
+  if (eina_str_has_prefix(name, "model/")){
+    printf("old path : '%s'\n", name);
+    memcpy(newpath, name, strlen(name)+1);
+    strncpy(newpath, "image", 5);
+    printf("new path : '%s'\n", newpath);
+    name = newpath;
+
+    void *array[10];
+    size_t size;
+    char **strings;
+    size_t i;
+     
+    size = backtrace (array, 10);
+    strings = (char**) backtrace_symbols (array, size);
+
+    printf ("Obtained %zd stack frames.\n", size);
+
+    for (i = 0; i < size; i++)
+    printf ("%s\n", strings[i]);
+
+    free (strings);
+  }
+
   Texture* t = eina_hash_find(rm->textures, name);
   if (!t)
   EINA_LOG_DOM_ERR(_resource_dom, "Cannot find texture '%s'.", name);
@@ -75,6 +99,17 @@ _resource_mesh_add_cb(const char *name, const char *path, void *data)
 }
 
 static void
+_resource_image_add_cb(const char *name, const char *path, void *data)
+{
+  ResourceManager* rm = data;
+  if (eina_str_has_extension(name,"png")) {
+    EINA_LOG_DOM_INFO(_resource_dom, "image %s in %s", name, path);
+    rm->images_to_load = eina_list_append(rm->images_to_load, eina_stringshare_add(name));
+  }
+}
+
+
+static void
 _resource_scene_add_cb(const char *name, const char *path, void *data)
 {
   ResourceManager* rm = data;
@@ -121,6 +156,7 @@ resource_read_path(ResourceManager* rm)
 
   eina_file_dir_list("model", EINA_FALSE, _resource_mesh_add_cb, rm);
   eina_file_dir_list("scene", EINA_FALSE, _resource_scene_add_cb, rm);
+  eina_file_dir_list("image", EINA_FALSE, _resource_image_add_cb, rm);
   //resource_load(rm);
 }
 
@@ -145,11 +181,13 @@ resource_manager_create()
   ResourceManager* rm = calloc(1, sizeof *rm);
   rm->meshes = eina_hash_string_superfast_new(NULL);
   rm->shaders = eina_hash_string_superfast_new(NULL);
-  rm->meshes_to_load = NULL;
   rm->textures = eina_hash_string_superfast_new(NULL);
   rm->scenes = eina_hash_string_superfast_new(_scene_free_cb);
-  rm->scenes_to_load = NULL;
   rm->prefabs = eina_hash_string_superfast_new(_prefab_free_cb);
+
+  rm->meshes_to_load = NULL;
+  rm->scenes_to_load = NULL;
+  rm->images_to_load = NULL;
   return rm;
 
 }
@@ -229,8 +267,23 @@ void resource_load(ResourceManager* rm)
     eina_hash_add(rm->meshes, filepath, m);
   }
 
+  path = "image";
+  EINA_LIST_FOREACH(rm->images_to_load, l, name) {
+    int l = strlen(name) + strlen(path) + 2;
+    char filepath[l];
+    eina_str_join(filepath, l, '/', path , name);
+    printf("image file path : %s.\n", filepath);
+
+    Texture* tex = texture_new();
+    tex->filename = filepath;
+    texture_png_read(tex);
+    eina_hash_add(rm->textures, filepath, tex);
+  }
+
+
   resource_prefabs_load();
   resource_scenes_load();
+
 }
 
 
@@ -339,6 +392,7 @@ resource_texture_create(ResourceManager* rm)
   texture_png_read(tex);
   eina_hash_add(rm->textures, filetex, tex);
 
+  /*
   tex = texture_new();
   tex->filename = "model/test.png";
   texture_png_read(tex);
@@ -358,6 +412,7 @@ resource_texture_create(ResourceManager* rm)
   tex->filename = "model/tex_ground.png";
   texture_png_read(tex);
   eina_hash_add(rm->textures, tex->filename, tex);
+  */
 }
 
 /*

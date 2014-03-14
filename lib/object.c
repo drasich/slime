@@ -124,6 +124,7 @@ object_draw_edit_component2(
 {
   Matrix4 mo;
   mat4_multiply(cam_inv, world, mo);
+  printf("object name : %s \n", o->name);
 
   Eina_List* l;
   Component* c;

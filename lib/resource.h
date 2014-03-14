@@ -14,7 +14,7 @@ struct _ResourceManager {
   Eina_Hash* shaders;
   Eina_List* meshes_to_load;
   Eina_Hash* textures;
-  Eina_List* textures_to_load;
+  Eina_List* images_to_load;
 
   Eina_Hash* scenes;
   Eina_List* scenes_to_load;
