@@ -737,6 +737,7 @@ static Eina_Bool _texture_init(
       void *fdata)
 {
   TextureHandle* th = data;
+
   th->texture = resource_texture_get(s_rm, th->name);
   return EINA_TRUE;
 }

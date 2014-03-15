@@ -202,7 +202,7 @@ create_window()
   //evas_object_resize(win, 800/3, 400/3);
   //evas_object_resize(win, 800, 200);
   evas_object_resize(win, 1600, 600);
-  evas_object_resize(win, 16, 6);
+  //evas_object_resize(win, 16, 6);
   evas_object_show(win);
 
 
@@ -414,7 +414,6 @@ elm_main(int argc, char **argv)
 
   resource_simple_mesh_create(s_rm);
   resource_shader_create(s_rm);
-  //resource_texture_create(s_rm);
   resource_load(s_rm);
 
   filemonitor_init(s_rm);

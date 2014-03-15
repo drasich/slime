@@ -1,4 +1,5 @@
 #include "resource.h"
+#include "trace.h"
 //#include "Ecore_File.h"
 
 static int _resource_dom = -1;
@@ -26,33 +27,11 @@ resource_shader_get(ResourceManager* rm, const char* name)
 Texture*
 resource_texture_get(ResourceManager* rm, const char* name)
 {
-  char newpath[strlen(name)+1];
-  if (eina_str_has_prefix(name, "model/")){
-    printf("old path : '%s'\n", name);
-    memcpy(newpath, name, strlen(name)+1);
-    strncpy(newpath, "image", 5);
-    printf("new path : '%s'\n", newpath);
-    name = newpath;
-
-    void *array[10];
-    size_t size;
-    char **strings;
-    size_t i;
-     
-    size = backtrace (array, 10);
-    strings = (char**) backtrace_symbols (array, size);
-
-    printf ("Obtained %zd stack frames.\n", size);
-
-    for (i = 0; i < size; i++)
-    printf ("%s\n", strings[i]);
-
-    free (strings);
-  }
-
   Texture* t = eina_hash_find(rm->textures, name);
-  if (!t)
-  EINA_LOG_DOM_ERR(_resource_dom, "Cannot find texture '%s'.", name);
+  if (!t) {
+    trace();
+    EINA_LOG_DOM_ERR(_resource_dom, "Cannot find texture '%s'.", name);
+  }
 
   return t;
 }
@@ -379,40 +358,6 @@ resource_shader_create(ResourceManager* rm)
   //shader_write(simple);
   //Shader* s = shader_read("shader/red.shader");
   //Shader* simplea = shader_read("shader/simple.shader");
-}
-
-
-void
-resource_texture_create(ResourceManager* rm)
-{
-  const char* filetex = "model/ceil.png";
-  //rm->textures_to_load = eina_list_append(rm->textures_to_load, eina_stringshare_add(filetex));
-  Texture* tex = texture_new();
-  tex->filename = filetex;
-  texture_png_read(tex);
-  eina_hash_add(rm->textures, filetex, tex);
-
-  /*
-  tex = texture_new();
-  tex->filename = "model/test.png";
-  texture_png_read(tex);
-  eina_hash_add(rm->textures, tex->filename, tex);
-
-  tex = texture_new();
-  tex->filename = "model/red64.png";
-  texture_png_read(tex);
-  eina_hash_add(rm->textures, tex->filename, tex);
-
-  tex = texture_new();
-  tex->filename = "model/base_skeleton_col.png";
-  texture_png_read(tex);
-  eina_hash_add(rm->textures, tex->filename, tex);
-
-  tex = texture_new();
-  tex->filename = "model/tex_ground.png";
-  texture_png_read(tex);
-  eina_hash_add(rm->textures, tex->filename, tex);
-  */
 }
 
 /*

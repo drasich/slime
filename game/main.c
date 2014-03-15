@@ -85,7 +85,7 @@ elm_main(int argc, char **argv)
   resource_read_path(s_rm);
   resource_simple_mesh_create(s_rm);
   resource_shader_create(s_rm);
-  resource_texture_create(s_rm);
+  resource_load(s_rm);
 
   s_component_manager = create_component_manager(); //TODO
   component_manager_load(s_component_manager);

@@ -940,10 +940,10 @@ _property_add_fileselect(ComponentProperties* cp, const Property* p)
 
   Evas_Object* fs_bt = elm_fileselector_button_add(cp->win);
   elm_object_focus_allow_set(fs_bt, 0);
-  elm_fileselector_button_path_set(fs_bt, "/home/chris/code/slime/model");
+  elm_fileselector_path_set(fs_bt, "/home/chris/code/slime/model");
   elm_object_text_set(fs_bt, "Change");
   //elm_object_part_content_set(fs_bt, "icon", ic);
-  elm_fileselector_button_expandable_set(fs_bt, EINA_TRUE);
+  elm_fileselector_expandable_set(fs_bt, EINA_TRUE);
   //elm_fileselector_mode_set(fs_bt, ELM_FILESELECTOR_LIST);
   elm_fileselector_button_inwin_mode_set(fs_bt, EINA_TRUE);
   evas_object_smart_callback_add(fs_bt, "file,chosen", _file_chosen, cp->component);
