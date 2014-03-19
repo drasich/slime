@@ -805,5 +805,24 @@ shader_instance_update(ShaderInstance* si, Shader* s)
       if (!uv) _shader_instance_uniform_default_value_add(si, uni);
     }
   }
+}
 
+Shader*
+shader_new()
+{
+  Shader* s = calloc(1,sizeof(Shader));
+  return s;
+}
+
+void
+shader_read_txt(Shader* s, const char* filename)
+{
+  s->name = filename;
+  //TODO first line vert,...
+  /*
+  s->vert_path = vert_path;
+  s->frag_path = frag_path;
+  s->attributes = eina_inarray_new(sizeof(Attribute), 0);
+  s->uniforms = eina_inarray_new(sizeof(Uniform), 0);
+  */
 }

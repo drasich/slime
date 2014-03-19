@@ -1,0 +1,2 @@
+diffuse.vert
+diffuse.frag

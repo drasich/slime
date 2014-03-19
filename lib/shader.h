@@ -94,6 +94,8 @@ void shader_mesh_nocomp_draw(Shader* s, ShaderInstance* si, struct _Mesh* m);
 void shader_destroy(Shader* s);
 
 Shader* create_shader(const char* name, const char* vert_path, const char* frag_path);
+Shader* shader_new();
+void shader_read_txt(Shader* s, const char* filename);
 Eina_Bool shader_write(const Shader* s);
 Shader* shader_read(const char* filename);
 

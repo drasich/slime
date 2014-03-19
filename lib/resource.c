@@ -87,6 +87,15 @@ _resource_image_add_cb(const char *name, const char *path, void *data)
   }
 }
 
+static void
+_resource_shader_add_cb(const char *name, const char *path, void *data)
+{
+  ResourceManager* rm = data;
+  if (eina_str_has_extension(name,"sh")) {
+    EINA_LOG_DOM_INFO(_resource_dom, "shader %s in %s", name, path);
+    rm->shaders_to_load = eina_list_append(rm->shaders_to_load, eina_stringshare_add(name));
+  }
+}
 
 static void
 _resource_scene_add_cb(const char *name, const char *path, void *data)
@@ -136,6 +145,7 @@ resource_read_path(ResourceManager* rm)
   eina_file_dir_list("model", EINA_FALSE, _resource_mesh_add_cb, rm);
   eina_file_dir_list("scene", EINA_FALSE, _resource_scene_add_cb, rm);
   eina_file_dir_list("image", EINA_FALSE, _resource_image_add_cb, rm);
+  eina_file_dir_list("shader", EINA_FALSE, _resource_shader_add_cb, rm);
   //resource_load(rm);
 }
 
@@ -167,6 +177,7 @@ resource_manager_create()
   rm->meshes_to_load = NULL;
   rm->scenes_to_load = NULL;
   rm->images_to_load = NULL;
+  rm->shaders_to_load = NULL;
   return rm;
 
 }
@@ -257,6 +268,19 @@ void resource_load(ResourceManager* rm)
     tex->filename = filepath;
     texture_png_read(tex);
     eina_hash_add(rm->textures, filepath, tex);
+  }
+
+  path = "shader";
+  EINA_LIST_FOREACH(rm->shaders_to_load, l, name) {
+    int l = strlen(name) + strlen(path) + 2;
+    char filepath[l];
+    eina_str_join(filepath, l, '/', path , name);
+    printf("shader file path : %s.\n", filepath);
+
+    Shader* shader = shader_new();
+    shader_read_txt(shader, filepath);
+    //TODO read the shader
+    eina_hash_add(rm->shaders, filepath, shader);
   }
 
 
