@@ -818,6 +818,20 @@ void
 shader_read_txt(Shader* s, const char* filename)
 {
   s->name = filename;
+  Eina_File* f = eina_file_open(filename, EINA_FALSE);
+
+  void *buf = eina_file_map_all(f, EINA_FILE_WILLNEED);
+  unsigned int line_count;
+  char** lines = eina_str_split_full((char*) buf, "\n", 0, &line_count);
+
+  if (line_count < 2) return;
+
+  printf("vert : %s\n", lines[0]);
+  printf("frag : %s\n", lines[1]);
+
+
+  //printf("file is \n%s \n\n\n\n", (char*) buf);
+
   //TODO first line vert,...
   /*
   s->vert_path = vert_path;
