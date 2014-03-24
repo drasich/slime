@@ -154,6 +154,7 @@ scene_read(const char* filename)
 void
 scene_post_read(Scene* s)
 {
+  EINA_LOG_DOM_DBG(log_scene_dom, "read start scene name is %s\nobjects number is %d", s->name, eina_list_count(s->objects));
   s->last_id = 0;
 
   Eina_List *l;

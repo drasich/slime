@@ -209,8 +209,11 @@ resource_scenes_load()
 
     Scene* s = scene_read(filepath);
     s->name = eina_stringshare_add(name);
+    printf("yep scene 00\n");
     eina_hash_add(rm->scenes, s->name, s);
+    printf("yep scene 01\n");
     scene_post_read(s);
+    printf("yep scene 02\n");
   }
 
 }
@@ -280,12 +283,17 @@ void resource_load(ResourceManager* rm)
     Shader* shader = shader_new();
     shader_read_txt(shader, filepath);
     //TODO read the shader
+    printf("shader file path add to map : %s.\n", filepath);
     eina_hash_add(rm->shaders, filepath, shader);
+    printf("shader file path add to map end : %s.\n", filepath);
   }
 
 
+  printf("yep00\n");
   resource_prefabs_load();
+  printf("yep01\n");
   resource_scenes_load();
+  printf("yep02\n");
 
 }
 
