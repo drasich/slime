@@ -594,6 +594,24 @@ resource_shader_handle_set(ResourceManager* rm, ShaderHandle* sh, const char* na
 void
 resource_shader_update(ResourceManager* rm, const char* filename)
 {
+
+  if (eina_str_has_extension(filename, ".sh")) {
+    //TODO
+    Eina_Hash* hash = resource_shaders_get(rm);
+    Shader* s = eina_hash_find(hash, filename);
+    if (s) {
+      printf("TODO destroy first \n ");
+      shader_read_txt(s, filename);
+      s->is_init = false;
+    }
+    else {
+      s = shader_new();
+      shader_read_txt(s, filename);
+      eina_hash_add(hash, s->name, s);
+    }
+    return;
+  }
+
   if (!eina_str_has_extension(filename, ".frag") &&
         !eina_str_has_extension(filename, ".vert"))
   return;

@@ -871,6 +871,7 @@ shader_read_txt(Shader* s, const char* filename)
   void *buf = eina_file_map_all(f, EINA_FILE_WILLNEED);
   unsigned int line_count;
   char** lines = eina_str_split_full((char*) buf, "\n", 0, &line_count);
+  printf("todo delete stuff\n");
 
   if (line_count < 2) return;
 
