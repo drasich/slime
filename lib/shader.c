@@ -334,6 +334,12 @@ shader_mesh_nocomp_draw(Shader* s, ShaderInstance* si, struct _Mesh* m)
       else if (!th->texture) {
         EINA_LOG_DOM_ERR(log_shader_dom, "Texture is not loaded, or not assigned?: '%s'.", uniname);
         th->texture = resource_texture_get(s_rm, th->name);
+        if (!th->texture) {
+          //TODO default texture
+          th->name = "image/test.png";
+          th->texture = resource_texture_get(s_rm, th->name);
+        }
+
       }
 
       if (th && th->texture) {
