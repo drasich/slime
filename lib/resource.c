@@ -209,11 +209,8 @@ resource_scenes_load()
 
     Scene* s = scene_read(filepath);
     s->name = eina_stringshare_add(name);
-    printf("yep scene 00\n");
     eina_hash_add(rm->scenes, s->name, s);
-    printf("yep scene 01\n");
     scene_post_read(s);
-    printf("yep scene 02\n");
   }
 
 }
@@ -284,17 +281,14 @@ void resource_load(ResourceManager* rm)
     shader_read_txt(shader, filepath);
     //TODO read the shader
     printf("shader file path add to map : %s.\n", filepath);
-    eina_hash_add(rm->shaders, filepath, shader);
-    printf("shader file path add to map end : %s.\n", filepath);
+    //eina_hash_add(rm->shaders, filepath, shader);
+    eina_hash_add(rm->shaders, shader->name, shader);
+    printf("shader file path add to map end : %s. name %s\n", filepath, shader->name);
   }
 
 
-  printf("yep00\n");
   resource_prefabs_load();
-  printf("yep01\n");
   resource_scenes_load();
-  printf("yep02\n");
-
 }
 
 
@@ -338,7 +332,8 @@ resource_shader_create(ResourceManager* rm)
   Shader* diffuse = create_shader("shader/diffuse.shader","shader/diffuse.vert", "shader/diffuse.frag");
   shader_attribute_add(diffuse, "vertex", 3, GL_FLOAT);
   shader_attribute_add(diffuse, "texcoord", 2, GL_FLOAT);
-  shader_uniform_add(diffuse, "matrix", false);
+  //shader_uniform_add(diffuse, "matrix", false);
+  shader_uniform_type_add(diffuse, "matrix", UNIFORM_MAT4, false);
   shader_uniform_type_add(diffuse, "texture", UNIFORM_TEXTURE, true);
 
   Shader* red = create_shader("shader/red.shader", "shader/simple.vert", "shader/red.frag");

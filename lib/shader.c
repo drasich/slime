@@ -504,7 +504,7 @@ _shader_instance_uniform_default_value_add(ShaderInstance* si, Uniform* uni)
 
   if (uni->type == UNIFORM_TEXTURE ) {
     //TODO another default texture
-    TextureHandle* t = resource_texture_handle_new(s_rm, "model/ceil.png");
+    TextureHandle* t = resource_texture_handle_new(s_rm, "image/ceil.png");
     printf("shader instance uniform default value 00 \n");
     eina_hash_add(si->textures, uni->name, t);
   }
@@ -805,18 +805,12 @@ shader_instance_update(ShaderInstance* si, Shader* s)
   Uniform* uni;
   EINA_INARRAY_FOREACH(s->uniforms, uni) {
     if (uni->type == UNIFORM_TEXTURE ) {
-      printf("shader instance up 00 \n");
       TextureHandle* th = eina_hash_find(si->textures, uni->name);
-      printf("shader instance up 10 \n");
       if (!th) _shader_instance_uniform_default_value_add(si, uni);
-      printf("shader instance up 20 \n");
     }
     else {
-      printf("shader instance up 30 \n");
       UniformValue* uv = eina_hash_find(si->uniforms, uni->name);
-      printf("shader instance up 40 \n");
       if (!uv) _shader_instance_uniform_default_value_add(si, uni);
-      printf("shader instance up 50 \n");
     }
   }
 }
@@ -871,7 +865,7 @@ _getUniType(const char* s)
 void
 shader_read_txt(Shader* s, const char* filename)
 {
-  s->name = filename;
+  s->name = eina_stringshare_add(filename);
   Eina_File* f = eina_file_open(filename, EINA_FALSE);
 
   void *buf = eina_file_map_all(f, EINA_FILE_WILLNEED);
@@ -880,12 +874,8 @@ shader_read_txt(Shader* s, const char* filename)
 
   if (line_count < 2) return;
 
-  printf("vert : %s\n", lines[0]);
-  printf("frag : %s\n", lines[1]);
-
   s->vert_path = eina_stringshare_add(lines[0]);
   s->frag_path = eina_stringshare_add(lines[1]);
-  s->name = filename;
   s->attributes = eina_inarray_new(sizeof(Attribute), 0);
   s->uniforms = eina_inarray_new(sizeof(Uniform), 0);
 
