@@ -900,3 +900,11 @@ shader_read_txt(Shader* s, const char* filename)
     }
   }
 }
+
+void
+shader_reset(Shader* s)
+{
+  eina_inarray_free(s->uniforms);
+  eina_inarray_free(s->attributes);
+
+}

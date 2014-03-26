@@ -49,7 +49,14 @@ struct _Uniform{
 };
 
 typedef struct _Shader Shader;
-//typedef char GLchar; // currently not in 1.7.3 and 1.7.4 but is in svn.
+//typedef char GLchar; // was not in efl before... should be fine now
+
+typedef enum ShaderState
+{
+  CREATED,
+  USABLE,
+  RESET
+}
 
 struct _Shader
 {
@@ -60,6 +67,7 @@ struct _Shader
   const char* vert_path;
   const char* frag_path;
   bool is_init;
+  int state; //TODO chris remove is_init and use state/ShaderState
 
   Eina_Inarray* attributes;
   Eina_Inarray* uniforms;
