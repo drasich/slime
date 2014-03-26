@@ -48,15 +48,17 @@ struct _Uniform{
   bool visible;
 };
 
-typedef struct _Shader Shader;
-//typedef char GLchar; // was not in efl before... should be fine now
-
-typedef enum ShaderState
-{
+typedef enum _ShaderState ShaderState;
+enum _ShaderState {
   CREATED,
   USABLE,
   RESET
-}
+};
+
+
+typedef struct _Shader Shader;
+//typedef char GLchar; // was not in efl before... should be fine now
+
 
 struct _Shader
 {
