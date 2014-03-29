@@ -81,7 +81,8 @@ shader_init(Shader* s)
   shader_uniforms_locations_init(s);
   free(vert);
   free(frag);
-  s->is_init = true;
+  //s->is_init = true;
+  s->state = USABLE;
 }
 
 void
@@ -166,7 +167,7 @@ shader_init_uniform(Shader* s, char* uni_name, GLint* uni)
 void
 shader_use(Shader* s)
 {
-  if (!s->is_init) {
+  if (s->state == CREATED) {
     shader_init(s);
   }
   glUseProgram(s->program);
@@ -819,6 +820,7 @@ Shader*
 shader_new()
 {
   Shader* s = calloc(1,sizeof(Shader));
+  s->state = CREATED;
   return s;
 }
 
@@ -899,6 +901,8 @@ shader_read_txt(Shader* s, const char* filename)
       printf("read uni : %s, %d, %d \n", strs[1],_getUniType(strs[2]), atoi(strs[3]) );
     }
   }
+
+  s->state = CREATED;
 }
 
 void
@@ -906,5 +910,11 @@ shader_reset(Shader* s)
 {
   eina_inarray_free(s->uniforms);
   eina_inarray_free(s->attributes);
-
 }
+
+void
+shader_reload(Shader* s)
+{
+  s->state = CREATED;
+}
+

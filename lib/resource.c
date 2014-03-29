@@ -602,7 +602,7 @@ resource_shader_update(ResourceManager* rm, const char* filename)
     if (s) {
       printf("TODO destroy first \n ");
       shader_read_txt(s, filename);
-      s->is_init = false;
+      //s->is_init = false;
     }
     else {
       s = shader_new();
@@ -630,7 +630,8 @@ resource_shader_update(ResourceManager* rm, const char* filename)
     Shader* s = t->data;
     if (!strcmp(filename, s->frag_path) ||
         !strcmp(filename, s->vert_path)){
-        s->is_init = false;
+        //s->is_init = false;
+        shader_reload(s);
      }
   }
 
