@@ -81,7 +81,6 @@ shader_init(Shader* s)
   shader_uniforms_locations_init(s);
   free(vert);
   free(frag);
-  //s->is_init = true;
   s->state = USABLE;
 }
 

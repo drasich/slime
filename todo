@@ -1,6 +1,5 @@
 LATELY
 FILE stuff
-- separate tex from model
 - remove a scene=> remove the file
 - be able to remove a prefab
 - put name in scene property, and name in prefab property 

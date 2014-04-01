@@ -68,8 +68,7 @@ struct _Shader
   GLuint program;
   const char* vert_path;
   const char* frag_path;
-  //bool is_init;
-  ShaderState state; //TODO chris remove is_init and use state/ShaderState
+  ShaderState state;
 
   Eina_Inarray* attributes;
   Eina_Inarray* uniforms;
