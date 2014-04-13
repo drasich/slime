@@ -70,6 +70,9 @@ struct _Armature
   Eina_List* bones;
 };
 
+
+Armature* armature_new();
+Armature* armature_file_set(Armature* a, const char *name);
 void armature_read_file(Armature* armature, FILE* f);
 Armature* create_armature_file(FILE* f);
 void armature_add_bone(Armature* a, Bone* b);

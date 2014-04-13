@@ -1,6 +1,34 @@
 #include "armature.h"
 #include "read.h"
 #include <float.h>
+#include "log.h"
+
+Armature*
+armature_new()
+{
+  Armature* a = calloc(1,sizeof *a);
+  return a;
+}
+
+Armature*
+armature_file_set(Armature* a, const char *filename)
+{
+  a->bones = NULL;
+  a->actions = NULL;
+
+  FILE *f;
+  f = fopen(filename, "rb");
+  if (!f) {
+    EINA_LOG_DOM_ERR(log_mesh_dom, "cannot open file '%s'", filename);
+  }
+  fseek(f, 0, SEEK_SET);
+
+  const char* type = read_string(f);
+
+  armature_read_file(a, f);
+  return a;
+}
+
 
 Armature*
 create_armature_file(FILE* f)
@@ -19,11 +47,11 @@ bone_create(FILE* f)
   Bone* bone = malloc(sizeof(Bone));
   bone->children = NULL;
   bone->name = read_name(f);
-  printf("bone name '%s'\n",bone->name);
+  //printf("bone name '%s'\n",bone->name);
   bone->position_base = read_vec3(f);
   bone->rotation_base = read_vec4(f);
   Quat q = bone->rotation_base;
-  printf("  bone rotation : %f, %f, %f, %f\n", q.x, q.y, q.z, q.w);
+  //printf("  bone rotation : %f, %f, %f, %f\n", q.x, q.y, q.z, q.w);
   bone->position = bone->position_base;
   bone->rotation = bone->rotation_base;
 

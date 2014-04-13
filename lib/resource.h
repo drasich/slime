@@ -21,6 +21,8 @@ struct _ResourceManager {
   Eina_List* scenes_to_load;
 
   Eina_Hash* prefabs;
+  Eina_Hash* armatures;
+  Eina_List* armatures_to_load;
 
   Eina_List* waiting;
 };
@@ -30,6 +32,7 @@ Shader* resource_shader_get(ResourceManager* rm, const char* name);
 Texture* resource_texture_get(ResourceManager* rm, const char* name);
 Scene* resource_scene_get(ResourceManager* rm, const char* name);
 Prefab* resource_prefab_get(ResourceManager* rm, const char* name);
+Armature* resource_armature_get(ResourceManager* rm, const char* name);
 
 //TODO do something like:?
 void* resource_get(ResourceManager* rm, const char* group, const char* name);

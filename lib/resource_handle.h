@@ -22,6 +22,7 @@ struct _ResourceHandle {
     Texture* texture;
     Shader* shader;
     struct _Prefab* prefab;
+    struct _Armature* armature;
   };
   ResourceHandleState state;
   void* data;
@@ -32,6 +33,7 @@ typedef struct _ResourceHandle MeshHandle;
 typedef struct _ResourceHandle TextureHandle;
 typedef struct _ResourceHandle ShaderHandle;
 typedef struct _ResourceHandle PrefabHandle;
+typedef struct _ResourceHandle ArmatureHandle;
 
 TextureHandle* texture_handle_new();
 

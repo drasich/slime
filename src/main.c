@@ -201,8 +201,8 @@ create_window()
 
   //evas_object_resize(win, 800/3, 400/3);
   //evas_object_resize(win, 800, 200);
-  //evas_object_resize(win, 1600, 600);
-  evas_object_resize(win, 16, 6);
+  evas_object_resize(win, 1600, 600);
+  //evas_object_resize(win, 16, 6);
   evas_object_show(win);
 
 

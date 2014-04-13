@@ -2,6 +2,7 @@
 #include <dlfcn.h>
 #include "component/camera.h"
 #include "component/meshcomponent.h"
+#include "component/armature_component.h"
 
 static int _component_dom = -1;
 static Eet_Data_Descriptor* _component_list_descriptor = NULL;
@@ -106,6 +107,7 @@ component_manager_load(ComponentManager* cm)
 
   cm->components = eina_list_append(cm->components, component_camera_desc());
   cm->components = eina_list_append(cm->components, component_mesh_desc());
+  cm->components = eina_list_append(cm->components, component_armature_desc());
 
   Eina_List* user_components = initfunc();
   cm->components = eina_list_merge(cm->components, user_components);

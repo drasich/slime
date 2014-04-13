@@ -36,6 +36,18 @@ resource_texture_get(ResourceManager* rm, const char* name)
   return t;
 }
 
+Armature*
+resource_armature_get(ResourceManager* rm, const char* name)
+{
+  Armature* a = eina_hash_find(rm->armatures, name);
+  if (!a) {
+    trace();
+    EINA_LOG_DOM_ERR(_resource_dom, "Cannot find armature '%s'.", name);
+  }
+
+  return a;
+}
+
 
 Eina_Hash*
 resource_meshes_get(ResourceManager* rm)
@@ -56,6 +68,13 @@ resource_textures_get(ResourceManager* rm)
 }
 
 Eina_Hash*
+resource_armatures_get(ResourceManager* rm)
+{
+  return rm->armatures;
+}
+
+
+Eina_Hash*
 resource_scenes_get(ResourceManager* rm)
 {
   return rm->scenes;
@@ -74,6 +93,10 @@ _resource_mesh_add_cb(const char *name, const char *path, void *data)
   if (eina_str_has_extension(name,"mesh")) {
     EINA_LOG_DOM_INFO(_resource_dom, "mesh %s in %s", name, path);
     rm->meshes_to_load = eina_list_append(rm->meshes_to_load, eina_stringshare_add(name));
+  }
+  else if (eina_str_has_extension(name,"arm")) {
+    EINA_LOG_DOM_INFO(_resource_dom, "armature %s in %s", name, path);
+    rm->armatures_to_load = eina_list_append(rm->armatures_to_load, eina_stringshare_add(name));
   }
 }
 
@@ -173,11 +196,13 @@ resource_manager_create()
   rm->textures = eina_hash_string_superfast_new(NULL);
   rm->scenes = eina_hash_string_superfast_new(_scene_free_cb);
   rm->prefabs = eina_hash_string_superfast_new(_prefab_free_cb);
+  rm->armatures = eina_hash_string_superfast_new(NULL);
 
   rm->meshes_to_load = NULL;
   rm->scenes_to_load = NULL;
   rm->images_to_load = NULL;
   rm->shaders_to_load = NULL;
+  rm->armatures_to_load = NULL;
   return rm;
 
 }
@@ -255,6 +280,16 @@ void resource_load(ResourceManager* rm)
     Mesh* m = mesh_new();
     mesh_file_set(m, filepath);
     eina_hash_add(rm->meshes, filepath, m);
+  }
+
+  EINA_LIST_FOREACH(rm->armatures_to_load, l, name) {
+    int l = strlen(name) + strlen(path) + 2;
+    char filepath[l];
+    eina_str_join(filepath, l, '/', path , name);
+
+    Armature* a = armature_new();
+    armature_file_set(a, filepath);
+    eina_hash_add(rm->armatures, filepath, a);
   }
 
   path = "image";
