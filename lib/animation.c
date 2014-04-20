@@ -4,7 +4,7 @@
 void
 animation_play(Object* o, char* name, PlayMode mode)
 {
-  Animation* a = o->animation;
+  Animation* a = object_animation_get(o);
   if (a == NULL) return;
 
   a->action_current = armature_find_action(o->armature, name);
@@ -19,7 +19,7 @@ animation_play(Object* o, char* name, PlayMode mode)
 void
 animation_stop(Object* o)
 {
-  Animation* a = o->animation;
+  Animation* a = object_animation_get(o);
   if (a == NULL) return;
   if (a->status != PLAY && a->status != PAUSE) return;
 
@@ -31,7 +31,7 @@ animation_stop(Object* o)
 void
 animation_pause(Object* o)
 {
-  Animation* a = o->animation;
+  Animation* a = object_animation_get(o);
   if (a == NULL) return;
   if (a->status != PLAY) return;
 
@@ -41,7 +41,7 @@ animation_pause(Object* o)
 void
 animation_resume(Object* o)
 {
-  Animation* a = o->animation;
+  Animation* a = object_animation_get(o);
   if (a == NULL) return;
   if (a->status != PAUSE) return;
 

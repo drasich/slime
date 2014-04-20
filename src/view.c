@@ -1321,7 +1321,6 @@ create_render()
   MeshComponent* mc = comp->data;
   mesh_component_mesh_set_by_name(mc, "quad");
 
-  r->quad_outline->mesh = mesh_component_mesh_get(mc);
   object_add_component(r->quad_outline, comp);
   Vec3 t3 = {0,0,-100};
   object_set_position(r->quad_outline, t3);

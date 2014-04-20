@@ -5,6 +5,8 @@
 #include "log.h"
 #include "prefab.h"
 #include "resource.h"
+#include "component/meshcomponent.h"
+#include "component/armature_component.h"
 
 void
 object_init(Object* o)
@@ -19,7 +21,6 @@ object_init(Object* o)
 void
 object_del(Object* o)
 {
-  //TODO clean armature
   components_del(o->components);
 }
 
@@ -216,7 +217,7 @@ object_compute_matrix_with_pos_quat(Object* o, Matrix4 mat, Vec3 v, Quat q)
 static void
 _animation_update(Object* o, float dt)
 {
-  Animation* anim = o->animation;
+  Animation* anim = object_animation_get(o);
   if (anim == NULL) return;
 
   if (anim->status == PLAY) {
@@ -238,7 +239,8 @@ void
 object_update(Object* o)
 {
 
-  if (o->animation != NULL) {
+  Animation* anim = object_animation_get(o);
+  if (anim != NULL) {
     _animation_update(o, 0.007f);
     static float stime = 0;
     static bool played =false;
@@ -329,11 +331,13 @@ Object* create_object_file(const char* path)
       object_add_component(o,cline);
       */
     }
+    /*
     else if (!strcmp(type, "armature")){
       Armature* armature = create_armature_file(f);
       object_add_component_armature(o, armature);
       o->animation = calloc(1, sizeof *o->animation);
     }
+    */
     free(type);
   }
 
@@ -359,9 +363,10 @@ void
 _object_update_mesh_vertex(Object* o)
 {
   //TODO add the rotation/position of the armature in the exporter
+  Mesh* mesh = object_mesh_get(o);
+  Armature* armature = object_armature_get(o);
 
-  if (o->mesh == NULL || o->armature == NULL) return;
-  Mesh* mesh = o->mesh;
+  if (mesh == NULL || armature == NULL) return;
 
   VertexInfo *vi;
   int i = 0;
@@ -371,7 +376,7 @@ _object_update_mesh_vertex(Object* o)
     Quat rotation = quat_identity();
     EINA_INARRAY_FOREACH(vi->weights, w) {
       VertexGroup* vg = eina_array_data_get(mesh->vertexgroups, w->index);
-      Bone* bone = armature_find_bone(o->armature, vg->name);
+      Bone* bone = armature_find_bone(armature, vg->name);
 
       Vec3 bn = quat_rotate_vec3(bone->rotation_base, bone->position);
 
@@ -415,7 +420,13 @@ _object_update_mesh_vertex(Object* o)
 void 
 object_set_pose(Object* o, char* action_name, float time)
 {
-  if (o->mesh == NULL || o->armature == NULL) return;
+  MeshComponent* mc = object_component_get(o, "mesh");
+  ArmatureComponent* ac = object_component_get(o, "armature");
+  if (!mc || !ac) return;
+
+  Mesh* mesh = mesh_component_mesh_get(mc);
+  Armature* armature = armature_component_armature_get(ac);
+  if (!mesh || !armature) return;
 
   armature_set_pose(o->armature, action_name, time);
   _object_update_mesh_vertex(o);
@@ -746,4 +757,37 @@ void object_prefab_unlink(Object* o)
     object_post_read(o);
   }
 
+}
+
+Mesh*
+object_mesh_get(Object* o)
+{
+  MeshComponent* mc = object_component_get(o, "mesh");
+  if (mc) {
+    return mesh_component_mesh_get(mc);
+  }
+
+  return NULL;
+}
+
+Armature*
+object_armature_get(Object* o)
+{
+  ArmatureComponent* ac = object_component_get(o, "armature");
+  if (ac) {
+    return armature_component_armature_get(ac);
+  }
+
+  return NULL;
+}
+
+Animation*
+object_animation_get(Object* o)
+{
+  ArmatureComponent* ac = object_component_get(o, "armature");
+  if (ac) {
+    return armature_component_animation_get(ac);
+  }
+
+  return NULL;
 }
