@@ -631,8 +631,9 @@ resource_armature_handle_set(ResourceManager* rm, ArmatureHandle* ah, const char
 {
   ah->name = name;
   Armature* a = resource_armature_get(rm, name);
-  if (a)
-  ah->armature = a;
+  if (a) {
+    ah->armature = a;
+  }
   else {
     //TODO waiting list
     /*

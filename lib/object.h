@@ -31,11 +31,7 @@ struct _Object {
   Eina_Value data_position;
   Eina_Value data_rotation;
 
-  //components array
-  //Mesh component
   //Box component
-  //Mesh* mesh;
-  Armature* armature;
   Eina_List* components;
   Component* component;
 
@@ -139,5 +135,7 @@ void object_prefab_unlink(Object* o);
 Mesh* object_mesh_get(Object* o);
 Armature* object_armature_get(Object* o);
 Animation* object_animation_get(Object* o);
+
+void object_components_init(Object* o);
 
 #endif

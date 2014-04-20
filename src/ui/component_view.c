@@ -494,6 +494,7 @@ _create_resource_menu(Evas_Object* win, ResourceType resource_type)
       break;
     case RESOURCE_TEXTURE:
       hash = resource_textures_get(s_rm);
+      break;
     case RESOURCE_ARMATURE:
       hash = resource_armatures_get(s_rm);
       break;
@@ -501,7 +502,9 @@ _create_resource_menu(Evas_Object* win, ResourceType resource_type)
       break;
   }
 
-  if (!hash) return NULL;
+  if (!hash) {
+    return NULL;
+  }
 
   it = eina_hash_iterator_tuple_new(hash);
 

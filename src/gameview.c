@@ -19,6 +19,12 @@ _init_gl(Evas_Object *obj)
 
   GameView* gv = evas_object_data_get(obj, "gameview");
   scene_init(gv->scene);
+
+  Eina_List* l;
+  Object* o;
+  EINA_LIST_FOREACH(gv->scene->objects, l, o){
+    object_components_init(o);
+  }
 }
 
 static void

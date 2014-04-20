@@ -196,6 +196,7 @@ scene_init(Scene* s)
 }
 
 #include "component/meshcomponent.h"
+#include "component/armature_component.h"
 
 void
 scene_print(Scene* s)
@@ -225,6 +226,12 @@ scene_print(Scene* s)
          shader_instance_print(mc->shader_instance);
 
        }
+     }
+     else if (!strcmp(c->name, "armature")) {
+       ArmatureComponent* ac = c->data;
+       if (ac->armature_handle.name)
+       printf("        ARMATURE handle name, ac pointer : %s, %p \n", ac->armature_handle.name, ac);
+
      }
      /*
      else if (!strcmp(c->name, "camera")) {

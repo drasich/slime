@@ -847,6 +847,7 @@ _addcomponent(void *data,
 
   Evas_Coord x,y,w,h;
   evas_object_geometry_get(obj, &x, &y, &w, &h);
+  printf("pos : %d, %d \n", x, y);
   elm_menu_move(menu, x, y);
 }
 

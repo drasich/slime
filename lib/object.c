@@ -212,8 +212,6 @@ object_compute_matrix_with_pos_quat(Object* o, Matrix4 mat, Vec3 v, Quat q)
   mat4_multiply(mt, mr, mat);
 }
 
-
-
 static void
 _animation_update(Object* o, float dt)
 {
@@ -238,14 +236,14 @@ _animation_update(Object* o, float dt)
 void
 object_update(Object* o)
 {
-
   Animation* anim = object_animation_get(o);
   if (anim != NULL) {
-    _animation_update(o, 0.007f);
+    _animation_update(o, 0.05f);
     static float stime = 0;
     static bool played =false;
     stime += 0.05f;
-    if (stime > 15 && !played) {
+    if (stime > 1115 && !played) {
+      printf("anim stop!!!\n");
       animation_stop(o);
       played = true;
     }
@@ -262,11 +260,6 @@ object_update(Object* o)
   }
 
   object_compute_matrix(o, o->matrix);
-}
-
-void object_add_component_armature(Object* o, Armature* a)
-{
-  o->armature = a;
 }
 
 Object*
@@ -428,7 +421,7 @@ object_set_pose(Object* o, char* action_name, float time)
   Armature* armature = armature_component_armature_get(ac);
   if (!mesh || !armature) return;
 
-  armature_set_pose(o->armature, action_name, time);
+  armature_set_pose(armature, action_name, time);
   _object_update_mesh_vertex(o);
 }
 
@@ -443,13 +436,7 @@ object_add_component(Object* o, Component* c)
 {
   Eina_List** components = object_components_get(o);
   *components = eina_list_append(*components, c);
-  //o->components = eina_list_append(o->components, c);
   c->object = o;
-  if (!strcmp(c->name, "mesh")) {
-    //TODO
-    //MeshComponent* cm = c->data;
-    //o->mesh = cm->mesh;
-  }
 }
 
 void
@@ -790,4 +777,19 @@ object_animation_get(Object* o)
   }
 
   return NULL;
+}
+
+void
+object_components_init(Object* o)
+{
+  Eina_List* l;
+  Component* c;
+
+  Eina_List** components = object_components_get(o);
+
+  EINA_LIST_FOREACH(*components, l, c) {
+    if (c->funcs->init)
+    c->funcs->init(c);
+  }
+
 }

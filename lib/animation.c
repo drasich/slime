@@ -5,9 +5,13 @@ void
 animation_play(Object* o, char* name, PlayMode mode)
 {
   Animation* a = object_animation_get(o);
-  if (a == NULL) return;
+  Armature* armature = object_armature_get(o);
+  if (a == NULL || !armature) return;
 
-  a->action_current = armature_find_action(o->armature, name);
+  a->action_current = armature_find_action(armature, name);
+  if (!a->action_current) {
+    return;
+  }
   a->current = name;
   a->mode = mode;
   a->speed = 1;
@@ -48,5 +52,23 @@ animation_resume(Object* o)
   a->status = PLAY;
 }
 
+Eina_List*
+animation_list(struct _Object* o)
+{
+  Armature* armature = object_armature_get(o);
+  if (!armature) {
+    return NULL;
+  }
+
+  Eina_List* strings = NULL;
+
+  Eina_List* l;
+  Action* action;
+  EINA_LIST_FOREACH(armature->actions, l, action) {
+    strings = eina_list_append(strings, action->name);
+  }
+
+  return strings;
+}
 
 
