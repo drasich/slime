@@ -290,6 +290,11 @@ armature_set_pose(Armature* armature, char* action_name, float time)
       Vec3 v1 = vec3_mul(start->vec3, 1-ratio);
       Vec3 v2 = vec3_mul(end->vec3, ratio);
       bone->position = vec3_add(v1, v2);
+      printf("position : %f, %f, %f \n",
+            bone->position.x,
+            bone->position.y,
+            bone->position.z);
+      
     } else if (curve->type == QUATERNION) {
       bone->rotation = quat_slerp(start->quat, end->quat, ratio);
     } else if (curve->type == EULER) {

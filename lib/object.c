@@ -373,18 +373,58 @@ _object_update_mesh_vertex(Object* o)
 
       Vec3 bn = quat_rotate_vec3(bone->rotation_base, bone->position);
 
+      /*
+      printf("__bone position : %f, %f, %f \n",
+            bone->position.x,
+            bone->position.y,
+            bone->position.z);
+
+      printf("____bn : %f, %f, %f \n",
+            bn.x,
+            bn.y,
+            bn.z);
+            */
+
       Vec3 t = vec3_mul(bn, w->weight);
+      /*
+      printf("____ttt : %f, %f, %f \n",
+            t.x,
+            t.y,
+            t.z);
+            */
+
       Quat q = quat_slerp(quat_identity(), bone->rotation, w->weight);
-      rotation = quat_mul(rotation, q);
+      //rotation = quat_mul(rotation, q);
+
+      printf("____bone rotation : %f, %f, %f, %f  \n",
+            bone->rotation.x,
+            bone->rotation.y,
+            bone->rotation.z,
+            bone->rotation.w);
 
       Vec3 bb = bone->position_base;
+      printf("____bb : %f, %f, %f \n",
+            bb.x,
+            bb.y,
+            bb.z);
       Vec3 yep = vec3_sub(vi->position, bb);
-      yep = quat_rotate_vec3(q, yep);
+      printf("____yep : %f, %f, %f \n",
+            yep.x,
+            yep.y,
+            yep.z);
+
+      //yep = quat_rotate_vec3(q, yep);
       yep = vec3_add(yep, bb);
       yep = vec3_sub(yep, vi->position);
 
       t = vec3_add(t,yep);
       translation = vec3_add(translation, t);
+      //*
+      printf("____translate : %f, %f, %f \n",
+            translation.x,
+            translation.y,
+            translation.z);
+      //      */
     }
 
     Vec3f newpos = vec3d_to_vec3f(vec3_add(vi->position,translation));
