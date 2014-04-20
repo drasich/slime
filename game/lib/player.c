@@ -11,7 +11,7 @@ player_init(Component* c)
   Player* p = c->data;
   scene_reference_get(c->object->scene, &p->targetpointer);
   
-  /*
+  //*
   Eina_List* s = animation_list(c->object);
 
   Eina_List* l;
@@ -19,9 +19,10 @@ player_init(Component* c)
   EINA_LIST_FOREACH(s, l, name) {
     printf("anim name : %s \n", name);
   }
-  */
+  //*/
 
-  animation_play(c->object, "idle", LOOP);
+  //animation_play(c->object, "idle", LOOP);
+  animation_play(c->object, "actiontest", LOOP);
 }
 
 void
