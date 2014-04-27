@@ -22,7 +22,11 @@ player_init(Component* c)
   //*/
 
   //animation_play(c->object, "idle", LOOP);
-  animation_play(c->object, "actiontest", LOOP);
+  //animation_play(c->object, "actiontest", LOOP);
+  //animation_play(c->object, "realwalk", LOOP);
+  animation_play(c->object, "ArmatureAction", LOOP);
+  //animation_play(c->object, "twobone", LOOP);
+  //animation_play(c->object, "moverotate", LOOP);
 }
 
 void

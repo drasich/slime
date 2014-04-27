@@ -179,6 +179,10 @@ armature_read_file(Armature* armature, FILE* f)
   armature->name = read_name(f);
   printf("armature name: %s\n", armature->name);
 
+  armature->position = read_vec3(f);
+  armature->rotation = read_vec4(f);
+  armature->scale = read_vec3(f);
+
   uint16_t bone_count;
   fread(&bone_count, sizeof(bone_count),1,f);
   printf("bone count: %d\n", bone_count);
@@ -290,11 +294,6 @@ armature_set_pose(Armature* armature, char* action_name, float time)
       Vec3 v1 = vec3_mul(start->vec3, 1-ratio);
       Vec3 v2 = vec3_mul(end->vec3, ratio);
       bone->position = vec3_add(v1, v2);
-      printf("position : %f, %f, %f \n",
-            bone->position.x,
-            bone->position.y,
-            bone->position.z);
-      
     } else if (curve->type == QUATERNION) {
       bone->rotation = quat_slerp(start->quat, end->quat, ratio);
     } else if (curve->type == EULER) {

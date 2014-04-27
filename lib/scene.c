@@ -151,6 +151,24 @@ scene_read(const char* filename)
   return s;  
 }
 
+static void
+_scene_object_post_read(Scene* s, Object* o)
+{
+    if (s->camerapointer.id == o->id)
+    s->camerapointer.object = o;
+
+    o->scene = s;
+    if (o->id > s->last_id)
+    s->last_id = o->id;
+
+    Eina_List* l;
+    Object* child;
+    EINA_LIST_FOREACH(o->children, l, child) {
+      _scene_object_post_read(s, child);
+    }
+}
+
+
 void
 scene_post_read(Scene* s)
 {
@@ -160,12 +178,7 @@ scene_post_read(Scene* s)
   Eina_List *l;
   Object *o;
   EINA_LIST_FOREACH(s->objects, l, o) {
-    if (s->camerapointer.id == o->id)
-    s->camerapointer.object = o;
-
-    o->scene = s;
-    if (o->id > s->last_id)
-    s->last_id = o->id;
+    _scene_object_post_read(s, o);
 
     object_post_read(o);
   }

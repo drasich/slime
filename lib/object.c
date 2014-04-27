@@ -183,6 +183,16 @@ object_compute_matrix(Object* o, Matrix4 mat)
     o->orientation = quat_yaw_pitch_roll_deg(o->angles.y, o->angles.x, o->angles.z);
   }
 
+  if (
+        o->orientation.x == 0 &&
+        o->orientation.y == 0 &&
+        o->orientation.z == 0 &&
+        o->orientation.w == 0 )
+   {
+    EINA_LOG_ERR("TOFIX quaternion became 0,0,0,0");
+    o->orientation = quat_identity();
+   }
+
   Matrix4 mt, mr, ms;
   mat4_set_scale(ms, o->scale);
   mat4_set_translation(mt, o->position);
@@ -260,6 +270,12 @@ object_update(Object* o)
   }
 
   object_compute_matrix(o, o->matrix);
+
+  Object* child;
+  EINA_LIST_FOREACH(o->children, l, child) {
+    object_update(child);
+  }
+
 }
 
 Object*
@@ -371,60 +387,102 @@ _object_update_mesh_vertex(Object* o)
       VertexGroup* vg = eina_array_data_get(mesh->vertexgroups, w->index);
       Bone* bone = armature_find_bone(armature, vg->name);
 
-      Vec3 bn = quat_rotate_vec3(bone->rotation_base, bone->position);
+      //if (w->weight == 0) continue;
+      //if (w->weight != 1) continue;
+      //if (bone->position_base.x == 0) continue;
 
+      
       /*
+      printf("__bone position BASE : %f, %f, %f \n",
+            bone->position_base.x,
+            bone->position_base.y,
+            bone->position_base.z);
+
       printf("__bone position : %f, %f, %f \n",
             bone->position.x,
             bone->position.y,
             bone->position.z);
-
-      printf("____bn : %f, %f, %f \n",
-            bn.x,
-            bn.y,
-            bn.z);
             */
-
-      Vec3 t = vec3_mul(bn, w->weight);
       /*
-      printf("____ttt : %f, %f, %f \n",
-            t.x,
-            t.y,
-            t.z);
-            */
-
-      Quat q = quat_slerp(quat_identity(), bone->rotation, w->weight);
-      //rotation = quat_mul(rotation, q);
+      printf("____bone rotation base : %f, %f, %f, %f  \n",
+            bone->rotation_base.x,
+            bone->rotation_base.y,
+            bone->rotation_base.z,
+            bone->rotation_base.w);
 
       printf("____bone rotation : %f, %f, %f, %f  \n",
             bone->rotation.x,
             bone->rotation.y,
             bone->rotation.z,
             bone->rotation.w);
+      */
 
-      Vec3 bb = bone->position_base;
-      printf("____bb : %f, %f, %f \n",
-            bb.x,
-            bb.y,
-            bb.z);
-      Vec3 yep = vec3_sub(vi->position, bb);
-      printf("____yep : %f, %f, %f \n",
-            yep.x,
-            yep.y,
-            yep.z);
+      ///////////////
 
-      //yep = quat_rotate_vec3(q, yep);
-      yep = vec3_add(yep, bb);
-      yep = vec3_sub(yep, vi->position);
+      //Vec3 bone_trans = vec3_sub(bone->position,bone->position_base);
+      Vec3 bone_trans = vec3_vec3_mul(bone->position, armature->scale);
+      Vec3 bone_trans_weight = vec3_mul(bone_trans, w->weight);
 
-      t = vec3_add(t,yep);
-      translation = vec3_add(translation, t);
-      //*
+      Vec3 mytranslation = quat_rotate_vec3(quat_inverse(bone->rotation_base), bone_trans_weight);
+
+      if (mytranslation.x != 0
+        ||mytranslation.y != 0
+        ||mytranslation.z != 0)
+      printf("____mytranslation : %f, %f, %f \n",
+            mytranslation.x,
+            mytranslation.y,
+            mytranslation.z);
+
+
+      //Quat bone_rot = quat_between_quat(bone->rotation_base,bone->rotation);
+      //Quat bone_rot = quat_between_quat(quat_identity(),bone->rotation);
+      //Quat bone_rot_weight = quat_slerp(quat_identity(), bone_rot, w->weight);
+      //Quat bone_rot_weight = quat_slerp(quat_identity(), bone->rotation, w->weight);
+      Quat bone_rot_weight = quat_slerp(quat_identity(), quat_inverse(bone->rotation), w->weight);
+      //Vec3 realposbase = quat_rotate_vec3(quat_inverse(bone->rotation_base), bone->position_base);
+      Vec3 realposbase = vec3_vec3_mul(bone->position_base, armature->scale);
+      //Vec3 vipos_bone = vec3_sub(vi->position, bone->position_base);
+      Vec3 vipos_bone = vec3_sub(vi->position, realposbase);
+      Vec3 tr_rot = quat_rotate_vec3(bone_rot_weight, vipos_bone);
+      tr_rot = vec3_sub(tr_rot, vipos_bone);
+      mytranslation = vec3_add(mytranslation, tr_rot);
+
+      /*
+      printf("START %d ____vi position : %f, %f, %f \n",
+            i,
+            vi->position.x,
+            vi->position.y,
+            vi->position.z);
+
+      printf("____realpose base : %f, %f, %f \n",
+            realposbase.x,
+            realposbase.y,
+            realposbase.z);
+      printf("____bone rot w : %f, %f, %f \n",
+            vipos_bone.x,
+            vipos_bone.y,
+            vipos_bone.z);
+
+      printf("____rot w : %f, %f, %f \n",
+            bone_rot_weight.x,
+            bone_rot_weight.y,
+            bone_rot_weight.z,
+            bone_rot_weight.w);
+
+      printf("____tr rot : %f, %f, %f \n",
+            tr_rot.x,
+            tr_rot.y,
+            tr_rot.z);
+
       printf("____translate : %f, %f, %f \n",
-            translation.x,
-            translation.y,
-            translation.z);
-      //      */
+            mytranslation.x,
+            mytranslation.y,
+            mytranslation.z);
+            */
+
+      translation = vec3_add(translation, mytranslation);
+      //rotation = quat_inverse(bone->rotation);
+
     }
 
     Vec3f newpos = vec3d_to_vec3f(vec3_add(vi->position,translation));
@@ -805,6 +863,7 @@ object_armature_get(Object* o)
     return armature_component_armature_get(ac);
   }
 
+  EINA_LOG_ERR("object '%s' has no armature component", o->name);
   return NULL;
 }
 

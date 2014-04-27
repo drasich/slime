@@ -5,6 +5,18 @@
 #include "component/camera.h"
 #define __UNUSED__
 
+static void _object_init(Object* o)
+{
+    object_components_init(o);
+
+    Eina_List* l;
+    Object* child;
+    EINA_LIST_FOREACH(o->children, l, child){
+      _object_init(child);
+    }
+}
+
+
 // Callbacks
 static void
 _init_gl(Evas_Object *obj)
@@ -23,7 +35,7 @@ _init_gl(Evas_Object *obj)
   Eina_List* l;
   Object* o;
   EINA_LIST_FOREACH(gv->scene->objects, l, o){
-    object_components_init(o);
+    _object_init(o);
   }
 }
 

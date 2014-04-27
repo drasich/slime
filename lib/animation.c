@@ -57,6 +57,7 @@ animation_list(struct _Object* o)
 {
   Armature* armature = object_armature_get(o);
   if (!armature) {
+    EINA_LOG_WARN("object '%s' has no armature", o->name);
     return NULL;
   }
 
