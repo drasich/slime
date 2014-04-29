@@ -387,6 +387,10 @@ _object_update_mesh_vertex(Object* o)
       VertexGroup* vg = eina_array_data_get(mesh->vertexgroups, w->index);
       Bone* bone = armature_find_bone(armature, vg->name);
 
+      //TODO
+      //WARNING!!!!!!!!!!!!!
+      // armature rotation doesn't have any effect (for now? I don't know yet if it should)
+
       if (w->weight == 0) continue;
       //if (w->weight != 1) continue;
       //if (bone->position_base.x == 0) continue;
