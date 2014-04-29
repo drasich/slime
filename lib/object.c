@@ -387,7 +387,7 @@ _object_update_mesh_vertex(Object* o)
       VertexGroup* vg = eina_array_data_get(mesh->vertexgroups, w->index);
       Bone* bone = armature_find_bone(armature, vg->name);
 
-      //if (w->weight == 0) continue;
+      if (w->weight == 0) continue;
       //if (w->weight != 1) continue;
       //if (bone->position_base.x == 0) continue;
 
@@ -425,6 +425,7 @@ _object_update_mesh_vertex(Object* o)
 
       Vec3 mytranslation = quat_rotate_vec3(quat_inverse(bone->rotation_base), bone_trans_weight);
 
+      /*
       if (mytranslation.x != 0
         ||mytranslation.y != 0
         ||mytranslation.z != 0)
@@ -432,6 +433,7 @@ _object_update_mesh_vertex(Object* o)
             mytranslation.x,
             mytranslation.y,
             mytranslation.z);
+            */
 
 
       //Quat bone_rot = quat_between_quat(bone->rotation_base,bone->rotation);
@@ -441,6 +443,7 @@ _object_update_mesh_vertex(Object* o)
       Quat bone_rot_weight = quat_slerp(quat_identity(), quat_inverse(bone->rotation), w->weight);
       //Vec3 realposbase = quat_rotate_vec3(quat_inverse(bone->rotation_base), bone->position_base);
       Vec3 realposbase = vec3_vec3_mul(bone->position_base, armature->scale);
+      realposbase = vec3_add(realposbase, armature->position);
       //Vec3 vipos_bone = vec3_sub(vi->position, bone->position_base);
       Vec3 vipos_bone = vec3_sub(vi->position, realposbase);
       Vec3 tr_rot = quat_rotate_vec3(bone_rot_weight, vipos_bone);
