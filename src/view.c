@@ -1643,3 +1643,4 @@ view_scene_set(View* v, Scene* s)
  
   property_scene_show(v->property, s);
 }
+
