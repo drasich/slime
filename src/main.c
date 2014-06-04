@@ -201,8 +201,8 @@ create_window()
 
   //evas_object_resize(win, 800/3, 400/3);
   //evas_object_resize(win, 800, 200);
-  evas_object_resize(win, 1600, 600);
-  //evas_object_resize(win, 16, 6);
+  //evas_object_resize(win, 1600, 600);
+  evas_object_resize(win, 16, 6);
   evas_object_show(win);
 
 
@@ -370,15 +370,17 @@ populate_scene(Control* c, Scene* s)
 }
 
 
-static void 
+static Scene* 
 build_scene()
 {
   Scene* s = scene_new();
-  populate_scene(view->control, s);
-  tree_scene_set(view->tree, s);
+  //populate_scene(view->control, s);
+  //tree_scene_set(view->tree, s);
 
   //printf("scene ORIGINAL\n");
   //scene_print(s);
+
+  return s;
 }
 
 static void
@@ -428,10 +430,17 @@ void create_editor()
     view->save = calloc(1, sizeof *view->save);
     view->save->scene = "base";
   }
-  
-  view_scene_set(view, resource_scene_get(s_rm, view->save->scene));
 
-  //build_scene();
+  Scene* s = resource_scene_get(s_rm, view->save->scene);
+
+  if (!s) {
+    //create new scene
+    s = build_scene();
+    s->name = eina_stringshare_add("base");
+  }
+  
+  view_scene_set(view, s);
+
   //gameviewtest();
 }
 

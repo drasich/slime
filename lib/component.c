@@ -82,7 +82,14 @@ create_component_manager()
 void 
 component_manager_load(ComponentManager* cm )
 {
+  cm->components = eina_list_append(cm->components, component_camera_desc());
+  cm->components = eina_list_append(cm->components, component_mesh_desc());
+  cm->components = eina_list_append(cm->components, component_armature_desc());
+
   component_manager_load_name(cm, "./build/libgamelib.so");
+
+  component_descriptor_init(s_component_manager->components);
+  //component_list_descriptor();
 }
 
 void
@@ -97,6 +104,7 @@ component_manager_load_name(ComponentManager* cm, const char* filename )
 
   if (!cm->libhandle) {
     EINA_LOG_DOM_ERR(_component_dom, "Error loading DSO: %s", dlerror());
+    return;
   }
   else 
   EINA_LOG_DOM_INFO(_component_dom, "Game Component Library successfully loaded");
@@ -107,19 +115,14 @@ component_manager_load_name(ComponentManager* cm, const char* filename )
   if (!initfunc) {
     EINA_LOG_DOM_ERR(_component_dom, "Error loading init function: %s", dlerror());
     dlclose(cm->libhandle);
+    return;
   }
   else 
   EINA_LOG_DOM_INFO(_component_dom, "Game Component Library, symbols successfully loaded");
 
-  cm->components = eina_list_append(cm->components, component_camera_desc());
-  cm->components = eina_list_append(cm->components, component_mesh_desc());
-  cm->components = eina_list_append(cm->components, component_armature_desc());
-
   Eina_List* user_components = initfunc();
   cm->components = eina_list_merge(cm->components, user_components);
 
-  component_descriptor_init(s_component_manager->components);
-  //component_list_descriptor();
 }
 
 static Eet_Data_Descriptor *_variant_unified_descriptor;
