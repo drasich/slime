@@ -79,15 +79,21 @@ create_component_manager()
   return cm;
 }
 
+void 
+component_manager_load(ComponentManager* cm )
+{
+  component_manager_load_name(cm, "./build/libgamelib.so");
+}
+
 void
-component_manager_load(ComponentManager* cm)
+component_manager_load_name(ComponentManager* cm, const char* filename )
 {
   if (cm->libhandle) {
     EINA_LOG_DOM_INFO(_component_dom, "libhandle is not null, return.");
     return;
   }
 
-  cm->libhandle = dlopen("./build/libgamelib.so", RTLD_NOW);
+  cm->libhandle = dlopen(filename, RTLD_NOW);
 
   if (!cm->libhandle) {
     EINA_LOG_DOM_ERR(_component_dom, "Error loading DSO: %s", dlerror());

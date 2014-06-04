@@ -11,6 +11,7 @@ TO be able to handle these: make a new struct type? filename
     - vert,frag,... :
       - modified: update the shader,program
       - new, delete: add/remove in material editor
+      - make default shader when null
     - .shader(program)
       - delete keep the name and assign default shader to those using it.
     - how to create program : in the application there is a material editor

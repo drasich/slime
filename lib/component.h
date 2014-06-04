@@ -50,6 +50,7 @@ ComponentManager*  create_component_manager();
 //void component_manager_add(ComponentManager* cm, Component* m);
 
 void component_manager_load(ComponentManager* cm);
+void component_manager_load_name(ComponentManager* cm, const char* filename);
 void component_manager_unload(ComponentManager* cm);
 
 void* component_property_data_get(Component* c, Property* p);
