@@ -31,7 +31,7 @@ def configure(conf):
   #conf.check_cfg(package='protobuf', uselib_store='protobuf', atleast_version='0.0.0', mandatory=1, args='--cflags --libs')
   conf.check_cfg(package='libpng', uselib_store='png', atleast_version='0.0.0', mandatory=1, args='--cflags --libs')
 
-  #conf.recurse('indefini')
+  conf.recurse('lib/dragon')
 
   #conf.define ('DEBUG', 0)
   #conf.env['CXXFLAGS']=['-O2']
@@ -56,48 +56,29 @@ def pre(bld):
 
 def build(bld):
 
-  #bld.recurse('indefini')
+  bld.recurse('lib/dragon')
   #bld.recurse('tool/property')
 
   #bld.exec_command('protoc -I=proto -I=/usr/include  --descriptor_set_out=proto/basedescriptor.proto --cpp_out=proto proto/base.proto')
 
-  engine_lib_c_files = bld.path.ant_glob('lib/*.c')
-  engine_lib_c_files += bld.path.ant_glob('lib/*/*.c')
-  bld.shlib(
-      source= engine_lib_c_files,
-      target='engine',
-      #use='elementary',
-      use='eina eet evas',
-      includes = 'lib',
-      defines = ['EVAS_GL']
-      )
-
-  #cpp_files = bld.path.ant_glob('src/*.cpp proto/*.cc')
-  #cpp_files = bld.path.ant_glob('src/*.c src/ui/*.c')
   c_files = bld.path.ant_glob('src/*.c')
-  #cpp_files += bld.path.ant_glob('src/ui/*.c')
   c_files += bld.path.ant_glob('src/*/*.c')
   bld.program(
       source= c_files, 
       target='slime', 
-      #use='elementary indefini protobuf',
-      use='elementary png engine',
+      use='elementary png dragon',
       linkflags = ['-ldl', '-rdynamic'],
-      #includes = ['include'],
-      #includes = 'include indefini/include proto',
-      includes = 'src lib',
+      includes = 'src lib/dragon/src',
       defines = ['EDITOR', 'EVAS_GL']
       )
 
   bld.shlib(
       source= c_files, 
       target='slime', 
-      #use='elementary indefini protobuf',
-      use='elementary png engine',
+      use='elementary png dragon',
       linkflags = ['-ldl', '-rdynamic'],
       #includes = ['include'],
-      #includes = 'include indefini/include proto',
-      includes = 'src lib',
+      includes = 'src lib/dragon/src',
       defines = ['EDITOR', 'EVAS_GL']
       )
 
@@ -105,9 +86,8 @@ def build(bld):
   bld.shlib(
       source= game_lib_c_files,
       target='gamelib',
-      #use='myobjects',
       use='elementary',
-      includes = 'lib src',
+      includes = 'src lib/dragon/src',
       cflags= ['-fpic']
       )
 
@@ -115,14 +95,11 @@ def build(bld):
   bld.program(
       source= game_cpp_files, 
       target='gameexec', 
-      use='elementary png engine',
+      use='elementary png dragon',
       linkflags = ['-ldl', '-rdynamic'],
-      includes = 'game lib',
+      includes = 'game lib/dragon/src',
       defines = ['GAME', 'EVAS_GL']
       )
-
-
-  #bld.objects(source='c.c', target='myobjects')
 
   bld.add_post_fun(post)
   #bld.add_pre_fun(pre)
