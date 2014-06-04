@@ -179,6 +179,10 @@ armature_read_file(Armature* armature, FILE* f)
   armature->name = read_name(f);
   printf("armature name: %s\n", armature->name);
 
+  armature->position = read_vec3(f);
+  armature->rotation = read_vec4(f);
+  armature->scale = read_vec3(f);
+
   uint16_t bone_count;
   fread(&bone_count, sizeof(bone_count),1,f);
   printf("bone count: %d\n", bone_count);

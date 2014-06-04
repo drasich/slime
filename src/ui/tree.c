@@ -167,6 +167,7 @@ gl4_unselect(void *data __UNUSED__, Evas_Object *obj __UNUSED__, void *event_inf
 static void
 _context_tree_msg_receive(Context* c, void* tree, const char* msg)
 {
+  printf("context tree msg receive %s\n", msg);
   if (!strcmp(msg, "clean_objects"))
   tree_unselect_all(tree);
   else if (!strcmp(msg, "add_object"))
@@ -275,6 +276,7 @@ _tree_get_item(Tree* t, Object* o)
 void
 tree_object_add(Tree* t,  Object* o)
 {
+  printf("tree object add %s\n", o->name);
   static Elm_Object_Item* parent = NULL;
   if (o->parent)
   parent = _tree_get_item(t, o);
@@ -396,6 +398,7 @@ tree_objects_select(Tree* t, Eina_List* objects)
 void
 tree_object_update(Tree* t, Object* o)
 { 
+  printf("tree update %s\n", o->name);
   Elm_Object_Item* item = _tree_get_item(t, o);
 
   //TODO change leaf to tree if you add a child etc
@@ -432,6 +435,7 @@ tree_object_remove(Tree* t,  Object* o)
 void
 tree_scene_set(Tree* t, struct _Scene* s)
 {
+  printf("tree scene set %s\n", s->name);
   elm_genlist_clear(t->gl);
   eina_hash_free(t->objects);
   t->objects = eina_hash_pointer_new(NULL);

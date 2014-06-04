@@ -627,6 +627,24 @@ resource_shader_handle_set(ResourceManager* rm, ShaderHandle* sh, const char* na
 }
 
 void
+resource_armature_handle_set(ResourceManager* rm, ArmatureHandle* ah, const char* name)
+{
+  ah->name = name;
+  Armature* a = resource_armature_get(rm, name);
+  if (a) {
+    ah->armature = a;
+  }
+  else {
+    //TODO waiting list
+    /*
+    ResourceWaiting rw = { rh, r};
+    rm->waiting = eina_list_append(rm->waiting, rw);
+    */
+  }
+}
+
+
+void
 resource_shader_update(ResourceManager* rm, const char* filename)
 {
 

@@ -847,6 +847,7 @@ _addcomponent(void *data,
 
   Evas_Coord x,y,w,h;
   evas_object_geometry_get(obj, &x, &y, &w, &h);
+  printf("pos : %d, %d \n", x, y);
   elm_menu_move(menu, x, y);
 }
 
@@ -1321,7 +1322,6 @@ create_render()
   MeshComponent* mc = comp->data;
   mesh_component_mesh_set_by_name(mc, "quad");
 
-  r->quad_outline->mesh = mesh_component_mesh_get(mc);
   object_add_component(r->quad_outline, comp);
   Vec3 t3 = {0,0,-100};
   object_set_position(r->quad_outline, t3);
@@ -1643,3 +1643,4 @@ view_scene_set(View* v, Scene* s)
  
   property_scene_show(v->property, s);
 }
+

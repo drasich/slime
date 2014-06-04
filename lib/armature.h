@@ -66,6 +66,7 @@ struct _Armature
   char* name;
   Vec3 position;
   Quat rotation;
+  Vec3 scale;
   Eina_List* actions;
   Eina_List* bones;
 };

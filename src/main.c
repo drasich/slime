@@ -394,8 +394,7 @@ gameviewtest()
 
 }
 
-EAPI_MAIN int
-elm_main(int argc, char **argv)
+void create_editor()
 {
   eina_init();
   eet_init();
@@ -434,14 +433,23 @@ elm_main(int argc, char **argv)
 
   //build_scene();
   //gameviewtest();
+}
 
-  elm_run();
-  elm_shutdown();
+void close_editor()
+{
   resource_scenes_save();
   resource_prefabs_save();
 
   elm_config_preferred_engine_set(NULL);
+}
 
+EAPI_MAIN int
+elm_main(int argc, char **argv)
+{
+  create_editor();
+  elm_run();
+  elm_shutdown();
+  close_editor();
   return 0;
 }
 ELM_MAIN()

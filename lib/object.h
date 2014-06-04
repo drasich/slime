@@ -26,16 +26,12 @@ struct _Object {
   Vec3 angles;
   const char* name;
   struct _Scene* scene; //TODO make a list of this?
-  Animation* animation;
+  //Animation* animation;
   Matrix4 matrix; //computed from position and orientation
   Eina_Value data_position;
   Eina_Value data_rotation;
 
-  //components array
-  //Mesh component
   //Box component
-  Mesh* mesh;
-  Armature* armature;
   Eina_List* components;
   Component* component;
 
@@ -135,5 +131,11 @@ Object* object_read(const char* filename);
 
 Eina_List** object_components_get(const Object* o);
 void object_prefab_unlink(Object* o);
+
+Mesh* object_mesh_get(Object* o);
+Armature* object_armature_get(Object* o);
+Animation* object_animation_get(Object* o);
+
+void object_components_init(Object* o);
 
 #endif

@@ -8,12 +8,13 @@ typedef struct _ArmatureComponent ArmatureComponent;
 struct _ArmatureComponent
 {
   ArmatureHandle armature_handle;
-  //data ?
+  Animation* animation;
 };
 
 ComponentDesc* component_armature_desc();
 
-Armature* armature_component_mesh_get(const ArmatureComponent* mc);
+Armature* armature_component_armature_get(const ArmatureComponent* mc);
+Animation* armature_component_animation_get(const ArmatureComponent* mc);
 void armature_component_armature_set(ArmatureComponent* ac, Armature* a);
 void armature_component_armature_set_by_name(ArmatureComponent* ac, const char* name);
 

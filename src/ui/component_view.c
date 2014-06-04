@@ -428,7 +428,6 @@ _change_resource(void *data,
 
   if (p->resource_type == RESOURCE_TEXTURE) {
     resource_texture_handle_set(s_rm, rh, name);
-
   }
   else if( p->resource_type == RESOURCE_MESH ) {
     resource_mesh_handle_set(s_rm, rh, name);
@@ -436,6 +435,9 @@ _change_resource(void *data,
   else if( p->resource_type == RESOURCE_SHADER ) {
     resource_shader_handle_set(s_rm, rh, name);
     property_reload_component(cp->pw, cp->component);
+  }
+  else if( p->resource_type == RESOURCE_ARMATURE ) {
+    resource_armature_handle_set(s_rm, rh, name);
   }
   else{
     free(old);
@@ -493,11 +495,16 @@ _create_resource_menu(Evas_Object* win, ResourceType resource_type)
     case RESOURCE_TEXTURE:
       hash = resource_textures_get(s_rm);
       break;
+    case RESOURCE_ARMATURE:
+      hash = resource_armatures_get(s_rm);
+      break;
     default:
       break;
   }
 
-  if (!hash) return NULL;
+  if (!hash) {
+    return NULL;
+  }
 
   it = eina_hash_iterator_tuple_new(hash);
 

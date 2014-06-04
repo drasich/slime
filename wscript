@@ -63,7 +63,7 @@ def build(bld):
 
   engine_lib_c_files = bld.path.ant_glob('lib/*.c')
   engine_lib_c_files += bld.path.ant_glob('lib/*/*.c')
-  bld.stlib(
+  bld.shlib(
       source= engine_lib_c_files,
       target='engine',
       #use='elementary',
@@ -78,6 +78,18 @@ def build(bld):
   #cpp_files += bld.path.ant_glob('src/ui/*.c')
   c_files += bld.path.ant_glob('src/*/*.c')
   bld.program(
+      source= c_files, 
+      target='slime', 
+      #use='elementary indefini protobuf',
+      use='elementary png engine',
+      linkflags = ['-ldl', '-rdynamic'],
+      #includes = ['include'],
+      #includes = 'include indefini/include proto',
+      includes = 'src lib',
+      defines = ['EDITOR', 'EVAS_GL']
+      )
+
+  bld.shlib(
       source= c_files, 
       target='slime', 
       #use='elementary indefini protobuf',

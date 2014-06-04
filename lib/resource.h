@@ -49,6 +49,7 @@ Eina_Hash* resource_shaders_get(ResourceManager* rm);
 Eina_Hash* resource_textures_get(ResourceManager* rm);
 Eina_Hash* resource_scenes_get(ResourceManager* rm);
 Eina_Hash* resource_prefabs_get(ResourceManager* rm);
+Eina_Hash* resource_armatures_get(ResourceManager* rm);
 
 bool resource_scene_add(ResourceManager* rm, Scene* s);
 bool resource_prefab_add(ResourceManager* rm, Prefab* p);
@@ -75,6 +76,8 @@ MeshHandle* resource_mesh_handle_new(ResourceManager* rm, const char* name);
 void resource_mesh_handle_set(ResourceManager* rm, MeshHandle* mh, const char* name);
 
 void resource_shader_handle_set(ResourceManager* rm, ShaderHandle* sh, const char* name);
+
+void resource_armature_handle_set(ResourceManager* rm, ArmatureHandle* ah, const char* name);
 
 
 //////////////////

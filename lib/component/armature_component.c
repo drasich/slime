@@ -16,6 +16,7 @@ static void*
 _armature_component_create()
 {
   ArmatureComponent* a = calloc(1, sizeof *a);
+  a->animation = calloc(1, sizeof *a->animation);
   return a;
 }
 
@@ -31,6 +32,20 @@ _armature_component_properties()
   return ps;
 }
 
+static void _armature_component_post_read(Component* c)
+{
+  ArmatureComponent* ac = c->data;
+  ac->animation = calloc(1, sizeof *ac->animation);
+
+  ArmatureHandle* ah = &ac->armature_handle;
+  if (ah->name) {
+    if (ah->armature)
+    resource_armature_get(s_rm, ah->name);
+    ah->armature = resource_armature_get(s_rm, ah->name);
+  }
+}
+
+
 ComponentDesc*
 component_armature_desc()
 {
@@ -41,20 +56,30 @@ component_armature_desc()
   cd->name = "armature";
   cd->create = _armature_component_create;
   cd->properties = _armature_component_properties;
+  cd->post_read = _armature_component_post_read;
   return cd;
 }
 
 
-Armature* armature_component_armature_get(const ArmatureComponent* ac)
+Armature*
+armature_component_armature_get(const ArmatureComponent* ac)
 {
   return ac->armature_handle.armature;
 }
 
+Animation*
+armature_component_animation_get(const ArmatureComponent* ac)
+{
+  return ac->animation;
+}
+
+/*
 void armature_component_armature_set(ArmatureComponent* ac, Armature* a)
 {
   ac->armature_handle.armature = a;
   ac->armature_handle.name = a->name;
 }
+*/
 
 /*
 void armature_component_armature_set_by_name(ArmatureComponent* ac, const char* name)

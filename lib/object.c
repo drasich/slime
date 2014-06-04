@@ -5,6 +5,8 @@
 #include "log.h"
 #include "prefab.h"
 #include "resource.h"
+#include "component/meshcomponent.h"
+#include "component/armature_component.h"
 
 void
 object_init(Object* o)
@@ -19,7 +21,6 @@ object_init(Object* o)
 void
 object_del(Object* o)
 {
-  //TODO clean armature
   components_del(o->components);
 }
 
@@ -182,6 +183,16 @@ object_compute_matrix(Object* o, Matrix4 mat)
     o->orientation = quat_yaw_pitch_roll_deg(o->angles.y, o->angles.x, o->angles.z);
   }
 
+  if (
+        o->orientation.x == 0 &&
+        o->orientation.y == 0 &&
+        o->orientation.z == 0 &&
+        o->orientation.w == 0 )
+   {
+    EINA_LOG_ERR("TOFIX quaternion became 0,0,0,0");
+    o->orientation = quat_identity();
+   }
+
   Matrix4 mt, mr, ms;
   mat4_set_scale(ms, o->scale);
   mat4_set_translation(mt, o->position);
@@ -211,12 +222,10 @@ object_compute_matrix_with_pos_quat(Object* o, Matrix4 mat, Vec3 v, Quat q)
   mat4_multiply(mt, mr, mat);
 }
 
-
-
 static void
 _animation_update(Object* o, float dt)
 {
-  Animation* anim = o->animation;
+  Animation* anim = object_animation_get(o);
   if (anim == NULL) return;
 
   if (anim->status == PLAY) {
@@ -237,13 +246,14 @@ _animation_update(Object* o, float dt)
 void
 object_update(Object* o)
 {
-
-  if (o->animation != NULL) {
-    _animation_update(o, 0.007f);
+  Animation* anim = object_animation_get(o);
+  if (anim != NULL) {
+    _animation_update(o, 0.05f);
     static float stime = 0;
     static bool played =false;
     stime += 0.05f;
-    if (stime > 15 && !played) {
+    if (stime > 1115 && !played) {
+      printf("anim stop!!!\n");
       animation_stop(o);
       played = true;
     }
@@ -260,11 +270,12 @@ object_update(Object* o)
   }
 
   object_compute_matrix(o, o->matrix);
-}
 
-void object_add_component_armature(Object* o, Armature* a)
-{
-  o->armature = a;
+  Object* child;
+  EINA_LIST_FOREACH(o->children, l, child) {
+    object_update(child);
+  }
+
 }
 
 Object*
@@ -329,11 +340,13 @@ Object* create_object_file(const char* path)
       object_add_component(o,cline);
       */
     }
+    /*
     else if (!strcmp(type, "armature")){
       Armature* armature = create_armature_file(f);
       object_add_component_armature(o, armature);
       o->animation = calloc(1, sizeof *o->animation);
     }
+    */
     free(type);
   }
 
@@ -359,9 +372,10 @@ void
 _object_update_mesh_vertex(Object* o)
 {
   //TODO add the rotation/position of the armature in the exporter
+  Mesh* mesh = object_mesh_get(o);
+  Armature* armature = object_armature_get(o);
 
-  if (o->mesh == NULL || o->armature == NULL) return;
-  Mesh* mesh = o->mesh;
+  if (mesh == NULL || armature == NULL) return;
 
   VertexInfo *vi;
   int i = 0;
@@ -371,22 +385,111 @@ _object_update_mesh_vertex(Object* o)
     Quat rotation = quat_identity();
     EINA_INARRAY_FOREACH(vi->weights, w) {
       VertexGroup* vg = eina_array_data_get(mesh->vertexgroups, w->index);
-      Bone* bone = armature_find_bone(o->armature, vg->name);
+      Bone* bone = armature_find_bone(armature, vg->name);
 
-      Vec3 bn = quat_rotate_vec3(bone->rotation_base, bone->position);
+      //TODO
+      //WARNING!!!!!!!!!!!!!
+      // armature rotation doesn't have any effect (for now? I don't know yet if it should)
 
-      Vec3 t = vec3_mul(bn, w->weight);
-      Quat q = quat_slerp(quat_identity(), bone->rotation, w->weight);
-      rotation = quat_mul(rotation, q);
+      if (w->weight == 0) continue;
+      //if (w->weight != 1) continue;
+      //if (bone->position_base.x == 0) continue;
 
-      Vec3 bb = bone->position_base;
-      Vec3 yep = vec3_sub(vi->position, bb);
-      yep = quat_rotate_vec3(q, yep);
-      yep = vec3_add(yep, bb);
-      yep = vec3_sub(yep, vi->position);
+      
+      /*
+      printf("__bone position BASE : %f, %f, %f \n",
+            bone->position_base.x,
+            bone->position_base.y,
+            bone->position_base.z);
 
-      t = vec3_add(t,yep);
-      translation = vec3_add(translation, t);
+      printf("__bone position : %f, %f, %f \n",
+            bone->position.x,
+            bone->position.y,
+            bone->position.z);
+            */
+      /*
+      printf("____bone rotation base : %f, %f, %f, %f  \n",
+            bone->rotation_base.x,
+            bone->rotation_base.y,
+            bone->rotation_base.z,
+            bone->rotation_base.w);
+
+      printf("____bone rotation : %f, %f, %f, %f  \n",
+            bone->rotation.x,
+            bone->rotation.y,
+            bone->rotation.z,
+            bone->rotation.w);
+      */
+
+      ///////////////
+
+      //Vec3 bone_trans = vec3_sub(bone->position,bone->position_base);
+      Vec3 bone_trans = vec3_vec3_mul(bone->position, armature->scale);
+      Vec3 bone_trans_weight = vec3_mul(bone_trans, w->weight);
+
+      Vec3 mytranslation = quat_rotate_vec3(quat_inverse(bone->rotation_base), bone_trans_weight);
+
+      /*
+      if (mytranslation.x != 0
+        ||mytranslation.y != 0
+        ||mytranslation.z != 0)
+      printf("____mytranslation : %f, %f, %f \n",
+            mytranslation.x,
+            mytranslation.y,
+            mytranslation.z);
+            */
+
+
+      //Quat bone_rot = quat_between_quat(bone->rotation_base,bone->rotation);
+      //Quat bone_rot = quat_between_quat(quat_identity(),bone->rotation);
+      //Quat bone_rot_weight = quat_slerp(quat_identity(), bone_rot, w->weight);
+      //Quat bone_rot_weight = quat_slerp(quat_identity(), bone->rotation, w->weight);
+      Quat bone_rot_weight = quat_slerp(quat_identity(), quat_inverse(bone->rotation), w->weight);
+      //Vec3 realposbase = quat_rotate_vec3(quat_inverse(bone->rotation_base), bone->position_base);
+      Vec3 realposbase = vec3_vec3_mul(bone->position_base, armature->scale);
+      realposbase = vec3_add(realposbase, armature->position);
+      //Vec3 vipos_bone = vec3_sub(vi->position, bone->position_base);
+      Vec3 vipos_bone = vec3_sub(vi->position, realposbase);
+      Vec3 tr_rot = quat_rotate_vec3(bone_rot_weight, vipos_bone);
+      tr_rot = vec3_sub(tr_rot, vipos_bone);
+      mytranslation = vec3_add(mytranslation, tr_rot);
+
+      /*
+      printf("START %d ____vi position : %f, %f, %f \n",
+            i,
+            vi->position.x,
+            vi->position.y,
+            vi->position.z);
+
+      printf("____realpose base : %f, %f, %f \n",
+            realposbase.x,
+            realposbase.y,
+            realposbase.z);
+      printf("____bone rot w : %f, %f, %f \n",
+            vipos_bone.x,
+            vipos_bone.y,
+            vipos_bone.z);
+
+      printf("____rot w : %f, %f, %f \n",
+            bone_rot_weight.x,
+            bone_rot_weight.y,
+            bone_rot_weight.z,
+            bone_rot_weight.w);
+
+      printf("____tr rot : %f, %f, %f \n",
+            tr_rot.x,
+            tr_rot.y,
+            tr_rot.z);
+
+      printf("____translate : %f, %f, %f \n",
+            mytranslation.x,
+            mytranslation.y,
+            mytranslation.z);
+            */
+
+      translation = vec3_add(translation, mytranslation);
+      //rotation = quat_inverse(bone->rotation);
+
     }
 
     Vec3f newpos = vec3d_to_vec3f(vec3_add(vi->position,translation));
@@ -415,9 +518,15 @@ _object_update_mesh_vertex(Object* o)
 void 
 object_set_pose(Object* o, char* action_name, float time)
 {
-  if (o->mesh == NULL || o->armature == NULL) return;
+  MeshComponent* mc = object_component_get(o, "mesh");
+  ArmatureComponent* ac = object_component_get(o, "armature");
+  if (!mc || !ac) return;
 
-  armature_set_pose(o->armature, action_name, time);
+  Mesh* mesh = mesh_component_mesh_get(mc);
+  Armature* armature = armature_component_armature_get(ac);
+  if (!mesh || !armature) return;
+
+  armature_set_pose(armature, action_name, time);
   _object_update_mesh_vertex(o);
 }
 
@@ -432,13 +541,7 @@ object_add_component(Object* o, Component* c)
 {
   Eina_List** components = object_components_get(o);
   *components = eina_list_append(*components, c);
-  //o->components = eina_list_append(o->components, c);
   c->object = o;
-  if (!strcmp(c->name, "mesh")) {
-    //TODO
-    //MeshComponent* cm = c->data;
-    //o->mesh = cm->mesh;
-  }
 }
 
 void
@@ -744,6 +847,55 @@ void object_prefab_unlink(Object* o)
     //o->prefab.name = "";
     o->prefab.name = NULL;
     object_post_read(o);
+  }
+
+}
+
+Mesh*
+object_mesh_get(Object* o)
+{
+  MeshComponent* mc = object_component_get(o, "mesh");
+  if (mc) {
+    return mesh_component_mesh_get(mc);
+  }
+
+  return NULL;
+}
+
+Armature*
+object_armature_get(Object* o)
+{
+  ArmatureComponent* ac = object_component_get(o, "armature");
+  if (ac) {
+    return armature_component_armature_get(ac);
+  }
+
+  EINA_LOG_ERR("object '%s' has no armature component", o->name);
+  return NULL;
+}
+
+Animation*
+object_animation_get(Object* o)
+{
+  ArmatureComponent* ac = object_component_get(o, "armature");
+  if (ac) {
+    return armature_component_animation_get(ac);
+  }
+
+  return NULL;
+}
+
+void
+object_components_init(Object* o)
+{
+  Eina_List* l;
+  Component* c;
+
+  Eina_List** components = object_components_get(o);
+
+  EINA_LIST_FOREACH(*components, l, c) {
+    if (c->funcs->init)
+    c->funcs->init(c);
   }
 
 }
