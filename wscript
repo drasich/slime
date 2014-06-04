@@ -45,6 +45,7 @@ def configure(conf):
 def post(ctx):
   if ctx.options.exe:
     ctx.exec_command('./build/slime')
+    #ctx.exec_command('LD_LIBRARY_PATH=LD_LIBRARY_PATH:./build ./build/slime')
 
 def pre(bld):
   print("Protoc start")
