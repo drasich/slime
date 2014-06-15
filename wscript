@@ -67,7 +67,7 @@ def build(bld):
       source= c_files, 
       target='slime', 
       use='elementary png dragon',
-      linkflags = ['-ldl', '-rdynamic'],
+      linkflags = ['-ldl', '-rdynamic', '-Wl,-R./build/lib/dragon'],
       includes = 'src lib/dragon/src',
       defines = ['EDITOR', 'EVAS_GL']
       )
@@ -96,7 +96,7 @@ def build(bld):
       source= game_cpp_files, 
       target='gameexec', 
       use='elementary png dragon',
-      linkflags = ['-ldl', '-rdynamic'],
+      linkflags = ['-ldl', '-rdynamic', '-Wl,-R./build/lib/dragon'],
       includes = 'game lib/dragon/src',
       defines = ['GAME', 'EVAS_GL']
       )
