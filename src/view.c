@@ -23,6 +23,17 @@ static const Vec4 RED = {1.0,0.247,0.188,1};
 static const Vec4 GREEN = {0.2117,0.949,0.4156,1};
 static const Vec4 BLUE = {0,0.4745,1,1};
 
+typedef void (*rust_callback)(Scene* s);
+rust_callback rust_cb;
+
+void register_callback(rust_callback callback) {
+    rust_cb = callback;
+}
+
+void trigger_callback() {
+  //rust_cb();
+}
+
 // Callbacks
 static void
 _view_init_gl(Evas_Object *obj)
@@ -743,6 +754,8 @@ _play(void *data,
     gameview_ = create_gameview_window(s, &gameview_, v->control );
     evas_object_smart_callback_add(gameview_, "delete,request", _gameview_closed, v);
     evas_object_smart_callback_add(gameview_, "gameview,close", _gameview_closed, v);
+
+    if (rust_cb) rust_cb(s);
   }
   else {
     evas_object_show(gameview_);
