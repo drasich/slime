@@ -989,29 +989,8 @@ _component_property_add_hash(
   const char* keyname = key;
   struct _ComponentPropertyCouple* cpp = fdata;
 
-  if (cpp->p->sub->type == PROPERTY_RESOURCE) {
-    Evas_Object* bx;
-    bx = elm_box_add(cpp->cp->win);
-    elm_box_horizontal_set(bx, EINA_TRUE);
-    evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, 0.0);
-    evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
-
-    Evas_Object *label;
-
-    label = elm_label_add(cpp->cp->win);
-    char s[256];
-    sprintf(s, "<b> %s </b> : ", keyname);
-
-    elm_object_text_set(label, s);
-    elm_box_pack_end(bx, label);
-    evas_object_show(label);
-
-    elm_box_pack_end(cpp->box, bx);
-    evas_object_show(bx);
-
-    _add_properties(cpp->cp, cpp->p->sub, bx, data);
-  }
-  else if (cpp->p->sub->type == PROPERTY_UNIFORM) {
+  if (cpp->p->sub->type == PROPERTY_RESOURCE
+    || cpp->p->sub->type == PROPERTY_UNIFORM) {
     Evas_Object* bx;
     bx = elm_box_add(cpp->cp->win);
     elm_box_horizontal_set(bx, EINA_FALSE);
