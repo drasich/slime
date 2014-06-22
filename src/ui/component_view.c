@@ -6,6 +6,14 @@
 #include "resource.h"
 #include "component/meshcomponent.h" //TODO remove
 
+static void _separator_add(Evas_Object* box)
+{
+  Evas_Object* sp = elm_separator_add(box);
+  elm_separator_horizontal_set(sp, EINA_TRUE); // by default, separator is vertical, we must set it horizontal
+  elm_box_pack_end(box, sp);
+  evas_object_show(sp);
+}
+
 static void _add_properties(
       ComponentProperties* cp,
       const Property* ps,
@@ -846,16 +854,16 @@ _property_add_spinner(ComponentProperties* cp, const Property* p, Evas_Object* b
   
   elm_spinner_step_set(en, 0.1);
   elm_spinner_min_max_set(en, -DBL_MAX, DBL_MAX);
-  elm_object_style_set (en, "vertical");
+  //elm_object_style_set (en, "vertical");
   elm_spinner_editable_set(en, EINA_TRUE);
 
   char s[50];
   if (p->name) {
     evas_object_name_set(en, p->name);
-    sprintf(s, "%s : %s", p->name, "%.4f");
+    sprintf(s, "%s : %s", p->name, "%.3f");
   }
   else
-    sprintf(s, "%s", "%.4f");
+    sprintf(s, "%s", "%.3f");
 
   elm_spinner_label_format_set(en, s);
 
@@ -1006,13 +1014,14 @@ _component_property_add_hash(
   else if (cpp->p->sub->type == PROPERTY_UNIFORM) {
     Evas_Object* bx;
     bx = elm_box_add(cpp->cp->win);
-    elm_box_horizontal_set(bx, EINA_TRUE);
+    elm_box_horizontal_set(bx, EINA_FALSE);
     evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, 0.0);
     evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, EVAS_HINT_FILL);
 
     Evas_Object *label;
 
     label = elm_label_add(cpp->cp->win);
+    evas_object_size_hint_align_set(label, 0.0, EVAS_HINT_FILL);
     char s[256];
     sprintf(s, "<b> %s </b> : ", keyname);
 
@@ -1219,11 +1228,11 @@ _property_add_spinner_angle(
   
   elm_spinner_step_set(en, 0.1);
   elm_spinner_min_max_set(en, -DBL_MAX, DBL_MAX);
-  elm_object_style_set (en, "vertical");
+  //elm_object_style_set (en, "vertical");
   elm_spinner_editable_set(en, EINA_TRUE);
 
   char s[50];
-  sprintf(s, "%s : %s", name, "%.4f");
+  sprintf(s, "%s : %s", name, "%.3f");
 
   elm_spinner_label_format_set(en, s);
 
@@ -1275,11 +1284,11 @@ _property_add_spinner_vec(
   
   elm_spinner_step_set(en, 0.1);
   elm_spinner_min_max_set(en, -DBL_MAX, DBL_MAX);
-  elm_object_style_set (en, "vertical");
+  //elm_object_style_set (en, "vertical");
   elm_spinner_editable_set(en, EINA_TRUE);
 
   char s[50];
-  sprintf(s, "%s : %s", name, "%.4f");
+  sprintf(s, "%s : %s", name, "%.3f");
 
   elm_spinner_label_format_set(en, s);
 
@@ -1439,33 +1448,43 @@ _property_add(ComponentProperties* cp, const Property* p, Evas_Object* box, void
         }
       break;
     case PROPERTY_STRUCT_NESTED:
-      if (p->sub->hint == HORIZONTAL) {
-        Evas_Object* hbox = elm_box_add(cp->win);
-        elm_box_horizontal_set(hbox, EINA_TRUE);
-        evas_object_size_hint_weight_set(hbox, EVAS_HINT_EXPAND, 0.0);
-        evas_object_size_hint_align_set(hbox, EVAS_HINT_FILL, EVAS_HINT_FILL);
-        elm_box_pack_end(box, hbox);
-        evas_object_show(hbox);
-        //TODO clean box
-        //
-        Evas_Object* label = elm_label_add(cp->win);
-        char s[256];
-        sprintf(s, "<b> %s </b> : ", p->name);
+       {
+        Evas_Object* label = NULL;
+        Evas_Object* nextbox = NULL;
+        if (p->sub->hint == HORIZONTAL || eina_list_count(p->sub->list) > 1)
+         {
+          label = elm_label_add(cp->win);
+          evas_object_size_hint_align_set(label, 0.0, EVAS_HINT_FILL);
+          char s[256];
+          sprintf(s, "<b> %s </b> : ", p->name);
 
-        elm_object_text_set(label, s);
-        evas_object_show(label);
-        elm_box_pack_end(hbox, label);
+          elm_object_text_set(label, s);
+          evas_object_show(label);
+         }
+
+        if (p->sub->hint == HORIZONTAL) {
+          Evas_Object* hbox = elm_box_add(cp->win);
+          elm_box_horizontal_set(hbox, EINA_TRUE);
+          evas_object_size_hint_weight_set(hbox, EVAS_HINT_EXPAND, 0.0);
+          evas_object_size_hint_align_set(hbox, EVAS_HINT_FILL, EVAS_HINT_FILL);
+          elm_box_pack_end(box, hbox);
+          evas_object_show(hbox);
+          //TODO clean box
+
+          nextbox = hbox;
+        }
+        else if (p->sub->hint == VERTICAL) {
+          nextbox = cp->box;
+        }
+
+        if (label) {
+          elm_box_pack_end(nextbox, label);
+        }
 
         int offset = property_offset_get(p);
         void* datastruct = data + offset;
-        _add_properties(cp, p->sub, hbox, datastruct);
-
-      }
-      else {
-        int offset = property_offset_get(p);
-        void* datastruct = (void*)data + offset;
-        _add_properties(cp, p->sub, cp->box, datastruct);
-      }
+        _add_properties(cp, p->sub, nextbox, datastruct);
+       }
       break;
     case EET_G_HASH:
       if (!data) break;

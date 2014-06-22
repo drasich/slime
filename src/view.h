@@ -46,6 +46,7 @@ struct _View
 
   Evas_Object* select_rect;
   Evas_Object* menu;
+  Evas_Object* edje;
 
   Eina_List* draggers;
   Eina_List* dragger_translate;

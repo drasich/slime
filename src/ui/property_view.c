@@ -247,7 +247,8 @@ create_property(Evas_Object* win, Context* context, Control* control)
 
   context_add_callback(context, _context_property_msg_receive, p);
 
-  Evas_Object *frame, *scroller, *bx;
+  Evas_Object *frame, *scroller, *bx, *bg;
+  bg = elm_bg_add(win);
 
   scroller = elm_scroller_add(win);
   evas_object_size_hint_weight_set(scroller, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -259,7 +260,6 @@ create_property(Evas_Object* win, Context* context, Control* control)
   //elm_scroller_policy_set(scroller, ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_ON);
 
   Evas_Object* pbx = elm_box_add(win);
-  //evas_object_size_hint_weight_set(pbx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
   evas_object_size_hint_weight_set(pbx, EVAS_HINT_EXPAND, 0);
   evas_object_size_hint_fill_set(pbx, EVAS_HINT_FILL, EVAS_HINT_FILL);
   elm_box_align_set(pbx, 0.0, 0.0);
@@ -298,7 +298,9 @@ create_property(Evas_Object* win, Context* context, Control* control)
 
   elm_object_content_set(frame, scroller);
   */
-  p->root = scroller;
+
+  elm_object_content_set(bg, scroller);
+  p->root = bg;
 
   return p;
 }

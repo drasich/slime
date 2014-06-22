@@ -21,43 +21,6 @@ create_workspace(Evas_Object* parent)
 
 }
 
-static Evas_Object *create_my_group(Evas *canvas, const char *text)
-{
-  Evas_Object *edje;
-
-  edje = edje_object_add(canvas);
-  if (!edje)
-   {
-    EINA_LOG_CRIT("could not create edje object!");
-    return NULL;
-   }
-
-  if (!edje_object_file_set(edje, "edc/test00.edj", "my_group"))
-   {
-    int err = edje_object_load_error_get(edje);
-    const char *errmsg = edje_load_error_str(err);
-    EINA_LOG_ERR("could not load 'my_group' from .edj file : %s",
-          errmsg);
-
-    evas_object_del(edje);
-    return NULL;
-   }
-
-  if (text)
-   {
-    if (!edje_object_part_text_set(edje, "text", text))
-     {
-      EINA_LOG_WARN("could not set the text. "
-            "Maybe part 'text' does not exist?");
-     }
-   }
-
-  evas_object_move(edje, 0, 0);
-  evas_object_resize(edje, 320, 240);
-  evas_object_show(edje);
-  return edje;
-}
-
 Evas_Object*
 create_panes(Evas_Object* win, Eina_Bool hor)
 {
@@ -143,36 +106,12 @@ create_window()
   elm_win_autodel_set(win, EINA_TRUE);
   evas_object_smart_callback_add(win, "delete,request", win_del, NULL);
 
-  /*
-  Evas_Object* box = elm_box_add(win);
-  evas_object_size_hint_weight_set(box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-
-  elm_win_resize_object_add(win, box);
-  evas_object_show(box);
-
-  Evas_Object* scene_entry = elm_entry_add(win);
-  elm_object_text_set(scene_entry, "<b>Scene: </b>my test");
-  elm_entry_single_line_set(scene_entry, EINA_TRUE);
-  elm_entry_editable_set(scene_entry, EINA_FALSE);
-  elm_entry_scrollable_set(scene_entry, EINA_TRUE);
-  evas_object_smart_callback_add(scene_entry, "clicked", _entry_clicked_cb, NULL);
-
-  evas_object_size_hint_align_set(scene_entry, EVAS_HINT_FILL, EVAS_HINT_FILL);
-  //evas_object_size_hint_weight_set(scene_entry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  evas_object_show(scene_entry);
-  elm_box_pack_end(box, scene_entry);
-  */
-
   Evas_Object* panes = create_panes(win, false);
-  //elm_box_pack_end(box, panes);
   elm_win_resize_object_add(win, panes);
-  Evas_Object* hpanes = create_panes(win, false);
   Evas_Object* treepanes = create_panes(win, false);
   Evas_Object* resourcepanes = create_panes(win, true);
   view = view_new(win);
-  //view->scene_entry = scene_entry;
   Evas_Object* glview = view->glview;
-  Evas_Object* property = view->property->root;
   Evas_Object* tree = view->tree->root;
 
   ResourceView* rv = resource_view_new(win, view, RESOURCE_SCENE);
@@ -183,31 +122,20 @@ create_window()
   elm_object_part_content_set(resourcepanes, "left", rv->gl);
   elm_object_part_content_set(resourcepanes, "right", rv_prefab->gl);
 
-  //elm_object_part_content_set(treepanes, "left", rv->gl);
   elm_object_part_content_set(treepanes, "left", resourcepanes);
   elm_object_part_content_set(treepanes, "right", tree);
 
-
-  elm_object_part_content_set(hpanes, "left", view->table);
-  elm_object_part_content_set(hpanes, "right", property);
-
-  //elm_object_part_content_set(panes, "left", tree);
   evas_object_hide(tree);
   elm_object_part_content_set(panes, "left", treepanes);
-  elm_object_part_content_set(panes, "right", hpanes);
+  elm_object_part_content_set(panes, "right", view->edje);
 
   elm_panes_content_left_size_set(panes, 0.20f);
-  elm_panes_content_right_size_set(hpanes, 0.35f);
 
   //evas_object_resize(win, 800/3, 400/3);
   //evas_object_resize(win, 800, 200);
-  //evas_object_resize(win, 1600, 600);
-  evas_object_resize(win, 16, 6);
+  evas_object_resize(win, 1600, 600);
+  //evas_object_resize(win, 16, 6);
   evas_object_show(win);
-
-
-  //Evas* evas = evas_object_evas_get(win);
-  //Evas_Object* edje = create_my_group(evas, "danceoff");
 }
 
 /*

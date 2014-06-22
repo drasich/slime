@@ -1173,6 +1173,32 @@ _set_callbacks(Evas_Object* glview)
   evas_object_event_callback_add(glview, EVAS_CALLBACK_MOUSE_IN, _mouse_in, NULL);
 }
 
+static Evas_Object *create_edje(Evas_Object* win)
+{
+  Evas_Object *edje;
+  Evas* canvas = evas_object_evas_get(win);
+
+  edje = edje_object_add(canvas);
+  if (!edje) {
+    EINA_LOG_CRIT("could not create edje object!");
+    return NULL;
+   }
+
+  if (!edje_object_file_set(edje, "edc/test.edj", "example_group")) {
+    int err = edje_object_load_error_get(edje);
+    const char *errmsg = edje_load_error_str(err);
+    EINA_LOG_ERR("could not load 'my_group' from .edj file : %s",
+          errmsg);
+
+    evas_object_del(edje);
+    return NULL;
+   }
+
+  return edje;
+}
+
+
+
 View*
 view_new(Evas_Object *win)
 {
@@ -1189,6 +1215,9 @@ view_new(Evas_Object *win)
   //Evas_Object* toolbar = _create_toolbar(win);
   //elm_box_pack_end(view->box, toolbar);
 
+  view->edje = create_edje(win);
+  edje_object_part_swallow(view->edje, "part_glview", view->table);
+
   view->glview = _create_glview(win);
   elm_table_pack(view->table, view->glview, 0, 0, 1, 10);
   _set_callbacks(view->glview);
@@ -1196,6 +1225,7 @@ view_new(Evas_Object *win)
   _add_buttons(view, win);
 
   view->property = create_property(win, view->context, view->control);
+  edje_object_part_swallow(view->edje, "part_property", view->property->root);
   view->tree = tree_widget_new(win, view);
   evas_object_data_set(view->glview, "view", view);
 

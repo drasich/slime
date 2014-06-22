@@ -48,10 +48,11 @@ def post(ctx):
     #ctx.exec_command('LD_LIBRARY_PATH=LD_LIBRARY_PATH:./build ./build/slime')
 
 def pre(bld):
-  print("Protoc start")
-  bld.exec_command('protoc -I=proto --cpp_out=proto proto/base.proto')
-  print("Protoc ended")
-  bld.exec_command('./build/tool/property/property_value')
+  #print("Protoc start")
+  #bld.exec_command('protoc -I=proto --cpp_out=proto proto/base.proto')
+  #print("Protoc ended")
+  #bld.exec_command('./build/tool/property/property_value')
+  bld.exec_command('edje_cc edc/test.edc  edc/test.edj')
 
 
 def build(bld):
@@ -102,5 +103,5 @@ def build(bld):
       )
 
   bld.add_post_fun(post)
-  #bld.add_pre_fun(pre)
+  bld.add_pre_fun(pre)
 

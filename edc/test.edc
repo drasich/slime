@@ -1,7 +1,7 @@
 collections {
    group {
       name: "example_group";
-      max: 500 500;
+      //max: 500 500;
       min: 50 50;
 
       data {
@@ -20,6 +20,43 @@ collections {
                color: 0 0 255 255; /* blue */
                rel1.relative: 0.0 0.0;
                rel2.relative: 1.0 1.0;
+            }
+         }
+         part {
+            name: "part_glview";
+            type: SWALLOW;
+            description {
+               state: "default" 0.0;
+               //color: 255 0 255 0; /* blue */
+               rel1.relative: 0.0 0.0;
+               rel2.relative: 1.0 1.0;
+               //min: 500 500;
+            }
+         }
+
+         part {
+            name: "part_property";
+            type: SWALLOW;
+            //effect: GLOW LEFT;
+            /*
+            dragable {
+              confine: "part_glview";
+              //threshold: "another part";
+              //events:  "another dragable part";
+              x: -1 1 0;
+              y: 1 1 0;
+            }
+              */
+
+            description {
+               min: 225 500;
+               max: 225 -1;
+               fixed: 1 1;
+               align: 1.0 0.0;
+               state: "default" 0.0;
+               color: 0 255 0 255; /* green */
+               //rel1.relative: 0.5 0.0;
+               //rel2.relative: 1.0 1.0;
             }
          }
 
