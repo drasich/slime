@@ -20,9 +20,9 @@ camera_lookat(ViewCamera* cam, Vec3 at)
 
   Vec3 d = vec3_sub(at, o->position);
 
-  c->yaw = atan2(d.x,-d.z);
+  c->yaw = atan2(-d.x,-d.z);
   float r = sqrt( d.x*d.x + d.z*d.z );
-  c->pitch = atan2(-d.y,r);
+  c->pitch = atan2(d.y,r);
 
   o->angles.x = c->pitch/M_PI*180.0;
   o->angles.y = c->yaw/M_PI*180.0;

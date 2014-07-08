@@ -194,11 +194,11 @@ _rotate_camera(View* v, float x, float y)
   Object* c = v->camera->object;
 
   if (vec3_dot(vec3(0,1,0), quat_rotate_vec3(c->orientation, vec3(0,1,0))) <0)
-  cam->yaw -= 0.005f*x;
-  else
   cam->yaw += 0.005f*x;
+  else
+  cam->yaw -= 0.005f*x;
 
-  cam->pitch += 0.005f*y;
+  cam->pitch -= 0.005f*y;
 
   //TODO angles
   Quat qy = quat_angle_axis(cam->yaw, vec3(0,1,0));

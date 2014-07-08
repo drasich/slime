@@ -1123,8 +1123,8 @@ _create_view_objects(View* v)
   Vec3 at = {0,0,0};
   camera_lookat(v->camera, at);
 
-  Quat q1 = quat_yaw_pitch_roll_deg(-90,0,0);
-  Quat q2 = quat_yaw_pitch_roll_deg(0, 90,0);
+  Quat q1 = quat_yaw_pitch_roll_deg(90,0,0);
+  Quat q2 = quat_yaw_pitch_roll_deg(0, -90,0);
   Quat qi = quat_identity();
 
   v->dragger_translate = _view_draggers_create(_dragger_translate_create, true, q1,q2,qi);
