@@ -22,9 +22,11 @@ struct _Render
   Object* quad_color;
   Fbo* fbo_selected;
   Fbo* fbo_all;
+  Fbo* fbo_from_light;
 
   Eina_List* render_objects;
   Eina_List* render_objects_selected;
+  TextureHandle* thfromlight;
 };
 
 typedef struct _View View;

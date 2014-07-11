@@ -91,6 +91,8 @@ _view_resize_gl(Evas_Object *obj)
   //TODO
   fbo_resize(v->render->fbo_all, w, h);
   fbo_resize(v->render->fbo_selected, w, h);
+  //TODO light remove
+  fbo_resize(v->render->fbo_from_light, w, h);
 }
 
 static void
@@ -1358,6 +1360,8 @@ create_render()
   Render* r = calloc(1, sizeof *r);
   r->fbo_selected = create_fbo();
   r->fbo_all = create_fbo();
+  r->fbo_from_light = create_fbo();
+  fbo_resize(r->fbo_from_light, 1024, 1024);
 
   r->quad_outline = create_object();
   r->quad_outline->name = "outline";
@@ -1372,8 +1376,11 @@ create_render()
 
   Texture* tsel = texture_new();
   Texture* tall = texture_new();
+  Texture* tfromlight = texture_new();
   texture_fbo_link(tsel, &r->fbo_selected->texture_depth_stencil_id);
   texture_fbo_link(tall, &r->fbo_all->texture_depth_stencil_id);
+  texture_fbo_link(tfromlight, &r->fbo_from_light->texture_depth_stencil_id);
+  //texture_fbo_link(tfromlight, &r->fbo_from_light->texture_color);
 
   Shader* s = create_shader("stencil", "shader/stencil.vert", "shader/stencil.frag");
   shader_attribute_add(s, "vertex", 3, GL_FLOAT);
@@ -1390,8 +1397,15 @@ create_render()
   shader_instance_texture_data_set(mc->shader_instance, "texture", th);
   th = texture_handle_new();
   th->name = "fbo_all";
-  th->texture = tall;
+  //TODO light
+  th->texture = tfromlight;//tall;
+  //th->texture = tall;
   shader_instance_texture_data_set(mc->shader_instance, "texture_all", th);
+
+  th = texture_handle_new();
+  th->name = "fbo_from_light";
+  th->texture = tfromlight;
+  r->thfromlight = th;
 
 
   /*
@@ -1484,6 +1498,26 @@ _object_camera_face(Quat qo, Object* o, ViewCamera* c)
 
 }
 
+static void
+_render_texture_write(int w, int h)
+{
+  if (w < 1000) return;
+  //int w = c->width;
+  //int h = c->height;
+  //printf(" w , h : %d, %d \n", w, h);
+  GLuint mypixels[w*h];
+  glReadPixels(
+        0, 
+        0, 
+        w, 
+        h, 
+        GL_DEPTH_STENCIL_OES, 
+        GL_UNSIGNED_INT_24_8_OES, 
+        mypixels);
+  save_png(mypixels, w, h);
+}
+
+
 void
 view_draw(View* v)
 {
@@ -1493,6 +1527,20 @@ view_draw(View* v)
   Context* cx = v->context;
   Render* r = v->render;
   Scene* s = cx->scene;
+
+  //TODO light
+  Matrix4 light;
+  //mat4_lookat(light, vec3(50,20,50), vec3_zero(), vec3(0,1,0));
+  mat4_pos_ori(vec3(50,20,50), quat_lookat(vec3(50,20,50), vec3(0,0,0), vec3(0,1,0)), light);
+  Matrix4 light_inv;
+  mat4_inverse(light, light_inv);
+  Matrix4 light_per;
+  //mat4_set_perspective(light_per, 0.4f, 2.0f , 10.0f, 1000.0f);
+  mat4_set_perspective(light_per, 0.8f, 1.0f , 10.0f, 500.0f);
+  printf("light matrix :: \n\n");
+  mat4_print(light);
+  printf("camera matrix :: \n\n");
+  mat4_print(co->matrix);
 
   Matrix4 cam_mat_inv, mo;
   Matrix4 id4;
@@ -1505,15 +1553,9 @@ view_draw(View* v)
   //Render just selected to fbo
   Eina_List *l;
   Object *o;
-  Eina_List* cxol = context_objects_get(cx);
 
   fbo_use(r->fbo_selected);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT) ;
-  /*
-  EINA_LIST_FOREACH(cxol, l, o) {
-    object_draw_edit_component(o, cam_mat_inv, cc->projection , id4, "mesh");
-  }
-  */
 
   RenderObject* ro;
   EINA_LIST_FOREACH(r->render_objects_selected, l, ro) {
@@ -1521,7 +1563,6 @@ view_draw(View* v)
   }
 
   fbo_use_end();
-
 
   //Render all objects to fbo to get depth for the lines.
   fbo_use(r->fbo_all);
@@ -1532,12 +1573,6 @@ view_draw(View* v)
   glStencilFunc(GL_ALWAYS, 0x1, 0x1);
   glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
-  /*
-  EINA_LIST_FOREACH(r->objects, l, o) {
-    object_draw_edit_component(o, cam_mat_inv, cc->projection , id4, "mesh");
-  }
-  */
-
   EINA_LIST_FOREACH(r->render_objects, l, ro) {
     object_draw_edit_component2(ro->object, cam_mat_inv, cc->projection, ro->world, "mesh");
   }
@@ -1545,23 +1580,40 @@ view_draw(View* v)
   //glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 
   //was a test, can be removed
-  /*
-  int w = c->width;
-  int h = c->height;
-  printf(" w , h : %d, %d \n", w, h);
-  GLuint mypixels[w*h];
-  glReadPixels(
-        0, 
-        0, 
-        w, 
-        h, 
-        GL_DEPTH_STENCIL_OES, 
-        GL_UNSIGNED_INT_24_8_OES, 
-        mypixels);
-  save_png(mypixels, w, h);
-  */
+  // _render_texture_write(c->width, c->height);
 
   fbo_use_end();
+
+  //TODO light
+  //Render from light fromlight
+  fbo_use(r->fbo_from_light);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT) ;
+  //glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
+  //glClearStencil(0);
+  //glDisable(GL_STENCIL_TEST);
+  //glEnable(GL_STENCIL_TEST);
+  //glEnable(GL_DEPTH_TEST);
+  //glStencilFunc(GL_ALWAYS, 0x1, 0x1);
+  //glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+  EINA_LIST_FOREACH(r->render_objects, l, ro) {
+    //object_draw_edit_component2(ro->object, light_inv, light_per, ro->world, "mesh");
+    object_draw_edit_component2(ro->object, light_inv, cc->projection, ro->world, "mesh");
+    //object_draw_edit_component2(ro->object, cam_mat_inv, cc->projection, ro->world, "mesh");
+  }
+
+  //glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
+
+  //was a test, can be removed
+  //_render_texture_write(1024,1024);
+  //printf("%f,%f\n",cc->width,cc->height);
+  //_render_texture_write((int)cc->width,(int)cc->height);
+
+  fbo_use_end();
+
+
+
+  //Render from light end
 
   //draw grid
   glClear(GL_DEPTH_BUFFER_BIT);
@@ -1595,6 +1647,8 @@ view_draw(View* v)
   glClear(GL_DEPTH_BUFFER_BIT);
   Vec3 repere_position = vec3_zero();
   Quat repere_ori = quat_identity();
+
+  Eina_List* cxol = context_objects_get(cx);
   EINA_LIST_FOREACH(cxol, l, o) {
     object_compute_matrix(o, mo);
     mat4_multiply(cam_mat_inv, mo, mo);
