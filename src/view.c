@@ -1398,8 +1398,8 @@ create_render()
   th = texture_handle_new();
   th->name = "fbo_all";
   //TODO light
-  th->texture = tfromlight;//tall;
-  //th->texture = tall;
+  //th->texture = tfromlight;//tall;
+  th->texture = tall;
   shader_instance_texture_data_set(mc->shader_instance, "texture_all", th);
 
   th = texture_handle_new();
