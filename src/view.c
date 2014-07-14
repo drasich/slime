@@ -1411,7 +1411,6 @@ create_render()
   th->texture = tfromlight;
   r->thfromlight = th;
   light_tex = th;
-  //resource_texture_add(s_rm, th->name, tfromlight);
 
 
   /*
@@ -1586,7 +1585,7 @@ view_draw(View* v)
   //TODO light
   Matrix4 light;
   //mat4_lookat(light, vec3(50,20,50), vec3_zero(), vec3(0,1,0));
-  Vec3 light_pos = vec3(-10,10,0);
+  Vec3 light_pos = vec3(-30,50,20);
   Quat light_ori = quat_lookat(light_pos, vec3(0,0,0), vec3(0,1,0));
   mat4_pos_ori(light_pos, light_ori, light);
   Matrix4 light_inv;
