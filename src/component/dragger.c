@@ -82,8 +82,10 @@ dragger_highlight_set(Dragger* d, bool highlight)
     return;
   }
 
-  Vec4* v = shader_instance_uniform_data_get(d->mc->shader_instance, "color");
-  if (!v) return;
+  UniformValue* uv = shader_instance_uniform_data_get(d->mc->shader_instance, "color");
+  if (!uv) return;
+
+  Vec4* v = &uv->value.vec4;
 
   if (highlight)
   *v = vec4(0,1,1,1);
@@ -101,8 +103,10 @@ dragger_state_set(Dragger* d, DraggerState state)
     return;
   }
 
-  Vec4* v = shader_instance_uniform_data_get(d->mc->shader_instance, "color");
-  if (!v) return;
+  UniformValue* uv = shader_instance_uniform_data_get(d->mc->shader_instance, "color");
+  if (!uv) return;
+
+  Vec4* v = &uv->value.vec4;
 
   if (state == DRAGGER_HIGHLIGHT)
   *v = vec4(1,0.97,0,1);
@@ -118,7 +122,8 @@ dragger_state_set(Dragger* d, DraggerState state)
   d->mc->hide = state == DRAGGER_HIDE || state == DRAGGER_SHOW_SECOND;
 
   if (d->mc_second) {
-    v = shader_instance_uniform_data_get(d->mc_second->shader_instance, "color");
+    uv = shader_instance_uniform_data_get(d->mc_second->shader_instance, "color");
+    v = &uv->value.vec4;
     if (state == DRAGGER_SHOW_SECOND) {
       *v = vec4(1,1,1,0.05);
       d->mc_second->hide = false;
