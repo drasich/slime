@@ -17,6 +17,9 @@
 #include "ui/resource_view.h"
 #define __UNUSED__
 
+//TODO remove from here
+static TextureHandle* light_tex;
+
 static bool s_view_destroyed = false;
 
 static const Vec4 RED = {1.0,0.247,0.188,1};
@@ -1382,6 +1385,7 @@ create_render()
   texture_fbo_link(tfromlight, &r->fbo_from_light->texture_depth_stencil_id);
   //texture_fbo_link(tfromlight, &r->fbo_from_light->texture_color);
 
+
   Shader* s = create_shader("stencil", "shader/stencil.vert", "shader/stencil.frag");
   shader_attribute_add(s, "vertex", 3, GL_FLOAT);
   shader_uniform_add(s, "matrix", false);
@@ -1391,21 +1395,23 @@ create_render()
 
   mesh_component_shader_set(mc, s);
 
+  //TODO thus texture must be saved somewhere and not just to the shader instance
   TextureHandle* th = texture_handle_new();
   th->name = "fbo_sel";
   th->texture = tsel;
   shader_instance_texture_data_set(mc->shader_instance, "texture", th);
   th = texture_handle_new();
   th->name = "fbo_all";
-  //TODO light
-  th->texture = tfromlight;//tall;
-  //th->texture = tall;
+  th->texture = tall;
   shader_instance_texture_data_set(mc->shader_instance, "texture_all", th);
 
+  //TODO light 
   th = texture_handle_new();
   th->name = "fbo_from_light";
   th->texture = tfromlight;
   r->thfromlight = th;
+  light_tex = th;
+  //resource_texture_add(s_rm, th->name, tfromlight);
 
 
   /*
@@ -1517,6 +1523,55 @@ _render_texture_write(int w, int h)
   save_png(mypixels, w, h);
 }
 
+void
+_object_light_matrix_set(Object* o, Matrix4 light_inv, Matrix4 projection, Matrix4 world, TextureHandle * th)
+{
+  MeshComponent* m = object_component_get(o, "mesh");
+  if (!m) {
+    return;
+  }
+
+  const char* uniname = "light_mat";
+
+  if (!shader_uniform_has(m->shader_handle.shader, uniname)){
+    return;
+  }
+
+  if (!m->shader_instance)
+   {
+    printf("no shader instance\n");
+    return;
+   }
+
+  UniformValue* lightmatuv = shader_instance_uniform_data_get(m->shader_instance, uniname);
+
+  if (!lightmatuv) {
+    lightmatuv = calloc(1, sizeof *lightmatuv);
+    lightmatuv->type = UNIFORM_MAT4;
+
+    shader_instance_uniform_data_set(m->shader_instance, uniname,  lightmatuv);
+   }
+
+  Matrix4 mo;
+  mat4_multiply(light_inv, world, mo);
+
+  Matrix4 tm;
+  mat4_multiply(projection, mo, tm);
+
+  Matrix4 bias;
+  mat4_set_scale(bias, vec3(0.5,0.5,0.5));
+  Matrix4 trans;
+  mat4_set_translation(trans, vec3(0.5,0.5,0.5));
+  mat4_multiply(trans, bias, bias);
+
+  Matrix4 light_mat;
+  mat4_multiply(bias, tm, light_mat);
+
+  mat4_to_gl(light_mat, lightmatuv->value.mat4);
+
+  shader_instance_texture_data_set(m->shader_instance, "light_tex", th);
+}
+
 
 void
 view_draw(View* v)
@@ -1531,16 +1586,14 @@ view_draw(View* v)
   //TODO light
   Matrix4 light;
   //mat4_lookat(light, vec3(50,20,50), vec3_zero(), vec3(0,1,0));
-  mat4_pos_ori(vec3(50,20,50), quat_lookat(vec3(50,20,50), vec3(0,0,0), vec3(0,1,0)), light);
+  Vec3 light_pos = vec3(-10,10,0);
+  Quat light_ori = quat_lookat(light_pos, vec3(0,0,0), vec3(0,1,0));
+  mat4_pos_ori(light_pos, light_ori, light);
   Matrix4 light_inv;
   mat4_inverse(light, light_inv);
   Matrix4 light_per;
   //mat4_set_perspective(light_per, 0.4f, 2.0f , 10.0f, 1000.0f);
   mat4_set_perspective(light_per, 0.8f, 1.0f , 10.0f, 500.0f);
-  printf("light matrix :: \n\n");
-  mat4_print(light);
-  printf("camera matrix :: \n\n");
-  mat4_print(co->matrix);
 
   Matrix4 cam_mat_inv, mo;
   Matrix4 id4;
@@ -1588,7 +1641,7 @@ view_draw(View* v)
   //Render from light fromlight
   fbo_use(r->fbo_from_light);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT) ;
-  //glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
+  glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
   //glClearStencil(0);
   //glDisable(GL_STENCIL_TEST);
   //glEnable(GL_STENCIL_TEST);
@@ -1599,10 +1652,10 @@ view_draw(View* v)
   EINA_LIST_FOREACH(r->render_objects, l, ro) {
     //object_draw_edit_component2(ro->object, light_inv, light_per, ro->world, "mesh");
     object_draw_edit_component2(ro->object, light_inv, cc->projection, ro->world, "mesh");
+    //object_draw_edit_component2(ro->object, light_inv, cc->orthographic, ro->world, "mesh");
     //object_draw_edit_component2(ro->object, cam_mat_inv, cc->projection, ro->world, "mesh");
   }
 
-  //glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 
   //was a test, can be removed
   //_render_texture_write(1024,1024);
@@ -1610,6 +1663,8 @@ view_draw(View* v)
   //_render_texture_write((int)cc->width,(int)cc->height);
 
   fbo_use_end();
+
+  glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 
 
 
@@ -1638,6 +1693,7 @@ view_draw(View* v)
   */
 
   EINA_LIST_FOREACH(r->render_objects, l, ro) {
+    _object_light_matrix_set(ro->object, light_inv, cc->projection, ro->world, light_tex);
     object_draw_edit2(ro->object, cam_mat_inv, cc->projection, ro->world);
   }
 

@@ -1,16 +1,31 @@
 varying vec2 f_texcoord;
 uniform sampler2D texture;
+uniform sampler2D light_tex;
 uniform float repeat_x;
 uniform float repeat_y;
+varying vec4 shadow_coord;
 
 void main (void)
 {
   vec2 texc = f_texcoord;
-  //repeat = 1.0;
   texc.x = texc.x * repeat_x;
   texc.y = texc.y * repeat_y;
-  //vec4 diffuse_tex = texture2D(texture, f_texcoord);
   vec4 diffuse_tex = texture2D(texture, texc);
+
+  vec4 shadowCoordinateWdivide = shadow_coord / shadow_coord.w ;
+  // Used to lower moiré pattern and self-shadowing
+  shadowCoordinateWdivide.z -= 0.0005;
+  float distanceFromLight = texture2D(light_tex,shadowCoordinateWdivide.st).z;
+  if (shadowCoordinateWdivide.x < 0.0 || 
+        shadowCoordinateWdivide.x > 1.0 ||
+        shadowCoordinateWdivide.y < 0.0 ||
+        shadowCoordinateWdivide.y > 1.0)
+  distanceFromLight = 1.0;
+  float shadow = 1.0;
+  if (shadow_coord.w > 0.0)
+  shadow = distanceFromLight < shadowCoordinateWdivide.z ? 0.5 : 1.0 ;
+  diffuse_tex.xyz = diffuse_tex.xyz * shadow;
   gl_FragColor = diffuse_tex;
+
 }
 
