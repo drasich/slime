@@ -472,7 +472,7 @@ _rotate_moving(Control* c, Evas_Event_Mouse_Move* e, Vec3 constraint)
   cons = constraint;
   double dotori = vec3_dot(diff, cons);
 
-  if (dotori <0) {
+  if (dotori > 0) {
     if (sign > 0) angle *= -1;
   }
   else {
