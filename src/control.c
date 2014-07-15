@@ -643,7 +643,7 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
   c->mouse_current.y = e->cur.canvas.y - y;
 
   View* v = c->view;
-  if (c->state == CONTROL_IDLE) {
+  if (c->state == CONTROL_IDLE || c->state == CONTROL_CAMERA_ROTATE) {
     if (e->buttons == 0){
        _draggers_highlight_check(c,c->mouse_current.x, c->mouse_current.y);
     }
@@ -657,6 +657,7 @@ control_mouse_move(Control* c, Evas_Event_Mouse_Move *e)
         camera_pan(v->camera, t);
       } else {
         _rotate_camera(v, x, y);
+        c->state = CONTROL_CAMERA_ROTATE;
       }
     }
   } else if (c->state == CONTROL_MOVE) {
@@ -942,6 +943,14 @@ control_mouse_up(Control* c, Evas_Event_Mouse_Up *e)
 
     control_operation_add(c, op);
     return true;
+  }
+  else if (c->state == CONTROL_CAMERA_ROTATE) {
+    _draggers_highlight_check(c,ex, ey);
+    c->state = CONTROL_IDLE;
+    return true;
+  }
+  else {
+    _draggers_highlight_check(c,ex, ey);
   }
 
 

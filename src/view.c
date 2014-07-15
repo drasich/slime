@@ -466,7 +466,11 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
     elm_menu_move(menu, ev->canvas.x, ev->canvas.y);
     return;
   }
+}
 
+static void
+_mouse_up_select(View* v, Evas_Event_Mouse_Up* ev)
+{
   if (ev->button != 1){
     return;
   }
@@ -484,11 +488,8 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   Object* clicked = NULL;
 
   Eina_List *list;
-  //Object *ob;
   RenderObject *ro;
-  //EINA_LIST_FOREACH(s->objects, list, ob) {
   EINA_LIST_FOREACH(v->render->render_objects, list, ro) {
-    //IntersectionRay ir = intersection_ray_object(r, ob);
     IntersectionRay ir = intersection_ray_object(r, ro->object);
     
     if (ir.hit) {
@@ -496,7 +497,6 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
       if ( (found && diff < d) || !found) {
         found = true;
         d = diff;
-        //clicked = ob;
         clicked = ro->object;
       }
     }
@@ -505,8 +505,8 @@ _mouse_down(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *eve
   if (clicked != NULL) {
     _view_select_object(v, clicked);
   }
-
 }
+
 
 static void
 _mouse_up(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event_info)
@@ -523,6 +523,8 @@ _mouse_up(void *data __UNUSED__, Evas *e __UNUSED__, Evas_Object *o, void *event
   Control* cl = v->control;
   if (control_mouse_up(cl, ev))
   return;
+
+  _mouse_up_select(v, ev);
 }
 
 static void
