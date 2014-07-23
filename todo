@@ -5,6 +5,7 @@ FILE stuff
 - put name in scene property, and name in prefab property 
   => to be able to change the name. when changing the name: rename the file and check if there isn't another file with the same name
 TO be able to handle these: make a new struct type? filename
+- rajouter une image dans image ne fait -> add it to resource
 
 - file monitor:
   - shaders: 
