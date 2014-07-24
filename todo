@@ -6,6 +6,8 @@ FILE stuff
   => to be able to change the name. when changing the name: rename the file and check if there isn't another file with the same name
 TO be able to handle these: make a new struct type? filename
 - rajouter mesh dans filemonitor.
+- separate data and functions
+- choose filtering in texture
 
 - file monitor:
   - shaders: 
