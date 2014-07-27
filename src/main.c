@@ -348,8 +348,8 @@ void create_editor()
   filemonitor_init(s_rm);
 
   elm_config_preferred_engine_set("opengl_x11");
-  //elm_config_focus_highlight_animate_set(EINA_TRUE);
-  //elm_config_focus_highlight_enabled_set(EINA_TRUE);
+  elm_config_focus_highlight_animate_set(EINA_TRUE);
+  elm_config_focus_highlight_enabled_set(EINA_TRUE);
   create_window();
   //create_window_panels();
 

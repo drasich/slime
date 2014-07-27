@@ -1532,6 +1532,9 @@ _object_light_matrix_set(Object* o, Matrix4 light_inv, Matrix4 projection, Matri
     return;
   }
 
+  if (!m->shader_handle.shader)
+  return;
+
   const char* uniname = "light_mat";
 
   if (!shader_uniform_has(m->shader_handle.shader, uniname)){
