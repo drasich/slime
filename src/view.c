@@ -18,7 +18,7 @@
 #define __UNUSED__
 
 //TODO remove from here
-static TextureHandle* light_tex;
+static TextureInfo* light_tex;
 
 static bool s_view_destroyed = false;
 
@@ -1379,14 +1379,6 @@ create_render()
   object_set_position(r->quad_outline, t3);
   r->quad_outline->name = eina_stringshare_add("quad");
 
-  Texture* tsel = texture_new();
-  Texture* tall = texture_new();
-  Texture* tfromlight = texture_new();
-  texture_fbo_link(tsel, &r->fbo_selected->texture_depth_stencil_id);
-  texture_fbo_link(tall, &r->fbo_all->texture_depth_stencil_id);
-  texture_fbo_link(tfromlight, &r->fbo_from_light->texture_depth_stencil_id);
-  //texture_fbo_link(tfromlight, &r->fbo_from_light->texture_color);
-
 
   Shader* s = create_shader("stencil", "shader/stencil.vert", "shader/stencil.frag");
   shader_attribute_add(s, "vertex", 3, GL_FLOAT);
@@ -1397,22 +1389,31 @@ create_render()
 
   mesh_component_shader_set(mc, s);
 
-  //TODO thus texture must be saved somewhere and not just to the shader instance
-  TextureHandle* th = texture_handle_new();
-  th->name = "fbo_sel";
-  th->texture = tsel;
-  shader_instance_texture_data_set(mc->shader_instance, "texture", th);
-  th = texture_handle_new();
-  th->name = "fbo_all";
-  th->texture = tall;
-  shader_instance_texture_data_set(mc->shader_instance, "texture_all", th);
+  //TODO thus textureinfo must be saved somewhere and not just to the shader instance?
+   {
+    TextureInfo* tsel = texture_info_new();
+    tsel->is_fbo = true;
+    tsel->value.fbo = r->fbo_selected;
+    tsel->fbo_depth = true;
+    shader_instance_texture_data_set(mc->shader_instance, "texture", tsel);
+   }
+
+   {
+    TextureInfo* tall = texture_info_new();
+    tall->is_fbo = true;
+    tall->value.fbo = r->fbo_all;
+    tall->fbo_depth = true;
+    shader_instance_texture_data_set(mc->shader_instance, "texture_all", tall);
+   }
 
   //TODO light 
-  th = texture_handle_new();
-  th->name = "fbo_from_light";
-  th->texture = tfromlight;
-  r->thfromlight = th;
-  light_tex = th;
+   {
+    TextureInfo* tlight = texture_info_new();
+    tlight->is_fbo = true;
+    tlight->value.fbo = r->fbo_from_light;
+    tlight->fbo_depth = true;
+    light_tex = tlight;
+   }
 
 
   /*
@@ -1525,7 +1526,7 @@ _render_texture_write(int w, int h)
 }
 
 void
-_object_light_matrix_set(Object* o, Matrix4 light_inv, Matrix4 projection, Matrix4 world, TextureHandle * th)
+_object_light_matrix_set(Object* o, Matrix4 light_inv, Matrix4 projection, Matrix4 world, TextureInfo* ti)
 {
   MeshComponent* m = object_component_get(o, "mesh");
   if (!m) {
@@ -1573,7 +1574,7 @@ _object_light_matrix_set(Object* o, Matrix4 light_inv, Matrix4 projection, Matri
 
   mat4_to_gl(light_mat, lightmatuv->value.mat4);
 
-  shader_instance_texture_data_set(m->shader_instance, "light_tex", th);
+  shader_instance_texture_data_set(m->shader_instance, "light_tex", ti);
 }
 
 

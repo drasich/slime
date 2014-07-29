@@ -12,6 +12,7 @@ TO be able to handle these: make a new struct type? filename
 - implement skeleton animation in shader
 - texture file update fix
 - mesh file update check
+- separate shader tex and resource tex
 
 - file monitor:
   - shaders: 

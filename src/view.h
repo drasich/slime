@@ -26,7 +26,6 @@ struct _Render
 
   Eina_List* render_objects;
   Eina_List* render_objects_selected;
-  TextureHandle* thfromlight;
 };
 
 typedef struct _View View;
