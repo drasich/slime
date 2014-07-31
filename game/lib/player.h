@@ -4,7 +4,19 @@
 #include "component.h"
 #include "object_pointer.h"
 
+typedef enum _MyEnum MyEnum;
+
+enum _MyEnum
+{
+  enum_1,
+  enum_2,
+  enum_3,
+  enum_4,
+};
+
+
 typedef struct _Player Player;
+
 
 struct _Player
 {
@@ -15,6 +27,7 @@ struct _Player
   bool rotate;
   Object* target;
   ObjectPointer targetpointer;
+  MyEnum myenum;
 };
 
 void player_init(Component* c);

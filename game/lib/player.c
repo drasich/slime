@@ -50,6 +50,12 @@ _player_properties(ComponentDesc* desc)
   PROPERTY_BASIC_ADD(ps, Player, rotation_speed, EET_T_DOUBLE);
   PROPERTY_BASIC_ADD(ps, Player, my_test, EET_T_DOUBLE );
 
+
+  int values[] = { enum_1, enum_2, enum_3, enum_4};
+  //int values[] = {};
+  const char* names[] = { "enum_1", "enum_2", "enum_3", "enum_4"};
+  PROPERTY_ENUM_ADD(ps, Player, myenum, values, names);
+
   Property *obp = property_set_object_pointer("target");
   PROPERTY_SUB_NESTED_ADD(ps, Player, targetpointer, obp);
 
