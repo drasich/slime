@@ -41,12 +41,6 @@ win_del(void *data, Evas_Object *obj, void *event_info)
   elm_exit();
 }
 
-static void
-simple_window_del(void *data, Evas_Object *obj, void *event_info)
-{
-  elm_exit();
-}
-
 /*
 static void
 _change_scene(void *data,
@@ -138,36 +132,11 @@ create_window()
   elm_panes_content_left_size_set(panes, 0.20f);
 
   //evas_object_resize(win, 800/3, 400/3);
-  //evas_object_resize(win, 800, 200);
+  evas_object_resize(win, 800, 200);
   //evas_object_resize(win, 1600, 600);
-  evas_object_resize(win, 16, 6);
+  //evas_object_resize(win, 16, 6);
   evas_object_show(win);
 }
-
-#include "glview.h"
-void
-create_simple_window()
-{
-  Evas_Object *win;
-  win = elm_win_util_standard_add("simple_window", "simple_window");
-  elm_win_autodel_set(win, EINA_TRUE);
-  evas_object_smart_callback_add(win, "delete,request", simple_window_del, NULL);
-
-  Evas_Object* box = elm_box_add(win);
-  evas_object_size_hint_weight_set(box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-  elm_win_resize_object_add(win, box);
-  evas_object_show(box);
-
-  Evas_Object* glview = _create_glview(win);
-  elm_box_pack_end(box, glview);
-  //TODO
-  //_set_callbacks(view);
-
-
-  evas_object_resize(win, 256, 256);
-  evas_object_show(win);
-}
-
 
 /*
 static void
@@ -405,19 +374,6 @@ void create_editor()
   //gameviewtest();
 }
 
-void create_glview()
-{
-  eina_init();
-  eet_init();
-  log_domains_register();
-  srand (time(NULL));
-
-  elm_config_preferred_engine_set("opengl_x11");
-  elm_config_focus_highlight_animate_set(EINA_TRUE);
-  elm_config_focus_highlight_enabled_set(EINA_TRUE);
-  create_simple_window();
-}
-
 void close_editor()
 {
   resource_scenes_save();
@@ -436,31 +392,3 @@ elm_main(int argc, char **argv)
   return 0;
 }
 ELM_MAIN()
-
-
-EAPI_MAIN int
-simple_window_main(int argc, char **argv)
-{
-  create_glview();
-  elm_run();
-  elm_shutdown();
-  return 0;
-}
-
-int
-elmmain(int argc, char **argv)
-{
-  int ret;
-  _elm_startup_time = ecore_time_unix_get();
-  elm_init(argc, argv);
-  ret = simple_window_main(argc, argv);
-  return ret;
-}
-
-void
-elm_simple_window_main()
-{
-  elmmain(0,0);
-}
-
-
